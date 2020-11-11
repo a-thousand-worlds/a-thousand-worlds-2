@@ -36,6 +36,10 @@ const routes = [
     name: 'Profile',
     component: ()=>import(/* webpackChunkName: "user" */ './pages/Profile.vue')
   },{
+    path: '/logout',
+    name: 'LogOut',
+    component: ()=>import(/* webpackChunkName: "user" */ './pages/LogOut.vue')
+  },{
     path: '/:catchAll(.*)',
     name: 'NotFound',
     component: NotFound,

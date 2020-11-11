@@ -7,6 +7,9 @@ export default {
   name: 'App',
   components: {
     LeftBar, RightBar
+  },
+  async created() {
+    await this.$store.dispatch('loadStage0')
   }
 }
 </script>

@@ -1,8 +1,7 @@
 import firebase from 'firebase/app'
 import 'firebase/auth'
+import 'firebase/database'
 
-//import * as firebaseui from 'firebaseui'
-//import 'firebaseui/dist/firebaseui.css'
 
 
 const firebaseConfig = {
@@ -21,25 +20,6 @@ firebase.initializeApp(firebaseConfig)
 export default firebase
 
 /*
-const uiConfig = {
-  signInFlow: 'popup',
-  //signInSuccessUrl: '/',
-  signInOptions: [
-    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-    //firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-    {
-      provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
-      requireDisplayName: true
-    },
-  ],
-  callbacks: {
-    signInSuccess: function(currentUser, credentials) {
-      console.log('currentUser!',currentUser,credentials)
-      return false
-    }
-  }
-}
-
 //let db = firebase.database()
 let ui = new firebaseui.auth.AuthUI(firebase.auth())
 
