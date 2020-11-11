@@ -5,10 +5,10 @@ import 'firebaseui/dist/firebaseui.css'
 
 const uiConfig = {
   signInFlow: 'popup',
-  //signInSuccessUrl: '/',
+  // signInSuccessUrl: '/',
   signInOptions: [
     firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-    //firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+    // firebase.auth.FacebookAuthProvider.PROVIDER_ID,
     {
       provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
       requireDisplayName: true
@@ -16,26 +16,27 @@ const uiConfig = {
   ],
   callbacks: {
     signInSuccess: function() {
-      //console.log('currentUser!',currentUser,credentials)
+      // console.log('currentUser!',currentUser,credentials)
       return false
     }
   }
 }
 
-
 export default {
   name: 'LogInPage',
   created() {
-    setTimeout(()=>{
-      let ui =  firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(firebase.auth())
-      ui.start('#firebaseui',uiConfig)
-    },0)
+    setTimeout(() => {
+      const ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(firebase.auth())
+      ui.start('#firebaseui', uiConfig)
+    }, 0)
   },
   watch: {
-    "$store.state.user"(next,prev) {
-      if (!prev&&!!next)
-        this.$router.push({name:'Profile'})
-      //console.log('user next',next,prev)
+    '$store.state.user'(next, prev) {
+      if (!prev && !!next) {
+        // eslint-disable-next-line fp/no-mutating-methods
+        this.$router.push({ name: 'Profile' })
+      }
+      // console.log('user next',next,prev)
     }
   }
 }

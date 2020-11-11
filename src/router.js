@@ -1,45 +1,45 @@
-import { createWebHistory, createRouter } from 'vue-router'
-//import Home from '@/pages/Home.vue'
+import { createRouter, createWebHistory } from 'vue-router'
+// import Home from '@/pages/Home.vue'
 import NotFound from '@/pages/NotFound.vue'
 
 const routes = [
   { // Non authorized pages
     path: '/',
     name: 'Home',
-    component: ()=>import(/* webpackChunkName: "guest" */ './pages/Home.vue')
-  },{
+    component: () => import(/* webpackChunkName: "guest" */ './pages/Home.vue')
+  }, {
     path: '/bundles',
     name: 'Bundles',
-    component: ()=>import(/* webpackChunkName: "guest" */ './pages/Bundles.vue')
-  },{
+    component: () => import(/* webpackChunkName: "guest" */ './pages/Bundles.vue')
+  }, {
     path: '/people',
     name: 'People',
-    component: ()=>import(/* webpackChunkName: "guest" */ './pages/People.vue')
-  },{
+    component: () => import(/* webpackChunkName: "guest" */ './pages/People.vue')
+  }, {
     path: '/instagram',
     name: 'Instagram',
-    component: ()=>import(/* webpackChunkName: "guest" */ './pages/Instagram.vue')
-  },{
+    component: () => import(/* webpackChunkName: "guest" */ './pages/Instagram.vue')
+  }, {
     path: '/support',
     name: 'Support',
-    component: ()=>import(/* webpackChunkName: "guest" */ './pages/Support.vue')
-  },{
+    component: () => import(/* webpackChunkName: "guest" */ './pages/Support.vue')
+  }, {
     path: '/about',
     name: 'About',
-    component: ()=>import(/* webpackChunkName: "guest" */ './pages/About.vue')
-  },{
+    component: () => import(/* webpackChunkName: "guest" */ './pages/About.vue')
+  }, {
     path: '/login',
     name: 'LogIn',
-    component: ()=>import(/* webpackChunkName: "guest" */ './pages/LogIn.vue')
-  },{ // User authorized paged
+    component: () => import(/* webpackChunkName: "guest" */ './pages/LogIn.vue')
+  }, { // User authorized paged
     path: '/profile',
     name: 'Profile',
-    component: ()=>import(/* webpackChunkName: "user" */ './pages/Profile.vue')
-  },{
+    component: () => import(/* webpackChunkName: "user" */ './pages/Profile.vue')
+  }, {
     path: '/logout',
     name: 'LogOut',
-    component: ()=>import(/* webpackChunkName: "user" */ './pages/LogOut.vue')
-  },{
+    component: () => import(/* webpackChunkName: "user" */ './pages/LogOut.vue')
+  }, {
     path: '/:catchAll(.*)',
     name: 'NotFound',
     component: NotFound,
