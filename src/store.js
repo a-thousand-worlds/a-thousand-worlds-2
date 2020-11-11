@@ -8,7 +8,10 @@ const store = createStore({
       loaded: false
     },
     loading: false,
-    user: null
+    user: null,
+    tags: [],
+    books: [],
+    bundles: []
   },
   mutations: {
     setUser(ctx,u)
@@ -29,18 +32,30 @@ const store = createStore({
     setStage0Load(ctx)
     {
       ctx.stage0.loaded = true
+    },
+    setTags(ctx,list)
+    {
+      ctx.tags = list
     }
   },
   actions: {
-    async loadBooks()
-    {
-    },
     async loadTags()
     {
+      firebase.database().ref('tags').once('value',snap=>{
+        console.log('tags',snap.val())
+        store.commit('setTags',snap.val())
+      })
+    },
+    async loadBooks()
+    {
+      firebase.database().ref('books').once('value',snap=>{
+        console.log('tags',snap.val())
+        store.commit('setTags',snap.val())
+      })
     },
     async loadStage0(ctx) {
       await ctx.dispatch('loadTags')
-      await ctx.dispatch('loadBooks')
+      //await ctx.dispatch('loadBooks')
       ctx.commit('setStage0Load')
     }
   }

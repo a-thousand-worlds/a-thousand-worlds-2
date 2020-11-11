@@ -1,19 +1,10 @@
 <script>
 export default {
-  data() {
-    return {
-      filters: ['Board Book','Picture Book','Fiction']
-    }
-  },
   methods: {
     toggleFilter(filter)
     {
       console.log('toggle filter: ',filter)
     }
-  },
-  created()
-  {
-    console.log(this.$router)
   }
 }
 </script>
@@ -21,8 +12,8 @@ export default {
 <template>
   <aside class="menu px-3">
     <ul class="menu-list submenu">
-      <li v-for="filter in filters" :key="filter" @click="toggleFilter(filter)">
-        <button class="p-1">{{filter}}</button>
+      <li v-for="filter in $store.state.tags" :key="filter" @click="toggleFilter(filter.id)">
+        <button class="p-1">{{filter.tag}}</button>
       </li>
     </ul>
   </aside>
