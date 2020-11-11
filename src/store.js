@@ -36,6 +36,10 @@ const store = createStore({
     setTags(ctx,list)
     {
       ctx.tags = list
+    },
+    setBooks(ctx,list)
+    {
+      ctx.books = list
     }
   },
   actions: {
@@ -49,13 +53,13 @@ const store = createStore({
     async loadBooks()
     {
       firebase.database().ref('books').once('value',snap=>{
-        console.log('tags',snap.val())
-        store.commit('setTags',snap.val())
+        console.log('books',snap.val())
+        store.commit('setBooks',snap.val())
       })
     },
     async loadStage0(ctx) {
       await ctx.dispatch('loadTags')
-      //await ctx.dispatch('loadBooks')
+      await ctx.dispatch('loadBooks')
       ctx.commit('setStage0Load')
     }
   }
@@ -97,6 +101,5 @@ firebase.auth().onAuthStateChanged(function(user) {
     store.commit('setUser',null)
   }
 })
-
 
 export default store
