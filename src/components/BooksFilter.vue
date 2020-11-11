@@ -1,9 +1,8 @@
 <script>
 export default {
   methods: {
-    toggleFilter(filter)
-    {
-      console.log('toggle filter: ',filter)
+    toggleFilter(filter) {
+      console.log('toggle filter: ', filter)
     }
   }
 }
