@@ -1,25 +1,28 @@
 <script>
 
 export default {
-  name: 'ProfilePage'
+  name: 'ProfilePage',
+  created() {
+    // console.log(this.$store.state.user.photoUrl)
+  },
+  computed: {
+    username() {
+      if (!this.$store.state.user) {
+        return ''
+      }
+      if (this.$store.state.user.profile.firstName.length) {
+        return this.$store.state.user.profile.firstName + ' ' + this.$store.state.user.profile.lastName
+      }
+      return this.$store.state.user.profile.email
+    }
+  }
 }
 
 </script>
 
 <template>
 
-<h1 class="title">Profile</h1>
-<div class="container">
-  <div v-if="!!$store.state.user" class="level">
-    <div class="level-item">
-      <img :src="$store.state.user.photoUrl"/>
-    </div>
-    <div class="level-item">
-      <h2 class="subtitle">{{$store.state.user.profile.firstName}}</h2>
-      <h2 class="subtitle">{{$store.state.user.profile.lastName}}</h2>
-    </div>
-  </div>
-</div>
+<h1 class="title page-title">Welcome back, {{username}}</h1>
 
 </template>
 

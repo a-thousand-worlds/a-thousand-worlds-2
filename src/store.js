@@ -14,53 +14,90 @@ const store = createStore({
     bundles: []
   },
   mutations: {
-    setUser(ctx,u)
-    {
+    setUser(ctx, u) {
       ctx.user = u
       ctx.stage0.auth = true
     },
-    setUserProfile(ctx,p)
-    {
-      if (ctx.user)
+    setUserProfile(ctx, p) {
+      if (ctx.user) {
         ctx.user.profile = p
+      }
     },
-    setUserRoles(ctx,list)
-    {
-      if (ctx.user)
+    setUserRoles(ctx, list) {
+      if (ctx.user) {
         ctx.user.roles = list
+      }
     },
-    setStage0Load(ctx)
-    {
+    setStage0Load(ctx) {
       ctx.stage0.loaded = true
     },
-    setTags(ctx,list)
-    {
+    setTags(ctx, list) {
       ctx.tags = list
     },
-    setBooks(ctx,list)
-    {
+    setBooks(ctx, list) {
       ctx.books = list
     }
   },
   actions: {
-    async loadTags()
-    {
-      firebase.database().ref('tags').once('value',snap=>{
-        console.log('tags',snap.val())
-        store.commit('setTags',snap.val())
+    loadTags() {
+      return new Promise((resolve, reject) => {
+        firebase.database().ref('tags').once('value', snap => {
+          console.log('tags', snap.val())
+          store.commit('setTags', snap.val())
+          resolve()
+        })
       })
     },
-    async loadBooks()
-    {
-      firebase.database().ref('books').once('value',snap=>{
-        console.log('books',snap.val())
-        store.commit('setBooks',snap.val())
+    loadBooks() {
+      return new Promise((resolve, reject) => {
+        firebase.database().ref('books').once('value', snap => {
+          console.log('books', snap.val())
+          store.commit('setBooks', snap.val())
+          resolve()
+        })
       })
     },
     async loadStage0(ctx) {
       await ctx.dispatch('loadTags')
       await ctx.dispatch('loadBooks')
       ctx.commit('setStage0Load')
+    },
+    userLogin(ctx, credentials) {
+      return new Promise((resolve, reject) => {
+        // console.log('test auth', credentials)
+        firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password)
+          .then(() => {
+            resolve()
+          })
+          .catch(err => {
+            reject(err)
+          })
+      })
+    },
+    passwordReset(ctx, email) {
+      return new Promise((resolve, reject) => {
+        firebase.auth().sendPasswordResetEmail(email)
+          .then(res => {
+            console.log('reset res', res)
+            resolve()
+          })
+          .catch(err => {
+            console.log('reset erroe', err)
+            reject(err)
+          })
+      })
+    },
+    async userRegister(ctx, credentials) {
+      let ret = null
+      console.log('reg with', credentials)
+      try {
+        ret = await firebase.auth().createUserWithEmailAndPassword(credentials.email, credentials.password)
+      }
+      catch (err) {
+        ret = null
+        console.log('userregister error', err)
+      }
+      return ret
     }
   }
 })
@@ -68,37 +105,40 @@ const store = createStore({
 firebase.auth().onAuthStateChanged(function(user) {
   if (user) {
     // User is signed in.
-    let u = {}
-    u.displayName = user.displayName;
-    u.email = user.email;
-    u.emailVerified = user.emailVerified;
-    u.photoURL = user.photoURL;
-    u.isAnonymous = user.isAnonymous;
-    u.uid = user.uid;
-    u.providerData = user.providerData;
+    const u = {}
+    u.displayName = user.displayName
+    u.email = user.email
+    u.emailVerified = user.emailVerified
+    u.photoURL = user.photoURL
+    u.isAnonymous = user.isAnonymous
+    u.uid = user.uid
+    u.providerData = user.providerData
     u.profile = {
+      email: u.email,
       firstName: '',
       lastName: '',
       bundles: [],
       submissions: []
     }
     u.roles = []
-    let p = firebase.database().ref(`users/${u.uid}/profile`)
-    console.log('auth!',u)
-    store.commit('setUser',u)
-    let r = firebase.database().ref(`users/${u.uid}/roles`)
-    r.once('value',snap=>{
-      console.log('roles snap',snap.val())
-      if (Array.isArray(snap.val()))
-        store.commit('setUserRoles',snap.val())
+    const p = firebase.database().ref(`users/${u.uid}/profile`)
+    console.log('auth!', u)
+    store.commit('setUser', u)
+    const r = firebase.database().ref(`users/${u.uid}/roles`)
+    r.once('value', snap => {
+      console.log('roles snap', snap.val())
+      if (Array.isArray(snap.val())) {
+        store.commit('setUserRoles', snap.val())
+      }
     })
-    p.once('value',snap=>{
+    p.once('value', snap => {
       u.profile = snap.val()
-      store.commit('setUserProfile',snap.val())
+      store.commit('setUserProfile', snap.val())
     })
-  } else {
+  }
+  else {
     console.log('out!')
-    store.commit('setUser',null)
+    store.commit('setUser', null)
   }
 })
 

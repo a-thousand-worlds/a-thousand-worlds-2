@@ -1,20 +1,21 @@
 <script>
 
 export default {
-  name: 'LogInPage',
+  name: 'RegisterPage',
   data() {
     return {
       email: '',
-      password: ''
+      password: '',
+      password2: ''
     }
   },
   methods: {
-    login() {
-      this.$store.dispatch('userLogin', { email: this.email, password: this.password })
-        .then(() => {})
-        .catch(err => {
-          console.log('login error', err)
-        })
+    async doRegister() {
+      if (!this.email.length || !this.password.length || this.password !== this.password2) {
+        return
+      }
+      const res = await this.$store.dispatch('userRegister', { email: this.email, password: this.password })
+      console.log('user register res', res)
     }
   },
   watch: {
@@ -31,7 +32,7 @@ export default {
 
 <template>
 
-<h1 class="title page-title">LogIn</h1>
+<h1 class="title page-title">Register</h1>
 <div class="columns">
   <div class="column">
     <div class="baner m-5 p-5">
@@ -40,7 +41,7 @@ export default {
       <h2>Update your book or curated list</h2>
     </div>
   </div>
-  <form class="column" @submit.prevent="login()">
+  <form class="column" @submit.prevent="doRegister()">
     <div class="field">
       <label class="label">EMAIL</label>
       <div class="control">
@@ -54,11 +55,17 @@ export default {
       </div>
     </div>
     <div class="field">
-      <input type="submit" class="button is-primary w-100" value="LOG IN"/>
+      <label class="label">PASSWORD CONFIRM</label>
+      <div class="control">
+        <input type="password" class="input" v-model="password2">
+      </div>
+    </div>
+    <div class="field">
+      <input type="submit" class="button is-primary w-100" value="REGISTER"/>
     </div>
     <div>
+      <p> Have account? <router-link :to="{name:'LogIn'}">Log In</router-link></p>
       <p> Forgot password? <router-link :to="{name:'PasswordReset'}">Reset here</router-link></p>
-      <p> Don't have account? <router-link :to="{name:'Register'}">Register here</router-link></p>
     </div>
   </form>
 </div>

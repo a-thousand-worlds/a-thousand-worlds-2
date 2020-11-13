@@ -5,9 +5,10 @@ export default {
   name: 'LogInPage',
   created() {
     firebase.auth().signOut()
-    setTimeout(()=>{
-      this.$router.push({name:'Home'})
-    },0)
+    setTimeout(() => {
+      // eslint-disable-next-line fp/no-mutating-methods
+      this.$router.push({ name: 'Home' })
+    }, 0)
   }
 }
 
@@ -24,4 +25,3 @@ export default {
 </div>
 
 </template>
-
