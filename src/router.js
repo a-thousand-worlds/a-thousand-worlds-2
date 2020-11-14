@@ -47,6 +47,13 @@ const routes = [
     path: '/logout',
     name: 'LogOut',
     component: () => import(/* webpackChunkName: "user" */ './pages/LogOut.vue')
+  }, { // Admin pages
+    path: '/tags-manager',
+    name: 'TagsManager',
+    component: () => import(/* webpackChunkName: "admin" */ './pages/TagsManager.vue'),
+    meta: {
+      access: 'manage.tags'
+    }
   }, {
     path: '/:catchAll(.*)',
     name: 'NotFound',

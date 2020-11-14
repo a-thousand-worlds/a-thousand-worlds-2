@@ -9,8 +9,8 @@ export default {
 </script>
 
 <template>
-  <aside class="menu px-5 is-flex-direction-column is-justify-content-space-between">
-    <ul class="menu-list">
+  <aside class="is-align-self-stretch menu px-5 is-flex-direction-column is-justify-content-space-between">
+    <ul class="menu-list is-flex-grow-1">
       <li><router-link :to="{name: 'Home'}">Books</router-link></li>
       <li id="books-filter-menu"></li>
       <li><router-link :to="{name: 'Bundles'}">Book Bundles</router-link></li>
@@ -21,6 +21,7 @@ export default {
     </ul>
     <ul class="menu-list mt-5">
       <li v-if="!$store.state.user"><router-link :to="{name: 'LogIn'}">LogIn</router-link></li>
+      <li v-if="!!$store.state.user"><router-link :to="{name: 'TagsManager'}">Tags Manager</router-link></li>
       <li v-if="!!$store.state.user"><router-link :to="{name: 'Profile'}">Profile</router-link></li>
       <li v-if="!!$store.state.user"><router-link :to="{name: 'LogOut'}">LogOut</router-link></li>
     </ul>
