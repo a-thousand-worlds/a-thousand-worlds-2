@@ -149,9 +149,21 @@ firebase.auth().onAuthStateChanged(function(user) {
       submissions: []
     }
     u.roles = []
+    const userRef = firebase.database().ref(`users/${u.uid}`)
+    userRef.once('value', snap => {
+      u.profile = snap.val().profile
+      u.roles = snap.val().roles
+      if (!u.roles) {
+        u.roles = {}
+      }
+      if (!u.roles.authorized) {
+        u.roles.authorized = true
+      }
+      store.commit('setUser', u)
+    })
+    /*
     const p = firebase.database().ref(`users/${u.uid}/profile`)
     console.log('auth!', u)
-    store.commit('setUser', u)
     const r = firebase.database().ref(`users/${u.uid}/roles`)
     r.once('value', snap => {
       console.log('roles snap', snap.val())
@@ -163,6 +175,7 @@ firebase.auth().onAuthStateChanged(function(user) {
       u.profile = snap.val()
       store.commit('setUserProfile', snap.val())
     })
+    */
   }
   else {
     console.log('out!')

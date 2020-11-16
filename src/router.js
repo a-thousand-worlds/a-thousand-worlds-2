@@ -42,7 +42,10 @@ const routes = [
   }, { // User authorized paged
     path: '/profile',
     name: 'Profile',
-    component: () => import(/* webpackChunkName: "user" */ './pages/Profile.vue')
+    component: () => import(/* webpackChunkName: "user" */ './pages/Profile.vue'),
+    meta: {
+      access: 'authorized'
+    }
   }, {
     path: '/logout',
     name: 'LogOut',
@@ -52,7 +55,21 @@ const routes = [
     name: 'TagsManager',
     component: () => import(/* webpackChunkName: "admin" */ './pages/TagsManager.vue'),
     meta: {
-      access: 'manage.tags'
+      access: 'superadmin'
+    }
+  }, {
+    path: '/books-manager',
+    name: 'BooksManager',
+    component: () => import(/* webpackChunkName: "admin" */ './pages/BooksManagerList.vue'),
+    meta: {
+      access: 'superadmin'
+    }
+  }, {
+    path: '/books-manager/add-book',
+    name: 'BookManagerAddForm',
+    component: () => import(/* webpackChunkName: "admin" */ './pages/BookManagerForm.vue'),
+    meta: {
+      access: 'superadmin'
     }
   }, {
     path: '/:catchAll(.*)',

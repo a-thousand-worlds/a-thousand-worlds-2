@@ -5,21 +5,42 @@ import store from './store'
 
 require('@/assets/main.scss')
 
-router.beforeEach((from, to, next) => {
-  if (to.meta && to.meta.access) {
-    if (!store.state.user || !Array.isArray(store.state.user.roles)) {
-      next('/404')
-      return
-    }
-    // let access = to.meta.access
-    // if (!Array.isArray(access))
-    // access = [access]
-
+router.beforeEach((to, from, next) => {
+  if (!to.meta || !to.meta.access) {
+    next()
+    return
   }
-  next()
+  if (!store.state.user || !store.state.user.roles) {
+    next('/404')
+    return
+  }
+  console.log('check access', to.meta.access)
+  let access = to.meta.access
+  if (!Array.isArray(access)) {
+    access = [access]
+  }
+  if (access.reduce((acc, x) => store.state.user.roles[x] || acc, false)) {
+    next()
+  }
+  else {
+    next('/404')
+  }
 })
 
-createApp(App)
+const app = createApp(App)
   .use(store)
   .use(router)
-  .mount('#app')
+
+app.mixin({
+  methods: {
+    $iam(role) {
+      if (!this.$store.state.user) {
+        return false
+      }
+      console.log('iam?', role, this.$store.state.user.roles)
+      return this.$store.state.user && this.$store.state.user.roles && this.$store.state.user.roles[role] === true
+    }
+  }
+})
+
+app.mount('#app')
