@@ -4,12 +4,28 @@ export default {
   name: 'TagsManagerPage',
   data() {
     return {
-      addTagTag: ''
+      addTagTag: '',
+      edits: {}
     }
   },
   methods: {
     addTag() {
-      console.log('add tag', this.addTagTag)
+      this.$store.dispatch('addTag', this.addTagTag).then(() => {
+        this.addTagTag = ''
+      })
+    },
+    delTag(id) {
+      this.$store.dispatch('delTag', id).then(() => {
+        this.addTagTag = ''
+      })
+    },
+    toggleEditTag(id, state) {
+      this.edits[id] = state
+    },
+    updateTag(tagid, tag) {
+      this.$store.dispatch('updateTag', { tagid, tag }).then(() => {
+        this.edits[tagid] = null
+      })
     }
   }
 }
@@ -33,17 +49,30 @@ export default {
     <tbody>
       <tr v-for="tag of $store.state.tags" :key="tag.id">
         <td>{{tag.id}}</td>
-        <td>{{tag.tag}}</td>
+        <td>
+          <span v-if="!edits[tag.id]">{{tag.tag}}</span>
+          <span v-if="edits[tag.id]"><input type="text" class="input" v-model="edits[tag.id]"/></span>
+        </td>
         <td>{{tag.created}}/{{tag.updated}}</td>
         <td class="actions">
-          <div class="field is-grouped is-justify-content-flex-end">
-            <p class="control"><button class="button is-secondary">
+          <div v-if="!edits[tag.id]" class="field is-grouped is-justify-content-flex-end">
+            <p class="control"><button @click.prevent="toggleEditTag(tag.id, tag.tag)" class="button is-secondary">
               <i class="fas fa-pencil-alt mr-2"></i>
               <span>Edit</span>
             </button></p>
-            <p class="control"><button class="button is-danger">
+            <p class="control"><button @click.prevent="delTag(tag.id)" class="button is-danger">
               <i class="fas fa-trash mr-2"></i>
               <span>Delete</span>
+            </button></p>
+          </div>
+          <div v-if="edits[tag.id]" class="field is-grouped is-justify-content-flex-end">
+            <p class="control"><button @click.prevent="toggleEditTag(tag.id, null)" class="button is-secondary">
+              <i class="fas fa-times mr-2"></i>
+              <span>Cancel</span>
+            </button></p>
+            <p class="control"><button @click.prevent="updateTag(tag.id,edits[tag.id])" class="button is-primary">
+              <i class="fas fa-check mr-2"></i>
+              <span>Save</span>
             </button></p>
           </div>
         </td>

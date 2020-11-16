@@ -1,5 +1,7 @@
 import { createStore } from 'vuex'
 import firebase from './firebase'
+import dayjs from 'dayjs'
+import { v4 } from 'uuid'
 
 const store = createStore({
   state: {
@@ -39,6 +41,41 @@ const store = createStore({
     }
   },
   actions: {
+    async addTag(ctx, tag) {
+      // eslint-disable-next-line  fp/no-mutating-methods
+      const id = v4()
+      const ref = await firebase.database().ref(`tags/${id}`)
+      // console.log('set ref', ref, id)
+      const now = dayjs()
+      await ref.set({
+        id,
+        tag,
+        created: now.format(),
+        updated: now.format()
+      })
+      return await ctx.dispatch('loadTags')
+    },
+    async updateTag(ctx, data) {
+      const ref = await firebase.database().ref(`tags/${data.tagid}`)
+      const now = dayjs()
+      // ref.once('value',s
+      const val = await ref.once('value')
+      const snap = val.val()
+      snap.tag = data.tag
+      snap.updated = now.format()
+      if (!snap.created) {
+        snap.created = now.format()
+      }
+      // console.log('set ref', ref, id)
+      console.log('updating ', snap)
+      await ref.set(snap)
+      return await ctx.dispatch('loadTags')
+    },
+    async delTag(ctx, tagid) {
+      const ref = await firebase.database().ref(`tags/${tagid}`)
+      await ref.remove()
+      return await ctx.dispatch('loadTags')
+    },
     loadTags() {
       return new Promise((resolve, reject) => {
         firebase.database().ref('tags').once('value', snap => {
@@ -62,17 +99,8 @@ const store = createStore({
       await ctx.dispatch('loadBooks')
       ctx.commit('setStage0Load')
     },
-    userLogin(ctx, credentials) {
-      return new Promise((resolve, reject) => {
-        // console.log('test auth', credentials)
-        firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password)
-          .then(() => {
-            resolve()
-          })
-          .catch(err => {
-            reject(err)
-          })
-      })
+    async userLogin(ctx, credentials) {
+      return firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password)
     },
     passwordReset(ctx, email) {
       return new Promise((resolve, reject) => {
@@ -89,7 +117,7 @@ const store = createStore({
     },
     async userRegister(ctx, credentials) {
       let ret = null
-      console.log('reg with', credentials)
+      // console.log('reg with', credentials)
       try {
         ret = await firebase.auth().createUserWithEmailAndPassword(credentials.email, credentials.password)
       }
