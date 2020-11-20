@@ -4,16 +4,24 @@ export default {
   name: 'LogInPage',
   data() {
     return {
+      loading: false,
+      error: '',
       email: '',
       password: ''
     }
   },
   methods: {
     login() {
+      this.loading = true
       this.$store.dispatch('userLogin', { email: this.email, password: this.password })
-        .then(() => {})
+        .then(() => {
+          this.loading = false
+          this.error = ''
+        })
         .catch(err => {
           console.log('login error', err)
+          this.error = err.message
+          this.loading = false
         })
     }
   },
@@ -44,17 +52,20 @@ export default {
     <div class="field">
       <label class="label">EMAIL</label>
       <div class="control">
-        <input type="email" class="input" v-model="email">
+        <input :disabled="loading" type="email" class="input" v-model="email">
       </div>
     </div>
     <div class="field">
       <label class="label">PASSWORD</label>
       <div class="control">
-        <input type="password" class="input" v-model="password">
+        <input :disabled="loading" type="password" class="input" v-model="password">
       </div>
     </div>
+    <div v-if="error!==''" class="field">
+      <small>{{error}}</small>
+    </div>
     <div class="field">
-      <input type="submit" class="button is-primary w-100" value="LOG IN"/>
+      <input :disabled="loadin" type="submit" class="button is-primary w-100" :class="{'is-loading':loading}" value="LOG IN"/>
     </div>
     <div>
       <p> Forgot password? <router-link :to="{name:'PasswordReset'}">Reset here</router-link></p>

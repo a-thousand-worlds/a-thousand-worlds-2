@@ -11,7 +11,8 @@ const store = createStore({
     },
     loading: false,
     user: null,
-    tags: [],
+    tags: {},
+    sortedTags: [],
     books: [],
     bundles: []
   },
@@ -36,6 +37,9 @@ const store = createStore({
     setTags(ctx, list) {
       ctx.tags = list
     },
+    setSortedTags(ctx, list) {
+      ctx.sortedTags = list
+    },
     setBooks(ctx, list) {
       ctx.books = list
     }
@@ -49,19 +53,24 @@ const store = createStore({
       const now = dayjs()
       await ref.set({
         id,
-        tag,
+        tag: tag.tag,
+        sortOrder: parseInt(tag.sortOrder) || 0,
+        showOnFront: !!tag.showOnFront,
         created: now.format(),
         updated: now.format()
       })
       return await ctx.dispatch('loadTags')
     },
     async updateTag(ctx, data) {
-      const ref = await firebase.database().ref(`tags/${data.tagid}`)
+      const ref = await firebase.database().ref(`tags/${data.id}`)
       const now = dayjs()
       // ref.once('value',s
       const val = await ref.once('value')
       const snap = val.val()
+      console.log('update?', data, snap)
       snap.tag = data.tag
+      snap.showOnFront = !!data.showOnFront
+      snap.sortOrder = parseInt(data.sortOrder)
       snap.updated = now.format()
       if (!snap.created) {
         snap.created = now.format()
@@ -80,7 +89,19 @@ const store = createStore({
       return new Promise((resolve, reject) => {
         firebase.database().ref('tags').once('value', snap => {
           console.log('tags', snap.val())
-          store.commit('setTags', snap.val())
+          const v = snap.val()
+          store.commit('setTags', v)
+          const tags = Object.keys(v).map(k => {
+            return { ...v[k] }
+          })
+          // eslint-disable-next-line fp/no-mutating-methods
+          const sorted = tags.sort((a, b) => {
+            if (a.sortOrder === b.sortOrder) {
+              return 0
+            }
+            return a.sortOrder > b.sortOrder ? 1 : -1
+          })
+          store.commit('setSortedTags', sorted)
           resolve()
         })
       })

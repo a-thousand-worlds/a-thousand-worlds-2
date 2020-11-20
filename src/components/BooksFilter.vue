@@ -11,8 +11,8 @@ export default {
 <template>
   <aside class="menu px-3">
     <ul class="menu-list submenu">
-      <li v-for="filter in $store.state.tags" :key="filter" @click="toggleFilter(filter.id)">
-        <button class="p-1">{{filter.tag}}</button>
+      <li v-for="filter in $store.state.sortedTags" :key="filter.id" @click="toggleFilter(filter.id)">
+        <button v-if="filter.showOnFront" class="p-1">{{filter.tag}}</button>
       </li>
     </ul>
   </aside>

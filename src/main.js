@@ -3,6 +3,8 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
+import dayjs from 'dayjs'
+
 require('@/assets/main.scss')
 
 router.beforeEach((to, from, next) => {
@@ -39,6 +41,10 @@ app.mixin({
       }
       console.log('iam?', role, this.$store.state.user.roles)
       return this.$store.state.user && this.$store.state.user.roles && this.$store.state.user.roles[role] === true
+    },
+    $dateFormat(date) {
+      const d = dayjs(date)
+      return d.format('D MMM YY')
     }
   }
 })

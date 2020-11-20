@@ -9,10 +9,13 @@
       <li><router-link :to="{name: 'Support'}">Support</router-link></li>
       <li><router-link :to="{name: 'About'}">About</router-link></li>
     </ul>
+    <ul v-if="$iam('superadmin')" class="menu-list mt-5">
+      <li><router-link :to="{name: 'TagsManager'}">Tags Manager</router-link></li>
+      <li><router-link :to="{name: 'BooksManager'}">Books Manager</router-link></li>
+      <li><router-link :to="{name: 'PeopleManager'}">People Manager</router-link></li>
+    </ul>
     <ul class="menu-list mt-5">
       <li v-if="!$store.state.user"><router-link :to="{name: 'LogIn'}">LogIn</router-link></li>
-      <li v-if="$iam('superadmin')"><router-link :to="{name: 'TagsManager'}">Tags Manager</router-link></li>
-      <li v-if="$iam('superadmin')"><router-link :to="{name: 'BooksManager'}">Books Manager</router-link></li>
       <li v-if="$iam('authorized')"><router-link :to="{name: 'Profile'}">Profile</router-link></li>
       <li v-if="!$iam('authorized')"><router-link :to="{name: 'LogOut'}">LogOut</router-link></li>
     </ul>

@@ -58,6 +58,13 @@ const routes = [
       access: 'superadmin'
     }
   }, {
+    path: '/people-manager',
+    name: 'PeopleManager',
+    component: () => import(/* webpackChunkName: "admin" */ './pages/PeopleManagerList.vue'),
+    meta: {
+      access: 'superadmin'
+    }
+  }, {
     path: '/books-manager',
     name: 'BooksManager',
     component: () => import(/* webpackChunkName: "admin" */ './pages/BooksManagerList.vue'),
