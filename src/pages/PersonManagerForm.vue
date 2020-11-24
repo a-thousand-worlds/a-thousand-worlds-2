@@ -1,0 +1,176 @@
+<script>
+
+import Jimp from 'jimp'
+
+export default {
+  data() {
+    return {
+      mode: 'new',
+      searching: false,
+      found: false,
+      photoType: null,
+      photoSize: 0,
+      person: {
+        id: null,
+        name: '',
+        email: '',
+        bio: '',
+        photo: '',
+        file: null,
+        role: 'author'
+      }
+    }
+  },
+  created() {
+    console.log('router', this.$router.currentRoute)
+    if (this.$router.currentRoute._value.name === 'PersonManagerUpdateForm') {
+      const p = this.$store.state.people[this.$router.currentRoute._value.params.uid] || null
+      console.log('upd', p, this.$store.state.people)
+      if (p) {
+        this.person = p
+        this.mode = 'update'
+      }
+    }
+  },
+  methods: {
+    fileChange(e) {
+      const file = e.target.files[0]
+      console.log('file', file)
+      const reader = new FileReader()
+      this.person.photo = ''
+      this.photoType = null
+      reader.onload = () => {
+        this.photoType = file.type
+        this.person.file = file
+        this.photoSize = file.size
+        this.person.photo = reader.result
+        Jimp.read(reader.result, (err, img) => {
+          if (err) {
+            console.log('jimp error', err)
+          }
+          if (img) {
+            // console.log(img)
+            if (img.bitmap.width !== img.bitmap.height) {
+              alert('recommended to use suqare images')
+            }
+          }
+        })
+      }
+      reader.onerror = err => {
+        console.log('rreader error', err)
+      }
+      reader.readAsDataURL(file)
+    },
+    save() {
+      // console.log('saving', this.person)
+      this.$store.dispatch('savePerson', this.person).then(() => {
+        // eslint-disable-next-line fp/no-mutating-methods
+        this.$router.push({ name: 'PeopleManager' })
+      })
+    }
+  },
+  computed: {
+    photoUrl() {
+      if (!this.person.photo || !this.person.photo.length) {
+        return null
+      }
+      return this.person.photo
+    },
+    photoSizeD() {
+      if (!this.photoSize) {
+        return null
+      }
+      let sz = Math.floor(this.photoSize * 100 / 1024) / 100 // kb
+      if (sz < 1024) {
+        return sz + 'kb'
+      }
+      sz = Math.floor(sz * 100 / 1024) / 100 // mb
+      return sz + 'mb'
+    }
+  }
+}
+</script>
+
+<template>
+<h1 v-if="mode==='new'" class="title page-title">Add Person</h1>
+<h1 v-if="mode!=='new'" class="title page-title">Update Person</h1>
+
+<section class="section">
+  <form @submit.prevent="save()">
+    <div class="columns">
+      <div class="column is-one-third">
+        <div id="photo-wrapper">
+          <img v-if="photoUrl" :src="photoUrl">
+        </div>
+        <small v-if="photoSizeD">{{photoSizeD}}</small>
+        <input type="file" class="file" @change.prevent="fileChange($event)"/>
+      </div>
+      <div class="column is-two-thirds">
+
+        <div class="field">
+          <label class="label">Name</label>
+          <div class="control">
+            <input type="text" class="input" v-model="person.name">
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">E-mail</label>
+          <div class="control">
+            <input type="email" class="input" v-model="person.email">
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Role</label>
+          <div class="control">
+            <div class="select">
+              <select v-model="person.role">
+                <option value="author">Author</option>
+                <option value="illustrator">Illustrator</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Biography</label>
+          <div class="control">
+            <textarea class="textarea" v-model="person.bio"></textarea>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="">
+      <input type="submit" class="button is-primary" value="Save">
+      <router-link class="button is-secondary ml-3" :to="{name: 'PeopleManager'}">Cancel</router-link>
+    </div>
+  </form>
+</section>
+
+</template>
+
+<style scoped lang="scss">
+@import '@/assets/vars.scss';
+
+#iff-isbn {
+  width: 0px !important;
+  height: 0px !important;
+}
+
+#photo-wrapper {
+  width: 300px;
+  height: 300px;
+  background: #ccc;
+  border: 2px solid $atw-base;
+  border-radius: 50%;
+  overflow: hidden;
+  text-align: center;
+
+  img {
+    height: 100%;
+    width: auto;
+  }
+}
+</style>

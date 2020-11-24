@@ -1,8 +1,8 @@
 <script>
 
-import axios from 'axios'
-
-const FNURL = 'http://localhost:5001/firebase-test-294020/us-central1/searchISBN?isbn='
+import dayjs from 'dayjs'
+import { isbnSearch } from '@/utils'
+import PersonField from '@/components/PersonField'
 
 export default {
   data() {
@@ -10,34 +10,86 @@ export default {
       mode: 'new',
       searching: false,
       found: false,
+      authorsRoles: [],
       book: {
         title: '',
         isbn: '',
-        text: '',
-        gr: null
+        description: '',
+        cover: '',
+        file: null,
+        tags: {},
+        authors: [],
+        goodReads: null,
+        google: null,
+        openlib: null,
+        publisher: '',
+        year: 2020,
       }
     }
   },
   methods: {
     searchISBN() {
-      console.log('search', this.book.isbn)
+      // console.log('search', this.book.isbn)
       this.searching = true
-      axios.get(FNURL + this.book.isbn).then(res => {
+      isbnSearch(this.book.isbn).then(res => {
         this.searching = false
-        if (res) {
-          console.log('found book!', res)
-          const inf = res.data
-          if (inf && inf.found) {
-            this.book.title = inf.gr.title
-            this.$refs.coverImg.src = 'data:image/png;base64, ' + inf.gr.coverb
-            this.book.gs = inf.gr
-          }
+        if (!res) {
+          console.log('book not found')
+          return
         }
-      }).catch(err => {
-        console.log('search book error', err)
-        this.searching = false
+        // console.log('found book!', res)
+        this.book.title = res.google.title
+        this.book.description = res.google.description
+        this.book.cover = 'data:image/png;base64,' + res.cover
+        this.book.publisher = res.google.publisher
+        this.book.year = dayjs(res.google.publishedDate).format('YYYY')
+        this.book.authors = []
+        this.authorsRoles = []
+        if (res.google && res.google.authors && res.google.authors.length) {
+          this.book.authors = res.google.authors
+        }
+        if (res.openlib && res.openlib.authors && res.openlib.authors.length && res.openlib.authors.length > this.book.authors.length) {
+          this.book.authors = res.openlib.authors
+        }
+        // console.log(this.book.authors)
+        this.book.google = res.goole
+        this.book.openlib = res.openlib
       })
+    },
+    save() {
+      console.log('save', this.book, this.authorsRoles)
+      /**/
+      this.$store.dispatch('saveBook', { book: this.book, roles: this.authorsRoles }).then(() => {
+        console.log('book saved')
+        // eslint-disable-next-line fp/no-mutating-methods
+        this.$router.push({ name: 'BooksManager' })
+      })
+      /**/
+    },
+    updatePerson(name, i) {
+      this.book.authors[i] = name
+    },
+    updatePersonRole(role, i) {
+      this.authorsRoles[i] = role
+    },
+    addAuthor() {
+      // eslint-disable-next-line fp/no-mutating-methods
+      this.book.authors.push('')
+      // eslint-disable-next-line fp/no-mutating-methods
+      this.authorsRoles.push('')
+    },
+    delAuthor() {
+      // eslint-disable-next-line fp/no-mutating-methods
+      this.book.authors.pop()
+      // eslint-disable-next-line fp/no-mutating-methods
+      this.authorsRoles.pop()
+    },
+    coverChange(e) {
+      console.log('cover change', e)
     }
+  },
+  components: {
+    'field-person': PersonField
   }
 }
 </script>
@@ -65,19 +117,74 @@ export default {
 </section>
 
 <section class="section">
+<form class="w-100" @submit.prevent="save()">
   <div class="columns">
-    <div class="column column-25">
-      <img ref="coverImg"/>
+    <div class="column is-one-third">
+      <img v-if="book.cover!=''" :src="book.cover">
+      <input type="file" class="file" @change.prevent="coverChange($evnet)"/>
     </div>
-    <div class="column column-75">
+    <div class="column is-two-thirds">
+
       <div class="field">
-        <label class="label">Book Title</label>
+        <label class="label">Title</label>
         <div class="control">
           <input type="text" class="input" v-model="book.title">
         </div>
       </div>
+
+      <div class="field">
+        <label class="label">Description</label>
+        <div class="control">
+          <textarea class="textarea" v-model="book.description"></textarea>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label d-inline">Authors</label>
+        <button @click.prevent="addAuthor()" class="button is-primary is-small d-inline ml-5">
+          <i class="fas fa-plus mr-2"></i>
+          <span>Add</span>
+        </button>
+        <button v-if="book.authors.length" @click.prevent="delAuthor()" class="button is-secondary is-small d-inline ml-5">
+          <i class="fas fa-minus mr-2"></i>
+          <span>Remove</span>
+        </button>
+        <div class="mt-2 field is-grouped" v-for="(person, index) of book.authors" :key="index">
+          <field-person @changed="updatePerson($event,index)" @changed-role="updatePersonRole($event,index)" :person="book.authors[index]"></field-person>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Categories</label>
+        <div v-for="tag of $store.state.sortedTags" :key="tag.id" class="control">
+          <input :id="tag.id" :name="tag.id" type="checkbox" class="checkbox mr-3" v-model="book.tags[tag.id]">
+          <label class="label d-inline" :for="tag.id">
+            {{tag.tag}} <i v-if="tag.showOnFront" class="fas fa-check has-text-primary ml-1"></i>
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Year</label>
+        <div class="control">
+          <input type="text" class="input" v-model="book.year">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Publisher</label>
+        <div class="control">
+          <input type="text" class="input" v-model="book.publisher">
+        </div>
+      </div>
+
     </div>
   </div>
+  <div>
+    <input class="button is-primary" type="submit" value="Save">
+    <router-link class="button is-secondary ml-2" :to="{name:'BooksManager'}">Cancel</router-link>
+  </div>
+</form>
 </section>
 
 </template>
@@ -86,5 +193,8 @@ export default {
 #iff-isbn {
   width: 0px !important;
   height: 0px !important;
+}
+.d-inline {
+  display: inline !important;
 }
 </style>

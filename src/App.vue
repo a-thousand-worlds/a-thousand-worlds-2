@@ -21,6 +21,15 @@ export default ({
       else {
         this.isFront = false
       }
+    },
+    '$store.state.user'(next, prev) {
+      if (!prev && next && this.$store.state.noAccessPath.length) {
+        const nap = this.$store.state.noAccessPath + ''
+        this.$store.commit('setNAP', '')
+        // eslint-disable-next-line  fp/no-mutating-methods
+        this.$router.push(nap)
+      }
+      // console.log('$store.user next', prev, next)
     }
   },
   async created() {

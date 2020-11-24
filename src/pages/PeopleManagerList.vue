@@ -2,33 +2,12 @@
 
 export default {
   name: 'PeopleManagerListPage',
-  data() {
-    return {
-      addTagTag: '',
-      edits: {}
-    }
-  },
   methods: {
-    /*
-    addTag() {
-      this.$store.dispatch('addTag', this.addTagTag).then(() => {
-        this.addTagTag = ''
-      })
-    },
-    delTag(id) {
-      this.$store.dispatch('delTag', id).then(() => {
-        this.addTagTag = ''
-      })
-    },
-    toggleEditTag(id, state) {
-      this.edits[id] = state
-    },
-    updateTag(tagid, tag) {
-      this.$store.dispatch('updateTag', { tagid, tag }).then(() => {
-        this.edits[tagid] = null
+    delPerson(id) {
+      this.$store.dispatch('delPerson', id).then(() => {
+        // this.addTagTag = ''
       })
     }
-    */
   }
 }
 
@@ -41,7 +20,7 @@ export default {
 <div class="level">
   <div class="level-right">
     <div class="level-item">
-      <router-link class="button is-primary" :to="{name:'BookManagerAddForm'}">Add Person</router-link>
+      <router-link class="button is-primary" :to="{name:'PeopleManagerAddForm'}">Add Person</router-link>
     </div>
   </div>
 </div>
@@ -50,26 +29,28 @@ export default {
   <table class="table w-100">
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Book/ISBN</th>
+        <th>Account</th>
+        <th>Name</th>
+        <th>Role</th>
         <th>Created/Updated</th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="book of $store.state.books" :key="book.id">
-        <td>{{book.id}}</td>
+      <tr v-for="person of $store.state.people" :key="person.id">
+        <td>{{person.id}}</td>
         <td>
-          <span>{{book.title}}</span>
+          <span>{{person.name}}</span>
         </td>
-        <td>{{book.created}}/{{book.updated}}</td>
+        <td>{{person.role}}</td>
+        <td>{{person.created}}/{{person.updated}}</td>
         <td class="actions">
           <div class="field is-grouped is-justify-content-flex-end">
-            <p class="control"><button @click.prevent="" class="button is-secondary">
+            <p class="control"><router-link :to="{name:'PersonManagerUpdateForm',params:{uid:person.id}}" class="button is-secondary">
               <i class="fas fa-pencil-alt mr-2"></i>
               <span>Edit</span>
-            </button></p>
-            <p class="control"><button @click.prevent="" class="button is-danger">
+            </router-link></p>
+            <p class="control"><button @click.prevent="delPerson(person.id)" class="button is-danger">
               <i class="fas fa-trash mr-2"></i>
               <span>Delete</span>
             </button></p>

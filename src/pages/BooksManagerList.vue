@@ -51,7 +51,8 @@ export default {
     <thead>
       <tr>
         <th>ID</th>
-        <th>Book/ISBN</th>
+        <th>ISBN</th>
+        <th>Title</th>
         <th>Created/Updated</th>
         <th>Actions</th>
       </tr>
@@ -60,15 +61,18 @@ export default {
       <tr v-for="book of $store.state.books" :key="book.id">
         <td>{{book.id}}</td>
         <td>
+          <span>{{book.isbn}}</span>
+        </td>
+        <td>
           <span>{{book.title}}</span>
         </td>
         <td>{{book.created}}/{{book.updated}}</td>
         <td class="actions">
           <div class="field is-grouped is-justify-content-flex-end">
-            <p class="control"><button @click.prevent="" class="button is-secondary">
+            <p class="control"><router-link :to="{name:'BookManagerUpdateForm',params:{bid:book.id}}" class="button is-secondary">
               <i class="fas fa-pencil-alt mr-2"></i>
               <span>Edit</span>
-            </button></p>
+            </router-link></p>
             <p class="control"><button @click.prevent="" class="button is-danger">
               <i class="fas fa-trash mr-2"></i>
               <span>Delete</span>

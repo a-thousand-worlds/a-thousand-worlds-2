@@ -13,10 +13,11 @@ router.beforeEach((to, from, next) => {
     return
   }
   if (!store.state.user || !store.state.user.roles) {
+    store.commit('setNAP', to.path)
     next('/404')
     return
   }
-  console.log('check access', to.meta.access)
+  // console.log('check access', to.meta.access)
   let access = to.meta.access
   if (!Array.isArray(access)) {
     access = [access]
@@ -39,7 +40,7 @@ app.mixin({
       if (!this.$store.state.user) {
         return false
       }
-      console.log('iam?', role, this.$store.state.user.roles)
+      // console.log('iam?', role, this.$store.state.user.roles)
       return this.$store.state.user && this.$store.state.user.roles && this.$store.state.user.roles[role] === true
     },
     $dateFormat(date) {

@@ -2,9 +2,11 @@ import { createStore } from 'vuex'
 import firebase from './firebase'
 import dayjs from 'dayjs'
 import { v4 } from 'uuid'
+import Jimp from 'jimp'
 
 const store = createStore({
   state: {
+    noAccessPath: '',
     stage0: {
       auth: false,
       loaded: false
@@ -13,10 +15,14 @@ const store = createStore({
     user: null,
     tags: {},
     sortedTags: [],
+    people: [],
     books: [],
     bundles: []
   },
   mutations: {
+    setNAP(ctx, p) {
+      ctx.noAccessPath = p
+    },
     setUser(ctx, u) {
       ctx.user = u
       ctx.stage0.auth = true
@@ -42,6 +48,9 @@ const store = createStore({
     },
     setBooks(ctx, list) {
       ctx.books = list
+    },
+    setPeople(ctx, list) {
+      ctx.people = list
     }
   },
   actions: {
@@ -106,18 +115,114 @@ const store = createStore({
         })
       })
     },
-    loadBooks() {
+    async saveBook(ctx, info) {
+      console.log('saving book store', info)
+      /**/
+      const id = info.book.id && info.book.id.length ? info.book.id : v4()
+      // checking and saving authors if not exists
+      let i = 0
+      // eslint-disable-next-line fp/no-loops
+      for (const person of info.book.authors) {
+        const exists = ctx.state.people.reduce((acc, x) => x.name.toLowerCase() === person ? true : acc, false)
+        if (!exists) {
+          console.log('saving person', person, info.roles[i])
+          await ctx.dispatch('savePerson', {
+            name: person,
+            role: info.roles[i] || 'author'
+          })
+        }
+        i++
+      }
+      // uploading photo
+      console.log('converting and uploading photo')
+      const img = await Jimp.read(info.book.cover)
+      const buff = await img.getBufferAsync(Jimp.MIME_PNG)
+      const photoRef = await firebase.storage().ref(`books/${id}`)
+      await photoRef.put(buff, { contentType: 'image/png' })
+      const photoUrl = await photoRef.getDownloadURL()
+
+      // saving book
+      console.log('building tags')
+      const tags = Object.keys(info.book.tags)
+        .filter(x => !!info.book.tags[x])
+        .map(x => ctx.state.sortedTags.reduce((acc, t) => t.id === x ? t.tag : acc, null))
+        .filter(x => !!x)
+      const bookRef = await firebase.database().ref(`books/${id}`)
+      const now = dayjs()
+      console.log('saving')
+      await bookRef.set({
+        id: id,
+        isbn: info.book.isbn,
+        title: info.book.title,
+        description: info.book.description,
+        cover: photoUrl,
+        publisher: info.book.publisher,
+        year: parseInt(info.book.year),
+        authors: info.book.authors,
+        tags: tags,
+        created: now.format(),
+        updated: now.format()
+      })
+      await ctx.dispatch('loadBooks')
+    },
+    loadBooks(ctx) {
       return new Promise((resolve, reject) => {
         firebase.database().ref('books').once('value', snap => {
           console.log('books', snap.val())
-          store.commit('setBooks', snap.val())
+          ctx.commit('setBooks', snap.val())
+          resolve()
+        })
+      })
+    },
+    async savePerson(ctx, info) {
+      // eslint-disable-next-line  fp/no-mutating-methods
+      const id = info.id && info.id.length ? info.id : v4()
+      let photoUrl = info.photo || ''
+      if (info.file) {
+        const photoRef = await firebase.storage().ref(`people/${id}`)
+        await photoRef.put(info.file)
+        photoUrl = await photoRef.getDownloadURL()
+      }
+
+      const ref = await firebase.database().ref(`people/${id}`)
+      const now = dayjs()
+      await ref.set({
+        name: info.name,
+        email: info.email || '',
+        bio: info.bio || '',
+        role: info.role,
+        id: id,
+        books: [],
+        photo: photoUrl,
+        created: now.format(),
+        updated: now.format()
+      })
+      await ctx.dispatch('loadPeople')
+    },
+    async delPerson(ctx, id) {
+      const ref = await firebase.database().ref(`people/${id}`)
+      const refp = await firebase.storage().ref(`people/${id}`)
+      await ref.remove()
+      await refp.delete()
+      return await ctx.dispatch('loadPeople')
+    },
+    loadPeople() {
+      return new Promise((resolve, reject) => {
+        firebase.database().ref('people').once('value', snap => {
+          const v = snap.val()
+          const list = Object.keys(v).map(x => v[x])
+          console.log('people', list)
+          store.commit('setPeople', list)
           resolve()
         })
       })
     },
     async loadStage0(ctx) {
+      // const ref = await firebase.database().ref(`people`)
+      // await ref.remove()
       await ctx.dispatch('loadTags')
       await ctx.dispatch('loadBooks')
+      await ctx.dispatch('loadPeople')
       ctx.commit('setStage0Load')
     },
     async userLogin(ctx, credentials) {
@@ -171,7 +276,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     }
     u.roles = []
     const userRef = firebase.database().ref(`users/${u.uid}`)
-    userRef.once('value', snap => {
+    userRef.on('value', snap => {
       u.profile = snap.val().profile
       u.roles = snap.val().roles
       if (!u.roles) {
@@ -182,21 +287,6 @@ firebase.auth().onAuthStateChanged(function(user) {
       }
       store.commit('setUser', u)
     })
-    /*
-    const p = firebase.database().ref(`users/${u.uid}/profile`)
-    console.log('auth!', u)
-    const r = firebase.database().ref(`users/${u.uid}/roles`)
-    r.once('value', snap => {
-      console.log('roles snap', snap.val())
-      if (Array.isArray(snap.val())) {
-        store.commit('setUserRoles', snap.val())
-      }
-    })
-    p.once('value', snap => {
-      u.profile = snap.val()
-      store.commit('setUserProfile', snap.val())
-    })
-    */
   }
   else {
     console.log('out!')

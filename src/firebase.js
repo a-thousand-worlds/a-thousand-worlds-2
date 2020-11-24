@@ -1,6 +1,7 @@
 import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/database'
+import 'firebase/storage'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyCJSm_g2dQAAGYohn5G0YjN6yfyk_4biCY',
@@ -16,16 +17,3 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig)
 
 export default firebase
-
-/*
-//let db = firebase.database()
-let ui = new firebaseui.auth.AuthUI(firebase.auth())
-
-document.getElementById("btn-signout").style.display = 'none'
-
-window.signOut = () => {
-  firebase.auth().signOut()
-}
-*/
-
-// ui.start('#firebase-auth', uiConfig)
