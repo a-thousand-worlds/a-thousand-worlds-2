@@ -16,7 +16,7 @@ export default {
         isbn: '',
         description: '',
         cover: '',
-        file: null,
+        // file: null,
         tags: {},
         authors: [],
         goodReads: null,
@@ -26,6 +26,30 @@ export default {
         year: 2020,
       }
     }
+  },
+  created() {
+    // console.log('router', this.$router.currentRoute)
+    if (this.$router.currentRoute._value.name === 'BookManagerUpdateForm') {
+      const b = this.$store.state.books[this.$router.currentRoute._value.params.bid] || null
+      // console.log('upd', p, this.$store.state.people)
+      if (b) {
+        this.book = b
+        if (!this.book.tags) {
+          this.book.tags = {}
+        }
+        else {
+          this.book.tags = this.book.tags.reduce((tags, x) => {
+            const tag = this.$store.state.sortedTags.reduce((acc, t) => t.tag === x ? t : acc, null)
+            if (tag) {
+              tags[tag.id] = true
+            }
+            return tags
+          }, {})
+        }
+        this.mode = 'update'
+      }
+    }
+    window.scrollTo(0, 0)
   },
   methods: {
     searchISBN() {
@@ -95,7 +119,8 @@ export default {
 </script>
 
 <template>
-<h1 class="title page-title">Add Book</h1>
+<h1 v-if="mode === 'new'" class="title page-title">Add Book</h1>
+<h1 v-if="mode === 'update'" class="title page-title">Add Book</h1>
 
 <section class="section">
   <form class="w-100" @submit.prevent="searchISBN()">
@@ -121,7 +146,6 @@ export default {
   <div class="columns">
     <div class="column is-one-third">
       <img v-if="book.cover!=''" :src="book.cover">
-      <input type="file" class="file" @change.prevent="coverChange($evnet)"/>
     </div>
     <div class="column is-two-thirds">
 

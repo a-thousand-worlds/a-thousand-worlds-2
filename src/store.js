@@ -16,7 +16,7 @@ const store = createStore({
     tags: {},
     sortedTags: [],
     people: [],
-    books: [],
+    books: {},
     bundles: []
   },
   mutations: {
@@ -123,7 +123,10 @@ const store = createStore({
       let i = 0
       // eslint-disable-next-line fp/no-loops
       for (const person of info.book.authors) {
-        const exists = ctx.state.people.reduce((acc, x) => x.name.toLowerCase() === person ? true : acc, false)
+        const exists = ctx.state.people.reduce((acc, x) => {
+          console.log('checking', x.name, person)
+          return x.name.toLowerCase() === person.toLowerCase() ? true : acc
+        }, false)
         if (!exists) {
           console.log('saving person', person, info.roles[i])
           await ctx.dispatch('savePerson', {
@@ -133,13 +136,19 @@ const store = createStore({
         }
         i++
       }
+      let photoUrl = ''
       // uploading photo
-      console.log('converting and uploading photo')
-      const img = await Jimp.read(info.book.cover)
-      const buff = await img.getBufferAsync(Jimp.MIME_PNG)
-      const photoRef = await firebase.storage().ref(`books/${id}`)
-      await photoRef.put(buff, { contentType: 'image/png' })
-      const photoUrl = await photoRef.getDownloadURL()
+      if (typeof info.book.cover === 'string' && info.book.cover.startsWith('http')) {
+        photoUrl = info.book.cover
+      }
+      else {
+        console.log('converting and uploading photo')
+        const img = await Jimp.read(info.book.cover)
+        const buff = await img.getBufferAsync(Jimp.MIME_PNG)
+        const photoRef = await firebase.storage().ref(`books/${id}`)
+        await photoRef.put(buff, { contentType: 'image/png' })
+        photoUrl = await photoRef.getDownloadURL()
+      }
 
       // saving book
       console.log('building tags')
@@ -150,6 +159,7 @@ const store = createStore({
       const bookRef = await firebase.database().ref(`books/${id}`)
       const now = dayjs()
       console.log('saving')
+      const created = info.book.created || now.format()
       await bookRef.set({
         id: id,
         isbn: info.book.isbn,
@@ -160,7 +170,7 @@ const store = createStore({
         year: parseInt(info.book.year),
         authors: info.book.authors,
         tags: tags,
-        created: now.format(),
+        created: created,
         updated: now.format()
       })
       await ctx.dispatch('loadBooks')
@@ -174,6 +184,16 @@ const store = createStore({
         })
       })
     },
+    async delBook(ctx, id) {
+      const ref = await firebase.database().ref(`books/${id}`)
+      const refp = await firebase.storage().ref(`books/${id}`)
+      await ref.remove()
+      try {
+        await refp.delete()
+      }
+      catch (e) {}
+      return await ctx.dispatch('loadBooks')
+    },
     async savePerson(ctx, info) {
       // eslint-disable-next-line  fp/no-mutating-methods
       const id = info.id && info.id.length ? info.id : v4()
@@ -186,6 +206,7 @@ const store = createStore({
 
       const ref = await firebase.database().ref(`people/${id}`)
       const now = dayjs()
+      const created = info.created || now.format()
       await ref.set({
         name: info.name,
         email: info.email || '',
@@ -194,7 +215,7 @@ const store = createStore({
         id: id,
         books: [],
         photo: photoUrl,
-        created: now.format(),
+        created: created,
         updated: now.format()
       })
       await ctx.dispatch('loadPeople')
@@ -203,7 +224,10 @@ const store = createStore({
       const ref = await firebase.database().ref(`people/${id}`)
       const refp = await firebase.storage().ref(`people/${id}`)
       await ref.remove()
-      await refp.delete()
+      try {
+        await refp.delete()
+      }
+      catch (e) {}
       return await ctx.dispatch('loadPeople')
     },
     loadPeople() {

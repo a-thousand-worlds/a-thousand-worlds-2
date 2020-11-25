@@ -2,33 +2,11 @@
 
 export default {
   name: 'BooksManagerListPage',
-  data() {
-    return {
-      addTagTag: '',
-      edits: {}
-    }
-  },
   methods: {
-    /*
-    addTag() {
-      this.$store.dispatch('addTag', this.addTagTag).then(() => {
-        this.addTagTag = ''
-      })
-    },
-    delTag(id) {
-      this.$store.dispatch('delTag', id).then(() => {
-        this.addTagTag = ''
-      })
-    },
-    toggleEditTag(id, state) {
-      this.edits[id] = state
-    },
-    updateTag(tagid, tag) {
-      this.$store.dispatch('updateTag', { tagid, tag }).then(() => {
-        this.edits[tagid] = null
+    delBook(id) {
+      this.$store.dispatch('delBook', id).then(() => {
       })
     }
-    */
   }
 }
 
@@ -66,14 +44,14 @@ export default {
         <td>
           <span>{{book.title}}</span>
         </td>
-        <td>{{book.created}}/{{book.updated}}</td>
+        <td>{{ $dateFormat(book.created) }}/{{ $dateFormat(book.updated) }}</td>
         <td class="actions">
           <div class="field is-grouped is-justify-content-flex-end">
             <p class="control"><router-link :to="{name:'BookManagerUpdateForm',params:{bid:book.id}}" class="button is-secondary">
               <i class="fas fa-pencil-alt mr-2"></i>
               <span>Edit</span>
             </router-link></p>
-            <p class="control"><button @click.prevent="" class="button is-danger">
+            <p class="control"><button @click.prevent="delBook(book.id)" class="button is-danger">
               <i class="fas fa-trash mr-2"></i>
               <span>Delete</span>
             </button></p>

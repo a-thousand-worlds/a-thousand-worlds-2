@@ -43,7 +43,7 @@ export default {
           <span>{{person.name}}</span>
         </td>
         <td>{{person.role}}</td>
-        <td>{{person.created}}/{{person.updated}}</td>
+        <td>{{ $dateFormat(person.created) }}/{{ $dateFormat(person.updated) }}</td>
         <td class="actions">
           <div class="field is-grouped is-justify-content-flex-end">
             <p class="control"><router-link :to="{name:'PersonManagerUpdateForm',params:{uid:person.id}}" class="button is-secondary">

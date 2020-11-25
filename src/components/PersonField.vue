@@ -12,6 +12,19 @@ export default {
     }
   },
   created() {
+    const u = this.$store.state.people.reduce((acc, x) => x.name.toLowerCase() === this.name.toLowerCase() ? x : acc, null)
+    if (u) {
+      this.personDB = u
+      this.exists = true
+      this.role = u.role
+      // this.$emit('changed-role', this.role)
+    }
+    else {
+      this.personDB = null
+      this.exists = false
+    }
+
+    this.$emit('changed', this.name)
     this.$emit('changed-role', this.role)
   },
   watch: {
