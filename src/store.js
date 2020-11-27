@@ -17,7 +17,8 @@ const store = createStore({
     sortedTags: [],
     people: [],
     books: {},
-    bundles: []
+    bundlesIndex: {},
+    bundlesList: []
   },
   mutations: {
     setNAP(ctx, p) {
@@ -51,9 +52,17 @@ const store = createStore({
     },
     setPeople(ctx, list) {
       ctx.people = list
+    },
+    setBundlesIndex(ctx, index) {
+      ctx.bundlesIndex = index
+    },
+    setBundlesList(ctx, list) {
+      ctx.bundlesList = list
     }
   },
   actions: {
+
+    // tags
     async addTag(ctx, tag) {
       // eslint-disable-next-line  fp/no-mutating-methods
       const id = v4()
@@ -76,7 +85,7 @@ const store = createStore({
       // ref.once('value',s
       const val = await ref.once('value')
       const snap = val.val()
-      console.log('update?', data, snap)
+      // console.log('update?', data, snap)
       snap.tag = data.tag
       snap.showOnFront = !!data.showOnFront
       snap.sortOrder = parseInt(data.sortOrder)
@@ -85,7 +94,7 @@ const store = createStore({
         snap.created = now.format()
       }
       // console.log('set ref', ref, id)
-      console.log('updating ', snap)
+      // console.log('updating ', snap)
       await ref.set(snap)
       return await ctx.dispatch('loadTags')
     },
@@ -115,8 +124,10 @@ const store = createStore({
         })
       })
     },
+
+    // books
     async saveBook(ctx, info) {
-      console.log('saving book store', info)
+      // console.log('saving book store', info)
       /**/
       const id = info.book.id && info.book.id.length ? info.book.id : v4()
       // checking and saving authors if not exists
@@ -124,7 +135,7 @@ const store = createStore({
       // eslint-disable-next-line fp/no-loops
       for (const person of info.book.authors) {
         const exists = ctx.state.people.reduce((acc, x) => {
-          console.log('checking', x.name, person)
+          // console.log('checking', x.name, person)
           return x.name.toLowerCase() === person.toLowerCase() ? true : acc
         }, false)
         if (!exists) {
@@ -164,6 +175,7 @@ const store = createStore({
         id: id,
         isbn: info.book.isbn,
         title: info.book.title,
+        goodread: info.book.goodread,
         description: info.book.description,
         cover: photoUrl,
         publisher: info.book.publisher,
@@ -194,6 +206,8 @@ const store = createStore({
       catch (e) {}
       return await ctx.dispatch('loadBooks')
     },
+
+    // people
     async savePerson(ctx, info) {
       // eslint-disable-next-line  fp/no-mutating-methods
       const id = info.id && info.id.length ? info.id : v4()
@@ -240,6 +254,26 @@ const store = createStore({
           resolve()
         })
       })
+    },
+
+    // bundles
+    loadBundles(ctx) {
+      return new Promise((resolve, reject) => {
+        firebase.database().ref('bundles').once('value', snap => {
+          const v = snap.val()
+          const list = Object.keys(v).map(x => v[x])
+          console.log('bundles', list)
+          store.commit('setBundlesIndex', v)
+          store.commit('setBundlesList', list)
+          resolve()
+        })
+      })
+    },
+    async saveBundle(ctx, info) {
+      console.log('save bundle', info)
+    },
+    async delBundle(ctx, id) {
+      console.log('del bundle', id)
     },
     async loadStage0(ctx) {
       // const ref = await firebase.database().ref(`people`)

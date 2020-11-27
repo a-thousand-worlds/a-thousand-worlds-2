@@ -16,6 +16,7 @@ export default {
         isbn: '',
         description: '',
         cover: '',
+        goodread: '',
         // file: null,
         tags: {},
         authors: [],
@@ -61,12 +62,13 @@ export default {
           console.log('book not found')
           return
         }
-        // console.log('found book!', res)
-        this.book.title = res.google.title
-        this.book.description = res.google.description
+        console.log('found book!', res)
+        this.book.title = res.google ? res.google.title : res.openlib.title
+        this.book.description = res.google ? res.google.description : ''
         this.book.cover = 'data:image/png;base64,' + res.cover
-        this.book.publisher = res.google.publisher
-        this.book.year = dayjs(res.google.publishedDate).format('YYYY')
+        this.book.publisher = res.google ? res.google.publisher : res.openlib.publisher
+        this.book.goodread = res.grid
+        this.book.year = res.google ? dayjs(res.google.publishedDate).format('YYYY') : dayjs(res.openlib.publishedDate).format('YYYY')
         this.book.authors = []
         this.authorsRoles = []
         if (res.google && res.google.authors && res.google.authors.length) {
@@ -119,14 +121,15 @@ export default {
 </script>
 
 <template>
-<h1 v-if="mode === 'new'" class="title page-title">Add Book</h1>
-<h1 v-if="mode === 'update'" class="title page-title">Add Book</h1>
+<h1 v-if="mode==='new'" class="title page-title">Add Book</h1>
+<h1 v-if="mode!=='new'" class="title page-title">Update Book</h1>
 
 <section class="section">
   <form class="w-100" @submit.prevent="searchISBN()">
     <div class="field has-addons">
       <p class="control">
-        <a class="button is-static">Search by ISBN</a>
+        <a v-if="mode==='new'" class="button is-static">Search by ISBN</a>
+        <a v-if="mode!=='new'" class="button is-static">Update by ISBN</a>
       </p>
       <p class="control w-100">
         <input type="text" :disabled="searching" class="input" placeholder="Enter Book ISBN" v-model="book.isbn"/>
@@ -134,7 +137,8 @@ export default {
       <p class="control">
         <button type="submit" :disabled="searching" class="button is-primary" :class="{'is-loading':searching}">
           <i class="fas fa-search mr-2"></i>
-          <span>Search</span>
+          <span v-if="mode==='new'">Search</span>
+          <span v-if="mode!=='new'">Update</span>
         </button>
       </p>
     </div>
@@ -185,6 +189,13 @@ export default {
           <label class="label d-inline" :for="tag.id">
             {{tag.tag}} <i v-if="tag.showOnFront" class="fas fa-check has-text-primary ml-1"></i>
           </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Book ID on Good Read</label>
+        <div class="control">
+          <input type="text" class="input" v-model="book.goodread">
         </div>
       </div>
 

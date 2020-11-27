@@ -10,10 +10,11 @@ export default ({
   },
   data() {
     return {
-      isFront: true
+      isFront: false
     }
   },
   watch: {
+    /*
     '$route'(next) {
       if (next.name === 'Home') {
         this.isFront = true
@@ -22,6 +23,7 @@ export default ({
         this.isFront = false
       }
     },
+    /**/
     '$store.state.user'(next, prev) {
       if (!prev && next && this.$store.state.noAccessPath.length) {
         const nap = this.$store.state.noAccessPath + ''

@@ -1,9 +1,10 @@
 <script>
 import BooksFilter from '../components/BooksFilter.vue'
+import BooksView from '../components/BooksView.vue'
 
 export default {
   name: 'HomePage',
-  components: { BooksFilter }
+  components: { BooksFilter, BooksView }
 }
 
 </script>
@@ -11,7 +12,7 @@ export default {
 <template>
   <div>
 
-    <h1 class="title">Home</h1>
+    <books-view></books-view>
 
     <teleport to="#books-filter-menu">
       <books-filter></books-filter>

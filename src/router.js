@@ -58,44 +58,65 @@ const routes = [
       access: 'superadmin'
     }
   }, {
-    path: '/people-manager',
+    path: '/admin/people',
     name: 'PeopleManager',
     component: () => import(/* webpackChunkName: "admin" */ './pages/PeopleManagerList.vue'),
     meta: {
       access: 'superadmin'
     }
   }, {
-    path: '/people-manager/add',
+    path: '/admin/people/add',
     name: 'PeopleManagerAddForm',
     component: () => import(/* webpackChunkName: "admin" */ './pages/PersonManagerForm.vue'),
     meta: {
       access: 'superadmin'
     }
   }, {
-    path: '/people-manager/update/:uid',
+    path: '/admin/people/update/:uid',
     name: 'PersonManagerUpdateForm',
     component: () => import(/* webpackChunkName: "admin" */ './pages/PersonManagerForm.vue'),
     meta: {
       access: 'superadmin'
     }
   }, {
-    path: '/books-manager',
+    path: '/admin/books',
     name: 'BooksManager',
     component: () => import(/* webpackChunkName: "admin" */ './pages/BooksManagerList.vue'),
     meta: {
       access: 'superadmin'
     }
   }, {
-    path: '/books-manager/update/:bid',
+    path: '/admin/books/update/:bid',
     name: 'BookManagerUpdateForm',
     component: () => import(/* webpackChunkName: "admin" */ './pages/BookManagerForm.vue'),
     meta: {
       access: 'superadmin'
     }
   }, {
-    path: '/books-manager/add-book',
+    path: '/admin/books/add',
     name: 'BookManagerAddForm',
     component: () => import(/* webpackChunkName: "admin" */ './pages/BookManagerForm.vue'),
+    meta: {
+      access: 'superadmin'
+    }
+  }, {
+    path: '/admin/bundles',
+    name: 'BundlesManager',
+    component: () => import(/* webpackChunkName: "admin" */ './pages/BundleManagerList.vue'),
+    meta: {
+      access: 'superadmin'
+    }
+  }, {
+    path: '/admin/bundles/update/:bid',
+    name: 'BundleManagerUpdateForm',
+    component: () => import(/* webpackChunkName: "admin" */ './pages/BundleManagerForm.vue'),
+    meta: {
+      access: 'superadmin'
+    }
+  }, {
+    path: '/admin/bundles/add',
+    name: 'BundleManagerNewForm',
+    component: () => import(/* webpackChunkName: "admin" */ './pages/BundleManagerForm.vue'),
     meta: {
       access: 'superadmin'
     }

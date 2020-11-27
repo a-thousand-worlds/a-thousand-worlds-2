@@ -1,5 +1,8 @@
 <template>
   <aside class="is-align-self-stretch menu px-5 is-flex-direction-column is-justify-content-space-between">
+    <div id="logo">
+      <span class="wrapper"></span>
+    </div>
     <ul class="menu-list is-flex-grow-1">
       <li><router-link :to="{name: 'Home'}">Books</router-link></li>
       <li id="books-filter-menu"></li>
@@ -12,6 +15,7 @@
     <ul v-if="$iam('superadmin')" class="menu-list mt-5">
       <li><router-link :to="{name: 'TagsManager'}">Tags Manager</router-link></li>
       <li><router-link :to="{name: 'BooksManager'}">Books Manager</router-link></li>
+      <li><router-link :to="{name: 'BundlesManager'}">Bundle Manager</router-link></li>
       <li><router-link :to="{name: 'PeopleManager'}">People Manager</router-link></li>
     </ul>
     <ul class="menu-list mt-5">
@@ -23,6 +27,16 @@
 </template>
 
 <style scoped lang="scss">
+@import '@/assets/vars.scss';
+
+#logo {
+  width: 80px;
+  height: 80px;
+  background: $atw-base;
+  border-radius: 50%;
+  margin: 20px;
+}
+
 a {
   font-size: 150%;
   font-weight: bold;
