@@ -18,7 +18,9 @@ const store = createStore({
     people: [],
     books: {},
     bundlesIndex: {},
-    bundlesList: []
+    bundlesList: [],
+
+    viewMode: 'covers'
   },
   mutations: {
     setNAP(ctx, p) {
@@ -58,6 +60,9 @@ const store = createStore({
     },
     setBundlesList(ctx, list) {
       ctx.bundlesList = list
+    },
+    setViewMode(ctx, mode) {
+      ctx.viewMode = mode
     }
   },
   actions: {

@@ -1,19 +1,28 @@
 <script>
+import BookCover from '@/components/BookCover'
+import BookList from '@/components/BookList'
+
 export default {
   computed: {
     books() {
       return Object.keys(this.$store.state.books)
         .map(x => this.$store.state.books[x])
         .filter(x => typeof x.id === 'string' && x.id.length > 8)
-    }
+    },
+
+  },
+  components: {
+    'book-cover': BookCover,
+    'book-list': BookList
   }
 }
 </script>
 
 <template>
-  <div class="masonry">
+  <div :class="{masonry:$store.state.viewMode==='covers'}">
     <div class="masonry-item" v-for="book of books" :key="book.id">
-      <img class="cover" :src="book.cover"/>
+      <book-cover v-if="$store.state.viewMode === 'covers'" :book="book"></book-cover>
+      <book-list v-if="$store.state.viewMode === 'list'" :book="book"></book-list>
     </div>
   </div>
 </template>
@@ -29,18 +38,18 @@ export default {
     column-count: 2;
   }
 }
-@media only screen and (min-width: 781px) {
+@media only screen and (min-width: 781px) and (max-width: 1280px) {
   .masonry {
     column-count: 3;
+  }
+}
+@media only screen and (min-width: 1281px) {
+  .masonry {
+    column-count: 4;
   }
 }
 
 .masonry-item {
   margin-bottom: 30px;
-}
-
-img.coveraa {
-  max-width: 420px;
-
 }
 </style>

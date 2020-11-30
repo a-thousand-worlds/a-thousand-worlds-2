@@ -8,22 +8,7 @@ export default ({
   components: {
     LeftBar, RightBar
   },
-  data() {
-    return {
-      isFront: false
-    }
-  },
   watch: {
-    /*
-    '$route'(next) {
-      if (next.name === 'Home') {
-        this.isFront = true
-      }
-      else {
-        this.isFront = false
-      }
-    },
-    /**/
     '$store.state.user'(next, prev) {
       if (!prev && next && this.$store.state.noAccessPath.length) {
         const nap = this.$store.state.noAccessPath + ''
@@ -31,10 +16,15 @@ export default ({
         // eslint-disable-next-line  fp/no-mutating-methods
         this.$router.push(nap)
       }
-      // console.log('$store.user next', prev, next)
+    }
+  },
+  computed: {
+    showHero() {
+      return !!localStorage.getItem('1stVisit')
     }
   },
   async created() {
+    localStorage.setItem('1stVist', new Date())
     await this.$store.dispatch('loadStage0')
   }
 })
@@ -42,28 +32,30 @@ export default ({
 
 <template>
   <div>
-    <section v-if="isFront" class="hero has-centredtext">
-      <div class="block mt-5 mb-3">
-        <h1 class="title is-1">A&nbsp;Thousand Worlds</h1>
-        <h2 class="subtitle is-5 is-hidden-touch">COLORFUL READS X COLORFUL PEOPLE: Picture books curated by leaders in the industry</h2>
+    <section v-if="showHero" class="hero">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title">A THOUSAND WORLDS</h1>
+          <h2 class="subtitle">COLORFUL READS X COLORFUL PEOPLE<br/>Picture books curated by BIPOC leaders in the industry</h2>
+        </div>
       </div>
     </section>
-    <div class="level is-align-items-flex-start py-5">
-      <section class="leftbar is-align-self-stretch level-left is-hidden-touch">
+    <div class="columns">
+      <section class="leftbar is-hidden-touch">
         <left-bar/>
       </section>
-      <section class="main level-item">
+      <section class="main column">
         <div class="container">
           <router-view/>
         </div>
+        <footer class="footer">
+          footer
+        </footer>
       </section>
-      <section class="rightbar level-right is-hidden-touch">
+      <section class="rightbar is-hidden-touch">
         <right-bar/>
       </section>
     </div>
-    <footer class="footer">
-      footer
-    </footer>
   </div>
 </template>
 
@@ -87,18 +79,53 @@ body {
 </style>
 
 <style lang="scss" scoped>
-@import '@/assets/vars.scss';
+@import '@/assets/main.scss';
+
+$leftbar-width: 340px;
+$rightbar-width: 70px;
+
+.rightbar {
+position: fixed;
+height: 100%;
+border-left: 1px solid $atw-base;
+right: 0;
+top: 0;
+padding: 10px;
+padding-top: 30px;
+width: $rightbar-width;
+z-index: 1;
+}
+
+.leftbar {
+padding: 20px;
+padding-top: 30px;
+position: fixed;
+height: 100%;
+border-right: 1px solid $atw-base;
+left: 0;
+width: $leftbar-width;
+overflow-y: scroll;
+top: 0;
+z-index: 1;
+}
+
+.main {
+margin-left: $leftbar-width;
+margin-right: $rightbar-width;
+padding: 30px;
+z-index: 1;
+@include until($desktop) {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+}
 
 .hero {
-  background: $atw-base;
-  text-align: center;
-
-  .title {
-    font-size: 200%;
-    text-transform: uppercase;
-    color: #fff;
-  }
-  .subtitle {
+z-index: 10;
+background: $atw-base;
+position: relative;
+text-align: center;
+  .title,.subtitle {
     color: #fff;
   }
 }

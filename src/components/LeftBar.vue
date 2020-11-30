@@ -1,7 +1,7 @@
 <template>
   <aside class="is-align-self-stretch menu px-5 is-flex-direction-column is-justify-content-space-between">
     <div id="logo">
-      <span class="wrapper"></span>
+      <span class="wrapper"><img title="COLORFUL READS X COLORFUL PEOPLE: Picture books curated by leaders in the industry" src="@/assets/logo.png"></span>
     </div>
     <ul class="menu-list is-flex-grow-1">
       <li><router-link :to="{name: 'Home'}">Books</router-link></li>
@@ -19,9 +19,9 @@
       <li><router-link :to="{name: 'PeopleManager'}">People Manager</router-link></li>
     </ul>
     <ul class="menu-list mt-5">
-      <li v-if="!$store.state.user"><router-link :to="{name: 'LogIn'}">LogIn</router-link></li>
+      <li v-if="!$iam('authorized')"><router-link :to="{name: 'LogIn'}">LogIn</router-link></li>
       <li v-if="$iam('authorized')"><router-link :to="{name: 'Profile'}">Profile</router-link></li>
-      <li v-if="!$iam('authorized')"><router-link :to="{name: 'LogOut'}">LogOut</router-link></li>
+      <li v-if="$iam('authorized')"><router-link :to="{name: 'LogOut'}">LogOut</router-link></li>
     </ul>
   </aside>
 </template>

@@ -38,6 +38,9 @@ export default {
         if (!this.book.tags) {
           this.book.tags = {}
         }
+        if (!this.book.authors) {
+          this.book.authors = []
+        }
         else {
           this.book.tags = this.book.tags.reduce((tags, x) => {
             const tag = this.$store.state.sortedTags.reduce((acc, t) => t.tag === x ? t : acc, null)
