@@ -1,3 +1,4 @@
+/* firebase realtime database access rules */
 {
   "rules": {
     "users": {
@@ -11,10 +12,16 @@
       ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true"
     },
     "books": {
-      ".read": true
+      ".read": true,
+      ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true"
+    },
+    "people": {
+      ".read": true,
+      ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true"
     },
     "pages": {
-      ".read": true
+      ".read": true,
+      ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true"
     }
   }
 }

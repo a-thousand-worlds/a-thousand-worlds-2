@@ -12,6 +12,10 @@ npm install
 firebase functions:config:set goodreads.api_key="YOUR_API_KEY"
 ```
 
+### Firebase realstore access rules
+
+Apply `firebase.rules.json` for realstore database access rules
+
 ### App environment .env
 ```
 VUE_APP_SEARCH_SERVICE_URL=%YOUR_FUNCTION_URL%

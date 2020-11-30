@@ -24,7 +24,7 @@ export default {
   position: relative;
 
   .cover-shadow, .cover-data {
-    transition: opacity 2s ease-in-out;
+    transition: transform 2s ease-in-out 0s;
     position: absolute;
     top: 0;
     left: 0;
@@ -45,7 +45,7 @@ export default {
   &:hover {
     .cover-shadow, .cover-data {
       display: block;
-      transition: opacity 2s ease-in-out;
+      transition: transform 2s ease-in-out 0s;
     }
   }
 }
