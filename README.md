@@ -1,50 +1,43 @@
-# A Thousand Worlds 2
+# A Thousand Worlds 2.0
 
-## Project setup
-```
-npm install
-```
+## Setup
+1. Clone this repo
+1. `npm install`
+1. `npm install -g firebase-tools`
+1. `firebase login`
+1. Create new project at [firebase.google.com](http://firebase.google.com)
+1. Create web app in Firebase project
+1. Save Firebase config into `.env.local`
+    - App → Firebase SDK snippet → Config
+1. Create Realtime Database in Firebase project
+1. Add `firebase.rules.json` to Realtime Database access rules and publish
+    - Realtime Database → Rules
+1. Create Firebase function for search service
+    - Add URL to `VUE_APP_SEARCH_SERVICE_URL` in .env.local
+1. Add Goodreads api key for firebase function
+    - `firebase functions:config:set goodreads.api_key="YOUR_API_KEY"`
 
-## Project configuration
+## Scripts
 
-### Goodreads api key for firebase function
-```
-firebase functions:config:set goodreads.api_key="YOUR_API_KEY"
-```
-
-### Firebase realstore access rules
-
-Apply `firebase.rules.json` for realstore database access rules
-
-### App environment .env
-```
-VUE_APP_SEARCH_SERVICE_URL=%YOUR_FUNCTION_URL%
-```
-
-### Compiles and hot-reloads for development
+### Compile and hot-reload for development
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
+### Lint and fix files
 ```
 npm run lint
 ```
 
-### Running localy
+### Run locally
 ```
 npm run build && firebase emulators:start
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Deploy
+```
+npm run deploy
+```
 
-## Firebase deployment
-```
-firebase deploy
-```
+## Customize Vue configuration
+See [Configuration Reference](https://cli.vuejs.org/config/)
