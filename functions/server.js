@@ -112,4 +112,8 @@ app.get('/', async (req, res) => {
   res.json(book)
 })
 
-exports.searchISBN = functions.https.onRequest(app)
+exports.searchISBN = functions
+  // increase function memory since we are doing image processing
+  // https://firebase.google.com/docs/functions/manage-functions#set_timeout_and_memory_allocation
+  .runWith({ memory: '1GB' })
+  .https.onRequest(app)
