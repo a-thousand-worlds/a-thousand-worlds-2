@@ -10,20 +10,26 @@
 1. Save Firebase config into `.env.local`
     - App → Firebase SDK snippet → Config
 1. Create Realtime Database in Firebase project
+1. Enable Firebase Storage
 1. Enable Email/Password authentication
+    - Authentication → Sign-in method
 1. Add `firebase.rules.json` to Realtime Database access rules and publish
     - Realtime Database → Rules
-1. Add Goodreads api key for firebase function
-    - `firebase functions:config:set goodreads.api_key="YOUR_API_KEY"`
 1. `firebase login`
 1. Set active Firebase app: `firebase use --add`
 1. Deploy Firebase functions: `firebase deploy --only functions`
-1. Add `searchISBN` Request URL from Firebase Functions dashboard to `VUE_APP_SEARCH_SERVICE_URL` in .env.local
+1. Add Request URL from Firebase Functions dashboard to `VUE_APP_SEARCH_SERVICE_URL` in .env.local
     - https://console.firebase.google.com/u/0/project/PROJECT_NAME/functions/list
+1. Add Goodreads API key for firebase function
+    - `firebase functions:config:set goodreads.api_key="YOUR_API_KEY"`
+1. Redeploy Firebase functions: `firebase deploy --only functions`
 
 ## Scripts
 
 ### Compile and hot-reload for development
+
+Server must be restarted if `.env` changes
+
 ```
 npm run serve
 ```
