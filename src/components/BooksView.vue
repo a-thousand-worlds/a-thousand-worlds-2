@@ -7,9 +7,16 @@ export default {
     books() {
       return Object.keys(this.$store.state.books)
         .map(x => this.$store.state.books[x])
-        .filter(x => typeof x.id === 'string' && x.id.length > 8)
+        .filter(x => typeof x.id === 'string' && x.id.length > 8) // converted to firebase
+        .filter(x => {
+          if (!this.$store.state.filters.length) {
+            return true
+          }
+          return this.$store.state.filters
+            .map(f => x.tags.includes(f))
+            .reduce((acc, ok) => ok || acc, false)
+        })
     },
-
   },
   components: {
     'book-cover': BookCover,

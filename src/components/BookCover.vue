@@ -1,6 +1,13 @@
 <script>
+import AuthorWidget from '@/components/AuthorWidget'
+import BookmarkButton from '@/components/BookmarkButton'
+
 export default {
-  props: ['book']
+  props: ['book'],
+  components: {
+    'author-widget': AuthorWidget,
+    'bookmark-button': BookmarkButton
+  }
 }
 </script>
 
@@ -11,7 +18,12 @@ export default {
     <router-link :to="{name:'Home',params:{bid:book.id}}" class="cover-data">
       <div class="title">{{book.title}}</div>
       <div class="authors">
-        <div class="author">{{book.authors}}</div>
+        <div v-for="person of book.authors" :key="person">
+          <author-widget :name="person"></author-widget>
+        </div>
+      </div>
+      <div class="bmb">
+        <bookmark-button :book="book"></bookmark-button>
       </div>
     </router-link>
   </div>
@@ -47,6 +59,11 @@ export default {
       display: block;
       transition: transform 2s ease-in-out 0s;
     }
+  }
+  .bmb {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
   }
 }
 

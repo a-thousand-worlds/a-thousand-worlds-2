@@ -104,7 +104,7 @@ height: 100%;
 border-right: 1px solid $atw-base;
 left: 0;
 width: $leftbar-width;
-overflow-y: scroll;
+//overflow-y: scroll;
 top: 0;
 z-index: 1;
 }

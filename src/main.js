@@ -47,6 +47,11 @@ app.mixin({
       const d = dayjs(date)
       return d.format('D MMM YY')
     }
+  },
+  computed: {
+    $uiBusy() {
+      return this.$store.state.uiBusy
+    }
   }
 })
 

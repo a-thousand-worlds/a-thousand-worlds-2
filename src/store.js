@@ -6,11 +6,13 @@ import Jimp from 'jimp'
 
 const store = createStore({
   state: {
+    uiBusy: false,
     noAccessPath: '',
     stage0: {
       auth: false,
       loaded: false
     },
+    filters: [],
     loading: false,
     user: null,
     tags: {},
@@ -20,9 +22,26 @@ const store = createStore({
     bundlesIndex: {},
     bundlesList: [],
 
+    submissionsIndex: {},
+
     viewMode: 'covers'
   },
   mutations: {
+    setBusy(ctx, busy) {
+      ctx.uiBusy = busy
+    },
+    resetFilters(ctx) {
+      ctx.filters = []
+    },
+    toggleFilter(ctx, filter) {
+      if (!ctx.filters.includes(filter)) {
+        // eslint-disable-next-line fp/no-mutating-methods
+        ctx.filters.push(filter)
+      }
+      else {
+        ctx.filters = ctx.filters.filter(x => x !== filter)
+      }
+    },
     setNAP(ctx, p) {
       ctx.noAccessPath = p
     },
@@ -63,12 +82,19 @@ const store = createStore({
     },
     setViewMode(ctx, mode) {
       ctx.viewMode = mode
+    },
+    indexSubmission(ctx, sub) {
+      ctx.submissionsIndex[sub.id] = sub
     }
   },
   actions: {
 
     // tags
     async addTag(ctx, tag) {
+      if (!tag || !tag.tag || !tag.tag.length) {
+        return
+      }
+      ctx.commit('setBusy', true)
       // eslint-disable-next-line  fp/no-mutating-methods
       const id = v4()
       const ref = await firebase.database().ref(`tags/${id}`)
@@ -85,6 +111,10 @@ const store = createStore({
       return await ctx.dispatch('loadTags')
     },
     async updateTag(ctx, data) {
+      if (!data || !data.tag || !data.tag.length) {
+        return
+      }
+      ctx.commit('setBusy', true)
       const ref = await firebase.database().ref(`tags/${data.id}`)
       const now = dayjs()
       // ref.once('value',s
@@ -104,12 +134,14 @@ const store = createStore({
       return await ctx.dispatch('loadTags')
     },
     async delTag(ctx, tagid) {
+      ctx.commit('setBusy', true)
       const ref = await firebase.database().ref(`tags/${tagid}`)
       await ref.remove()
       return await ctx.dispatch('loadTags')
     },
-    loadTags() {
+    loadTags(ctx) {
       return new Promise((resolve, reject) => {
+        ctx.commit('setBusy', true)
         firebase.database().ref('tags').once('value', snap => {
           console.log('tags', snap.val())
           const v = snap.val()
@@ -125,6 +157,7 @@ const store = createStore({
             return a.sortOrder > b.sortOrder ? 1 : -1
           })
           store.commit('setSortedTags', sorted)
+          ctx.commit('setBusy', false)
           resolve()
         })
       })
@@ -132,6 +165,7 @@ const store = createStore({
 
     // books
     async saveBook(ctx, info) {
+      ctx.commit('setBusy', true)
       // console.log('saving book store', info)
       /**/
       const id = info.book.id && info.book.id.length ? info.book.id : v4()
@@ -194,14 +228,17 @@ const store = createStore({
     },
     loadBooks(ctx) {
       return new Promise((resolve, reject) => {
+        ctx.commit('setBusy', true)
         firebase.database().ref('books').once('value', snap => {
           console.log('books', snap.val())
           ctx.commit('setBooks', snap.val())
+          ctx.commit('setBusy', false)
           resolve()
         })
       })
     },
     async delBook(ctx, id) {
+      ctx.commit('setBusy', true)
       const ref = await firebase.database().ref(`books/${id}`)
       const refp = await firebase.storage().ref(`books/${id}`)
       await ref.remove()
@@ -214,6 +251,7 @@ const store = createStore({
 
     // people
     async savePerson(ctx, info) {
+      ctx.commit('setBusy', true)
       // eslint-disable-next-line  fp/no-mutating-methods
       const id = info.id && info.id.length ? info.id : v4()
       let photoUrl = info.photo || ''
@@ -240,6 +278,7 @@ const store = createStore({
       await ctx.dispatch('loadPeople')
     },
     async delPerson(ctx, id) {
+      ctx.commit('setBusy', true)
       const ref = await firebase.database().ref(`people/${id}`)
       const refp = await firebase.storage().ref(`people/${id}`)
       await ref.remove()
@@ -249,13 +288,15 @@ const store = createStore({
       catch (e) {}
       return await ctx.dispatch('loadPeople')
     },
-    loadPeople() {
+    loadPeople(ctx) {
       return new Promise((resolve, reject) => {
+        ctx.commit('setBusy', true)
         firebase.database().ref('people').once('value', snap => {
           const v = snap.val()
           const list = Object.keys(v).map(x => v[x])
           console.log('people', list)
           store.commit('setPeople', list)
+          ctx.commit('setBusy', false)
           resolve()
         })
       })
@@ -264,12 +305,14 @@ const store = createStore({
     // bundles
     loadBundles(ctx) {
       return new Promise((resolve, reject) => {
+        ctx.commit('setBusy', true)
         firebase.database().ref('bundles').once('value', snap => {
           const v = snap.val()
           const list = Object.keys(v).map(x => v[x])
           console.log('bundles', list)
           store.commit('setBundlesIndex', v)
           store.commit('setBundlesList', list)
+          ctx.commit('setBusy', false)
           resolve()
         })
       })
@@ -284,10 +327,79 @@ const store = createStore({
       // const ref = await firebase.database().ref(`people`)
       // await ref.remove()
       await ctx.dispatch('loadTags')
-      await ctx.dispatch('loadBooks')
       await ctx.dispatch('loadPeople')
+      await ctx.dispatch('loadBooks')
       ctx.commit('setStage0Load')
     },
+
+    // profile
+    async saveBookSubmissionsDraft(ctx, draft) {
+      ctx.commit('setBusy', true)
+      const profile = ctx.state.user.profile
+      profile.draftBooks = draft
+      await ctx.dispatch('saveProfile', profile)
+      ctx.commit('setBusy', false)
+    },
+
+    async submitBookSubmission(ctx, list) {
+      ctx.commit('setBusy', true)
+      const ids = []
+      // eslint-disable-next-line  fp/no-loops
+      for (const sub of list) {
+        // eslint-disable-next-line  fp/no-mutating-methods
+        const sid = v4()
+        const ref = await firebase.database().ref(`submits/books/${sid}`)
+        // console.log('set ref', ref, id)
+        const now = dayjs()
+        const subData = {
+          id: sid,
+          type: 'book',
+          approved: false,
+          approvedBy: null,
+          approvedAt: null,
+          approveComment: '',
+          createdBy: ctx.state.user.uid,
+          createdAt: now.format(),
+          title: sub.title,
+          author: sub.author,
+          illustrator: sub.illustrator || '',
+          isbn: sub.isbn || '',
+          tags: sub.tags,
+          otherTag: sub.otherTag || ''
+        }
+        await ref.set(subData)
+        ctx.commit('indexSubmission', subData)
+        // eslint-disable-next-line  fp/no-mutating-methods
+        ids.push(sid)
+      }
+      const profile = ctx.state.user.profile
+      profile.draftBooks = []
+      if (!Array.isArray(profile.submissions)) {
+        profile.submissions = []
+      }
+      profile.submissions = [...profile.submissions, ...ids]
+      await ctx.dispatch('saveProfile', profile)
+      ctx.commit('setBusy', false)
+    },
+
+    async saveProfile(ctx, profile) {
+      const ref = firebase.database().ref(`users/${ctx.state.user.uid}/profile`)
+      await ref.set(profile)
+      ctx.commit('setUserProfile', profile)
+    },
+
+    // submissions
+    indexSubmission(ctx, sid) {
+      return new Promise((resolve, reject) => {
+        const ref = firebase.database().ref(`submits/books/${sid}`)
+        ref.once('value', snap => {
+          ctx.commit('indexSubmission', snap.val())
+          resolve()
+        })
+      })
+    },
+
+    // auth
     async userLogin(ctx, credentials) {
       return firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password)
     },
@@ -335,13 +447,16 @@ firebase.auth().onAuthStateChanged(function(user) {
       firstName: '',
       lastName: '',
       bundles: [],
-      submissions: []
+      submissions: [],
+      draftBooks: [],
+      draftBundles: []
     }
     u.roles = []
     const userRef = firebase.database().ref(`users/${u.uid}`)
     userRef.on('value', snap => {
       u.profile = snap.val().profile
       u.roles = snap.val().roles
+      console.log('profile', u.profile)
       if (!u.roles) {
         u.roles = {}
       }

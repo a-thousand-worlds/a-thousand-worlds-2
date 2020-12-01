@@ -47,6 +47,13 @@ const routes = [
       access: 'authorized'
     }
   }, {
+    path: '/suggest/book',
+    name: 'BookSuggest',
+    component: () => import(/* webpackChunkName: "user" */ './pages/BookSuggestionForm.vue'),
+    meta: {
+      access: 'authorized'
+    }
+  }, {
     path: '/logout',
     name: 'LogOut',
     component: () => import(/* webpackChunkName: "user" */ './pages/LogOut.vue')

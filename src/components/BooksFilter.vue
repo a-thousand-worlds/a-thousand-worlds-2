@@ -1,8 +1,15 @@
 <script>
 export default {
   methods: {
-    toggleFilter(filter) {
-      console.log('toggle filter: ', filter)
+    toggleFilter(fid) {
+      console.log('toggle filter: ', fid)
+      this.$store.commit('toggleFilter', fid)
+    },
+    resetFilters() {
+      this.$store.commit('resetFilters')
+    },
+    filterOn(fid) {
+      return this.$store.state.filters.includes(fid)
     }
   }
 }
@@ -11,10 +18,11 @@ export default {
 <template>
   <aside class="menu px-3">
     <ul class="menu-list submenu">
-      <li v-for="filter in $store.state.sortedTags" :key="filter.id" @click="toggleFilter(filter.id)">
-        <button v-if="filter.showOnFront" class="p-1">{{filter.tag}}</button>
+      <li v-for="filter in $store.state.sortedTags" :key="filter.id" @click="toggleFilter(filter.tag)">
+        <button v-if="filter.showOnFront" :class="{toggled:filterOn(filter.tag)}" class="p-1">{{filter.tag}}</button>
       </li>
     </ul>
+    <button @click.prevent="resetFilters">Reset Filters</button>
   </aside>
 </template>
 
@@ -22,8 +30,6 @@ export default {
 @import '@/assets/vars.scss';
 
 a {
-  //font-size: 150%;
-  //font-weight: bold;
   text-transform: uppercase;
 }
 
@@ -32,17 +38,21 @@ a {
   padding: 0;
   width: 100%;
   margin: 0;
-  background: linear-gradient(to bottom, $atw-base, $atw-spin);
+  //background: linear-gradient(to bottom, $atw-base, $atw-spin);
 
   button {
+    margin-left: 10px;
+    margin-bottom: 10px;
     width: 100%;
     border: 0;
-    border-bottom: 2px solid #fff;
-    background: transparent;
-    color: #fff;
+    background: #fff;
     font-family: 'Gotham SSm', Helvetica, Arial, sans-serif;
     font-size: 120%;
     text-align: left;
+
+    &.toggled {
+      border: 4px solid #333;
+    }
   }
 }
 </style>
