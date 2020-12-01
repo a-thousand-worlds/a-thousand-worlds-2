@@ -12,7 +12,7 @@
       <li><router-link :to="{name: 'Support'}">Support</router-link></li>
       <li><router-link :to="{name: 'About'}">About</router-link></li>
     </ul>
-    <ul v-if="$iam('superadmin') && 1==0" class="menu-list mt-5">
+    <ul v-if="$iam('superadmin')" class="menu-list mt-5">
       <li><router-link :to="{name: 'TagsManager'}">Tags Manager</router-link></li>
       <li><router-link :to="{name: 'BooksManager'}">Books Manager</router-link></li>
       <li><router-link :to="{name: 'BundlesManager'}">Bundle Manager</router-link></li>
