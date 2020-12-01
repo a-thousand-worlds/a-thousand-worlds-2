@@ -2,7 +2,6 @@
 node_modules
 /dist
 
-
 # local env files
 .env.local
 .env.*.local
@@ -25,3 +24,6 @@ pnpm-debug.log*
 # Firebase
 .firebase/*
 *.log
+
+# https://firebase.google.com/docs/cli#source_control_aliases
+.firebaserc
