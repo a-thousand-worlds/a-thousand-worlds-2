@@ -4,14 +4,14 @@ import 'firebase/database'
 import 'firebase/storage'
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyCJSm_g2dQAAGYohn5G0YjN6yfyk_4biCY',
-  authDomain: 'fir-test-294020-8181c.firebaseapp.com',
-  databaseURL: 'https://fir-test-294020-8181c.firebaseio.com',
-  projectId: 'firebase-test-294020',
-  storageBucket: 'firebase-test-294020.appspot.com',
-  messagingSenderId: '493454713346',
-  appId: '1:493454713346:web:5714db14fe9577727ffd1b',
-  measurementId: 'G-Y89GWN2FCR'
+  apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
+  authDomain: process.env.VUE_APP_FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.VUE_APP_FIREBASE_DATABASE_URL,
+  projectId: process.env.VUE_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.VUE_APP_FIREBASE_APP_ID,
+  measurementId: process.env.VUE_APP_FIREBASE_MEASURMENT_ID
 }
 
 firebase.initializeApp(firebaseConfig)
