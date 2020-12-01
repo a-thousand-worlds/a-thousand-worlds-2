@@ -3,8 +3,8 @@
 ## Setup
 1. Clone this repo
 1. `npm install`
+1. `cd functions && npm install && cd ..`
 1. `npm install -g firebase-tools`
-1. `firebase login`
 1. Create new project at [firebase.google.com](http://firebase.google.com)
 1. Create web app in Firebase project
 1. Save Firebase config into `.env.local`
@@ -17,6 +17,9 @@
     - Add URL to `VUE_APP_SEARCH_SERVICE_URL` in .env.local
 1. Add Goodreads api key for firebase function
     - `firebase functions:config:set goodreads.api_key="YOUR_API_KEY"`
+1. `firebase login`
+1. Set active Firebase app: `firebase use --add`
+1. Deploy Firebase functions: `firebase deploy --only functions`
 
 ## Scripts
 
