@@ -145,8 +145,12 @@ const store = createStore({
         firebase.database().ref('tags').once('value', snap => {
           console.log('tags', snap.val())
           const v = snap.val()
+          if (!v || v.length === 0) {
+            console.error('No tags in database')
+            resolve()
+          }
           store.commit('setTags', v)
-          const tags = Object.keys(v).map(k => {
+          const tags = Object.keys(v || []).map(k => {
             return { ...v[k] }
           })
           // eslint-disable-next-line fp/no-mutating-methods
@@ -231,7 +235,7 @@ const store = createStore({
         ctx.commit('setBusy', true)
         firebase.database().ref('books').once('value', snap => {
           console.log('books', snap.val())
-          ctx.commit('setBooks', snap.val())
+          ctx.commit('setBooks', snap.val() || [])
           ctx.commit('setBusy', false)
           resolve()
         })
@@ -293,7 +297,11 @@ const store = createStore({
         ctx.commit('setBusy', true)
         firebase.database().ref('people').once('value', snap => {
           const v = snap.val()
-          const list = Object.keys(v).map(x => v[x])
+          if (!v || v.length === 0) {
+            console.error('No people in database')
+            resolve()
+          }
+          const list = Object.keys(v || []).map(x => v[x])
           console.log('people', list)
           store.commit('setPeople', list)
           ctx.commit('setBusy', false)
@@ -308,7 +316,11 @@ const store = createStore({
         ctx.commit('setBusy', true)
         firebase.database().ref('bundles').once('value', snap => {
           const v = snap.val()
-          const list = Object.keys(v).map(x => v[x])
+          if (!v || v.length === 0) {
+            console.error('No bundles in database')
+            resolve()
+          }
+          const list = Object.keys(v || []).map(x => v[x])
           console.log('bundles', list)
           store.commit('setBundlesIndex', v)
           store.commit('setBundlesList', list)
