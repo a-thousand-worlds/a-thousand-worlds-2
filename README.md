@@ -13,13 +13,13 @@
 1. Enable Email/Password authentication
 1. Add `firebase.rules.json` to Realtime Database access rules and publish
     - Realtime Database → Rules
-1. Create Firebase function for search service
-    - Add URL to `VUE_APP_SEARCH_SERVICE_URL` in .env.local
 1. Add Goodreads api key for firebase function
     - `firebase functions:config:set goodreads.api_key="YOUR_API_KEY"`
 1. `firebase login`
 1. Set active Firebase app: `firebase use --add`
 1. Deploy Firebase functions: `firebase deploy --only functions`
+1. Add `searchISBN` Request URL from Firebase Functions dashboard to `VUE_APP_SEARCH_SERVICE_URL` in .env.local
+    - https://console.firebase.google.com/u/0/project/PROJECT_NAME/functions/list
 
 ## Scripts
 
