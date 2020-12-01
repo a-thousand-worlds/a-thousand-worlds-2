@@ -466,8 +466,8 @@ firebase.auth().onAuthStateChanged(function(user) {
     u.roles = []
     const userRef = firebase.database().ref(`users/${u.uid}`)
     userRef.on('value', snap => {
-      u.profile = snap.val().profile
-      u.roles = snap.val().roles
+      u.profile = snap.val()?.profile || {}
+      u.roles = snap.val()?.roles || []
       console.log('profile', u.profile)
       if (!u.roles) {
         u.roles = {}
