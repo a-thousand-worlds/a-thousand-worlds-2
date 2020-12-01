@@ -10,6 +10,7 @@
 1. Save Firebase config into `.env.local`
     - App → Firebase SDK snippet → Config
 1. Create Realtime Database in Firebase project
+1. Enable Email/Password authentication
 1. Add `firebase.rules.json` to Realtime Database access rules and publish
     - Realtime Database → Rules
 1. Create Firebase function for search service
