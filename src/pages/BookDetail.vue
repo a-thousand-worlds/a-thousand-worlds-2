@@ -12,6 +12,9 @@ export default {
     book() {
       const id = this.$router.currentRoute._value.params.id
       return this.$store.state.books[id] || {}
+    },
+    url() {
+      return window.location.href
     }
   }
 }
@@ -64,6 +67,23 @@ export default {
 
   </div>
 
+  <!-- Add a bottom spacer so that fixed position footer clears content when scrolled to the bottom. -->
+  <div class="mb-7" />
+
+  <div class="content-footer">
+    <div class="is-flex is-justify-content-space-between mx-6">
+      <div>
+        <input type="text" class="input" style="width: 16rem;" :value="url" readonly />
+        <button class="button is-rounded mx-1">COPY LINK</button>
+      </div>
+      <div>
+        <button class="button is-rounded mx-1">LOCAL LIBRARY</button>
+        <button class="button is-rounded mx-1">LINK</button>
+        <button class="button is-rounded mx-1">INDIEBOUND</button>
+      </div>
+    </div>
+  </div>
+
 </template>
 
 <style lang="scss" scoped>
@@ -83,6 +103,15 @@ export default {
   padding-bottom: 1rem;
   margin-bottom: 2rem;
   border-bottom: solid 1px #ddd;
+}
+
+.content-footer {
+  position: fixed;
+  bottom: 0;
+  background-color: #ddd;
+  width: calc(100% - 340px - 70px);
+  padding: 1rem;
+  margin-left: -18px;
 }
 
 </style>
