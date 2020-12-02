@@ -22,7 +22,7 @@ export default {
         <button v-if="filter.showOnFront" :class="{toggled:filterOn(filter.tag)}" class="p-1">{{filter.tag}}</button>
       </li>
     </ul>
-    <button @click.prevent="resetFilters">Reset Filters</button>
+    <button class="button" @click.prevent="resetFilters">Reset Filters</button>
   </aside>
 </template>
 
