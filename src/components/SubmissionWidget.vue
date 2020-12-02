@@ -16,7 +16,6 @@ export default {
     this.$store.dispatch('indexSubmission', this.sid)
       .then(() => {
         this.sub = this.$store.state.submissionsIndex[this.sid]
-        console.log('sub', this.sub)
         this.loading = false
       })
   }
@@ -24,13 +23,22 @@ export default {
 </script>
 
 <template>
-  <div v-if="loading">
-    <div class="button is-static is-loading">loading</div>
+<div class="box p-5">
+  <div class="content">
+    <div v-if="loading">
+      <div class="button is-static is-loading">loading</div>
+    </div>
+    <div v-if="!loading && sub.type === 'book'">
+      <h4 v-if="sub.type==='book'">
+        <i class="fas fa-book"></i> Book
+      </h4>
+      <div>Title: {{sub.title}}</div>
+      <div>Author: {{sub.author}}</div>
+      <hr>
+      <i class="fas fa-circle" :class="{ 'is-primary': sub.approved, 'is-secondary': !sub.approved }"></i>
+      <span class="ml-3" v-if="sub.approved">Approved</span>
+      <span class="ml-3" v-if="!sub.approved">Checking</span>
+    </div>
   </div>
-  <div v-if="!loading && sub.type === 'book'">
-    <h4 v-if="sub.type==='book'">
-      <i class="fas fa-book"></i> Book
-    </h4>
-    <div>{{sub.title}}</div>
-  </div>
+</div>
 </template>

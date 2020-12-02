@@ -362,6 +362,7 @@ const store = createStore({
           createdAt: now.format(),
           title: sub.title,
           author: sub.author,
+          submitterIsAuthor: sub.isAuthor,
           illustrator: sub.illustrator || '',
           isbn: sub.isbn || '',
           tags: sub.tags,

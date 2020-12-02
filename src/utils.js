@@ -20,7 +20,7 @@ function _isbn(code, provider) {
 export async function isbnSearch(code) {
   const req = await axios.get(FNURL + '?isbn=' + code)
   const ret = req.data
-  if (!ret.google) {
+  if (ret && !ret.google) {
     ret.google = await _isbn(code, 'google')
   }
   return ret
