@@ -12,10 +12,10 @@ export default {
 </script>
 
 <template>
-  <div class="book-cover-wrapper">
+  <router-link :to="{name: 'BookDetail',params:{id:book.id}}"><div class="book-cover-wrapper">
     <img class="cover" :src="book.cover"/>
     <div class="cover-shadow"></div>
-    <router-link :to="{name:'Home',params:{bid:book.id}}" class="cover-data">
+    <div class="cover-data">
       <div class="title">{{book.title}}</div>
       <div class="authors">
         <div v-for="person of book.authors" :key="person">
@@ -25,8 +25,8 @@ export default {
       <div class="bmb">
         <bookmark-button :book="book"></bookmark-button>
       </div>
-    </router-link>
-  </div>
+    </div>
+  </div></router-link>
 </template>
 
 <style lang="scss" scoped>
