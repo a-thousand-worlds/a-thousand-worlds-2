@@ -43,4 +43,9 @@ a {
   text-transform: uppercase;
   text-align: left;
 }
+
+.menu-list a:hover {
+  background: none;
+}
+
 </style>
