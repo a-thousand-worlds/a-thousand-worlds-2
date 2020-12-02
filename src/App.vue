@@ -48,9 +48,9 @@ export default ({
         <div class="container">
           <router-view/>
         </div>
-        <footer class="footer">
+        <!-- <footer class="footer">
           footer
-        </footer>
+        </footer> -->
       </section>
       <section class="rightbar is-hidden-touch">
         <right-bar/>

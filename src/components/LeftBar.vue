@@ -1,7 +1,7 @@
 <template>
   <aside class="is-align-self-stretch menu px-5 is-flex-direction-column is-justify-content-space-between">
     <div id="logo">
-      <span class="wrapper"><img title="COLORFUL READS X COLORFUL PEOPLE: Picture books curated by leaders in the industry" src="@/assets/logo.png"></span>
+      <router-link :to="{name: 'Home'}"><span class="wrapper"><img title="COLORFUL READS X COLORFUL PEOPLE: Picture books curated by leaders in the industry" src="@/assets/logo.png"></span></router-link>
     </div>
     <ul class="menu-list is-flex-grow-1">
       <li><router-link :to="{name: 'Home'}">Books</router-link></li>
@@ -12,7 +12,7 @@
       <li><router-link :to="{name: 'Support'}">Support</router-link></li>
       <li><router-link :to="{name: 'About'}">About</router-link></li>
     </ul>
-    <ul v-if="$iam('superadmin') && 1==0" class="menu-list mt-5">
+    <ul v-if="$iam('superadmin')" class="menu-list mt-5">
       <li><router-link :to="{name: 'TagsManager'}">Tags Manager</router-link></li>
       <li><router-link :to="{name: 'BooksManager'}">Books Manager</router-link></li>
       <li><router-link :to="{name: 'BundlesManager'}">Bundle Manager</router-link></li>
@@ -43,4 +43,9 @@ a {
   text-transform: uppercase;
   text-align: left;
 }
+
+.menu-list a:hover {
+  background: none;
+}
+
 </style>

@@ -1,4 +1,5 @@
 @charset "utf-8";
+@use "sass:map";
 
 @import "./mixins.scss";
 @import "./vars.scss";
@@ -13,3 +14,14 @@
 @import "bulma/sass/helpers/_all.sass";
 @import "bulma/sass/layout/_all.sass";
 
+// extend bulma spacing since it only goes up to 6rem
+// https://github.com/jgthms/bulma/blob/master/sass/helpers/spacing.sass
+$spacing-values: map.merge($spacing-values, (
+  "7": 7rem,
+  "8": 8rem,
+  "9": 9rem,
+  "10": 10rem,
+  "11": 11rem,
+  "12": 12rem,
+));
+@import "bulma/sass/helpers/spacing.sass";

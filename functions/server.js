@@ -1,4 +1,4 @@
-const functions = require('firebase-functions');
+const functions = require('firebase-functions')
 const bookcovers = require('bookcovers')
 const isbn = require('node-isbn')
 const express = require('express')
@@ -7,8 +7,7 @@ const sharp = require('sharp')
 
 const app = express()
 
-async function getGoodReadsBookIDByISBN(isbn)
-{
+async function getGoodReadsBookIDByISBN(isbn) {
   let res = null
   try {
     res = await axios({
@@ -20,29 +19,32 @@ async function getGoodReadsBookIDByISBN(isbn)
       },
       responseType: 'text',
     })
-  } catch (e) {
+  }
+  catch (e) {
     console.log('axios error', e)
     res = null
   }
-  if (!res || !res.data)
+  if (!res || !res.data) {
     return null
+  }
   return res.data
 }
 
-async function loadImage2Base64(url)
-{
+async function loadImage2Base64(url) {
   let res = null
   try {
     res = await axios.get(url, {
       responseType: 'arraybuffer'
     })
-  } catch (e) {
+  }
+  catch (e) {
     console.log(e, 'loadImage2Base64 error')
     res = null
   }
-  if (!res||!res.data)
+  if (!res || !res.data) {
     return null
-  let img = await sharp(res.data)
+  }
+  const img = await sharp(res.data)
     .toFormat('png')
     .toBuffer()
   return img.toString('base64')
@@ -65,7 +67,7 @@ function _isbn(code, provider) {
 async function isbnSearch(code) {
   const gBook = await _isbn(code, 'google')
   const oBook = await _isbn(code, 'openlibrary')
-  if (!gBook&&!oBook) {
+  if (!gBook && !oBook) {
     return null
   }
   const book = {
@@ -90,26 +92,30 @@ async function isbnSearch(code) {
   return book
 }
 
-
 app.get('/', async (req, res) => {
   res.header('Access-Control-Allow-Origin', '*')
-  if (!req.query || !req.query.isbn )
-  {
-    res.send(JSON.stringify(null));
+  if (!req.query || !req.query.isbn) {
+    res.send(JSON.stringify(null))
     return
   }
   console.log(`searchng [${req.query.isbn}]`)
-  let book = await isbnSearch(req.query.isbn)
-  if (book)
+  const book = await isbnSearch(req.query.isbn)
+  if (book) {
     book.grid = await getGoodReadsBookIDByISBN(req.query.isbn)
-  //console.log(book, 'BOOK!')
+  }
+  // console.log(book, 'BOOK!')
   if (!book) {
     console.log(`[${req.query.isbn}] not found`)
-  } else {
-    let ttl = book.google ? book.google.title : book.openlib.title
+  }
+  else {
+    const ttl = book.google ? book.google.title : book.openlib.title
     console.log(`[${req.query.isbn}] found - ${ttl}`)
   }
   res.json(book)
 })
 
-exports.searchISBN = functions.https.onRequest(app)
+exports.searchISBN = functions
+  // increase function memory since we are doing image processing
+  // https://firebase.google.com/docs/functions/manage-functions#set_timeout_and_memory_allocation
+  .runWith({ memory: '1GB' })
+  .https.onRequest(app)
