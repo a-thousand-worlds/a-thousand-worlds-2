@@ -13,7 +13,7 @@ export default {
             return true
           }
           return this.$store.state.filters
-            .map(f => x.tags.includes(f))
+            .map(f => (x.tags || []).includes(f))
             .reduce((acc, ok) => ok || acc, false)
         })
     },
