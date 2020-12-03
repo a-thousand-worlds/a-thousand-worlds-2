@@ -42,7 +42,7 @@ export default {
       <router-link class="button is-outlined is-primary" :to="{name:'BookSuggest'}">Book</router-link>
     </div>
     <div class="control">
-      <router-link class="button is-outlined is-primary" :to="{name:'Home'}">Bundle</router-link>
+      <router-link class="button is-outlined is-primary" :to="{name:'BundleSuggest'}">Bundle</router-link>
     </div>
   </div>
 </section>

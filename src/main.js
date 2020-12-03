@@ -34,6 +34,21 @@ const app = createApp(App)
   .use(store)
   .use(router)
 
+// sourced from https://stackoverflow.com/questions/63869859/detect-click-outside-element-on-vue-3
+app.directive('click-outside', {
+  beforeMount(el, binding, vnode) {
+    el.clickOutsideEvent = function(event) {
+      if (!(el === event.target || el.contains(event.target))) {
+        binding.value(event, el)
+      }
+    }
+    document.body.addEventListener('click', el.clickOutsideEvent)
+  },
+  unmounted(el) {
+    document.body.removeEventListener('click', el.clickOutsideEvent)
+  }
+})
+
 app.mixin({
   methods: {
     $iam(role) {

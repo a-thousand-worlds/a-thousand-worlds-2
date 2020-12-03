@@ -395,6 +395,39 @@ const store = createStore({
       ctx.commit('setBusy', false)
     },
 
+    async saveBundleSubmissionsDraft(ctx, draft) {
+      ctx.commit('setBusy', true)
+      const profile = ctx.state.user.profile
+      profile.draftBundle = draft
+      await ctx.dispatch('saveProfile', profile)
+      ctx.commit('setBusy', false)
+    },
+
+    async submitBundleSuggestion(ctx, data) {
+      ctx.commit('setBusy', true)
+      const sid = v4()
+      const now = dayjs()
+      const sub = {
+        id: sid,
+        type: 'bundle',
+        approved: false,
+        approvedBy: null,
+        approvedAt: null,
+        approveComment: '',
+        createdBy: ctx.state.user.uid,
+        createdAt: now.format(),
+        ...data
+      }
+      const ref = await firebase.database().ref(`submits/bundles/${sid}`)
+      await ref.set(sub)
+      const profile = ctx.state.user.profile
+      profile.draftBundle = null
+      profile.submissions = [...profile.submissions, sid]
+      await ctx.dispatch('saveProfile', profile)
+      ctx.commit('indexSubmission', sub)
+      ctx.commit('setBusy', false)
+    },
+
     async saveProfile(ctx, profile) {
       const ref = firebase.database().ref(`users/${ctx.state.user.uid}/profile`)
       await ref.set(profile)
@@ -406,8 +439,18 @@ const store = createStore({
       return new Promise((resolve, reject) => {
         const ref = firebase.database().ref(`submits/books/${sid}`)
         ref.once('value', snap => {
-          ctx.commit('indexSubmission', snap.val())
-          resolve()
+          if (snap.val()) {
+            ctx.commit('indexSubmission', snap.val())
+            resolve()
+            return
+          }
+          const ref2 = firebase.database().ref(`submits/bundles/${sid}`)
+          ref2.once('value', snap2 => {
+            if (snap2.val()) {
+              ctx.commit('indexSubmission', snap2.val())
+            }
+            resolve()
+          })
         })
       })
     },

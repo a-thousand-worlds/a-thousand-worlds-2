@@ -1,18 +1,14 @@
 <script>
 
-import { isbnSearch } from '@/utils'
-import AuthorWidget from '@/components/AuthorWidget'
+import BookTitleField from '@/components/fields/BookTitle'
+import BookIsbnField from '@/components/fields/BookIsbn'
+import PersonField from '@/components/fields/Person'
 
 export default {
   data() {
     return {
       books: [],
       submissions: [],
-      titleSearches: [],
-      authorSearches: [],
-      illustratorSearches: [],
-      isbnSearches: [],
-      isbnGlobals: [],
     }
   },
   created() {
@@ -30,69 +26,29 @@ export default {
     window.scrollTo(0, 0)
   },
   methods: {
-    titleSearch($e, si) {
-      const search = $e.target.value.toLowerCase()
-      this.books[si] = null
-      this.titleSearches[si] = []
-      this.titleSearches[si] = Object.keys(this.$store.state.books)
+    isbnGlobalSearchState(si, state) {
+      this.$store.commit('setBusy', state)
+    },
+    isbnGlobalSearchResult(si, res) {
+      if (!res) {
+        console.log('nothing found')
+        return
+      }
+      console.log('isbn global search res', res)
+      const localBook = Object.keys(this.$store.state.books)
         .map(x => this.$store.state.books[x])
-        .filter(book => search.length && book.title.toLowerCase().includes(search))
-    },
-    authorSearch($e, si) {
-      const search = $e.target.value.toLowerCase()
-      this.authorSearches[si] = []
-      this.authorSearches[si] = this.$store.state.people
-        .filter(person => search.length && person.name.toLowerCase().includes(search) && person.role === 'author')
-    },
-    illustratorSearch($e, si) {
-      const search = $e.target.value.toLowerCase()
-      this.illustratorSearches[si] = []
-      this.illustratorSearches[si] = this.$store.state.people
-        .filter(person => search.length && person.name.toLowerCase().includes(search) && person.role === 'illustrator')
-    },
-    isbnSearch($e, si) {
-      const search = $e.target.value.toString()
-      this.books[si] = null
-      this.isbnSearches[si] = []
-      this.isbnSearches[si] = Object.keys(this.$store.state.books)
-        .map(x => this.$store.state.books[x])
-        .filter(book => search.length && book.isbn.toString().includes(search))
-    },
-    isbnGlobalSearch(si) {
-      this.$store.commit('setBusy', true)
-      this.isbnGlobals[si] = true
-      this.clearSearches(si)
-      const search = this.submissions[si].isbn.toString()
-      isbnSearch(search)
-        .then(res => {
-          this.$store.commit('setBusy', false)
-          this.isbnGlobals[si] = false
-          if (!res) {
-            console.log('nothing found')
-            return
-          }
-          console.log('isbn global search res', res)
-          const localBook = Object.keys(this.$store.state.books)
-            .map(x => this.$store.state.books[x])
-            .reduce((acc, book) => book.isbn === search ? book : acc, null)
-          console.log('local book?', localBook)
-          if (localBook) {
-            this.books[si] = localBook
-            return
-          }
-          this.books[si] = {
-            cover: 'data:image/png;base64,' + res.cover
-          }
-          this.submissions[si].title = res.google ? res.google.title : res.openlib.title
-          this.submissions[si].author = res.google ? res.google.authors.join(', ') : res.openlib.authors.join(', ')
-          this.submissions[si].illustrator = ''
-        })
-        .catch(err => {
-          this.$store.commit('setBusy', false)
-          this.isbnGlobals[si] = false
-          console.log('isbn global search err', err)
-        })
-
+        .reduce((acc, book) => book.isbn === res.isbn ? book : acc, null)
+      console.log('local book?', localBook)
+      if (localBook) {
+        this.books[si] = localBook
+        return
+      }
+      this.books[si] = {
+        cover: 'data:image/png;base64,' + res.cover
+      }
+      this.submissions[si].title = res.google ? res.google.title : res.openlib.title
+      this.submissions[si].author = res.google ? res.google.authors.join(', ') : res.openlib.authors.join(', ')
+      this.submissions[si].illustrator = ''
     },
     fillBook(book, si) {
       console.log('fill book', book)
@@ -119,35 +75,17 @@ export default {
           return acc
         }, '')
       }
-      this.titleSearches[si] = []
-      this.isbnSearches[si] = []
-      this.authorSearches[si] = []
-      this.illustratorSearches[si] = []
-    },
-    fillAuthor(person, si) {
-      if (person) {
-        this.submissions[si].author = person.name
-      }
-      this.authorSearches[si] = []
-    },
-    fillIllustrator(person, si) {
-      if (person) {
-        this.submissions[si].illustrator = person.name
-      }
-      this.illustratorSearches[si] = []
     },
     setIsAuthor(si, state) {
       this.submissions[si].isAuthor = state
     },
     submitForReview() {
-      /**/
-      console.log('save', this.book, this.authorsRoles)
+      console.log('save', this.submissions)
       this.$store.dispatch('submitBookSubmission', this.submissions).then(() => {
         console.log('book saved')
         // eslint-disable-next-line fp/no-mutating-methods
         this.$router.push({ name: 'Profile' })
       })
-      /**/
     },
     saveDraft() {
       this.$store.dispatch('saveBookSubmissionsDraft', this.submissions)
@@ -175,26 +113,10 @@ export default {
       console.log('del sub', si)
       this.books = this.books.filter((x, xi) => xi !== si)
       this.submissions = this.submissions.filter((x, xi) => xi !== si)
-      this.titleSearches = this.titleSearches.filter((x, xi) => xi !== si)
-      this.authorSearches = this.authorSearches.filter((x, xi) => xi !== si)
-      this.illustratorSearches = this.illustratorSearches.filter((x, xi) => xi !== si)
-      this.isbnSearches = this.isbnSearches.filter((x, xi) => xi !== si)
-      this.isbnGlobals = this.isbnGlobals.filter((x, xi) => xi !== si)
     },
     clearSubmission(si) {
       this.books[si] = null
       this.submissions[si] = this.newSubmissionObject()
-      this.titleSearches[si] = []
-      this.authorSearches[si] = []
-      this.illustratorSearches[si] = []
-      this.isbnSearches[si] = []
-      this.isbnGlobals[si] = false
-    },
-    clearSearches(si) {
-      this.titleSearches[si] = []
-      this.authorSearches[si] = []
-      this.illustratorSearches[si] = []
-      this.isbnSearches[si] = []
     }
   },
   computed: {
@@ -212,7 +134,9 @@ export default {
     }
   },
   components: {
-    'author-widget': AuthorWidget
+    'book-title-field': BookTitleField,
+    'book-isbn-field': BookIsbnField,
+    'person-field': PersonField
   }
 }
 </script>
@@ -225,80 +149,29 @@ export default {
 
     <div class="field">
       <label class="label">Title</label>
-      <div class="control">
-        <input :disabled="$uiBusy || (books[si] && books[si].id)" type="text" class="input" @input="titleSearch($event, si)" v-model="submissions[si].title">
-        <div v-if="titleSearches[si] && titleSearches[si].length" class="search-wrap">
-          <div class="search-results">
-            <div @click.prevent="fillBook(res, si)" class="media p-2" v-for="res of titleSearches[si]" :key="res.id">
-              <div class="media-left">
-                <img :src="res.cover">
-              </div>
-              <div class="media-right">
-                <b>{{res.title}}</b><br>
-                <small>{{res.isbn}}</small><br>
-                <author-widget :name="res.authors[0]"></author-widget>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <book-title-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].title" @book-selected="fillBook($event, si)"/>
     </div>
 
     <div class="field">
       <label class="label">Author</label>
-      <div class="control">
-        <input :disabled="$uiBusy || (books[si] && books[si].id)" type="text" class="input" @input="authorSearch($event, si)" v-model="submissions[si].author">
-        <div v-if="authorSearches[si] && authorSearches[si].length" class="search-wrap">
-          <div class="search-results">
-            <div @click.prevent="fillAuthor(res, si)" class="media p-2" v-for="res of authorSearches[si]" :key="res.id">
-              <b>{{res.name}}</b><br>
-            </div>
-          </div>
-        </div>
-      </div>
+      <person-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].author" @person-selected="fillAuthor($event, si)" :role="'author'"/>
     </div>
 
     <div class="field">
       <label class="label">Illustrator</label>
-      <div class="control">
-        <input :disabled="$uiBusy || (books[si] && books[si].id)" type="text" class="input" @input="illustratorSearch($event, si)" v-model="submissions[si].illustrator">
-        <div v-if="illustratorSearches[si] && illustratorSearches[si].length" class="search-wrap">
-          <div class="search-results">
-            <div @click.prevent="fillIllustrator(res, si)" class="media p-2" v-for="res of illustratorSearches[si]" :key="res.id">
-              <b>{{res.name}}</b><br>
-            </div>
-          </div>
-        </div>
-      </div>
+      <person-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].illustrator" @person-selected="fillIllustrator($event, si)" :role="'illustrator'"/>
     </div>
 
     <div class="field">
       <label class="label">ISBN</label>
-      <div class="field has-addons">
-        <div class="control w-100">
-          <input :disabled="$uiBusy || (books[si] && books[si].id)" type="text" class="input" @input="isbnSearch($event, si)" v-model="submissions[si].isbn">
-          <div v-if="isbnSearches[si] && isbnSearches[si].length" class="search-wrap">
-            <div class="search-results">
-              <div @click.prevent="fillBook(res, si)" class="media p-2" v-for="res of isbnSearches[si]" :key="res.id">
-                <div class="media-left">
-                  <img :src="res.cover">
-                </div>
-                <div class="media-right">
-                  <b>{{res.title}}</b><br>
-                  <small>{{res.isbn}}</small><br>
-                  <author-widget :name="res.authors[0]"></author-widget>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="control">
-          <button @click="isbnGlobalSearch(si)" :disabled="$uiBusy || (books[si] && books[si].id)" :class="{'is-loading': isbnGlobals[si] === true}" class="button is-primary">
-            <i class="fas fa-search"></i>
-            <span class="ml-3">Search</span>
-          </button>
-        </div>
-      </div>
+      <book-isbn-field
+        :disabled="$uiBusy || (books[si] && books[si].id)"
+        :searchable="true"
+        v-model="submissions[si].isbn"
+        @book-selected="fillBook($event, si)"
+        @isbn-search-state="isbnGlobalSearchState(si, $event)"
+        @isbn-search-result="isbnGlobalSearchResult(si, $event)"
+      />
     </div>
 
     <div v-if="!!books[si]" class="field">
