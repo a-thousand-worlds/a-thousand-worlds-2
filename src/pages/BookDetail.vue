@@ -1,12 +1,14 @@
 <script>
 import AuthorWidget from '@/components/AuthorWidget'
 import BookmarkButton from '@/components/BookmarkButton'
+import BooksFilter from '@/components/BooksFilter'
 
 export default {
   name: 'BookDetail',
   components: {
     'author-widget': AuthorWidget,
     'bookmark-button': BookmarkButton,
+    'books-filter': BooksFilter,
   },
   computed: {
     book() {
@@ -22,6 +24,10 @@ export default {
 </script>
 
 <template>
+
+  <teleport to="#books-filter-menu">
+    <books-filter></books-filter>
+  </teleport>
 
   <div class="content mx-6">
 
