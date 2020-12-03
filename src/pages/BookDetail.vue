@@ -80,7 +80,7 @@ export default {
   <div class="mb-7" />
 
   <div class="content-footer">
-    <div class="content-footer-inner mx-6">
+    <div class="content-footer-inner">
       <div class="from-fullhd">
         <input type="text" class="input" style="width: 16rem;" :value="pageUrl" readonly />
         <button id="copy-link" class="button is-rounded mx-1" :data-clipboard-text="pageUrl">COPY LINK</button>
@@ -120,11 +120,11 @@ export default {
   position: fixed;
   bottom: 0;
   background-color: #ddd;
-  width: calc(100% - 340px - 70px);
+  width: calc(100% - 183px - 58px);
   padding: 1rem;
-  margin-left: -18px;
+  margin-left: -30px;
 
-  @include until($desktop) {
+  @include until($tablet) {
     width: 100%;
   }
 

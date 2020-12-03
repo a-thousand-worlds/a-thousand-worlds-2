@@ -38,11 +38,11 @@ a {
   padding: 0;
   width: 100%;
   margin: 0;
+  margin-bottom: 20px;
+  word-break: break-word;
   //background: linear-gradient(to bottom, $atw-base, $atw-spin);
 
   button {
-    margin-left: 10px;
-    margin-bottom: 10px;
     width: 100%;
     border: 0;
     background: #fff;

@@ -1,5 +1,5 @@
 <template>
-  <aside class="is-align-self-stretch menu px-5 is-flex-direction-column is-justify-content-space-between">
+  <aside class="is-align-self-stretch menu px-2 is-flex-direction-column is-justify-content-space-between">
     <div id="logo">
       <router-link :to="{name: 'Home'}"><span class="wrapper"><img title="COLORFUL READS X COLORFUL PEOPLE: Picture books curated by leaders in the industry" src="@/assets/logo.png"></span></router-link>
     </div>
