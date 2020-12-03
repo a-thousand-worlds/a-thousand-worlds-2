@@ -31,26 +31,25 @@ export default {
 
   <div class="content mx-6">
 
-    <div class="directory-navbar mt-4 mb-5">
-      <div class="is-flex is-justify-content-space-between">
-        <div>
-          <router-link :to="{ name: 'Home' }" class="directory-nav-link is-uppercase">&lt; Back to Books</router-link>
-        </div>
-        <div>
-          <router-link :to="{ name: 'Home' }" class="directory-nav-link is-uppercase mx-6">&lt; Previous Book</router-link>
-          <router-link :to="{ name: 'Home' }" class="directory-nav-link is-uppercase">Next Book &gt;</router-link>
-        </div>
-      </div>
-    </div>
-
     <div class="columns">
       <div class="column mr-4 is-two-fifths" style="max-width: 720px">
+        <div class="mt-4 mb-5">
+          <router-link :to="{ name: 'Home' }" class="directory-nav-link is-uppercase">&lt; Back to Books</router-link>
+        </div>
         <div class="book-cover-wrapper">
           <img class="cover" :src="book.cover"/>
         </div>
       </div>
 
       <div class="column" style="max-width: 720px;">
+
+        <div class="is-flex is-justify-content-flex-end">
+          <div class="mt-4 mb-5">
+            <router-link :to="{ name: 'Home' }" class="directory-nav-link is-uppercase mx-6">&lt; Previous Book</router-link>
+            <router-link :to="{ name: 'Home' }" class="directory-nav-link is-uppercase">Next Book &gt;</router-link>
+          </div>
+        </div>
+
         <div class="title-container divider-bottom is-flex is-justify-content-space-between">
           <h1 class="title">{{book.title}}</h1>
           <div style="padding-top: 0px;"><bookmark-button /></div>
