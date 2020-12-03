@@ -44,13 +44,13 @@ export default {
     </div>
 
     <div class="columns">
-      <div class="column is-two-fifths mr-4">
+      <div class="column mr-4 is-two-fifths" style="max-width: 720px">
         <div class="book-cover-wrapper">
           <img class="cover" :src="book.cover"/>
         </div>
       </div>
 
-      <div class="column">
+      <div class="column" style="max-width: 720px;">
         <div class="title-container divider-bottom is-flex is-justify-content-space-between">
           <h1 class="title">{{book.title}}</h1>
           <div style="padding-top: 0px;"><bookmark-button /></div>
