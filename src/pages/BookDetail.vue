@@ -82,6 +82,7 @@ export default {
         <button class="button is-rounded mx-1">COPY LINK</button>
       </div>
       <div>
+        <button class="button button-unstyled">FIND BOOK AT</button>
         <button class="button is-rounded mx-1">LOCAL LIBRARY</button>
         <button class="button is-rounded mx-1">LINK</button>
         <button class="button is-rounded mx-1">INDIEBOUND</button>
@@ -117,6 +118,17 @@ export default {
   width: calc(100% - 340px - 70px);
   padding: 1rem;
   margin-left: -18px;
+
+  .button, input {
+    border: solid 1px #666;
+  }
+}
+
+/* Unstyled button for text that needs to sit next to a button and have the same size and padding. */
+.button-unstyled {
+  cursor: default;
+  background-color: transparent;
+  border-color: transparent !important;
 }
 
 </style>
