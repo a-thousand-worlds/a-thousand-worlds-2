@@ -45,9 +45,7 @@ export default ({
         <left-bar/>
       </section>
       <section class="main column">
-        <div class="container">
-          <router-view/>
-        </div>
+        <router-view/>
         <!-- <footer class="footer">
           footer
         </footer> -->
