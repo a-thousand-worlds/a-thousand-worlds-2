@@ -2,6 +2,7 @@
 import AuthorWidget from '@/components/AuthorWidget'
 import BookmarkButton from '@/components/BookmarkButton'
 import BooksFilter from '@/components/BooksFilter'
+import Clipboard from 'clipboard'
 
 export default {
   name: 'BookDetail',
@@ -14,10 +15,13 @@ export default {
     book() {
       const id = this.$router.currentRoute._value.params.id
       return this.$store.state.books[id] || {}
-    },
-    url() {
-      return window.location.href
     }
+  },
+  created() {
+    this.pageUrl = window.location.href
+  },
+  mounted() {
+    new Clipboard('#copy-link') // eslint-disable-line no-new
   }
 }
 
@@ -78,8 +82,8 @@ export default {
   <div class="content-footer">
     <div class="is-flex is-justify-content-space-between mx-6">
       <div>
-        <input type="text" class="input" style="width: 16rem;" :value="url" readonly />
-        <button class="button is-rounded mx-1">COPY LINK</button>
+        <input type="text" class="input" style="width: 16rem;" :value="pageUrl" readonly />
+        <button id="copy-link" class="button is-rounded mx-1" :data-clipboard-text="pageUrl">COPY LINK</button>
       </div>
       <div>
         <button class="button button-unstyled">FIND BOOK AT</button>
