@@ -80,8 +80,8 @@ export default {
   <div class="mb-7" />
 
   <div class="content-footer">
-    <div class="is-flex is-justify-content-space-between mx-6">
-      <div>
+    <div class="content-footer-inner mx-6">
+      <div class="from-fullhd">
         <input type="text" class="input" style="width: 16rem;" :value="pageUrl" readonly />
         <button id="copy-link" class="button is-rounded mx-1" :data-clipboard-text="pageUrl">COPY LINK</button>
       </div>
@@ -97,6 +97,7 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+@import "bulma/sass/utilities/_all.sass";
 @import '@/assets/vars.scss';
 
 .directory-nav-link {
@@ -123,6 +124,10 @@ export default {
   padding: 1rem;
   margin-left: -18px;
 
+  @include until($desktop) {
+    width: 100%;
+  }
+
   .button, input {
     border: solid 1px #666;
   }
@@ -133,6 +138,15 @@ export default {
   cursor: default;
   background-color: transparent;
   border-color: transparent !important;
+}
+
+.content-footer-inner {
+  display: flex;
+  justify-content: center;
+
+  @include from($fullhd) {
+    justify-content: space-between;
+  }
 }
 
 </style>
