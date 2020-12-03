@@ -19,7 +19,7 @@ export default {
   <aside class="menu px-3 mb-5">
     <ul class="menu-list submenu">
       <li v-for="filter in $store.state.sortedTags" :key="filter.id" @click="toggleFilter(filter.tag)">
-        <button v-if="filter.showOnFront" :class="{toggled:filterOn(filter.tag)}" class="p-1" style="cursor: pointer;">{{filter.tag}}</button>
+        <button v-if="filter.showOnFront" :class="{toggled:filterOn(filter.tag)}" class="p-1">{{filter.tag}}</button>
       </li>
     </ul>
     <button class="button is-rounded" @click.prevent="resetFilters">Reset Filters</button>

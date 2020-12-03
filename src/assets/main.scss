@@ -25,3 +25,7 @@ $spacing-values: map.merge($spacing-values, (
   "12": 12rem,
 ));
 @import "bulma/sass/helpers/spacing.sass";
+
+.button {
+  cursor: pointer;
+}
