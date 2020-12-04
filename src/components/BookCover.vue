@@ -12,21 +12,23 @@ export default {
 </script>
 
 <template>
-  <router-link :to="{name: 'BookDetail',params:{id:book.id}}"><div class="book-cover-wrapper">
-    <img class="cover" :src="book.cover"/>
-    <div class="cover-shadow"></div>
-    <div class="cover-data">
-      <div class="title">{{book.title}}</div>
-      <div class="authors">
-        <div v-for="person of book.authors" :key="person">
-          <author-widget :name="person"></author-widget>
+  <router-link :to="{name: 'BookDetail',params:{id:book.id}}">
+    <div class="book-cover-wrapper">
+      <img class="cover" :src="book.cover"/>
+      <div class="cover-shadow"></div>
+      <div class="cover-data">
+        <div class="title">{{book.title}}</div>
+        <div class="authors">
+          <div v-for="person of book.authors" :key="person">
+            <author-widget :name="person"></author-widget>
+          </div>
+        </div>
+        <div class="bmb">
+          <bookmark-button :book="book"></bookmark-button>
         </div>
       </div>
-      <div class="bmb">
-        <bookmark-button :book="book"></bookmark-button>
-      </div>
     </div>
-  </div></router-link>
+  </router-link>
 </template>
 
 <style lang="scss" scoped>
@@ -34,6 +36,11 @@ export default {
 
 .book-cover-wrapper {
   position: relative;
+
+  .cover {
+    // https://www.tutorialrepublic.com/faq/how-to-remove-white-space-under-an-image-using-css.php#:~:text=Answer%3A%20Use%20the%20CSS%20display,to%20adjust%20other%20inline%20elements.
+    display: block;
+  }
 
   .cover-shadow, .cover-data {
     transition: transform 2s ease-in-out 0s;
@@ -45,15 +52,21 @@ export default {
     display: none;
     opacity: 0;
   }
+
   .cover-data {
-    border: 10px solid $atw-base;
     padding: 20px;
     opacity: 1;
+
+    .title {
+      font-size: 24px;
+    }
   }
+
   .cover-shadow {
     background: #fff;
     opacity: 0.8;
   }
+
   &:hover {
     .cover-shadow, .cover-data {
       display: block;

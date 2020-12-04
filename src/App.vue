@@ -40,17 +40,14 @@ export default ({
         </div>
       </div>
     </section>
-    <div class="columns">
-      <section class="leftbar is-hidden-mobile">
+    <div class="columns" style="margin-top: 0;">
+      <section class="leftbar column is-narrow is-hidden-mobile">
         <left-bar/>
       </section>
       <section class="main column">
         <router-view/>
-        <!-- <footer class="footer">
-          footer
-        </footer> -->
       </section>
-      <section class="rightbar is-hidden-mobile">
+      <section class="rightbar column is-hidden-mobile">
         <right-bar/>
       </section>
     </div>
@@ -79,13 +76,22 @@ body {
 <style lang="scss" scoped>
 @import '@/assets/main.scss';
 
-$leftbar-width: 183px;
-$rightbar-width: 70px;
+.leftbar {
+  padding-top: 30px;
+  padding-bottom: 30px;
+  height: 100%;
+  left: 0;
+  width: $leftbar-width;
+  //overflow-y: scroll;
+  top: 0;
+  z-index: 1;
+}
 
 .rightbar {
+  background-color: white;
+  border-left: solid 1px $atw-base;
   position: fixed;
   height: 100%;
-  border-left: 1px solid $atw-base;
   right: 0;
   top: 0;
   padding: 10px;
@@ -94,20 +100,11 @@ $rightbar-width: 70px;
   z-index: 1;
 }
 
-.leftbar {
-  padding-top: 30px;
-  height: 100%;
-  border-right: 1px solid $atw-base;
-  left: 0;
-  width: $leftbar-width;
-  //overflow-y: scroll;
-  top: 0;
-  z-index: 1;
-}
-
 .main {
-  margin-right: $rightbar-width;
-  padding: 30px;
+  padding-top: 30px;
+  min-height: 100vh;
+  border-left: solid 1px $atw-base;
+  margin-right: calc(#{$rightbar-width} + 0.75rem); // column gap
   z-index: 1;
   @include until($tablet) {
     margin-left: 0px;

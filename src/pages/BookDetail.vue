@@ -33,11 +33,11 @@ export default {
     <books-filter></books-filter>
   </teleport>
 
-  <div class="content mx-6">
+  <div class="mx-5">
 
     <div class="columns">
-      <div class="column mr-4 is-two-fifths" style="max-width: 720px">
-        <div class="mt-4 mb-5">
+      <div class="column mr-1 is-two-fifths" style="max-width: 720px">
+        <div class="mb-5">
           <router-link :to="{ name: 'Home' }" class="directory-nav-link is-uppercase">&lt; Back to Books</router-link>
         </div>
         <div class="book-cover-wrapper">
@@ -48,7 +48,7 @@ export default {
       <div class="column" style="max-width: 720px;">
 
         <div class="is-flex is-justify-content-flex-end">
-          <div class="mt-4 mb-5">
+          <div class="mb-5">
             <router-link :to="{ name: 'Home' }" class="directory-nav-link is-uppercase mx-6">&lt; Previous Book</router-link>
             <router-link :to="{ name: 'Home' }" class="directory-nav-link is-uppercase">Next Book &gt;</router-link>
           </div>
@@ -68,7 +68,7 @@ export default {
           </div>
         </div>
 
-        <p>{{book.description}}</p>
+        <p style="font-size: 22px;">{{book.description}}</p>
 
       </div>
 
@@ -105,14 +105,18 @@ export default {
 }
 
 .title {
-  font-size: 3.5rem;
+  font-size: 50px;
   line-height: 1;
   margin-bottom: 0;
 }
 
+.authors {
+  font-size: 14px;
+}
+
 .divider-bottom {
-  padding-bottom: 1rem;
-  margin-bottom: 2rem;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
   border-bottom: solid 1px #ddd;
 }
 
@@ -120,9 +124,9 @@ export default {
   position: fixed;
   bottom: 0;
   background-color: #ddd;
-  width: calc(100% - 183px - 58px);
+  width: calc(100% - #{$leftbar-width} - #{$rightbar-width} + 0.75rem);
   padding: 1rem;
-  margin-left: -30px;
+  margin-left: -0.75rem; // column left gap
 
   @include until($tablet) {
     width: 100%;
@@ -133,20 +137,22 @@ export default {
   }
 }
 
-/* Unstyled button for text that needs to sit next to a button and have the same size and padding. */
-.button-unstyled {
-  cursor: default;
-  background-color: transparent;
-  border-color: transparent !important;
-}
-
 .content-footer-inner {
   display: flex;
   justify-content: center;
 
   @include from($fullhd) {
     justify-content: space-between;
+    margin-left: 60px;
+    margin-right: 60px;
   }
+}
+
+/* Unstyled button for text that needs to sit next to a button and have the same size and padding. */
+.button-unstyled {
+  cursor: default;
+  background-color: transparent;
+  border-color: transparent !important;
 }
 
 </style>

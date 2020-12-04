@@ -26,10 +26,12 @@ export default {
 </script>
 
 <template>
-  <div :class="{masonry:$store.state.viewMode==='covers'}">
-    <div class="masonry-item" v-for="book of books" :key="book.id">
-      <book-cover v-if="$store.state.viewMode === 'covers'" :book="book"></book-cover>
-      <book-list v-if="$store.state.viewMode === 'list'" :book="book"></book-list>
+  <div class="mx-1">
+    <div :class="{masonry:$store.state.viewMode==='covers'}">
+      <div class="masonry-item" v-for="book of books" :key="book.id">
+        <book-cover v-if="$store.state.viewMode === 'covers'" :book="book"></book-cover>
+        <book-list v-if="$store.state.viewMode === 'list'" :book="book"></book-list>
+      </div>
     </div>
   </div>
 </template>
@@ -57,6 +59,6 @@ export default {
 }
 
 .masonry-item {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
-  <aside class="is-align-self-stretch menu px-2 is-flex-direction-column is-justify-content-space-between">
+  <aside class="is-align-self-stretch menu is-flex-direction-column is-justify-content-space-between">
     <div id="logo">
-      <router-link :to="{name: 'Home'}"><span class="wrapper"><img title="COLORFUL READS X COLORFUL PEOPLE: Picture books curated by leaders in the industry" src="@/assets/logo.png"></span></router-link>
+      <router-link :to="{name: 'Home'}"><span class="wrapper"><!-- <img title="COLORFUL READS X COLORFUL PEOPLE: Picture books curated by leaders in the industry" src="@/assets/logo.png"> --></span></router-link>
     </div>
     <ul class="menu-list is-flex-grow-1">
       <li><router-link :to="{name: 'Home'}">Books</router-link></li>
@@ -32,20 +32,26 @@
 #logo {
   width: 80px;
   height: 80px;
-  background: $atw-base;
+  background: $grey;
   border-radius: 50%;
-  margin: 20px;
+  margin-left: 20px;
+  margin-bottom: 10px;
 }
 
 a {
-  font-size: 150%;
+  font-size: 18px;
   font-weight: bold;
   text-transform: uppercase;
   text-align: left;
 }
 
-.menu-list a:hover {
-  background: none;
+.menu-list a {
+  padding-bottom: 0;
+
+  &:hover {
+    background: none;
+  }
+
 }
 
 </style>
