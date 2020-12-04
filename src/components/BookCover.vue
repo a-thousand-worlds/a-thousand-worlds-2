@@ -58,19 +58,9 @@ export default {
   margin-bottom: 10px;
   background-size: contain;
 
-  .cover-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    .cover {
-      // https://www.tutorialrepublic.com/faq/how-to-remove-white-space-under-an-image-using-css.php#:~:text=Answer%3A%20Use%20the%20CSS%20display,to%20adjust%20other%20inline%20elements.
-      display: block;
-    }
-  }
-
   .cover-shadow, .cover-data {
-    transition: transform 2s ease-in-out 0s;
     position: absolute;
+    transition: opacity 5s linear;
     top: 0;
     left: 0;
     width: 100%;
@@ -96,9 +86,9 @@ export default {
   &:hover {
     .cover-shadow, .cover-data {
       display: block;
-      transition: transform 2s ease-in-out 0s;
     }
   }
+
   .bmb {
     position: absolute;
     bottom: 10px;

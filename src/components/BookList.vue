@@ -1,21 +1,64 @@
 <script>
+
+import AuthorWidget from '@/components/AuthorWidget'
+import BookmarkButton from '@/components/BookmarkButton'
+
 export default {
-  props: ['book']
+  props: ['book'],
+  components: {
+    'author-widget': AuthorWidget,
+    'bookmark-button': BookmarkButton
+  },
+  methods: {
+    coverRatio() {
+      if (!this.book || !this.book.coverWidth || !this.book.coverHeight) {
+        return 1
+      }
+      return this.book.coverHeight / this.book.coverWidth * 100
+    },
+    // can generate randomly, or use some predefined list
+    genBack() {
+      const chars = '0123456789abcdef'
+      let ret = '#'
+      // eslint-disable-next-line fp/no-loops
+      for (let i = 0; i < 6; i++) {
+        ret += chars[Math.floor(Math.random() * 16)]
+      }
+      return ret
+    }
+  }
 }
 </script>
 
 <template>
   <div class="book-list-wrapper columns">
     <div class="column is-one-third">
-      <img class="cover" :src="book.cover"/>
+      <router-link :to="{name:'BookDetail',params:{id:book.id}}" class="cover-data">
+        <div class="img-cover" :style="{width: '100%', paddingTop: coverRatio()+'%', backgroundColor: genBack(), backgroundImage: 'url('+book.cover+')', backgroundSize: 'contain'}"></div>
+      </router-link>
     </div>
-    <div class="column is-two-thirds">
-    <router-link :to="{name:'Home',params:{bid:book.id}}" class="cover-data">
-      <div class="title">{{book.title}}</div>
-    </router-link>
-      <div class="authors">
-        <div class="author">{{book.authors}}</div>
+    <div class="column is-two-thirds is-align-content-center">
+      <div class="columns is-desktop is-vcentered">
+        <div class="column">
+          <router-link :to="{name:'BookDetail',params:{id:book.id}}" class="cover-data">
+            <div class="title">{{book.title}}</div>
+          </router-link>
+          <div class="authors" v-for="person of book.authors" :key="person">
+            <author-widget :name="person"/>
+          </div>
+        </div>
+        <div class="column">
+          <div class="bmb  has-text-centered">
+            <bookmark-button :book="book"></bookmark-button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.is-vcentered {
+  height: 100%;
+}
+</style>
