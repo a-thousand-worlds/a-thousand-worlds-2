@@ -191,6 +191,8 @@ const store = createStore({
         i++
       }
       let photoUrl = ''
+      let photoWidth = info.book.coverWidth || 0
+      let photoHeight = info.book.coverHeight || 0
       // uploading photo
       if (typeof info.book.cover === 'string' && info.book.cover.startsWith('http')) {
         photoUrl = info.book.cover
@@ -198,11 +200,17 @@ const store = createStore({
       else {
         console.log('converting and uploading photo')
         const img = await Jimp.read(info.book.cover)
+        console.log(img, 'img')
+        photoWidth = img.bitmap.width
+        photoHeight = img.bitmap.height
         const buff = await img.getBufferAsync(Jimp.MIME_PNG)
         const photoRef = await firebase.storage().ref(`books/${id}`)
         await photoRef.put(buff, { contentType: 'image/png' })
         photoUrl = await photoRef.getDownloadURL()
       }
+
+      // const img2 = await Jimp.read(photoUrl)
+      // console.log('!!!', img2)
 
       // saving book
       console.log('building tags')
@@ -221,6 +229,8 @@ const store = createStore({
         goodread: info.book.goodread,
         description: info.book.description,
         cover: photoUrl,
+        coverWidth: photoWidth,
+        coverHeight: photoHeight,
         publisher: info.book.publisher,
         year: parseInt(info.book.year),
         authors: info.book.authors,

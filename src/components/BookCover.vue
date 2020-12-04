@@ -7,14 +7,31 @@ export default {
   components: {
     'author-widget': AuthorWidget,
     'bookmark-button': BookmarkButton
+  },
+  methods: {
+    coverRatio() {
+      if (!this.book || !this.book.coverWidth || !this.book.coverHeight) {
+        return 1
+      }
+      return this.book.coverHeight / this.book.coverWidth * 100
+    },
+    // can generate randomly, or use some predefined list
+    genBack() {
+      const chars = '0123456789abcdef'
+      let ret = '#'
+      // eslint-disable-next-line fp/no-loops
+      for (let i = 0; i < 6; i++) {
+        ret += chars[Math.floor(Math.random() * 16)]
+      }
+      return ret
+    }
   }
 }
 </script>
 
 <template>
   <router-link :to="{name: 'BookDetail',params:{id:book.id}}">
-    <div class="book-cover-wrapper">
-      <img class="cover" :src="book.cover"/>
+    <div :style="{width: '100%', paddingTop: coverRatio()+'%', backgroundColor: genBack(), backgroundImage: 'url('+book.cover+')', backgroundSize: 'contain'}" class="book-cover-wrapper">
       <div class="cover-shadow"></div>
       <div class="cover-data">
         <div class="title">{{book.title}}</div>
@@ -36,10 +53,19 @@ export default {
 
 .book-cover-wrapper {
   position: relative;
+  top: 0;
+  left: 0;
+  margin-bottom: 10px;
+  background-size: contain;
 
-  .cover {
-    // https://www.tutorialrepublic.com/faq/how-to-remove-white-space-under-an-image-using-css.php#:~:text=Answer%3A%20Use%20the%20CSS%20display,to%20adjust%20other%20inline%20elements.
-    display: block;
+  .cover-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    .cover {
+      // https://www.tutorialrepublic.com/faq/how-to-remove-white-space-under-an-image-using-css.php#:~:text=Answer%3A%20Use%20the%20CSS%20display,to%20adjust%20other%20inline%20elements.
+      display: block;
+    }
   }
 
   .cover-shadow, .cover-data {

@@ -49,6 +49,18 @@ app.directive('click-outside', {
   }
 })
 
+app.directive('on-resize', {
+  beforeMount(el, binding, vnode) {
+    el.resizeEventListener = function(event) {
+      binding.value(event, el)
+    }
+    window.addEventListener('resize', el.resizeEventListener)
+  },
+  unmounted(el) {
+    window.removeEventListener('resize', el.resizeEventListener)
+  }
+})
+
 app.mixin({
   methods: {
     $iam(role) {

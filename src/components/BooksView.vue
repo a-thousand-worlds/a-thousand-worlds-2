@@ -60,5 +60,6 @@ export default {
 
 .masonry-item {
   margin-bottom: 20px;
+  break-inside: avoid-column;
 }
 </style>

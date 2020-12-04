@@ -31,7 +31,21 @@ export default {
   created() {
     // console.log('router', this.$router.currentRoute)
     if (this.$router.currentRoute._value.name === 'BookManagerUpdateForm') {
-      const b = this.$store.state.books[this.$router.currentRoute._value.params.bid] || null
+      this.loadBookID(this.$router.currentRoute._value.params.bid)
+    }
+    window.scrollTo(0, 0)
+  },
+  watch: {
+    '$store.state.books'(next) {
+      if (this.$router.currentRoute._value.name === 'BookManagerUpdateForm') {
+        this.loadBookID(this.$router.currentRoute._value.params.bid)
+      }
+      window.scrollTo(0, 0)
+    }
+  },
+  methods: {
+    loadBookID(bid) {
+      const b = this.$store.state.books[bid] || null
       // console.log('upd', p, this.$store.state.people)
       if (b) {
         this.book = b
@@ -52,10 +66,7 @@ export default {
         }
         this.mode = 'update'
       }
-    }
-    window.scrollTo(0, 0)
-  },
-  methods: {
+    },
     searchISBN() {
       // console.log('search', this.book.isbn)
       this.searching = true
@@ -94,6 +105,18 @@ export default {
         this.$router.push({ name: 'BooksManager' })
       })
       /**/
+    },
+    reloadCover() {
+      this.searching = true
+      isbnSearch(this.book.isbn).then(res => {
+        this.searching = false
+        if (!res) {
+          console.log('book not found')
+          return
+        }
+        console.log('found book!', res)
+        this.book.cover = 'data:image/png;base64,' + res.cover
+      })
     },
     updatePerson(name, i) {
       this.book.authors[i] = name
@@ -152,7 +175,12 @@ export default {
 <form class="w-100" @submit.prevent="save()">
   <div class="columns">
     <div class="column is-one-third">
-      <img v-if="book.cover!=''" :src="book.cover">
+      <div>
+        <img v-if="book.cover!=''" :src="book.cover">
+      </div>
+      <div>
+        <button class="button is-outlined" :disabled="$uiBusy || searching" @click.prevent="reloadCover()" :class="{'is-loading': searching}">Reload</button>
+      </div>
     </div>
     <div class="column is-two-thirds">
 
