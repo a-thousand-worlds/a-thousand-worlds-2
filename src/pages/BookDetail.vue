@@ -11,14 +11,60 @@ export default {
     'bookmark-button': BookmarkButton,
     'books-filter': BooksFilter,
   },
-  computed: {
-    book() {
-      const id = this.$router.currentRoute._value.params.id
-      return this.$store.state.books[id] || {}
+  data() {
+    return {
+      book: null,
+      pageUrl: ''
     }
   },
   created() {
     this.pageUrl = window.location.href
+    const id = this.$router.currentRoute._value.params.id
+    this.book = this.$store.state.books[id]
+  },
+  watch: {
+    '$route'(next) {
+      const id = this.$router.currentRoute._value.params.id
+      this.book = this.$store.state.books[id]
+    },
+    '$store.state.books'(next, prev) {
+      const id = this.$router.currentRoute._value.params.id
+      if (next && Object.keys(next).length && !next[id]) {
+        // book not found! drop to 404
+        // timeout to make router finish any his current work, if doing any
+        setTimeout(() => {
+          // eslint-disable-next-line fp/no-mutating-methods
+          this.$router.push('/404')
+        }, 0)
+      }
+      console.log(next, '======', prev)
+      this.book = this.$store.state.books[id]
+    }
+  },
+  computed: {
+    books() {
+      return Object.keys(this.$store.state.books)
+        .map(x => this.$store.state.books[x])
+        .filter(x => typeof x.id === 'string' && x.id.length > 8) // converted to firebase
+        .filter(x => {
+          if (!this.$store.state.filters.length) {
+            return true
+          }
+          return this.$store.state.filters
+            .map(f => (x.tags || []).includes(f))
+            .reduce((acc, ok) => ok || acc, false)
+        })
+    },
+    nextBook() {
+      const list = this.books.map(x => x.id)
+      const pos = list.indexOf(this.book.id)
+      return list[pos + 1]
+    },
+    prevBook() {
+      const list = this.books.map(x => x.id)
+      const pos = list.indexOf(this.book.id)
+      return list[pos - 1]
+    }
   },
   mounted() {
     new Clipboard('#copy-link') // eslint-disable-line no-new
@@ -33,7 +79,7 @@ export default {
     <books-filter></books-filter>
   </teleport>
 
-  <div class="mx-5">
+  <div v-if="book" class="mx-5">
 
     <div class="columns">
       <div class="column mr-1 is-two-fifths" style="max-width: 720px">
@@ -49,8 +95,8 @@ export default {
 
         <div class="is-flex is-justify-content-flex-end">
           <div class="mb-5">
-            <router-link :to="{ name: 'Home' }" class="directory-nav-link is-uppercase mx-6">&lt; Previous Book</router-link>
-            <router-link :to="{ name: 'Home' }" class="directory-nav-link is-uppercase">Next Book &gt;</router-link>
+            <router-link v-if="prevBook" :to="{ name: 'BookDetail', params: {id: prevBook} }" class="directory-nav-link is-uppercase mx-6">&lt; Previous Book</router-link>
+            <router-link v-if="nextBook" :to="{ name: 'BookDetail', params: {id: nextBook}  }" class="directory-nav-link is-uppercase">Next Book &gt;</router-link>
           </div>
         </div>
 
