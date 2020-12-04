@@ -49,9 +49,11 @@ export default {
 
 <style scoped lang="scss">
 @import '@/assets/main.scss';
+
 aside {
-height: 100%;
+  height: 100%;
 }
+
 a {
   &.disabled {
     pointer-events: none;

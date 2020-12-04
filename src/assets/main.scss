@@ -25,3 +25,31 @@ $spacing-values: map.merge($spacing-values, (
   "12": 12rem,
 ));
 @import "bulma/sass/helpers/spacing.sass";
+
+// Bulma has is-hidden-* classes that hide elements after a breakpoint, but does not seem to have classes that hide elements up to a breakpoint
+$devices: (
+  tablet: $tablet,
+  desktop: $desktop,
+  widescreen: $widescreen,
+  fullhd: $fullhd,
+);
+
+@each $key,$value in $devices {
+  @include until($value) {
+    .from-#{$key} {
+      display: none;
+    }
+  }
+}
+
+// override bulma title
+.title, .title:not(:last-child) {
+  margin-bottom: 10px;
+}
+
+.button {
+  color: black;
+  cursor: pointer;
+  border: solid 1px black;
+  text-transform: uppercase;
+}

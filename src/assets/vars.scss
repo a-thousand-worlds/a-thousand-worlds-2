@@ -24,20 +24,23 @@ $family-sans-serif: "DIN", sans-serif;
 //$input-shadow: none;
 
 // ATW variables
-$atw-base: #f00;
+$atw-base: black;
 $atw-spin: #f0e;
 
 
-$primary: $atw-base
-//$link: $blue
-//$info: $cyan
-//$success: $green
-//$warning: $yellow
-//$danger: $red
-//$dark: $grey-darker
-//$text: $grey-dark
-//$background: $white-ter: a general background color
-//$link: $blue: the links use the primary color
+$primary: $atw-base;
+$background: white;
+$lightgrey: #eee;
+$grey: #c4c4c4;
+//$link: $blue;
+//$info: $cyan;
+//$success: $green;
+//$warning: $yellow;
+//$danger: $red;
+//$dark: $grey-darker;
+//$text: $grey-dark;
+//$link: $blue; // the links use the primary color
 //$family-primary: $family-sans-serif
 
-
+$leftbar-width: 183px;
+$rightbar-width: 70px;

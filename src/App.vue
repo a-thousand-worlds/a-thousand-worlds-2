@@ -40,19 +40,14 @@ export default ({
         </div>
       </div>
     </section>
-    <div class="columns">
-      <section class="leftbar is-hidden-touch">
+    <div class="columns" style="margin-top: 0;">
+      <section class="leftbar column is-narrow is-hidden-mobile">
         <left-bar/>
       </section>
       <section class="main column">
-        <div class="container">
-          <router-view/>
-        </div>
-        <!-- <footer class="footer">
-          footer
-        </footer> -->
+        <router-view/>
       </section>
-      <section class="rightbar is-hidden-touch">
+      <section class="rightbar column is-hidden-mobile">
         <right-bar/>
       </section>
     </div>
@@ -81,50 +76,47 @@ body {
 <style lang="scss" scoped>
 @import '@/assets/main.scss';
 
-$leftbar-width: 340px;
-$rightbar-width: 70px;
-
-.rightbar {
-position: fixed;
-height: 100%;
-border-left: 1px solid $atw-base;
-right: 0;
-top: 0;
-padding: 10px;
-padding-top: 30px;
-width: $rightbar-width;
-z-index: 1;
+.leftbar {
+  padding-top: 30px;
+  padding-bottom: 30px;
+  height: 100%;
+  left: 0;
+  width: $leftbar-width;
+  //overflow-y: scroll;
+  top: 0;
+  z-index: 1;
 }
 
-.leftbar {
-padding: 20px;
-padding-top: 30px;
-position: fixed;
-height: 100%;
-border-right: 1px solid $atw-base;
-left: 0;
-width: $leftbar-width;
-//overflow-y: scroll;
-top: 0;
-z-index: 1;
+.rightbar {
+  background-color: white;
+  border-left: solid 1px $atw-base;
+  position: fixed;
+  height: 100%;
+  right: 0;
+  top: 0;
+  padding: 10px;
+  padding-top: 30px;
+  width: $rightbar-width;
+  z-index: 1;
 }
 
 .main {
-margin-left: $leftbar-width;
-margin-right: $rightbar-width;
-padding: 30px;
-z-index: 1;
-@include until($desktop) {
-  margin-left: 0px;
-  margin-right: 0px;
-}
+  padding-top: 30px;
+  min-height: 100vh;
+  border-left: solid 1px $atw-base;
+  margin-right: calc(#{$rightbar-width} + 0.75rem); // column gap
+  z-index: 1;
+  @include until($tablet) {
+    margin-left: 0px;
+    margin-right: 0px;
+  }
 }
 
 .hero {
-z-index: 10;
-background: $atw-base;
-position: relative;
-text-align: center;
+  z-index: 10;
+  background: $atw-base;
+  position: relative;
+  text-align: center;
   .title,.subtitle {
     color: #fff;
   }

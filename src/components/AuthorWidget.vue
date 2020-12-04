@@ -21,7 +21,9 @@ export default {
 </script>
 
 <template>
-  <i v-if="isAuthor" class="fas fa-pencil-alt"></i>
-  <i v-if="!isAuthor" class="fas fa-palette"></i>
-  <span class="name ml-2">{{name}}</span>
+  <div class="mb-3 is-uppercase" style="font-size: 10px; color: black; font-weight: bold">
+    <i v-if="isAuthor" class="fas fa-pencil-alt"></i>
+    <i v-if="!isAuthor" class="fas fa-palette"></i>
+    <span class="name ml-2">{{name}}</span>
+  </div>
 </template>
