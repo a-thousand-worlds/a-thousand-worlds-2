@@ -1,4 +1,5 @@
 <script>
+
 export default {
   props: ['sid'],
   data() {
@@ -18,11 +19,18 @@ export default {
         this.sub = this.$store.state.submissionsIndex[this.sid]
         this.loading = false
       })
+  },
+  computed: {
+    isApproved() {
+      return this.sub && this.sub.approved
+    }
   }
 }
+
 </script>
 
 <template>
+
 <div class="box p-5">
   <div class="content">
     <div v-if="loading">
@@ -43,9 +51,10 @@ export default {
       <div>Books: {{sub.books.length}}</div>
     </div>
     <hr>
-    <i class="fas fa-circle" :class="{ 'is-primary': sub.approved, 'is-secondary': !sub.approved }"></i>
-    <span class="ml-3" v-if="sub.approved">Approved</span>
-    <span class="ml-3" v-if="!sub.approved">Checking</span>
+    <i class="fas fa-circle" :class="{ 'is-primary': isApproved, 'is-secondary': !isApproved }"></i>
+    <span class="ml-3" v-if="isApproved">Approved</span>
+    <span class="ml-3" v-if="!isApproved">Checking</span>
   </div>
 </div>
+
 </template>

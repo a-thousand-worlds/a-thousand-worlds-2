@@ -1,11 +1,23 @@
 <script>
 export default {
-  computed: {
-
-  },
   methods: {
     toggleViewMode(mode) {
       this.$store.commit('setViewMode', mode)
+    }
+  },
+  data() {
+    return {
+      showTogglers: true
+    }
+  },
+  watch: {
+    '$route'(next) {
+      if (next.name === 'Home' || next.name === 'Bundles') {
+        this.showTogglers = true
+      }
+      else {
+        this.showTogglers = false
+      }
     }
   }
 }
@@ -17,7 +29,7 @@ export default {
         <i class="far fa-bookmark fa-2x"></i>
       </router-link></li>
     </ul>
-    <ul class="menu-list">
+    <ul v-if="showTogglers" class="menu-list">
       <li>
         <a :class="{disabled:$store.state.viewMode==='covers'}" @click.prevent="toggleViewMode('covers')" href="#">
           <i class="fas fa-th-large fa-2x"></i>
