@@ -60,18 +60,17 @@ export default {
 
   .cover-shadow, .cover-data {
     position: absolute;
-    transition: opacity 5s linear;
+    transition: opacity 0.2s ease-in-out;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    display: none;
+    //display: none;
     opacity: 0;
   }
 
   .cover-data {
     padding: 20px;
-    opacity: 1;
 
     .title {
       font-size: 24px;
@@ -80,12 +79,15 @@ export default {
 
   .cover-shadow {
     background: #fff;
-    opacity: 0.8;
   }
 
   &:hover {
-    .cover-shadow, .cover-data {
-      display: block;
+    .cover-shadow
+    {
+      opacity: 0.8;
+    }
+    .cover-data {
+      opacity: 1;
     }
   }
 
