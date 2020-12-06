@@ -84,6 +84,9 @@ export default {
     },
 
     async login() {
+
+      if (!this.validate()) return
+
       return this.handleResponse(this.$store.dispatch('userLogin', {
         email: this.email,
         password: this.password
