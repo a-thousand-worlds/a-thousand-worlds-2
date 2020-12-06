@@ -16,57 +16,50 @@ export default {
   },
   data() {
     return {
-      showTogglers: true
+      showViewOptions: true
     }
   },
   watch: {
     '$route'(next) {
-      if (next.name === 'Home' || next.name === 'Bundles') {
-        this.showTogglers = true
-      }
-      else {
-        this.showTogglers = false
-      }
+      this.showViewOptions = next.name === 'Home' || next.name === 'Bundles'
     }
   }
 }
 </script>
-<template>
-<aside class="is-flex is-flex-direction-column is-justify-content-space-between">
-    <ul class="menu-list">
-      <li><router-link :to="{name: 'Home'}">
-        <BookmarkIcon/>
-      </router-link></li>
-    </ul>
-    <ul v-if="showTogglers" class="menu-list">
-      <li>
-        <a :class="{disabled:$store.state.viewMode==='covers'}" @click.prevent="toggleViewMode('covers')" href="#">
-          <CoverViewIcon/>
-          <span class="icon-label">Cover</span>
-        </a>
-      </li>
-      <li class='my-30'>
-        <a :class="{disabled:$store.state.viewMode==='list'}" @click.prevent="toggleViewMode('list')" href="#">
-          <ListViewIcon/>
-          <span class="icon-label">List</span>
-        </a>
-      </li>
-    </ul>
 
-</aside>
+<template>
+  <aside class="is-flex is-flex-direction-column is-justify-content-space-between has-text-centered" style="height: 100%;">
+
+      <ul class="menu-list">
+        <li><router-link :to="{name: 'Home'}">
+          <BookmarkIcon/>
+        </router-link></li>
+      </ul>
+
+      <ul v-if="showViewOptions" class="menu-list">
+        <li>
+          <a :class="{ active: $store.state.viewMode === 'covers' }" @click.prevent="toggleViewMode('covers')" href="#">
+            <CoverViewIcon/>
+            <span class="icon-label">Cover</span>
+          </a>
+        </li>
+        <li class='my-30'>
+          <a :class="{ active: $store.state.viewMode === 'list' }" @click.prevent="toggleViewMode('list')" href="#">
+            <ListViewIcon/>
+            <span class="icon-label">List</span>
+          </a>
+        </li>
+      </ul>
+
+  </aside>
 </template>
 
 <style scoped lang="scss">
 @import '@/assets/main.scss';
 
-aside {
-  height: 100%;
-}
-
 .menu-list a {
 
   padding: 0;
-  text-align: center;
 
   .icon-label {
     text-transform: uppercase;
@@ -74,7 +67,7 @@ aside {
     font-weight: bold;
   }
 
-  &.disabled {
+  &.active {
     pointer-events: none;
     cursor: default;
     color: black;
