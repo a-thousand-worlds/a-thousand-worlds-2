@@ -3,12 +3,16 @@ import AuthorWidget from '@/components/AuthorWidget'
 import BookmarkButton from '@/components/BookmarkButton'
 
 export default {
-  props: ['book'],
+  props: ['book', 'colorI'],
   components: {
     'author-widget': AuthorWidget,
     'bookmark-button': BookmarkButton
   },
-  methods: {
+  created() {
+    this.$store.dispatch('loadImage', this.book.cover)
+    console.log('setup', this.book.title)
+  },
+  computed: {
     coverRatio() {
       if (!this.book || !this.book.coverWidth || !this.book.coverHeight) {
         return 1
@@ -16,14 +20,12 @@ export default {
       return this.book.coverHeight / this.book.coverWidth * 100
     },
     // can generate randomly, or use some predefined list
-    genBack() {
-      const chars = '0123456789abcdef'
-      let ret = '#'
-      // eslint-disable-next-line fp/no-loops
-      for (let i = 0; i < 6; i++) {
-        ret += chars[Math.floor(Math.random() * 16)]
-      }
-      return ret
+    bgColor() {
+      const colors = ['#fefad2', '#98ba93', '#d4c0d6', '#fcf1f5', '#fcebd0', '#f3fef1']
+      return colors[parseInt(this.colorI) % colors.length]
+    },
+    bgImage() {
+      return this.$store.state.images[this.book.cover] || ''
     }
   }
 }
@@ -31,7 +33,7 @@ export default {
 
 <template>
   <router-link :to="{name: 'BookDetail',params:{id:book.id}}">
-    <div :style="{width: '100%', paddingTop: coverRatio()+'%', backgroundColor: genBack(), backgroundImage: 'url('+book.cover+')', backgroundSize: 'contain'}" class="book-cover-wrapper">
+    <div :style="{width: '100%', paddingTop: coverRatio+'%', backgroundColor: bgColor, backgroundImage: 'url('+bgImage+')', backgroundSize: 'contain'}" class="book-cover-wrapper">
       <div class="cover-shadow"></div>
       <div class="cover-data">
         <div class="title">{{book.title}}</div>

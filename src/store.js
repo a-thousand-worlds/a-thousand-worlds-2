@@ -14,10 +14,12 @@ const store = createStore({
     },
     filters: [],
     loading: false,
+    images: {},
     user: null,
     tags: {},
     sortedTags: [],
     people: [],
+    pages: {},
     books: {},
     bundlesIndex: {},
     bundlesList: [],
@@ -29,6 +31,9 @@ const store = createStore({
   mutations: {
     setBusy(ctx, busy) {
       ctx.uiBusy = busy
+    },
+    setImage(ctx, img) {
+      ctx.images[img.url] = img.data
     },
     resetFilters(ctx) {
       ctx.filters = []
@@ -85,6 +90,9 @@ const store = createStore({
     },
     indexSubmission(ctx, sub) {
       ctx.submissionsIndex[sub.id] = sub
+    },
+    setPages(ctx, pages) {
+      ctx.pages = pages
     }
   },
   actions: {
@@ -240,6 +248,16 @@ const store = createStore({
       })
       await ctx.dispatch('loadBooks')
     },
+
+    async loadImage(ctx, url) {
+      if (ctx.state.images[url]) {
+        return
+      }
+      const jimp = await Jimp.read(url)
+      const data = await jimp.getBase64Async(Jimp.MIME_PNG)
+      ctx.commit('setImage', { url, data })
+    },
+
     loadBooks(ctx) {
       return new Promise((resolve, reject) => {
         ctx.commit('setBusy', true)
@@ -344,14 +362,6 @@ const store = createStore({
     },
     async delBundle(ctx, id) {
       console.log('del bundle', id)
-    },
-    async loadStage0(ctx) {
-      // const ref = await firebase.database().ref(`people`)
-      // await ref.remove()
-      await ctx.dispatch('loadTags')
-      await ctx.dispatch('loadPeople')
-      await ctx.dispatch('loadBooks')
-      ctx.commit('setStage0Load')
     },
 
     // profile
@@ -465,6 +475,17 @@ const store = createStore({
       })
     },
 
+    // pages
+    loadPages(ctx) {
+      return new Promise((resolve, reject) => {
+        const ref = firebase.database().ref('pages')
+        ref.once('value', snap => {
+          console.log('pages', snap.val())
+          ctx.commit('setPages', snap.val())
+        })
+      })
+    },
+
     // auth
     async userLogin(ctx, credentials) {
       return firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password)
@@ -493,7 +514,20 @@ const store = createStore({
         console.log('userregister error', err)
       }
       return ret
+    },
+
+    // start
+    async loadStage0(ctx) {
+      // const ref = await firebase.database().ref(`people`)
+      // await ref.remove()
+      await ctx.dispatch('loadTags')
+      await ctx.dispatch('loadPeople')
+      await ctx.dispatch('loadBooks')
+      await ctx.dispatch('loadPages')
+      // await ctx.dispatch('loadCovers')
+      ctx.commit('setStage0Load')
     }
+
   }
 })
 

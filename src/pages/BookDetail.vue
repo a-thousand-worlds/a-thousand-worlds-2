@@ -1,4 +1,5 @@
 <script>
+import LazyImage from '@/components/LazyImage'
 import AuthorWidget from '@/components/AuthorWidget'
 import BookmarkButton from '@/components/BookmarkButton'
 import BooksFilter from '@/components/BooksFilter'
@@ -10,6 +11,7 @@ export default {
     'author-widget': AuthorWidget,
     'bookmark-button': BookmarkButton,
     'books-filter': BooksFilter,
+    'lazy-image': LazyImage,
   },
   data() {
     return {
@@ -87,7 +89,7 @@ export default {
           <router-link :to="{ name: 'Home' }" class="directory-nav-link is-uppercase">&lt; Back to Books</router-link>
         </div>
         <div class="book-cover-wrapper">
-          <img class="cover" :src="book.cover"/>
+          <lazy-image class="cover" :src="book.cover"/>
         </div>
       </div>
 
