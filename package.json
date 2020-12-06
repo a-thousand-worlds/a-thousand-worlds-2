@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint src functions",
+    "lint": "vue-cli-service lint src functions vue.config.js",
     "deploy": "npm run build && firebase deploy --only hosting"
   },
   "dependencies": {
@@ -41,7 +41,8 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.1.0",
-    "eslint-plugin-vue": "^7.1.0"
+    "eslint-plugin-vue": "^7.1.0",
+    "vue-svg-loader": "^0.17.0-beta.2"
   },
   "eslintConfig": {
     "extends": [
