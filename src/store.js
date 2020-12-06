@@ -519,12 +519,13 @@ firebase.auth().onAuthStateChanged(function(user) {
     u.roles = {}
     const userRef = firebase.database().ref(`users/${u.uid}`)
     userRef.on('value', snap => {
-      u.profile = snap.val()?.profile || {}
+      u.profile = { ...u.profile, ...snap.val()?.profile }
       u.roles = snap.val()?.roles || {}
       if (!u.roles.authorized) {
         u.roles.authorized = true
       }
       store.commit('setUser', u)
+      store.dispatch('saveProfile', u.profile)
     })
   }
   else {
