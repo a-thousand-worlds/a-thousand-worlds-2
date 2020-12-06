@@ -1,5 +1,10 @@
 <script>
+import BookmarkIcon from '../assets/icons/bookmark.svg'
+
 export default {
+  components: {
+    BookmarkIcon,
+  },
   methods: {
     toggleViewMode(mode) {
       this.$store.commit('setViewMode', mode)
@@ -26,7 +31,7 @@ export default {
 <aside class="is-flex is-flex-direction-column is-justify-content-space-between">
     <ul class="menu-list">
       <li><router-link :to="{name: 'Home'}">
-        <i class="far fa-bookmark fa-2x"></i>
+        <BookmarkIcon/>
       </router-link></li>
     </ul>
     <ul v-if="showTogglers" class="menu-list">
@@ -54,7 +59,11 @@ aside {
   height: 100%;
 }
 
-a {
+.menu-list a {
+
+  padding: 0;
+  text-align: center;
+
   &.disabled {
     pointer-events: none;
     cursor: default;

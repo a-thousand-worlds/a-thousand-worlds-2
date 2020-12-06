@@ -100,7 +100,7 @@ export default {
 
         <div class="title-container divider-bottom is-flex is-justify-content-space-between">
           <h1 class="title">{{book.title}}</h1>
-          <div style="padding-top: 0px;"><bookmark-button /></div>
+          <div style="padding-top: 0px;"><bookmark-button :book="book.id" /></div>
         </div>
 
         <div class="authors divider-bottom">
