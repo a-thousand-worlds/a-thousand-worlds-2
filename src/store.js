@@ -1,8 +1,9 @@
 import { createStore } from 'vuex'
-import firebase from './firebase'
+import _ from 'lodash'
 import dayjs from 'dayjs'
 import { v4 } from 'uuid'
 import Jimp from 'jimp'
+import firebase from './firebase'
 
 const store = createStore({
   state: {
@@ -71,7 +72,7 @@ const store = createStore({
     },
     setBooks(ctx, books) {
       ctx.booksIndex = books || {}
-      ctx.booksList = Object.values(books || [])
+      ctx.booksList = _.shuffle(books || [])
     },
     setPeople(ctx, people) {
       ctx.people = people
