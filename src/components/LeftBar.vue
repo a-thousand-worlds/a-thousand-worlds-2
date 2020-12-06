@@ -19,9 +19,9 @@
       <li><router-link :to="{name: 'PeopleManager'}">People Manager</router-link></li>
     </ul>
     <ul class="menu-list mt-5">
-      <li v-if="!$iam('authorized')"><router-link :to="{name: 'LogIn'}">LogIn</router-link></li>
+      <li v-if="!$iam('authorized')"><router-link :to="{name: 'LogIn'}">Log In</router-link></li>
       <li v-if="$iam('authorized')"><router-link :to="{name: 'Profile'}">Profile</router-link></li>
-      <li v-if="$iam('authorized')"><router-link :to="{name: 'LogOut'}">LogOut</router-link></li>
+      <li v-if="$iam('authorized')"><router-link :to="{name: 'LogOut'}">Log Out</router-link></li>
     </ul>
   </aside>
 </template>

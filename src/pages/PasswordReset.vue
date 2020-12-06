@@ -33,27 +33,38 @@ export default {
 
 <template>
 
-<h1 class="title page-title">Password Reset</h1>
-<div class="columns">
-  <form class="column is-half is-offset-one-quarter" @submit.prevent="pReset()">
+<div class="is-flex is-justify-content-center">
+  <form class="is-flex-grow-1" style="max-width: 480px;" @submit.prevent="pReset">
+
+    <h1 class="title page-title divider-bottom">Password Reset</h1>
+
     <div class="field">
       <label class="label">EMAIL</label>
       <div class="control">
         <input type="email" class="input" v-model="email">
       </div>
     </div>
+
     <div class="field">
       <input type="submit" class="button is-primary w-100" value="RESET"/>
     </div>
-    <div>
-      <p> Have account? <router-link :to="{name:'LogIn'}">Log In</router-link></p>
-      <p> Don't have? <router-link :to="{name:'Register'}">Register here</router-link></p>
+
+    <div class="has-text-centered">
+      <p><router-link :to="{name:'LogIn'}">LOG IN</router-link></p>
+      <p><router-link :to="{name:'Register'}">SIGN UP</router-link></p>
     </div>
+
   </form>
 </div>
 
 </template>
 
 <style>
+
+.divider-bottom {
+  padding-bottom: 15px;
+  margin-bottom: 38px;
+  border-bottom: solid 1px #ddd;
+}
 
 </style>
