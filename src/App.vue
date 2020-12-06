@@ -1,12 +1,15 @@
 <script>
 
+import Hamburger from './assets/icons/hamburger.svg'
 import LeftBar from './components/LeftBar.vue'
 import RightBar from './components/RightBar.vue'
 
 export default ({
   name: 'App',
   components: {
-    LeftBar, RightBar
+    Hamburger,
+    LeftBar,
+    RightBar,
   },
   watch: {
     '$store.state.user'(next, prev) {
@@ -32,14 +35,22 @@ export default ({
 
 <template>
   <div>
+
     <section v-if="showHero" class="hero">
       <div class="hero-body">
         <div class="container">
-          <h1 class="title">A THOUSAND WORLDS</h1>
-          <h2 class="subtitle">COLORFUL READS X COLORFUL PEOPLE<br/>Picture books curated by BIPOC leaders in the industry</h2>
+          <h1 class="title is-uppercase">A Thousand Worlds</h1>
+          <h2 class="subtitle"><span class="is-uppercase">Colorful Reads X Colorful People</span><br/>
+          Picture books curated by BIPOC leaders in the industry</h2>
         </div>
       </div>
     </section>
+
+    <section class="mobile-top-menu is-hidden-tablet is-flex is-justify-content-space-between">
+      <h1 class="title is-uppercase">A Thousand Worlds</h1>
+      <Hamburger class="mt-1" />
+    </section>
+
     <div class="columns" style="margin-top: 0;">
       <section class="leftbar column is-narrow is-hidden-mobile">
         <left-bar/>
@@ -51,6 +62,7 @@ export default ({
         <right-bar/>
       </section>
     </div>
+
   </div>
 </template>
 
@@ -98,6 +110,20 @@ body {
   padding-top: 30px;
   width: $rightbar-width;
   z-index: 1;
+}
+
+.mobile-top-menu {
+  padding: 10px 20px;
+  position: sticky;
+  top: 0;
+  border-bottom: solid 1px $atw-base;
+  background-color: white;
+  z-index: 1;
+
+  .title {
+    font-size: 20px;
+    margin: 0;
+  }
 }
 
 .main {
