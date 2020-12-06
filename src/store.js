@@ -77,11 +77,9 @@ const store = createStore({
     setPeople(ctx, people) {
       ctx.people = people
     },
-    setBundlesIndex(ctx, index) {
-      ctx.bundlesIndex = index
-    },
-    setBundlesList(ctx, list) {
-      ctx.bundlesList = list
+    setBundles(ctx, bundles) {
+      ctx.bundlesIndex = bundles || {}
+      ctx.bundlesList = Object.values(bundles || [])
     },
     setViewMode(ctx, mode) {
       ctx.viewMode = mode
@@ -333,10 +331,8 @@ const store = createStore({
             console.error('No bundles in database')
             resolve()
           }
-          const list = Object.keys(v || []).map(x => v[x])
-          console.log('bundles', list)
-          store.commit('setBundlesIndex', v)
-          store.commit('setBundlesList', list)
+          console.log('bundles', v)
+          store.commit('setBundles', v)
           ctx.commit('setBusy', false)
           resolve()
         })
