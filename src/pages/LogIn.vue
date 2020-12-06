@@ -49,6 +49,20 @@ export default {
 
   methods: {
 
+    /** Shows or clears an error for the given service response. */
+    handleResponse(response) {
+      this.loading = true
+      return response
+        .then(() => {
+          this.loading = false
+          this.error = null
+        })
+        .catch(err => {
+          this.error = { message: err.message }
+          this.loading = false
+        })
+    },
+
     /** Returns 'error' if a field is in error. */
     hasError(field) {
       return this.error?.fields?.[field]
@@ -64,41 +78,21 @@ export default {
     },
 
     async login() {
-      this.loading = true
-      await this.$store.dispatch('userLogin', {
+      return this.handleResponse(this.$store.dispatch('userLogin', {
         email: this.email,
         password: this.password
-      })
-        .then(() => {
-          this.loading = false
-          this.error = null
-        })
-        .catch(err => {
-          console.error('userLogin error', err)
-          this.error = { message: err.message }
-          this.loading = false
-        })
+      }))
     },
 
     async signup() {
 
       if (!this.validate()) return
 
-      this.loading = true
-      await this.$store.dispatch('userRegister', {
+      return this.handleResponse(this.$store.dispatch('userRegister', {
         email: this.email,
         password: this.password,
         ...this.signupData,
-      })
-        .then(() => {
-          this.loading = false
-          this.error = null
-        })
-        .catch(err => {
-          console.error('userRegister error', err)
-          this.error = { message: err.message }
-          this.loading = false
-        })
+      }))
     },
 
     setActive(active) {
