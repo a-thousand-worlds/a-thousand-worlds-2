@@ -58,7 +58,13 @@ export default {
           this.error = null
         })
         .catch(err => {
-          this.error = { message: err.message }
+          console.error('err', err)
+          this.error = {
+            // reword wrong-password error from "The password is invalid or the user does not have a password."
+            message: err.code === 'auth/wrong-password'
+              ? 'Wrong email or password'
+              : err.message
+          }
           this.loading = false
         })
     },
