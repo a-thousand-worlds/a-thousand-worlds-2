@@ -40,9 +40,9 @@ const routes = [
     name: 'PasswordReset',
     component: () => import(/* webpackChunkName: "guest" */ './pages/PasswordReset.vue')
   }, {
-    path: '/register',
-    name: 'Register',
-    component: () => import(/* webpackChunkName: "guest" */ './pages/Register.vue')
+    path: '/signup',
+    name: 'Signup',
+    component: () => import(/* webpackChunkName: "guest" */ './pages/LogIn.vue')
   }, { // User authorized paged
     path: '/profile',
     name: 'Profile',

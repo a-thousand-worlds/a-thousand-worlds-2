@@ -34,7 +34,7 @@ export default {
 <template>
 
 <div class="is-flex is-justify-content-center">
-  <form class="is-flex-grow-1" style="max-width: 480px;" @submit.prevent="pReset">
+  <form class="is-flex-grow-1" style="max-width: 480px;" @submit.prevent="pReset()">
 
     <h1 class="title page-title divider-bottom">Password Reset</h1>
 
@@ -51,7 +51,7 @@ export default {
 
     <div class="has-text-centered">
       <p><router-link :to="{name:'LogIn'}">LOG IN</router-link></p>
-      <p><router-link :to="{name:'Register'}">SIGN UP</router-link></p>
+      <p><router-link :to="{name:'Signup'}">SIGN UP</router-link></p>
     </div>
 
   </form>

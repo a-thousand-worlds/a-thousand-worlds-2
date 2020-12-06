@@ -4,7 +4,9 @@ export default {
   name: 'LogInPage',
   data() {
     return {
-      active: 'login',
+      active: window.location.pathname === '/login' ? 'login'
+      : window.location.pathname === '/signup' ? 'signup'
+      : null,
       engagementCategories: [
         { id: 0, text: 'CATEGORY' },
         { id: 1, text: 'CATEGORY' },
@@ -35,6 +37,14 @@ export default {
     },
   },
   methods: {
+    async submit() {
+      if (this.isSignup) {
+        await this.signup()
+      }
+      else if (this.isLogin) {
+        await this.login()
+      }
+    },
     async login() {
       this.loading = true
       await this.$store.dispatch('userLogin', {
@@ -73,6 +83,13 @@ export default {
     },
     setActive(active) {
       this.active = active
+
+      // eslint-disable-next-line fp/no-mutating-methods
+      this.$router.push({
+        name: active === 'signup' ? 'Signup'
+        : active === 'login' ? 'LogIn'
+        : null
+      })
     },
     validate() {
       if (!this.email.length) {
@@ -100,15 +117,14 @@ export default {
 
   <div class="mx-6">
 
-    <!-- Cannot use are-small and is-rounded until #3208 is merged. See https://github.com/jgthms/bulma/pull/3208. -->
-    <div class="buttons is-centered has-addons">
-      <button :class="['button', 'is-small', 'is-rounded', ...[isSignup ? ['is-selected', 'is-dark'] : null]]" @click="setActive('signup')">Sign Up</button>
-      <button :class="['button', 'is-small', 'is-rounded', ...[isLogin ? ['is-selected', 'is-dark'] : null]]" @click="setActive('login')">Log In</button>
-    </div>
-
     <div class="is-flex is-justify-content-center">
-      <!-- is-half-desktop is-three-quarters-touch is-offset-one-quarter-desktop -->
-      <form class="is-flex-grow-1" style="max-width: 480px;" @submit.prevent="login">
+      <form class="is-flex-grow-1" style="max-width: 480px;" @submit.prevent="submit">
+
+        <!-- Cannot use are-small and is-rounded until #3208 is merged. See https://github.com/jgthms/bulma/pull/3208. -->
+        <div class="buttons is-centered has-addons">
+          <button :class="['button', 'is-small', 'is-rounded', ...[isSignup ? ['is-selected', 'is-dark'] : null]]" style="width: 50%; max-width: 240px;" @click.prevent="setActive('signup')">Sign Up</button>
+          <button :class="['button', 'is-small', 'is-rounded', ...[isLogin ? ['is-selected', 'is-dark'] : null]]" style="width: 50%; max-width: 240px;" @click.prevent="setActive('login')">Log In</button>
+        </div>
 
         <h1 class="title page-title divider-bottom">{{ isSignup ? 'Sign up for an account' : isLogin ? 'Log In' : null }}</h1>
 
