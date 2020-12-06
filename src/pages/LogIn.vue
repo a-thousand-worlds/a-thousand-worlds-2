@@ -42,6 +42,9 @@ export default {
     isSignup() {
       return this.active === 'signup'
     },
+    hasFieldErrors() {
+      return Object.keys(this.error?.fields || {}).length > 0
+    }
   },
 
   methods: {
@@ -71,7 +74,7 @@ export default {
           this.error = null
         })
         .catch(err => {
-          console.error('login error', err)
+          console.error('userLogin error', err)
           this.error = { message: err.message }
           this.loading = false
         })
@@ -92,7 +95,7 @@ export default {
           this.error = null
         })
         .catch(err => {
-          console.error('register error', err)
+          console.error('userRegister error', err)
           this.error = { message: err.message }
           this.loading = false
         })
@@ -202,7 +205,7 @@ export default {
         </div>
 
         <div class="field my-4">
-          <input :disabled="loading || error" type="submit" class="button is-primary is-rounded is-fullwidth" :class="{'is-loading':loading}" :value="isLogin ? 'LOG IN' : isSignup ? 'CREATE ACCOUNT' : null"/>
+          <input :disabled="loading || hasFieldErrors" type="submit" class="button is-primary is-rounded is-fullwidth" :class="{'is-loading':loading}" :value="isLogin ? 'LOG IN' : isSignup ? 'CREATE ACCOUNT' : null"/>
         </div>
 
         <div v-if="error" class="field">

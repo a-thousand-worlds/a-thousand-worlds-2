@@ -465,9 +465,6 @@ const store = createStore({
     },
 
     // auth
-    async userLogin(ctx, credentials) {
-      return firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password)
-    },
     passwordReset(ctx, email) {
       return new Promise((resolve, reject) => {
         firebase.auth().sendPasswordResetEmail(email)
@@ -481,18 +478,12 @@ const store = createStore({
           })
       })
     },
-    async userRegister(ctx, credentials) {
-      let ret = null
-      // console.log('reg with', credentials)
-      try {
-        ret = await firebase.auth().createUserWithEmailAndPassword(credentials.email, credentials.password)
-      }
-      catch (err) {
-        ret = null
-        console.log('userregister error', err)
-      }
-      return ret
-    }
+    userLogin(ctx, credentials) {
+      return firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password)
+    },
+    userRegister(ctx, credentials) {
+      return firebase.auth().createUserWithEmailAndPassword(credentials.email, credentials.password)
+    },
   }
 })
 
