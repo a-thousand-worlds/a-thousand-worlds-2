@@ -1,9 +1,13 @@
 <script>
 import BookmarkIcon from '../assets/icons/bookmark.svg'
+import CoverViewIcon from '../assets/icons/cover-view.svg'
+import ListViewIcon from '../assets/icons/list-view.svg'
 
 export default {
   components: {
     BookmarkIcon,
+    CoverViewIcon,
+    ListViewIcon,
   },
   methods: {
     toggleViewMode(mode) {
@@ -37,14 +41,14 @@ export default {
     <ul v-if="showTogglers" class="menu-list">
       <li>
         <a :class="{disabled:$store.state.viewMode==='covers'}" @click.prevent="toggleViewMode('covers')" href="#">
-          <i class="fas fa-th-large fa-2x"></i>
-          <span class="covers">Covers</span>
+          <CoverViewIcon/>
+          <span class="icon-label">Cover</span>
         </a>
       </li>
-      <li>
+      <li class='my-30'>
         <a :class="{disabled:$store.state.viewMode==='list'}" @click.prevent="toggleViewMode('list')" href="#">
-          <i class="fas fa-list fa-2x"></i>
-          <span class="list">List</span>
+          <ListViewIcon/>
+          <span class="icon-label">List</span>
         </a>
       </li>
     </ul>
@@ -64,20 +68,21 @@ aside {
   padding: 0;
   text-align: center;
 
+  .icon-label {
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
   &.disabled {
     pointer-events: none;
     cursor: default;
-    color: #ccc;
-  }
-  span {
-    text-transform: uppercase;
-    font-size: 80%;
-    &.covers {
-      margin-left: -6px;
-    }
-    &.list {
-      margin-left: 4px;
+    color: black;
+
+    &.icon-label {
+      color: #ccc;
     }
   }
+
 }
 </style>
