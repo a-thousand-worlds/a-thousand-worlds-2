@@ -4,9 +4,12 @@ export default {
   name: 'LogInPage',
   data() {
     return {
+      // the active tab (login or signup)
       active: window.location.pathname === '/login' ? 'login'
       : window.location.pathname === '/signup' ? 'signup'
       : null,
+      email: '',
+      // all options for enagement checkboxes
       engagementCategories: [
         { id: 0, text: 'CATEGORY' },
         { id: 1, text: 'CATEGORY' },
@@ -17,15 +20,17 @@ export default {
         { id: 6, text: 'CATEGORY' },
         { id: 7, text: 'CATEGORY' },
       ],
-      email: '',
+      error: '',
+      loading: false,
       password: '',
       signupData: {
         organization: '',
         otherEngagementCategory: '',
         selectedEngagementCategories: {},
       },
-      loading: false,
-      error: '',
+      // only show errors after a submit has been attempted
+      submitAttempt: false,
+
     }
   },
   computed: {
