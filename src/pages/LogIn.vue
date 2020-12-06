@@ -1,4 +1,5 @@
 <script>
+import _ from 'lodash'
 
 export default {
   name: 'LogInPage',
@@ -20,7 +21,7 @@ export default {
         { id: 6, text: 'CATEGORY' },
         { id: 7, text: 'CATEGORY' },
       ],
-      error: '',
+      error: null,
       loading: false,
       password: '',
       signupData: {
@@ -33,6 +34,7 @@ export default {
 
     }
   },
+
   computed: {
     isLogin() {
       return this.active === 'login'
@@ -41,7 +43,14 @@ export default {
       return this.active === 'signup'
     },
   },
+
   methods: {
+
+    /** Returns 'error' if a field is in error. */
+    hasError(field) {
+      return this.error?.fields?.[field]
+    },
+
     async submit() {
       if (this.isSignup) {
         await this.signup()
@@ -50,6 +59,7 @@ export default {
         await this.login()
       }
     },
+
     async login() {
       this.loading = true
       await this.$store.dispatch('userLogin', {
@@ -58,14 +68,15 @@ export default {
       })
         .then(() => {
           this.loading = false
-          this.error = ''
+          this.error = null
         })
         .catch(err => {
           console.error('login error', err)
-          this.error = err.message
+          this.error = { message: err.message }
           this.loading = false
         })
     },
+
     async signup() {
 
       if (!this.validate()) return
@@ -78,14 +89,15 @@ export default {
       })
         .then(() => {
           this.loading = false
-          this.error = ''
+          this.error = null
         })
         .catch(err => {
           console.error('register error', err)
-          this.error = err.message
+          this.error = { message: err.message }
           this.loading = false
         })
     },
+
     setActive(active) {
       this.active = active
 
@@ -96,15 +108,34 @@ export default {
         : null
       })
     },
+
+    /** Checks all fields for errors and updates this.error. */
     validate() {
+
+      this.error = null
+
       if (!this.email.length) {
-        this.error = 'Email required'
+        this.error = {
+          message: 'Please check required fields',
+          fields: { ...this.error?.fields, email: true },
+        }
       }
-      else if (!this.password.length) {
-        this.error = 'Password required'
+
+      if (!this.password.length) {
+        this.error = {
+          message: 'Please check required fields',
+          fields: { ...this.error?.fields, password: true },
+        }
       }
+
       return !this.error
     },
+
+    /** Debounced validation, only if error */
+    revalidate: _.debounce(function() {
+      return !this.error || this.validate()
+    }, 50),
+
   },
   watch: {
     '$store.state.user'(next, prev) {
@@ -134,16 +165,16 @@ export default {
         <h1 class="title page-title divider-bottom">{{ isSignup ? 'Sign up for an account' : isLogin ? 'Log In' : null }}</h1>
 
         <div class="field">
-          <label class="label">EMAIL</label>
+          <label :class="['label', { error: hasError('email') }]">EMAIL</label>
           <div class="control">
-            <input :disabled="loading" type="email" class="input" v-model="email">
+            <input :disabled="loading" type="email" class="input" v-model="email" @input="revalidate">
           </div>
         </div>
 
         <div class="field">
-          <label class="label">PASSWORD</label>
+          <label :class="['label', { error: hasError('password') }]">PASSWORD</label>
           <div class="control">
-            <input :disabled="loading" type="password" class="input" v-model="password">
+            <input :disabled="loading" type="password" class="input" v-model="password" @input="revalidate">
           </div>
         </div>
 
@@ -170,12 +201,12 @@ export default {
           <input :disabled="loading" class="input" type="text" v-model="signupData.organization">
         </div>
 
-        <div v-if="error !== ''" class="field">
-          <small>{{error}}</small>
+        <div class="field my-4">
+          <input :disabled="loading || error" type="submit" class="button is-primary is-rounded is-fullwidth" :class="{'is-loading':loading}" :value="isLogin ? 'LOG IN' : isSignup ? 'CREATE ACCOUNT' : null"/>
         </div>
 
-        <div class="field my-4">
-          <input :disabled="loading" type="submit" class="button is-primary is-rounded is-fullwidth" :class="{'is-loading':loading}" :value="isLogin ? 'LOG IN' : isSignup ? 'CREATE ACCOUNT' : null"/>
+        <div v-if="error" class="field">
+          <p class="error has-text-centered is-uppercase">{{error.message}}</p>
         </div>
 
         <p class="has-text-centered" v-if="isLogin">
