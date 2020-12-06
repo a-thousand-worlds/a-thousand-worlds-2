@@ -36,7 +36,7 @@ export default {
     window.scrollTo(0, 0)
   },
   watch: {
-    '$store.state.books'(next) {
+    '$store.state.booksList'(next) {
       if (this.$router.currentRoute._value.name === 'BookManagerUpdateForm') {
         this.loadBookID(this.$router.currentRoute._value.params.bid)
       }
@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     loadBookID(bid) {
-      const b = this.$store.state.books[bid] || null
+      const b = this.$store.state.booksList[bid] || null
       // console.log('upd', p, this.$store.state.people)
       if (b) {
         this.book = b

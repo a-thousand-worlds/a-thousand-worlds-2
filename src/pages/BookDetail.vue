@@ -14,20 +14,19 @@ export default {
   data() {
     return {
       book: null,
-      pageUrl: ''
+      pageUrl: window.location.href,
     }
   },
   created() {
-    this.pageUrl = window.location.href
     const id = this.$router.currentRoute._value.params.id
-    this.book = this.$store.state.books[id]
+    this.book = this.$store.state.booksIndex[id]
   },
   watch: {
     '$route'(next) {
       const id = this.$router.currentRoute._value.params.id
-      this.book = this.$store.state.books[id]
+      this.book = this.$store.state.booksIndex[id]
     },
-    '$store.state.books'(next, prev) {
+    '$store.state.booksList'(next, prev) {
       const id = this.$router.currentRoute._value.params.id
       if (next && Object.keys(next).length && !next[id]) {
         // book not found! drop to 404
@@ -38,13 +37,12 @@ export default {
         }, 0)
       }
       console.log(next, '======', prev)
-      this.book = this.$store.state.books[id]
+      this.book = this.$store.state.booksIndex[id]
     }
   },
   computed: {
-    books() {
-      return Object.keys(this.$store.state.books)
-        .map(x => this.$store.state.books[x])
+    booksFiltered() {
+      return this.$store.state.booksList
         .filter(x => typeof x.id === 'string' && x.id.length > 8) // converted to firebase
         .filter(x => {
           if (!this.$store.state.filters.length) {
@@ -56,12 +54,12 @@ export default {
         })
     },
     nextBook() {
-      const list = this.books.map(x => x.id)
+      const list = this.booksFiltered.map(x => x.id)
       const pos = list.indexOf(this.book.id)
       return list[pos + 1]
     },
     prevBook() {
-      const list = this.books.map(x => x.id)
+      const list = this.booksFiltered.map(x => x.id)
       const pos = list.indexOf(this.book.id)
       return list[pos - 1]
     }

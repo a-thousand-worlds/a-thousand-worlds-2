@@ -18,7 +18,8 @@ const store = createStore({
     tags: {},
     sortedTags: [],
     people: [],
-    books: {},
+    booksIndex: {},
+    booksList: [],
     bundlesIndex: {},
     bundlesList: [],
 
@@ -68,11 +69,12 @@ const store = createStore({
     setSortedTags(ctx, list) {
       ctx.sortedTags = list
     },
-    setBooks(ctx, list) {
-      ctx.books = list
+    setBooks(ctx, books) {
+      ctx.booksIndex = books || {}
+      ctx.booksList = Object.values(books || [])
     },
-    setPeople(ctx, list) {
-      ctx.people = list
+    setPeople(ctx, people) {
+      ctx.people = people
     },
     setBundlesIndex(ctx, index) {
       ctx.bundlesIndex = index
@@ -245,7 +247,7 @@ const store = createStore({
         ctx.commit('setBusy', true)
         firebase.database().ref('books').once('value', snap => {
           console.log('books', snap.val())
-          ctx.commit('setBooks', snap.val() || [])
+          ctx.commit('setBooks', snap.val() || {})
           ctx.commit('setBusy', false)
           resolve()
         })

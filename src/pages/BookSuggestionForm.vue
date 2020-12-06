@@ -35,8 +35,8 @@ export default {
         return
       }
       console.log('isbn global search res', res)
-      const localBook = Object.keys(this.$store.state.books)
-        .map(x => this.$store.state.books[x])
+      const localBook = Object.keys(this.$store.state.booksList)
+        .map(x => this.$store.state.booksList[x])
         .reduce((acc, book) => book.isbn === res.isbn ? book : acc, null)
       console.log('local book?', localBook)
       if (localBook) {

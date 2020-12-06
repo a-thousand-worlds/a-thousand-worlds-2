@@ -4,9 +4,8 @@ import BookList from '@/components/BookList'
 
 export default {
   computed: {
-    books() {
-      return Object.keys(this.$store.state.books)
-        .map(x => this.$store.state.books[x])
+    booksFiltered() {
+      return this.$store.state.booksList
         .filter(x => typeof x.id === 'string' && x.id.length > 8) // converted to firebase
         .filter(x => {
           if (!this.$store.state.filters.length) {
@@ -28,7 +27,7 @@ export default {
 <template>
   <div class="mx-1">
     <div :class="{masonry:$store.state.viewMode==='covers'}">
-      <div class="masonry-item" v-for="book of books" :key="book.id">
+      <div class="masonry-item" v-for="book of booksFiltered" :key="book.id">
         <book-cover v-if="$store.state.viewMode === 'covers'" :book="book"></book-cover>
         <book-list v-if="$store.state.viewMode === 'list'" :book="book"></book-list>
       </div>
