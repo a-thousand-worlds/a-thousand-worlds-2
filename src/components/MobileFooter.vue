@@ -25,6 +25,11 @@ export default {
       this.isFront = next.name === 'Home'
     }
   },
+  computed: {
+    bookmarksCount() {
+      return Object.keys(this.$store.state.user.profile.bookmarks || {}).length
+    }
+  },
   methods: {
     toggleFilter(fid) {
       this.$store.commit('toggleFilter', fid)
@@ -87,9 +92,10 @@ export default {
       </li>
 
       <li>
-        <a :class="null" @click.prevent="toggleBookmarks()" href="#">
+        <a class="bookmark-toggler" @click.prevent="toggleBookmarks()" href="#">
           <BookmarkIcon/>
           <div class="icon-label mt-2">Saved Items</div>
+          <span v-if="$iam('authorized')" class="badge">{{bookmarksCount}}</span>
         </a>
       </li>
 
@@ -146,6 +152,24 @@ export default {
       display: inline-block;
       min-width: 100px;
     }
+  }
+}
+
+.bookmark-toggler {
+  position: relative;
+
+  .badge {
+    position: absolute;
+    top: -5px;
+    right: 26px;
+    background: #000;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    border-radius: 10px;
   }
 }
 

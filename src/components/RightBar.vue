@@ -24,6 +24,11 @@ export default {
       this.$store.commit('setBookmarksOpen', !state)
     }
   },
+  computed: {
+    bookmarksCount() {
+      return Object.keys(this.$store.state.user.profile.bookmarks || {}).length
+    }
+  },
   data() {
     return {
       showViewOptions: true
@@ -41,8 +46,9 @@ export default {
   <aside class="is-flex is-flex-direction-column is-justify-content-space-between has-text-centered" style="height: 100%;">
 
       <ul class="menu-list">
-        <li><a :href="null" @click.prevent="toggleBookmarks()">
+        <li><a :href="null" class="bookmark-toggler" @click.prevent="toggleBookmarks()">
           <BookmarkIcon/>
+          <span v-if="$iam('authorized')" class="badge">{{bookmarksCount}}</span>
         </a></li>
       </ul>
 
@@ -66,6 +72,24 @@ export default {
 
 <style scoped lang="scss">
 @import '@/assets/main.scss';
+
+.bookmark-toggler {
+  position: relative;
+
+  .badge {
+    position: absolute;
+    top: -9px;
+    right: 0px;
+    background: #000;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    border-radius: 10px;
+  }
+}
 
 .menu-list a {
 
