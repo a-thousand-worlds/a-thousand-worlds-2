@@ -29,7 +29,7 @@ export default {
 
 <template>
   <div style="cursor: pointer;" @click.prevent="toggleBookmark()">
-    <BookmarkMarkedIcon v-if="$store.state.user.profile.bookmarks[book.id]" />
+    <BookmarkMarkedIcon v-if="$store.state.user?.profile?.bookmarks?.[book.id]" />
     <BookmarkIcon v-else />
   </div>
 </template>
