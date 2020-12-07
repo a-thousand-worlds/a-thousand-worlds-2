@@ -51,6 +51,12 @@ $devices: (
   }
 }
 
+hr {
+  background-color: #ddd;
+  height: 1px;
+  width: 100%;
+}
+
 // override bulma title
 .title, .title:not(:last-child) {
   margin-bottom: 10px;

@@ -8,6 +8,7 @@ export default {
   data() {
     return {
       books: [],
+      otherTag: null,
       submissions: [],
     }
   },
@@ -141,128 +142,149 @@ export default {
 </script>
 
 <template>
-<h1 class="title page-title">Submit a Book</h1>
 
-<div v-for="(submission, si) of submissions" :key="si">
-  <section class="section">
+  <div class="mx-20">
+    <div class="is-flex is-justify-content-center">
+      <form class="is-flex-grow-1" style="max-width: 540px;" @submit.prevent="submit">
 
-    <div class="field">
-      <label class="label">Title</label>
-      <book-title-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].title" @book-selected="fillBook($event, si)"/>
-    </div>
+        <h1 class="title page-title divider-bottom">Submit a book</h1>
 
-    <div class="field">
-      <label class="label">Author</label>
-      <person-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].author" @person-selected="fillAuthor($event, si)" :role="'author'"/>
-    </div>
+        <div v-for="(submission, si) of submissions" :key="si">
+          <section class="basic-information">
 
-    <div class="field">
-      <label class="label">Illustrator</label>
-      <person-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].illustrator" @person-selected="fillIllustrator($event, si)" :role="'illustrator'"/>
-    </div>
+            <div class="field">
+              <label class="label">Book Title</label>
+              <book-title-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].title" @book-selected="fillBook($event, si)"/>
+            </div>
 
-    <div class="field">
-      <label class="label">ISBN</label>
-      <book-isbn-field
-        :disabled="$uiBusy || (books[si] && books[si].id)"
-        :searchable="true"
-        v-model="submissions[si].isbn"
-        @book-selected="fillBook($event, si)"
-        @isbn-search-state="isbnGlobalSearchState(si, $event)"
-        @isbn-search-result="isbnGlobalSearchResult(si, $event)"
-      />
-    </div>
+            <div class="field">
+              <label class="label">Author</label>
+              <person-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].author" @person-selected="fillAuthor($event, si)" :role="'author'"/>
+            </div>
 
-    <div v-if="!!books[si]" class="field">
-      <div class="columns">
-        <div class="column">
-          <img :src="books[si].cover">
+            <div class="field">
+              <label class="label">Illustrator</label>
+              <person-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].illustrator" @person-selected="fillIllustrator($event, si)" :role="'illustrator'"/>
+            </div>
+
+            <div class="field">
+              <label class="label">ISBN</label>
+              <book-isbn-field
+                :disabled="$uiBusy || (books[si] && books[si].id)"
+                :searchable="true"
+                v-model="submissions[si].isbn"
+                @book-selected="fillBook($event, si)"
+                @isbn-search-state="isbnGlobalSearchState(si, $event)"
+                @isbn-search-result="isbnGlobalSearchResult(si, $event)"
+              />
+            </div>
+
+            <div v-if="!!books[si]" class="field">
+              <div class="columns">
+                <div class="column">
+                  <img :src="books[si].cover">
+                </div>
+                <div v-if="books[si].id" class="column">
+                  GREAT MINDS THINK ALIKE.<br>THIS BOOK IS ALREADY IN OUR DIRECTORY.<br>
+                  <button class="button is-primary is-outlined" @click="clearSubmission(si)">
+                    Clear
+                  </button>
+                </div>
+                <div v-if="!books[si].id && submissions[si].isAuthor === null" class="column field">
+                  <label class="label">Is this your book?</label>
+                  <div class="control mb-3">
+                    <button @click.prevent="setIsAuthor(si, true)" class="button is-primary is-outlined">Yes</button>
+                  </div>
+                  <div class="control mb-3">
+                    <button @click.prevent="clearSubmission(si)" class="button is-secondary is-outlined">No (clear submission)</button>
+                  </div>
+                  <div class="control">
+                    <button @click.prevent="setIsAuthor(si, false)" class="button is-primary is-outlined">No (but submit info anyway)</button>
+                  </div>
+                </div>
+                <div v-if="!books[si].id && (submissions[si].isAuthor === true || submissions[si].isAuthor === false)" class="column field">
+                  Thank you!
+                </div>
+              </div>
+            </div>
+
+            <div v-if="!books[si] || (books[si] && !books[si].id)" class="field">
+              <label class="label">How would you categorize this book? Select all that apply</label>
+              <div class="text-14 tablet-columns-2">
+                <div v-for="tag of $store.state.sortedTags" :key="tag.id" class="control">
+                  <input :disabled="$uiBusy" :id="tag.id" :name="tag.id" type="checkbox" class="checkbox mr-3 mb-3" v-model="submissions[si].tags[tag.id]">
+                  <label class="label d-inline" :for="tag.id">
+                    {{tag.tag}}
+                  </label>
+                </div>
+                <div>
+                  <input :disabled="$uiBusy" type="checkbox" class="checkbox mr-3 mb-3" v-model="otherTag">
+                  <label class="label d-inline">Other</label>
+                  <input :disabled="$uiBusy" class="input" type="text" v-model="submissions[si].otherTags">
+                </div>
+              </div>
+            </div>
+
+          </section>
+
+          <section v-if="submissions.length>1">
+            <button @click="delSubmission(si)" class="button is-rounded">
+              <i class="fas fa-minus"></i>
+              <span class="ml-3">Delete</span>
+            </button>
+          </section>
+
+          <hr class="double" />
+
         </div>
-        <div v-if="books[si].id" class="column">
-          GREAT MINDS THINK ALIKE.<br>THIS BOOK IS ALREADY IN OUR DIRECTORY.<br>
-          <button class="button is-primary is-outlined" @click="clearSubmission(si)">
-            Clear
+
+        <div>
+          <button :disabled="$uiBusy" @click.prevent="addMoreSubmission()" class="button is-rounded">
+            <i class="fas fa-plus"></i>
+            <span class="ml-2">Add another book</span>
           </button>
         </div>
-        <div v-if="!books[si].id && submissions[si].isAuthor === null" class="column field">
-          <label class="label">Is this your book?</label>
-          <div class="control mb-3">
-            <button @click.prevent="setIsAuthor(si, true)" class="button is-primary is-outlined">Yes</button>
-          </div>
-          <div class="control mb-3">
-            <button @click.prevent="clearSubmission(si)" class="button is-secondary is-outlined">No (clear submission)</button>
-          </div>
-          <div class="control">
-            <button @click.prevent="setIsAuthor(si, false)" class="button is-primary is-outlined">No (but submit info anyway)</button>
-          </div>
-        </div>
-        <div v-if="!books[si].id && (submissions[si].isAuthor === true || submissions[si].isAuthor === false)" class="column field">
-          Thank you!
-        </div>
-      </div>
-    </div>
 
-    <div v-if="!books[si] || (books[si] && !books[si].id)" class="field">
-      <label class="label">How would you categorize this book? Select all that apply</label>
-      <div class="columns-2">
-        <div v-for="tag of $store.state.sortedTags" :key="tag.id" class="control columns-2">
-          <input :disabled="$uiBusy" :id="tag.id" :name="tag.id" type="checkbox" class="checkbox mr-3" v-model="submissions[si].tags[tag.id]">
-          <label class="label d-inline" :for="tag.id">
-            {{tag.tag}}
-          </label>
+        <hr />
+
+        <div class="field is-grouped">
+          <button :disabled="!draftable||$uiBusy" :class="{'is-loading':$uiBusy}" @click.prevent="saveDraft()" class="button is-rounded is-fullwidth mr-20">Save as draft</button>
+          <button :disabled="!submitable||$uiBusy" :class="{'is-loading':$uiBusy}" @click.prevent="submitForReview()" class="button is-rounded is-primary is-fullwidth">Submit for review</button>
         </div>
-        <div>
-          <label class="label d-inline">Other</label>
-          <input :disabled="$uiBusy" class="input" type="text" v-model="submissions[si].otherTags">
-        </div>
-      </div>
-    </div>
 
-  </section>
-  <hr>
-  <section v-if="submissions.length>1">
-    <button @click="delSubmission(si)" class="button is-info is-outlined">
-      <i class="fas fa-minus"></i>
-      <span class="ml-3">Delete</span>
-    </button>
-  </section>
-</div>
-
-<section class="section">
-  <div>
-    <button :disabled="$uiBusy" @click.prevent="addMoreSubmission()" class="button is-primary">
-      <i class="fas fa-plus"></i>
-      <span class="ml-2">Add another book</span>
-    </button>
-  </div>
-</section>
-
-<section class="section">
-  <div class="field is-grouped">
-    <div class="control">
-      <button :disabled="!draftable||$uiBusy" :class="{'is-loading':$uiBusy}" @click.prevent="saveDraft()" class="button is-primary">
-        <span class="ml-2">Save as draft</span>
-      </button>
-    </div>
-    <div class="control">
-      <button :disabled="!submitable||$uiBusy" :class="{'is-loading':$uiBusy}" @click.prevent="submitForReview()" class="button is-primary">
-        <span class="ml-2">Submit for review</span>
-      </button>
+      </form>
     </div>
   </div>
-</section>
-
 </template>
 
 <style scoped lang="scss">
+@import '@/assets/main.scss';
+
+.title {
+  font-size: 50px;
+}
+
+.text-14 .label {
+  font-size: 14px;
+}
+
+.basic-information > .field {
+  margin-bottom: 30px;
+}
+
 .label {
-  text-decoration: uppercase;
+  text-transform: uppercase;
+  font-size: 18px;
 }
 .d-inline {
   display: inline !important;
 }
-.columns-2 {
-  column-count: 2;
+.tablet-columns-2 {
+  column-count: 1;
+
+  @include from($tablet) {
+    column-count: 2;
+  }
 }
 
 .w-100 {
