@@ -55,7 +55,7 @@ export default {
               <author-widget :name="person"></author-widget>
             </div>
           </div>
-          <div style="padding-top: 0px;"><bookmark-button /></div>
+          <div style="padding-top: 0px;"><bookmark-button :book="book" /></div>
         </div>
 
     </div>

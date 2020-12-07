@@ -14,7 +14,7 @@ export default {
       const search = e.target.value.toLowerCase()
       this.$emit('update:modelValue', search)
       this.book = null
-      this.searches = this.$store.state.people
+      this.searches = this.$store.state.peopleList
         .filter(person => search.length && person.name.toLowerCase().includes(search) && (this.role ? person.role === this.role : true))
     },
     hideSearch() {

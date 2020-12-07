@@ -35,8 +35,7 @@ export default {
         return
       }
       console.log('isbn global search res', res)
-      const localBook = Object.keys(this.$store.state.booksList)
-        .map(x => this.$store.state.booksList[x])
+      const localBook = this.$store.state.booksList
         .reduce((acc, book) => book.isbn === res.isbn ? book : acc, null)
       console.log('local book?', localBook)
       if (localBook) {
@@ -56,7 +55,7 @@ export default {
         this.books[si] = book
         this.submissions[si].title = book.title
         this.submissions[si].isbn = book.isbn
-        this.submissions[si].author = this.$store.state.people.reduce((acc, x) => {
+        this.submissions[si].author = this.$store.state.peopleList.reduce((acc, x) => {
           if (book.authors.includes(x.name) && x.role === 'author') {
             if (acc !== '') {
               acc += ', '
@@ -65,7 +64,7 @@ export default {
           }
           return acc
         }, '')
-        this.submissions[si].illustrator = this.$store.state.people.reduce((acc, x) => {
+        this.submissions[si].illustrator = this.$store.state.peopleList.reduce((acc, x) => {
           if (book.authors.includes(x.name) && x.role === 'illustrator') {
             if (acc !== '') {
               acc += ', '
@@ -272,6 +271,7 @@ export default {
 
 .search-wrap {
   position: relative;
+
   .search-results {
     position: absolute;
     width: 100%;
@@ -293,11 +293,8 @@ export default {
       &:hover {
         background: #eee;
       }
-
-      .media-left {
-        //min-width: 70px;
-      }
     }
+
   }
 }
 </style>

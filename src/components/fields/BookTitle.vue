@@ -16,8 +16,7 @@ export default {
       const search = e.target.value.toLowerCase()
       this.$emit('update:modelValue', search)
       this.book = null
-      this.searches = Object.keys(this.$store.state.booksList)
-        .map(x => this.$store.state.booksList[x])
+      this.searches = this.$store.state.booksList
         .filter(book => search.length && book.title.toLowerCase().includes(search))
     },
     hideSearch() {
