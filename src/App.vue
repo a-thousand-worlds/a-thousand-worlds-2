@@ -1,12 +1,14 @@
 <script>
 
-import LeftBar from './components/LeftBar.vue'
-import RightBar from './components/RightBar.vue'
+import LeftBar from '@/components/LeftBar'
+import RightBar from '@/components/RightBar'
+import MobileHeader from '@/components/MobileHeader'
+import MobileFooter from '@/components/MobileFooter'
 
 export default ({
   name: 'App',
   components: {
-    LeftBar, RightBar
+    LeftBar, RightBar, MobileHeader, MobileFooter
   },
   watch: {
     '$store.state.user'(next, prev) {
@@ -32,6 +34,7 @@ export default ({
 
 <template>
   <div>
+    <mobile-header class="is-hidden-tablet"/>
     <section v-if="showHero" class="hero">
       <div class="hero-body">
         <div class="container">
@@ -51,6 +54,7 @@ export default ({
         <right-bar/>
       </section>
     </div>
+    <mobile-footer class="is-hidden-tablet"/>
   </div>
 </template>
 
@@ -109,6 +113,8 @@ body {
   @include until($tablet) {
     margin-left: 0px;
     margin-right: 0px;
+    margin-top: 20px;
+    margin-bottom: 80px;
   }
 }
 

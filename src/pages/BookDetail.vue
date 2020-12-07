@@ -23,11 +23,13 @@ export default {
     this.pageUrl = window.location.href
     const id = this.$router.currentRoute._value.params.id
     this.book = this.$store.state.books[id]
+    window.scrollTo(0, 0)
   },
   watch: {
     '$route'(next) {
       const id = this.$router.currentRoute._value.params.id
       this.book = this.$store.state.books[id]
+      window.scrollTo(0, 0)
     },
     '$store.state.books'(next, prev) {
       const id = this.$router.currentRoute._value.params.id
@@ -104,7 +106,7 @@ export default {
 
         <div class="title-container divider-bottom is-flex is-justify-content-space-between">
           <h1 class="title">{{book.title}}</h1>
-          <div style="padding-top: 0px;"><bookmark-button /></div>
+          <div style="padding-top: 0px;"><bookmark-button :book="book" /></div>
         </div>
 
         <div class="authors divider-bottom">
@@ -178,6 +180,7 @@ export default {
 
   @include until($tablet) {
     width: 100%;
+    bottom: 75px;
   }
 
   .button, input {

@@ -10,7 +10,6 @@ export default {
   },
   created() {
     this.$store.dispatch('loadImage', this.book.cover)
-    console.log('setup', this.book.title)
   },
   computed: {
     coverRatio() {
@@ -47,11 +46,30 @@ export default {
         </div>
       </div>
     </div>
+    <div class="is-hidden-tablet">
+
+        <div class="divider-bottom is-flex is-justify-content-space-between">
+          <div>
+            <h1 class="title">{{book.title}}</h1>
+            <div v-for="person of book.authors" :key="person" class="mb-2">
+              <author-widget :name="person"></author-widget>
+            </div>
+          </div>
+          <div style="padding-top: 0px;"><bookmark-button /></div>
+        </div>
+
+    </div>
   </router-link>
 </template>
 
 <style lang="scss" scoped>
 @import '@/assets/vars.scss';
+
+.divider-bottom {
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: solid 1px #ddd;
+}
 
 .book-cover-wrapper {
   position: relative;

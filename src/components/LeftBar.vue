@@ -8,9 +8,11 @@
       <li id="books-filter-menu"></li>
       <li><router-link :to="{name: 'Bundles'}">Book Bundles</router-link></li>
       <li><router-link :to="{name: 'People'}">People</router-link></li>
-      <li><router-link :to="{name: 'Instagram'}">Instagram</router-link></li>
       <li><router-link :to="{name: 'Support'}">Support</router-link></li>
       <li><router-link :to="{name: 'About'}">About</router-link></li>
+      <li v-if="!$iam('authorized')"><router-link :to="{name: 'LogIn'}">LogIn</router-link></li>
+      <li v-if="$iam('authorized')"><router-link :to="{name: 'Profile'}">Profile</router-link></li>
+      <li v-if="$iam('authorized')"><router-link :to="{name: 'LogOut'}">LogOut</router-link></li>
     </ul>
     <ul v-if="$iam('superadmin')" class="menu-list mt-5">
       <li><router-link :to="{name: 'TagsManager'}">Tags Manager</router-link></li>
@@ -18,11 +20,15 @@
       <li><router-link :to="{name: 'BundlesManager'}">Bundle Manager</router-link></li>
       <li><router-link :to="{name: 'PeopleManager'}">People Manager</router-link></li>
     </ul>
-    <ul class="menu-list mt-5">
-      <li v-if="!$iam('authorized')"><router-link :to="{name: 'LogIn'}">LogIn</router-link></li>
-      <li v-if="$iam('authorized')"><router-link :to="{name: 'Profile'}">Profile</router-link></li>
-      <li v-if="$iam('authorized')"><router-link :to="{name: 'LogOut'}">LogOut</router-link></li>
-    </ul>
+
+    <div class="level mt-5">
+      <div class="level-item">
+        <i class="fab fa-instagram fa-2x"></i>
+      </div>
+      <div class="level-item">
+        <i class="fab fa-twitter fa-2x"></i>
+      </div>
+    </div>
   </aside>
 </template>
 

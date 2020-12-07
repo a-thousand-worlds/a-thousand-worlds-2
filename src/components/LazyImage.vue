@@ -4,14 +4,14 @@ export default {
   created() {
     this.$store.dispatch('loadImage', this.src)
   },
-  computed: {
-    imageSrc() {
-      return this.$store.state.images[this.src] || null
+  watch: {
+    src(next) {
+      this.$store.dispatch('loadImage', this.src)
     }
   }
 }
 </script>
 
 <template>
-<img v-if="imageSrc" :src="imageSrc">
+  <img v-if="$store.state.images[this.src]" :src="$store.state.images[this.src]">
 </template>

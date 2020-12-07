@@ -255,6 +255,7 @@ const store = createStore({
       }
       const jimp = await Jimp.read(url)
       const data = await jimp.getBase64Async(Jimp.MIME_PNG)
+      console.log('image: ', url)
       ctx.commit('setImage', { url, data })
     },
 
