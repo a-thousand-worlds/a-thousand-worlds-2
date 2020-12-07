@@ -14,6 +14,7 @@ const store = createStore({
       loaded: false
     },
     filters: [],
+    bookmarksOpen: false,
     loading: false,
     images: {},
     user: null,
@@ -35,6 +36,9 @@ const store = createStore({
   mutations: {
     setBusy(ctx, busy) {
       ctx.uiBusy = busy
+    },
+    setBookmarksOpen(ctx, state) {
+      ctx.bookmarksOpen = state
     },
     setImage(ctx, img) {
       ctx.images[img.url] = img.data
@@ -223,7 +227,7 @@ const store = createStore({
       else {
         console.log('converting and uploading photo')
         const img = await Jimp.read(info.book.cover)
-        console.log(img, 'img')
+        // console.log(img, 'img')
         photoWidth = img.bitmap.width
         photoHeight = img.bitmap.height
         const buff = await img.getBufferAsync(Jimp.MIME_PNG)
@@ -374,6 +378,29 @@ const store = createStore({
     },
 
     // profile
+    async toggleBookmark(ctx, mark) {
+      ctx.commit('setBusy', true)
+      const profile = ctx.state.user.profile
+      if (profile.bookmarks[mark.id]) {
+        profile.bookmarks = Object.keys(profile.bookmarks)
+          .filter(id => id !== mark.id)
+          .reduce((acc, id) => ({ [id]: profile.bookmarks[id], ...acc }), {})
+      }
+      else {
+        profile.bookmarks[mark.id] = mark.type
+      }
+      await ctx.dispatch('saveProfile', profile)
+      ctx.commit('setBusy', false)
+    },
+
+    async clearBookmarks(ctx, mark) {
+      ctx.commit('setBusy', true)
+      const profile = ctx.state.user.profile
+      profile.bookmarks = {}
+      await ctx.dispatch('saveProfile', profile)
+      ctx.commit('setBusy', false)
+    },
+
     async saveBookSubmissionsDraft(ctx, draft) {
       ctx.commit('setBusy', true)
       const profile = ctx.state.user.profile
@@ -547,6 +574,7 @@ firebase.auth().onAuthStateChanged(function(user) {
       firstName: '',
       lastName: '',
       bundles: [],
+      bookmarks: {},
       submissions: [],
       draftBooks: [],
       draftBundles: []

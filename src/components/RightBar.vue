@@ -12,6 +12,16 @@ export default {
   methods: {
     toggleViewMode(mode) {
       this.$store.commit('setViewMode', mode)
+    },
+    toggleBookmarks() {
+      if (!this.$iam('authorized')) {
+        // eslint-disable-next-line fp/no-mutating-methods
+        this.$router.push({ name: 'LogIn' })
+        return
+      }
+      const state = this.$store.state.bookmarksOpen
+      console.log('tbm', state)
+      this.$store.commit('setBookmarksOpen', !state)
     }
   },
   data() {
@@ -31,9 +41,9 @@ export default {
   <aside class="is-flex is-flex-direction-column is-justify-content-space-between has-text-centered" style="height: 100%;">
 
       <ul class="menu-list">
-        <li><router-link :to="{name: 'Home'}">
+        <li><a :href="null" @click.prevent="toggleBookmarks()">
           <BookmarkIcon/>
-        </router-link></li>
+        </a></li>
       </ul>
 
       <ul v-if="showViewOptions" class="menu-list">

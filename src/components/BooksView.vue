@@ -12,7 +12,7 @@ export default {
 
 <template>
   <div class="mx-20">
-    <div :class="{masonry:$store.state.viewMode==='covers'}">
+    <div :class="{masonry:$store.state.viewMode==='covers', 'with-bookmarks': $store.state.bookmarksOpen}">
       <div class="masonry-item" v-for="(book, i) of $store.state.booksFiltered" :key="book.id">
         <book-cover v-if="$store.state.viewMode === 'covers'" :colorI="i" :book="book"></book-cover>
         <book-list v-if="$store.state.viewMode === 'list'" :colorI="i" :book="book"></book-list>
@@ -35,6 +35,17 @@ export default {
   }
   @include from($widescreen) {
     column-count: 4;
+  }
+  &.with-bookmarks {
+    display: none;
+    @include from($tablet) {
+      column-count: 1;
+      display: block;
+    }
+    @include from($widescreen) {
+      column-count: 2;
+      display: block;
+    }
   }
 }
 

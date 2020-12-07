@@ -8,11 +8,6 @@ export default {
     BookmarkIcon,
     BookmarkMarkedIcon,
   },
-  data() {
-    return {
-      marked: false,
-    }
-  },
   methods: {
     toggleBookmark() {
       if (!this.$iam('authorized')) {
@@ -21,21 +16,20 @@ export default {
       }
       else {
         // optimistic client-side toggle
-        this.marked = !this.marked
-        console.log('bm me!', this.book)
+        this.$store.dispatch('toggleBookmark', {
+          id: this.book.id,
+          type: 'book'
+        })
+        // console.log('bm me!', this.book)
       }
     }
-  },
+  }
 }
 </script>
 
 <template>
-  <div style="cursor: pointer;" @click.prevent="toggleBookmark">
-    <BookmarkMarkedIcon v-if="marked" />
+  <div style="cursor: pointer;" @click.prevent="toggleBookmark()">
+    <BookmarkMarkedIcon v-if="$store.state.user.profile.bookmarks[book.id]" />
     <BookmarkIcon v-else />
   </div>
 </template>
-
-<style lang="scss" scoped>
-
-</style>

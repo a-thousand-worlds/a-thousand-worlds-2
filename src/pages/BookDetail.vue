@@ -8,10 +8,10 @@ import Clipboard from 'clipboard'
 export default {
   name: 'BookDetail',
   components: {
-    'author-widget': AuthorWidget,
-    'bookmark-button': BookmarkButton,
-    'books-filter': BooksFilter,
-    'lazy-image': LazyImage,
+    AuthorWidget,
+    BookmarkButton,
+    BooksFilter,
+    LazyImage,
   },
   data() {
     return {
@@ -91,14 +91,11 @@ export default {
 
         <div class="title-container divider-bottom is-flex is-justify-content-space-between">
           <h1 class="title">{{book.title}}</h1>
-          <div style="padding-top: 0px;"><bookmark-button :book="book.id" /></div>
+          <div style="padding-top: 0px;"><bookmark-button :book="book" /></div>
         </div>
 
         <div class="authors divider-bottom">
           <div v-for="person of book.authors" :key="person" class="mb-2">
-            <author-widget :name="person"></author-widget>
-          </div>
-          <div v-for="person of book.illustrators" :key="person">
             <author-widget :name="person"></author-widget>
           </div>
         </div>

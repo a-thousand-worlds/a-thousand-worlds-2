@@ -2,8 +2,9 @@
 
 import MobileHeader from '@/components/MobileHeader'
 import MobileFooter from '@/components/MobileFooter'
-import LeftBar from './components/LeftBar.vue'
-import RightBar from './components/RightBar.vue'
+import LeftBar from '@/components/LeftBar.vue'
+import RightBar from '@/components/RightBar.vue'
+import BookmarksView from '@/components/BookmarksView'
 
 export default ({
   name: 'App',
@@ -11,7 +12,8 @@ export default ({
     LeftBar,
     RightBar,
     MobileHeader,
-    MobileFooter
+    MobileFooter,
+    BookmarksView
   },
   watch: {
     '$route'(next) {
@@ -32,8 +34,10 @@ export default ({
     }
   },
   async created() {
-    localStorage.setItem('1stVist', new Date())
     await this.$store.dispatch('loadStage0')
+  },
+  beforeRouteLeave(from, to) {
+    localStorage.setItem('1stVist', new Date())
   }
 })
 </script>
@@ -55,8 +59,11 @@ export default ({
       <section class="leftbar column is-narrow is-hidden-mobile">
         <left-bar/>
       </section>
-      <section class="main column px-0 pb-50">
+      <section class="main column px-0 pb-50" :class="{'with-bookmarks': $store.state.bookmarksOpen}">
         <router-view/>
+      </section>
+      <section v-if="$store.state.bookmarksOpen" class="bookmarks column px-0 pb-50">
+        <bookmarks-view/>
       </section>
       <section class="rightbar column is-hidden-mobile">
         <right-bar/>
@@ -112,17 +119,39 @@ body {
   z-index: 1;
 }
 
+.bookmarks {
+  margin-right: calc(#{$rightbar-width} + 0.75rem); // column gap
+  height: 100%;
+
+  @include until($tablet) {
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 40px;
+    margin-bottom: 80px;
+  }
+}
+
 .main {
   padding-top: 30px;
   min-height: 100vh;
   border-left: solid 1px $atw-base;
   margin-right: calc(#{$rightbar-width} + 0.75rem); // column gap
   z-index: 1;
+
+  &.with-bookmarks {
+    border-right: solid 1px $atw-base;
+    margin-right: 0.75rem;
+  }
+
   @include until($tablet) {
     margin-left: 0px;
     margin-right: 0px;
     margin-top: 20px;
     margin-bottom: 80px;
+
+    &.with-bookmarks {
+      display: none;
+    }
   }
 }
 

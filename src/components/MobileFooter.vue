@@ -37,6 +37,15 @@ export default {
     },
     clickOutsideFilters(e) {
       this.showFilters = false
+    },
+    toggleBookmarks() {
+      if (!this.$iam('authorized')) {
+        // eslint-disable-next-line fp/no-mutating-methods
+        this.$router.push({ name: 'LogIn' })
+        return
+      }
+      const state = this.$store.state.bookmarksOpen
+      this.$store.commit('setBookmarksOpen', !state)
     }
   }
 }
@@ -56,7 +65,7 @@ export default {
   <section class="mobile-bottom-nav is-flex is-justify-content-center has-text-centered is-uppercase">
     <ul class="menu-list">
 
-      <li v-if="isFront" >
+      <li v-if="isFront && !$store.state.bookmarksOpen" >
         <a :class="null" @click.stop="showFilters=!showFilters" href="#">
           <FilterIcon/>
           <div class="icon-label mt-2">Filter</div>
@@ -78,7 +87,7 @@ export default {
       </li>
 
       <li>
-        <a :class="null" @click.prevent="null" href="#">
+        <a :class="null" @click.prevent="toggleBookmarks()" href="#">
           <BookmarkIcon/>
           <div class="icon-label mt-2">Saved Items</div>
         </a>

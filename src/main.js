@@ -30,6 +30,10 @@ router.beforeEach((to, from, next) => {
   }
 })
 
+router.afterEach((to, from) => {
+  store.commit('setBookmarksOpen', false)
+})
+
 const app = createApp(App)
   .use(store)
   .use(router)
