@@ -72,7 +72,7 @@ export default {
   <div v-if="author" class="mx-5">
 
     <div class="is-flex is-flex-direction-row is-flex-wrap-wrap">
-      <div class="column-author">
+      <div class="column-author" :class="{'with-bookmarks': $store.state.bookmarksOpen}">
         <div class="cover-wrapper">
           <div v-if="author.photo && author.photo.length" :style="{backgroundColor: bgColor, backgroundImage: 'url('+bgImage+')'}" class="cover-photo"/>
         </div>
@@ -93,7 +93,7 @@ export default {
 
       </div>
 
-      <div class="column-books">
+      <div class="column-books" :class="{'with-bookmarks': $store.state.bookmarksOpen}">
         <book-list v-for="(book, i) of books" :key="i" :book="book" :colorI="i"/>
       </div>
 
@@ -122,6 +122,11 @@ export default {
     margin-right: 0.75rem;
     text-align: left;
   }
+
+  &.with-bookmarks {
+    width: 100%;
+    text-align: center;
+  }
 }
 
 .column-books {
@@ -129,6 +134,10 @@ export default {
 
   @include from($widescreen) {
     width: 48%;
+  }
+
+  &.with-bookmarks {
+    width: 100%;
   }
 }
 
