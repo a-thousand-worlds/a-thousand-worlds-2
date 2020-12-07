@@ -55,7 +55,7 @@ export default ({
       </div>
     </section>
 
-    <div class="columns my-0">
+    <div class="columns m-0">
       <section class="leftbar column is-narrow is-hidden-mobile">
         <left-bar/>
       </section>
@@ -120,7 +120,7 @@ body {
 }
 
 .bookmarks {
-  margin-right: calc(#{$rightbar-width} + 0.75rem); // column gap
+  margin-right: $rightbar-width;
   height: 100%;
 
   @include until($tablet) {
@@ -134,8 +134,7 @@ body {
 .main {
   padding-top: 30px;
   min-height: 100vh;
-  border-left: solid 1px $atw-base;
-  margin-right: calc(#{$rightbar-width} + 0.75rem); // column gap
+  margin-right: $rightbar-width;
   z-index: 1;
 
   &.with-bookmarks {
@@ -152,6 +151,10 @@ body {
     &.with-bookmarks {
       display: none;
     }
+  }
+
+  @include from($tablet) {
+    border-left: solid 1px $atw-base;
   }
 }
 
