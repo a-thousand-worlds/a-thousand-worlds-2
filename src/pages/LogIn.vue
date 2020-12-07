@@ -91,6 +91,10 @@ export default {
         email: this.email,
         password: this.password
       }))
+        .then(() => {
+          // eslint-disable-next-line fp/no-mutating-methods
+          this.$router.push({ name: 'Profile' })
+        })
     },
 
     async signup() {
@@ -102,6 +106,10 @@ export default {
         password: this.password,
         ...this.signupData,
       }))
+        .then(() => {
+          // eslint-disable-next-line fp/no-mutating-methods
+          this.$router.push({ name: 'Profile' })
+        })
     },
 
     setActive(active) {
