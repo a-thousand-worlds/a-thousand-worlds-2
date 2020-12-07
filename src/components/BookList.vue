@@ -9,6 +9,9 @@ export default {
     'author-widget': AuthorWidget,
     'bookmark-button': BookmarkButton
   },
+  created() {
+    this.$store.dispatch('loadImage', this.book.cover)
+  },
   computed: {
     coverRatio() {
       if (!this.book || !this.book.coverWidth || !this.book.coverHeight) {

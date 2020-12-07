@@ -1,17 +1,55 @@
 <script>
+import AuthorCover from '@/components/AuthorCover'
 
 export default {
-  name: 'PeoplePage'
+  components: {
+    AuthorCover,
+  }
 }
 
 </script>
 
 <template>
 
-<h1 class="title">People</h1>
+<div class="container is-flex is-flex-direction-row is-flex-wrap-wrap p-3">
+  <div :class="{'with-bookmarks': $store.state.bookmarksOpen}" class="has-text-centered person-block p-3" v-for="(person, i) of $store.state.peopleList" :key="i">
+    <author-cover :person="person" :colorI="i"/>
+  </div>
+</div>
 
 </template>
 
-<style>
+<style scoped lang="scss">
+@import '@/assets/main.scss';
+
+.person-block {
+  width: 100%;
+  margin-bottom: 20px;
+
+  @include from($tablet) {
+    width: 50%;
+  }
+
+  @include from($desktop) {
+    width: 33%;
+  }
+
+  @include from($widescreen) {
+    width: 25%;
+  }
+
+  &.with-bookmarks {
+    width: 100%;
+
+    @include from($desktop) {
+      width: 50%;
+    }
+
+    @include from($widescreen) {
+      width: 33%;
+    }
+
+  }
+}
 
 </style>
