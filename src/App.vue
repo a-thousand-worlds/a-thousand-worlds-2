@@ -55,7 +55,7 @@ export default ({
       </div>
     </section>
 
-    <div class="columns" style="margin-top: 0;">
+    <div class="columns my-0">
       <section class="leftbar column is-narrow is-hidden-mobile">
         <left-bar/>
       </section>
