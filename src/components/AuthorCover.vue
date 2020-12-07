@@ -26,7 +26,7 @@ export default {
 
 <template>
 <router-link :to="{name:'PersonDetail', params: {id: person.id}}">
-  <div :style="{width: '100%', paddingTop: '100%', backgroundColor: bgColor, backgroundImage: 'url('+bgImage+')'}" class="photo-wrapper">
+  <div :style="{backgroundColor: bgColor, backgroundImage: 'url('+bgImage+')'}" class="photo-wrapper">
   </div>
   <author-widget :name="person.name" :size="120"/>
 </router-link>
@@ -38,6 +38,8 @@ export default {
 
 /**/
 .photo-wrapper {
+  width: 100%;
+  padding-top: 100%;
   border: 1px solid $atw-base;
   border-radius: 50%;
   background-size: cover;

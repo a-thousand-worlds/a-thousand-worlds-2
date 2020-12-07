@@ -37,7 +37,7 @@ export default {
       </tr>
     </thead>
     <tbody>
-      <tr v-for="person of $store.state.people" :key="person.id">
+      <tr v-for="person of $store.state.peopleList" :key="person.id">
         <td>{{person.id}}</td>
         <td>
           <span>{{person.name}}</span>

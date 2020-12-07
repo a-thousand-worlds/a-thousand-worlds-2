@@ -1,10 +1,10 @@
 <script>
-import LazyImage from '@/components/LazyImage'
+// import LazyImage from '@/components/LazyImage'
 import BookList from '@/components/BookList'
 
 export default {
   components: {
-    LazyImage,
+    // LazyImage,
     BookList,
   },
   data() {
@@ -16,12 +16,19 @@ export default {
   created() {
     const id = this.$router.currentRoute._value.params.id
     this.author = this.$store.state.peopleIndex[id]
+    console.log('person', this.author)
+    if (this.author && this.author.photo && this.author.photo.length) {
+      this.$store.dispatch('loadImage', this.author.photo)
+    }
     window.scrollTo(0, 0)
   },
   watch: {
     '$route'(next) {
       const id = this.$router.currentRoute._value.params.id
       this.author = this.$store.state.peopleIndex[id]
+      if (this.author && this.author.photo && this.author.photo.length) {
+        this.$store.dispatch('loadImage', this.author.photo)
+      }
       window.scrollTo(0, 0)
     },
     '$store.state.peopleIndex'(next, prev) {
@@ -35,6 +42,9 @@ export default {
         }, 0)
       }
       this.author = this.$store.state.peopleIndex[id]
+      if (this.author && this.author.photo && this.author.photo.length) {
+        this.$store.dispatch('loadImage', this.author.photo)
+      }
     }
   },
   computed: {
@@ -43,7 +53,15 @@ export default {
     },
     books() {
       return this.author ? this.$store.state.booksList.filter(book => book.authors.includes(this.author.name)) : []
+    },
+    bgColor(i) {
+      const colors = ['#fefad2', '#98ba93', '#d4c0d6', '#fcf1f5', '#fcebd0', '#f3fef1']
+      return colors[Math.floor(Math.random() * colors.length)]
+    },
+    bgImage() {
+      return this.$store.state.images[this.author.photo] || ''
     }
+
   }
 }
 
@@ -55,8 +73,8 @@ export default {
 
     <div class="is-flex is-flex-direction-row is-flex-wrap-wrap">
       <div class="column-author">
-        <div v-if="author.photo && author.photo.length" class="cover-wrapper">
-          <lazy-image class="cover" :src="author.photo"/>
+        <div class="cover-wrapper">
+          <div v-if="author.photo && author.photo.length" :style="{backgroundColor: bgColor, backgroundImage: 'url('+bgImage+')'}" class="cover-photo"/>
         </div>
 
         <div class="title-container divider-bottom">
@@ -71,7 +89,7 @@ export default {
           <h1 class="title mt-5">{{author.name}}</h1>
         </div>
 
-        <p style="font-size: 22px;">{{author.bio}}</p>
+        <p class="person-bio">{{author.bio}}</p>
 
       </div>
 
@@ -97,10 +115,12 @@ export default {
 
 .column-author {
   width: 100%;
+  text-align: center;
 
   @include from($widescreen) {
     width: 48%;
     margin-right: 0.75rem;
+    text-align: left;
   }
 }
 
@@ -114,16 +134,41 @@ export default {
 
 .cover-wrapper {
   max-width: 180px;
+  max-height: 180px;
+  text-align: center;
+  margin: auto;
+  margin-bottom: 10px;
+
+  @include from($widescreen) {
+    text-align: left;
+  }
+}
+
+.cover-photo {
+  padding-top: 100%;
   width: 100%;
-  height: 100%;
   border: 1px solid $atw-base;
   border-radius: 50%;
+  background-size: cover;
 }
 
 .title {
   font-size: 50px;
   line-height: 1;
   margin-bottom: 0;
+}
+
+.person-bio {
+  font-size: 22px;
+  text-align: justify;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: solid 1px #ddd;
+
+  @include from($widescreen) {
+    text-align: left;
+    border-bottom: none;
+  }
 }
 
 .divider-bottom {
@@ -138,5 +183,4 @@ export default {
   background-color: transparent;
   border-color: transparent !important;
 }
-
 </style>

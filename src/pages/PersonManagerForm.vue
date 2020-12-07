@@ -22,10 +22,8 @@ export default {
     }
   },
   created() {
-    console.log('router', this.$router.currentRoute)
     if (this.$router.currentRoute._value.name === 'PersonManagerUpdateForm') {
-      const p = this.$store.state.people[this.$router.currentRoute._value.params.uid] || null
-      console.log('upd', p, this.$store.state.people)
+      const p = this.$store.state.peopleIndex[this.$router.currentRoute._value.params.uid] || null
       if (p) {
         this.person = p
         this.mode = 'update'
@@ -36,7 +34,6 @@ export default {
   methods: {
     fileChange(e) {
       const file = e.target.files[0]
-      console.log('file', file)
       const reader = new FileReader()
       this.person.photo = ''
       this.photoType = null

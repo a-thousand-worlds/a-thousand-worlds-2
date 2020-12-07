@@ -39,7 +39,7 @@ export default {
       </router-link>
     </div>
     <div class="column is-two-thirds is-align-content-center">
-      <div class="columns is-desktop is-vcentered">
+      <div class="columns is-mobile is-vcentered">
         <div class="column">
           <router-link :to="{name:'BookDetail',params:{id:book.id}}" class="cover-data">
             <div class="title">{{book.title}}</div>
