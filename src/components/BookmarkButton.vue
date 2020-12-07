@@ -1,38 +1,41 @@
 <script>
+import BookmarkIcon from '../assets/icons/bookmark.svg'
+import BookmarkMarkedIcon from '../assets/icons/bookmark-marked.svg'
+
 export default {
   props: ['book'],
+  components: {
+    BookmarkIcon,
+    BookmarkMarkedIcon,
+  },
+  data() {
+    return {
+      marked: false,
+    }
+  },
   methods: {
-    bookmark() {
+    toggleBookmark() {
       if (!this.$iam('authorized')) {
         // eslint-disable-next-line fp/no-mutating-methods
         this.$router.push({ name: 'LogIn' })
       }
-      console.log('bm me!', this.book)
+      else {
+        // optimistic client-side toggle
+        this.marked = !this.marked
+        console.log('bm me!', this.book)
+      }
     }
   },
-  computed: {
-    isMarked() {
-      return false
-    }
-  }
 }
 </script>
 
 <template>
-<button @click.prevent="bookmark()">
-  <i :class="{fas: isMarked, far: !isMarked}" class="fa-bookmark"></i>
-</button>
-
+  <div style="cursor: pointer;" @click.prevent="toggleBookmark">
+    <BookmarkMarkedIcon v-if="marked" />
+    <BookmarkIcon v-else />
+  </div>
 </template>
 
 <style lang="scss" scoped>
-button {
-  font-size: 200%;
-  background: none;
-  border: 0;
-  padding-top: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-bottom: 5px;
-}
+
 </style>

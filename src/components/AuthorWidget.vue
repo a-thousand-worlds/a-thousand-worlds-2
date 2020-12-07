@@ -7,7 +7,7 @@ export default {
     }
   },
   created() {
-    this.person = this.$store.state.people.reduce((acc, x) => x.name === this.name ? x : acc, null)
+    this.person = this.$store.state.peopleList.reduce((acc, x) => x.name === this.name ? x : acc, null)
   },
   computed: {
     isAuthor() {

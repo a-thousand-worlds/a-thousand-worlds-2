@@ -1,16 +1,22 @@
 <script>
 
-import LeftBar from '@/components/LeftBar'
-import RightBar from '@/components/RightBar'
 import MobileHeader from '@/components/MobileHeader'
 import MobileFooter from '@/components/MobileFooter'
+import LeftBar from './components/LeftBar.vue'
+import RightBar from './components/RightBar.vue'
 
 export default ({
   name: 'App',
   components: {
-    LeftBar, RightBar, MobileHeader, MobileFooter
+    LeftBar,
+    RightBar,
+    MobileHeader,
+    MobileFooter
   },
   watch: {
+    '$route'(next) {
+      this.showMobileFilter = next.name === 'Home' || next.name === 'Bundles'
+    },
     '$store.state.user'(next, prev) {
       if (!prev && next && this.$store.state.noAccessPath.length) {
         const nap = this.$store.state.noAccessPath + ''
@@ -38,16 +44,18 @@ export default ({
     <section v-if="showHero" class="hero">
       <div class="hero-body">
         <div class="container">
-          <h1 class="title">A THOUSAND WORLDS</h1>
-          <h2 class="subtitle">COLORFUL READS X COLORFUL PEOPLE<br/>Picture books curated by BIPOC leaders in the industry</h2>
+          <h1 class="title is-uppercase">A Thousand Worlds</h1>
+          <h2 class="subtitle"><span class="is-uppercase">Colorful Reads X Colorful People</span><br/>
+          Picture books curated by BIPOC leaders in the industry</h2>
         </div>
       </div>
     </section>
+
     <div class="columns" style="margin-top: 0;">
       <section class="leftbar column is-narrow is-hidden-mobile">
         <left-bar/>
       </section>
-      <section class="main column">
+      <section class="main column px-0 pb-50">
         <router-view/>
       </section>
       <section class="rightbar column is-hidden-mobile">

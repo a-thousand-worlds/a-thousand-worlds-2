@@ -16,22 +16,21 @@ export default {
   data() {
     return {
       book: null,
-      pageUrl: ''
+      pageUrl: window.location.href,
     }
   },
   created() {
-    this.pageUrl = window.location.href
     const id = this.$router.currentRoute._value.params.id
-    this.book = this.$store.state.books[id]
+    this.book = this.$store.state.booksIndex[id]
     window.scrollTo(0, 0)
   },
   watch: {
     '$route'(next) {
       const id = this.$router.currentRoute._value.params.id
-      this.book = this.$store.state.books[id]
+      this.book = this.$store.state.booksIndex[id]
       window.scrollTo(0, 0)
     },
-    '$store.state.books'(next, prev) {
+    '$store.state.booksList'(next, prev) {
       const id = this.$router.currentRoute._value.params.id
       if (next && Object.keys(next).length && !next[id]) {
         // book not found! drop to 404
@@ -41,31 +40,17 @@ export default {
           this.$router.push('/404')
         }, 0)
       }
-      console.log(next, '======', prev)
-      this.book = this.$store.state.books[id]
+      this.book = this.$store.state.booksIndex[id]
     }
   },
   computed: {
-    books() {
-      return Object.keys(this.$store.state.books)
-        .map(x => this.$store.state.books[x])
-        .filter(x => typeof x.id === 'string' && x.id.length > 8) // converted to firebase
-        .filter(x => {
-          if (!this.$store.state.filters.length) {
-            return true
-          }
-          return this.$store.state.filters
-            .map(f => (x.tags || []).includes(f))
-            .reduce((acc, ok) => ok || acc, false)
-        })
-    },
     nextBook() {
-      const list = this.books.map(x => x.id)
+      const list = this.$store.state.booksFiltered.map(x => x.id)
       const pos = list.indexOf(this.book.id)
       return list[pos + 1]
     },
     prevBook() {
-      const list = this.books.map(x => x.id)
+      const list = this.$store.state.booksFiltered.map(x => x.id)
       const pos = list.indexOf(this.book.id)
       return list[pos - 1]
     }
@@ -106,7 +91,7 @@ export default {
 
         <div class="title-container divider-bottom is-flex is-justify-content-space-between">
           <h1 class="title">{{book.title}}</h1>
-          <div style="padding-top: 0px;"><bookmark-button :book="book" /></div>
+          <div style="padding-top: 0px;"><bookmark-button :book="book.id" /></div>
         </div>
 
         <div class="authors divider-bottom">
@@ -175,12 +160,14 @@ export default {
   bottom: 0;
   background-color: #ddd;
   width: calc(100% - #{$leftbar-width} - #{$rightbar-width} + 0.75rem);
-  padding: 1rem;
-  margin-left: -0.75rem; // column left gap
+  padding: 10px 20px;
+  white-space: nowrap;
 
   @include until($tablet) {
+    left: 0;
     width: 100%;
-    bottom: 75px;
+    // make space for mobile-bottom-nav
+    bottom: 94px;
   }
 
   .button, input {

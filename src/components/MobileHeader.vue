@@ -1,4 +1,7 @@
 <script>
+
+import HamburgerIcon from '@/assets/icons/hamburger.svg'
+
 export default {
   data() {
     return {
@@ -9,6 +12,9 @@ export default {
     '$route'() {
       this.isOpen = false
     }
+  },
+  components: {
+    HamburgerIcon
   }
 }
 </script>
@@ -24,7 +30,7 @@ export default {
     <div class="level-right">
       <div class="level-item">
         <button @click="isOpen = !isOpen" class="menu-button button">
-          <i class="fas fa-bars"></i>
+          <HamburgerIcon class="mt-1" />
         </button>
       </div>
     </div>
@@ -57,9 +63,24 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/assets/vars.scss';
+
+.mobile-top-nav {
+  position: sticky;
+  top: 0;
+  border-bottom: solid 1px $atw-base;
+  background-color: white;
+  z-index: 1;
+
+  .title {
+    font-size: 20px;
+    margin: 0;
+  }
+}
+
 .header {
+  padding: 10px 20px;
   border-bottom: 1px solid $atw-base;
-  position: fixed;
+  position: sticky;
   top: 0;
   left: 0;
   width: 100%;

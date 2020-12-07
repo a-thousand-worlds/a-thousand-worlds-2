@@ -1,8 +1,9 @@
 import { createStore } from 'vuex'
-import firebase from './firebase'
+import _ from 'lodash'
 import dayjs from 'dayjs'
 import { v4 } from 'uuid'
 import Jimp from 'jimp'
+import firebase from './firebase'
 
 const store = createStore({
   state: {
@@ -17,10 +18,13 @@ const store = createStore({
     images: {},
     user: null,
     tags: {},
-    sortedTags: [],
-    people: [],
     pages: {},
-    books: {},
+    sortedTags: [],
+    peopleList: [],
+    peopleIndex: {},
+    booksIndex: {},
+    booksList: [],
+    booksFiltered: [],
     bundlesIndex: {},
     bundlesList: [],
 
@@ -37,6 +41,7 @@ const store = createStore({
     },
     resetFilters(ctx) {
       ctx.filters = []
+      ctx.booksFiltered = ctx.booksList
     },
     toggleFilter(ctx, filter) {
       if (!ctx.filters.includes(filter)) {
@@ -46,6 +51,14 @@ const store = createStore({
       else {
         ctx.filters = ctx.filters.filter(x => x !== filter)
       }
+      ctx.booksFiltered = ctx.booksList.filter(book => {
+        if (!ctx.filters.length) {
+          return true
+        }
+        return ctx.filters
+          .map(f => (book.tags || []).includes(f))
+          .reduce((acc, ok) => ok || acc, false)
+      })
     },
     setNAP(ctx, p) {
       ctx.noAccessPath = p
@@ -73,17 +86,19 @@ const store = createStore({
     setSortedTags(ctx, list) {
       ctx.sortedTags = list
     },
-    setBooks(ctx, list) {
-      ctx.books = list
+    setBooks(ctx, books) {
+      ctx.booksIndex = books || {}
+      const list = Object.keys(books || {}).map(id => books[id])
+      ctx.booksList = _.shuffle(list)
+      ctx.booksFiltered = ctx.booksList
     },
-    setPeople(ctx, list) {
-      ctx.people = list
+    setPeople(ctx, people) {
+      ctx.peopleIndex = people || {}
+      ctx.peopleList = Object.keys(people || {}).map(id => people[id])
     },
-    setBundlesIndex(ctx, index) {
-      ctx.bundlesIndex = index
-    },
-    setBundlesList(ctx, list) {
-      ctx.bundlesList = list
+    setBundles(ctx, bundles) {
+      ctx.bundlesIndex = bundles || {}
+      ctx.bundlesList = Object.values(bundles || [])
     },
     setViewMode(ctx, mode) {
       ctx.viewMode = mode
@@ -264,7 +279,7 @@ const store = createStore({
         ctx.commit('setBusy', true)
         firebase.database().ref('books').once('value', snap => {
           console.log('books', snap.val())
-          ctx.commit('setBooks', snap.val() || [])
+          ctx.commit('setBooks', snap.val() || {})
           ctx.commit('setBusy', false)
           resolve()
         })
@@ -326,13 +341,8 @@ const store = createStore({
         ctx.commit('setBusy', true)
         firebase.database().ref('people').once('value', snap => {
           const v = snap.val()
-          if (!v || v.length === 0) {
-            console.error('No people in database')
-            resolve()
-          }
-          const list = Object.keys(v || []).map(x => v[x])
-          console.log('people', list)
-          store.commit('setPeople', list)
+          console.log('people', v)
+          store.commit('setPeople', v)
           ctx.commit('setBusy', false)
           resolve()
         })
@@ -349,10 +359,8 @@ const store = createStore({
             console.error('No bundles in database')
             resolve()
           }
-          const list = Object.keys(v || []).map(x => v[x])
-          console.log('bundles', list)
-          store.commit('setBundlesIndex', v)
-          store.commit('setBundlesList', list)
+          console.log('bundles', v)
+          store.commit('setBundles', v)
           ctx.commit('setBusy', false)
           resolve()
         })
@@ -488,9 +496,6 @@ const store = createStore({
     },
 
     // auth
-    async userLogin(ctx, credentials) {
-      return firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password)
-    },
     passwordReset(ctx, email) {
       return new Promise((resolve, reject) => {
         firebase.auth().sendPasswordResetEmail(email)
@@ -504,18 +509,6 @@ const store = createStore({
           })
       })
     },
-    async userRegister(ctx, credentials) {
-      let ret = null
-      // console.log('reg with', credentials)
-      try {
-        ret = await firebase.auth().createUserWithEmailAndPassword(credentials.email, credentials.password)
-      }
-      catch (err) {
-        ret = null
-        console.log('userregister error', err)
-      }
-      return ret
-    },
 
     // start
     async loadStage0(ctx) {
@@ -527,8 +520,14 @@ const store = createStore({
       await ctx.dispatch('loadPages')
       // await ctx.dispatch('loadCovers')
       ctx.commit('setStage0Load')
-    }
+    },
 
+    userLogin(ctx, credentials) {
+      return firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password)
+    },
+    userRegister(ctx, credentials) {
+      return firebase.auth().createUserWithEmailAndPassword(credentials.email, credentials.password)
+    },
   }
 })
 
@@ -555,12 +554,13 @@ firebase.auth().onAuthStateChanged(function(user) {
     u.roles = {}
     const userRef = firebase.database().ref(`users/${u.uid}`)
     userRef.on('value', snap => {
-      u.profile = snap.val()?.profile || {}
+      u.profile = { ...u.profile, ...snap.val()?.profile }
       u.roles = snap.val()?.roles || {}
       if (!u.roles.authorized) {
         u.roles.authorized = true
       }
       store.commit('setUser', u)
+      store.dispatch('saveProfile', u.profile)
     })
   }
   else {

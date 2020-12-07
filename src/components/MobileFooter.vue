@@ -1,6 +1,16 @@
 <script>
+import BookmarkIcon from '@/assets/icons/bookmark.svg'
+import BooksIcon from '@/assets/icons/books.svg'
+import BundlesIcon from '@/assets/icons/bundles.svg'
+import FilterIcon from '@/assets/icons/filter.svg'
 
 export default {
+  components: {
+    BookmarkIcon,
+    BundlesIcon,
+    BooksIcon,
+    FilterIcon,
+  },
   data() {
     return {
       showFilters: false,
@@ -43,34 +53,41 @@ export default {
     <button class="button is-rounded" @click.prevent="resetFilters">Reset Filter</button>
   </section>
 
-  <section class="mobile-footer">
-    <div class="is-flex is-flex-direction-row is-justify-content-space-around">
-      <div v-if="isFront" class="has-text-centered">
-        <div @click.stop="showFilters=!showFilters" class="icon-button">
-          <i class="fas fa-filter"></i>
-          <div class="caption">Filter</div>
-        </div>
-      </div>
-      <div class="has-text-centered">
-        <router-link :to="{name: 'Home'}" class="icon-button">
-          <i class="fas fa-book"></i>
-          <div class="caption">Books</div>
+  <section class="mobile-bottom-nav is-flex is-justify-content-center has-text-centered is-uppercase">
+    <ul class="menu-list">
+
+      <li v-if="isFront" >
+        <a :class="null" @click.stop="showFilters=!showFilters" href="#">
+          <FilterIcon/>
+          <div class="icon-label mt-2">Filter</div>
+        </a>
+      </li>
+
+      <li>
+        <router-link :to="{ name: 'Home' }">
+          <BooksIcon/>
+          <div class="icon-label mt-2">Books</div>
         </router-link>
-      </div>
-      <div class="has-text-centered">
-        <router-link :to="{name: 'Bundles'}" class="icon-button">
-          <i class="fas fa-boxes"></i>
-          <div class="caption">Bundles</div>
+      </li>
+
+      <li>
+        <router-link :to="{ name: 'Bundles' }">
+          <BundlesIcon/>
+          <div class="icon-label mt-2">Bundles</div>
         </router-link>
-      </div>
-      <div class="has-text-centered">
-        <div class="icon-button">
-          <i class="fas fa-bookmark"></i>
-          <div class="caption">Saved Items</div>
-        </div>
-      </div>
-    </div>
+      </li>
+
+      <li>
+        <a :class="null" @click.prevent="null" href="#">
+          <BookmarkIcon/>
+          <div class="icon-label mt-2">Saved Items</div>
+        </a>
+      </li>
+
+    </ul>
+
   </section>
+
 </div>
 </template>
 
@@ -80,7 +97,7 @@ export default {
 .mobile-filters {
   border-top: 1px solid $atw-base;
   position: fixed;
-  bottom: 74px;
+  bottom: 95px;
   left: 0;
   width: 100%;
   height: auto;
@@ -99,34 +116,28 @@ export default {
   }
 }
 
-.mobile-footer {
-  border-top: 1px solid $atw-base;
+.mobile-bottom-nav {
+  width: 100%;
+  padding: 10px 20px;
   position: fixed;
   bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 74px;
-  z-index: 3;
-  background: #fff;
-  padding-top: 11px;
-}
-
-.icon-button {
-  border: none;
-  background: none;
-}
-
-i {
-  fonx-size: 33px;
-}
-
-.caption {
-  text-transform: uppercase;
+  border-top: solid 1px $atw-base;
+  background-color: white;
+  z-index: 1;
   font-size: 10px;
-  font-weight: 400;
+  font-weight: bold;
+
+  .title {
+    font-size: 20px;
+    margin: 0;
+  }
+
+  .menu-list {
+    li {
+      display: inline-block;
+      min-width: 100px;
+    }
+  }
 }
 
-a {
-  color: #4a4a4a;
-}
 </style>

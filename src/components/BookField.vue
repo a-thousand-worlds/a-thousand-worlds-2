@@ -11,7 +11,7 @@ export default {
     }
   },
   created() {
-    const b = this.$store.state.books[this.id]
+    const b = this.$store.state.booksList[this.id]
     if (b) {
       this.book = b
       this.id = b.id
@@ -24,7 +24,7 @@ export default {
   },
   watch: {
     bookID(next, prev) {
-      const b = this.$store.state.books[this.id]
+      const b = this.$store.state.booksList[this.id]
       if (b) {
         this.book = b
         this.id = b.id

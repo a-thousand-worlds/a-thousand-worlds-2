@@ -1,3 +1,15 @@
+<script>
+import InstagramIcon from '../assets/icons/instagram.svg'
+import TwitterIcon from '../assets/icons/twitter.svg'
+
+export default {
+  components: {
+    InstagramIcon,
+    TwitterIcon,
+  },
+}
+</script>
+
 <template>
   <aside class="is-align-self-stretch menu is-flex-direction-column is-justify-content-space-between">
     <div id="logo">
@@ -21,19 +33,21 @@
       <li><router-link :to="{name: 'PeopleManager'}">People Manager</router-link></li>
     </ul>
 
-    <div class="level mt-5">
-      <div class="level-item">
-        <i class="fab fa-instagram fa-2x"></i>
-      </div>
-      <div class="level-item">
-        <i class="fab fa-twitter fa-2x"></i>
-      </div>
-    </div>
+    <ul class="menu-list mt-50">
+      <li>
+        <a href="https://instagram.com" target="_blank" class="inline"><InstagramIcon/></a>
+        <a href="https://twitter.com" target="_blank" class="inline p-0"><TwitterIcon/></a>
+      </li>
+    </ul>
   </aside>
 </template>
 
 <style scoped lang="scss">
 @import '@/assets/vars.scss';
+
+.inline {
+  display: inline;
+}
 
 #logo {
   width: 80px;
