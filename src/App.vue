@@ -1,17 +1,33 @@
 <script>
 
-import Hamburger from './assets/icons/hamburger.svg'
+import BookmarkIcon from './assets/icons/bookmark.svg'
+import BooksIcon from './assets/icons/books.svg'
+import BundlesIcon from './assets/icons/bundles.svg'
+import FilterIcon from './assets/icons/filter.svg'
+import HamburgerIcon from './assets/icons/hamburger.svg'
 import LeftBar from './components/LeftBar.vue'
 import RightBar from './components/RightBar.vue'
 
 export default ({
   name: 'App',
   components: {
-    Hamburger,
+    BookmarkIcon,
+    BundlesIcon,
+    BooksIcon,
+    FilterIcon,
+    HamburgerIcon,
     LeftBar,
     RightBar,
   },
+  data() {
+    return {
+      showMobileFilter: true
+    }
+  },
   watch: {
+    '$route'(next) {
+      this.showMobileFilter = next.name === 'Home' || next.name === 'Bundles'
+    },
     '$store.state.user'(next, prev) {
       if (!prev && next && this.$store.state.noAccessPath.length) {
         const nap = this.$store.state.noAccessPath + ''
@@ -46,16 +62,51 @@ export default ({
       </div>
     </section>
 
-    <section class="mobile-top-menu is-hidden-tablet is-flex is-justify-content-space-between">
+    <section class="mobile-top-nav is-hidden-tablet is-flex is-justify-content-space-between">
       <h1 class="title is-uppercase">A Thousand Worlds</h1>
-      <Hamburger class="mt-1" />
+      <HamburgerIcon class="mt-1" />
+    </section>
+
+    <section class="mobile-bottom-nav is-hidden-tablet is-flex is-justify-content-center has-text-centered is-uppercase">
+      <ul class="menu-list">
+
+        <li v-if="showMobileFilter" >
+          <a :class="null" @click.prevent="null" href="#">
+            <FilterIcon/>
+            <div class="icon-label mt-2">Filter</div>
+          </a>
+        </li>
+
+        <li>
+          <router-link :to="{ name: 'Home' }">
+            <BooksIcon/>
+            <div class="icon-label mt-2">Books</div>
+          </router-link>
+        </li>
+
+        <li>
+          <router-link :to="{ name: 'Bundles' }">
+            <BundlesIcon/>
+            <div class="icon-label mt-2">Bundles</div>
+          </router-link>
+        </li>
+
+        <li>
+          <a :class="null" @click.prevent="null" href="#">
+            <BookmarkIcon/>
+            <div class="icon-label mt-2">Saved Items</div>
+          </a>
+        </li>
+
+      </ul>
+
     </section>
 
     <div class="columns" style="margin-top: 0;">
       <section class="leftbar column is-narrow is-hidden-mobile">
         <left-bar/>
       </section>
-      <section class="main column">
+      <section class="main column px-0 pb-50">
         <router-view/>
       </section>
       <section class="rightbar column is-hidden-mobile">
@@ -112,7 +163,7 @@ body {
   z-index: 1;
 }
 
-.mobile-top-menu {
+.mobile-top-nav {
   padding: 10px 20px;
   position: sticky;
   top: 0;
@@ -123,6 +174,30 @@ body {
   .title {
     font-size: 20px;
     margin: 0;
+  }
+}
+
+.mobile-bottom-nav {
+  width: 100%;
+  padding: 10px 20px;
+  position: fixed;
+  bottom: 0;
+  border-top: solid 1px $atw-base;
+  background-color: white;
+  z-index: 1;
+  font-size: 10px;
+  font-weight: bold;
+
+  .title {
+    font-size: 20px;
+    margin: 0;
+  }
+
+  .menu-list {
+    li {
+      display: inline-block;
+      min-width: 100px;
+    }
   }
 }
 

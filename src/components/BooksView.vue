@@ -25,7 +25,7 @@ export default {
 </script>
 
 <template>
-  <div class="mx-1">
+  <div class="mx-20">
     <div :class="{masonry:$store.state.viewMode==='covers'}">
       <div class="masonry-item" v-for="book of booksFiltered" :key="book.id">
         <book-cover v-if="$store.state.viewMode === 'covers'" :book="book"></book-cover>
@@ -35,24 +35,19 @@ export default {
   </div>
 </template>
 
-<style lang="css" scoped>
-@media only screen and (max-width: 480px) {
-  .masonry {
-    column-count: 1;
-  }
-}
-@media only screen and (min-width: 481px) and (max-width: 780px) {
-  .masonry {
+<style lang="scss" scoped>
+@import "bulma/sass/utilities/_all.sass";
+@import '@/assets/vars.scss';
+
+.masonry {
+  column-count: 1;
+  @include from($tablet) {
     column-count: 2;
   }
-}
-@media only screen and (min-width: 781px) and (max-width: 1280px) {
-  .masonry {
+  @include from($desktop) {
     column-count: 3;
   }
-}
-@media only screen and (min-width: 1281px) {
-  .masonry {
+  @include from($widescreen) {
     column-count: 4;
   }
 }

@@ -169,11 +169,14 @@ export default {
   bottom: 0;
   background-color: #ddd;
   width: calc(100% - #{$leftbar-width} - #{$rightbar-width} + 0.75rem);
-  padding: 1rem;
-  margin-left: -0.75rem; // column left gap
+  padding: 10px 20px;
+  white-space: nowrap;
 
   @include until($tablet) {
+    left: 0;
     width: 100%;
+    // make space for mobile-bottom-nav
+    bottom: 94px;
   }
 
   .button, input {
