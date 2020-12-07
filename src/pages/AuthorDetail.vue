@@ -171,12 +171,6 @@ export default {
   }
 }
 
-.divider-bottom {
-  padding-bottom: 0.5rem;
-  margin-bottom: 1.5rem;
-  border-bottom: solid 1px #ddd;
-}
-
 /* Unstyled button for text that needs to sit next to a button and have the same size and padding. */
 .button-unstyled {
   cursor: default;

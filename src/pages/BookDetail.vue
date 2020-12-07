@@ -146,12 +146,6 @@ export default {
   font-size: 14px;
 }
 
-.divider-bottom {
-  padding-bottom: 0.5rem;
-  margin-bottom: 1.5rem;
-  border-bottom: solid 1px #ddd;
-}
-
 .content-footer {
   position: fixed;
   bottom: 0;

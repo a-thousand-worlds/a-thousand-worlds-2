@@ -227,18 +227,6 @@ export default {
 
 <style scoped lang="scss">
 
-.divider-bottom {
-  padding-bottom: 15px;
-  margin-bottom: 38px;
-  border-bottom: solid 1px #ddd;
-}
-
-.divider-30 {
-  padding-bottom: 30px;
-  margin-bottom: 30px;
-  border-bottom: solid 1px #ddd;
-}
-
 .field:not(:last-child) {
   margin-bottom: 30px;
 }
