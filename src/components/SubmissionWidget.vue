@@ -31,7 +31,7 @@ export default {
 
 <template>
 
-<div class="box p-5">
+<div class="p-5">
   <div>
     <div v-if="loading">
       <div class="button is-static is-loading">loading</div>

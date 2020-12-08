@@ -146,8 +146,14 @@ export default {
   watch: {
     '$store.state.user'(next, prev) {
       if (!prev && !!next) {
-        // eslint-disable-next-line fp/no-mutating-methods
-        this.$router.push({ name: 'Profile' })
+        if (this.$iam('creator') || this.$iam('contributor') || this.$iam('admin') || this.$iam('superadmin')) {
+          // eslint-disable-next-line fp/no-mutating-methods
+          this.$router.push({ name: 'Profile' })
+        }
+        else {
+          // eslint-disable-next-line fp/no-mutating-methods
+          this.$router.push({ name: 'Home' })
+        }
       }
     }
   }

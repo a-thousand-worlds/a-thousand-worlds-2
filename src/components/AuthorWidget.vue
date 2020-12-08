@@ -1,6 +1,6 @@
 <script>
 export default {
-  props: ['name', 'size'],
+  props: ['name', 'size', 'nolink'],
   data() {
     return {
       person: null,
@@ -25,7 +25,8 @@ export default {
   <div class="mb-3 is-uppercase widget" :style="{'font-size': this.fontSize+'%'}">
     <i v-if="isAuthor" class="fas fa-pencil-alt"></i>
     <i v-if="!isAuthor" class="fas fa-palette"></i>
-    <router-link :to="{name: 'PersonDetail', params: {id: person.id}}" class="name ml-2">{{name}}</router-link>
+    <div v-if="nolink === true" class="name ml-2">{{name}}</div>
+    <router-link v-else :to="{name: 'PersonDetail', params: {id: person.id}}" class="name ml-2">{{name}}</router-link>
   </div>
 </template>
 

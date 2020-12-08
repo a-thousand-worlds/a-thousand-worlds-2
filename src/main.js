@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 
 import dayjs from 'dayjs'
+import CKEditor from '@ckeditor/ckeditor5-vue'
 
 require('@/assets/main.scss')
 
@@ -37,6 +38,7 @@ router.afterEach((to, from) => {
 const app = createApp(App)
   .use(store)
   .use(router)
+  .use(CKEditor)
 
 // sourced from https://stackoverflow.com/questions/63869859/detect-click-outside-element-on-vue-3
 app.directive('click-outside', {

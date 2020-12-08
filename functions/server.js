@@ -44,10 +44,14 @@ async function loadImage2Base64(url) {
   if (!res || !res.data) {
     return null
   }
-  const img = await sharp(res.data)
-    .toFormat('png')
-    .toBuffer()
-  return img.toString('base64')
+  const img = await sharp(res.data).toFormat('png')
+  const meta = await img.metadata()
+  const buff = await img.toBuffer()
+  return {
+    base64: buff.toString('base64'),
+    width: meta.width,
+    height: meta.height
+  }
 }
 
 function _isbn(code, provider) {
@@ -75,7 +79,9 @@ async function isbnSearch(code) {
     google: gBook,
     openlib: oBook,
     covers: [],
-    cover: null
+    cover: null,
+    coverWidth: 0,
+    coverHeight: 0
   }
   const covers = await bookcovers.withIsbn(code)
   const amazonSizes = Object.keys(covers.amazon)
@@ -88,7 +94,10 @@ async function isbnSearch(code) {
     covers.amazon['1x'] ||
     covers.openLibrary.small
   console.log(`Fetching book cover: ${url}`)
-  book.cover = await loadImage2Base64(url)
+  const img = await loadImage2Base64(url)
+  book.cover = img.base64
+  book.coverWidth = img.width
+  book.coverHeight = img.height
   return book
 }
 

@@ -63,6 +63,27 @@ $devices: (
   text-transform: uppercase;
 }
 
+// flat buttons looks like links and don't extend bulma button sizes
+// is-link already exists at bulma for buttons
+button.is-flat {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.is-underlined {
+  text-decoration: underline;
+}
+
 .error {
   color: red;
+}
+
+.ck.oneline {
+  margin-top: -0.5rem;
+
+  p {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
 }

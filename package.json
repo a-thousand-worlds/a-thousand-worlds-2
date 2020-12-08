@@ -9,6 +9,8 @@
     "deploy": "npm run build && firebase deploy --only hosting"
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-build-balloon": "^23.1.0",
+    "@ckeditor/ckeditor5-vue": "^2.0.1",
     "axios": "^0.21.0",
     "bulma": "^0.9.1",
     "clipboard": "^2.0.6",

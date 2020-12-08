@@ -511,6 +511,26 @@ const store = createStore({
       })
     },
 
+    // this method doesn't use store to keep values
+    // it used only by administrators
+    loadContributorsSubmissions(ctx) {
+      return new Promise((resolve, reject) => {
+        const ref = firebase.database().ref(`submits`)
+        ref.once('value', snap => {
+          resolve(snap.val())
+        })
+      })
+    },
+    // -- same
+    loadContributorProfile(ctx, uid) {
+      return new Promise((resolve, reject) => {
+        const ref = firebase.database().ref(`users/${uid}/profile`)
+        ref.once('value', snap => {
+          resolve(snap.val())
+        })
+      })
+    },
+
     // pages
     loadPages(ctx) {
       return new Promise((resolve, reject) => {
