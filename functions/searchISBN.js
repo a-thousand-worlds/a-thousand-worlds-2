@@ -1,11 +1,9 @@
 const functions = require('firebase-functions')
+const express = require('express')
 const bookcovers = require('bookcovers')
 const isbn = require('node-isbn')
-const express = require('express')
 const axios = require('axios').default
 const sharp = require('sharp')
-
-const app = express()
 
 async function getGoodReadsBookIDByISBN(isbn) {
   let res = null
@@ -92,30 +90,31 @@ async function isbnSearch(code) {
   return book
 }
 
-app.get('/', async (req, res) => {
-  res.header('Access-Control-Allow-Origin', '*')
-  if (!req.query || !req.query.isbn) {
-    res.send(JSON.stringify(null))
-    return
-  }
-  console.log(`searchng [${req.query.isbn}]`)
-  const book = await isbnSearch(req.query.isbn)
-  if (book) {
-    book.grid = await getGoodReadsBookIDByISBN(req.query.isbn)
-  }
-  // console.log(book, 'BOOK!')
-  if (!book) {
-    console.log(`[${req.query.isbn}] not found`)
-  }
-  else {
-    const ttl = book.google ? book.google.title : book.openlib.title
-    console.log(`[${req.query.isbn}] found - ${ttl}`)
-  }
-  res.json(book)
-})
+module.exports = () => {
 
-exports.searchISBN = functions
-  // increase function memory since we are doing image processing
-  // https://firebase.google.com/docs/functions/manage-functions#set_timeout_and_memory_allocation
-  .runWith({ memory: '1GB' })
-  .https.onRequest(app)
+  const app = express()
+
+  app.get('/', async (req, res) => {
+    res.header('Access-Control-Allow-Origin', '*')
+    if (!req.query || !req.query.isbn) {
+      res.send(JSON.stringify(null))
+      return
+    }
+    console.log(`searchng [${req.query.isbn}]`)
+    const book = await isbnSearch(req.query.isbn)
+    if (book) {
+      book.grid = await getGoodReadsBookIDByISBN(req.query.isbn)
+    }
+    // console.log(book, 'BOOK!')
+    if (!book) {
+      console.log(`[${req.query.isbn}] not found`)
+    }
+    else {
+      const ttl = book.google ? book.google.title : book.openlib.title
+      console.log(`[${req.query.isbn}] found - ${ttl}`)
+    }
+    res.json(book)
+  })
+
+  return app
+}

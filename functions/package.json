@@ -1,8 +1,6 @@
 {
-  "name": "backend",
+  "name": "a-thousand-worlds-functions",
   "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
   "dependencies": {
     "axios": "^0.21.0",
     "bookcovers": "^0.0.2",
@@ -16,13 +14,9 @@
   "engines": {
     "node": "12"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
-    "monitor": "nodemon -i ./node_modules server.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+    "start": "node index.js",
+    "monitor": "nodemon -i ./node_modules index.js"
+  }
 }
