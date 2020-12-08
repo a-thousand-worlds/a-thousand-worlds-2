@@ -51,14 +51,24 @@ $devices: (
   }
 }
 
+hr {
+  background-color: #ddd;
+  height: 1px;
+  width: 100%;
+}
+
 // override bulma title
 .title, .title:not(:last-child) {
+  font-size: 50px;
   margin-bottom: 10px;
+}
+
+button {
+  cursor: pointer;
 }
 
 .button {
   color: black;
-  cursor: pointer;
   border: solid 1px black;
   text-transform: uppercase;
 }
@@ -86,4 +96,16 @@ button.is-flat {
     margin-top: 0.5rem !important;
     margin-bottom: 0.5rem !important;
   }
+}
+
+.divider-bottom {
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: solid 1px #ddd;
+}
+
+.divider-30 {
+  padding-bottom: 30px;
+  margin-bottom: 30px;
+  border-bottom: solid 1px #ddd;
 }

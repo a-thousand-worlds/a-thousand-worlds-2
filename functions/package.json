@@ -1,28 +1,24 @@
 {
-  "name": "backend",
+  "name": "a-thousand-worlds-functions",
   "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
   "dependencies": {
+    "amazon-buddy": "^2.2.18",
     "axios": "^0.21.0",
     "bookcovers": "^0.0.2",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "firebase-admin": "^9.4.1",
     "firebase-functions": "^3.12.0",
+    "lodash": "^4.17.20",
     "node-isbn": "^1.6.0",
     "sharp": "^0.26.3"
   },
   "engines": {
     "node": "12"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
-    "monitor": "nodemon -i ./node_modules server.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+    "start": "node index.js",
+    "monitor": "nodemon -i ./node_modules index.js"
+  }
 }

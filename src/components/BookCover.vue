@@ -65,12 +65,6 @@ export default {
 <style lang="scss" scoped>
 @import '@/assets/vars.scss';
 
-.divider-bottom {
-  padding-bottom: 0.5rem;
-  margin-bottom: 1.5rem;
-  border-bottom: solid 1px #ddd;
-}
-
 .book-cover-wrapper {
   position: relative;
   top: 0;

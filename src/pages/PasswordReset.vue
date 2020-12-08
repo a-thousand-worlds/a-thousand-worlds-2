@@ -61,10 +61,4 @@ export default {
 
 <style>
 
-.divider-bottom {
-  padding-bottom: 15px;
-  margin-bottom: 38px;
-  border-bottom: solid 1px #ddd;
-}
-
 </style>

@@ -11,10 +11,12 @@
     - App → Firebase SDK snippet → Config
 1. Create Realtime Database in Firebase project
 1. Enable Firebase Storage
-    - Configure CORS policy for storage bucket according to requirements (only production domain, or \* as default setting)
-    - Open the GCP console and start a cloud terminal session by clicking the >\_ icon button in the top navbar.
-    - Click the pencil icon to open the editor, then create the cors.json file and copy (with modifications if required) firebase.storage.cors.json.
-    - Run gsutil cors set cors.json gs://your-bucket
+2. Configure CORS policy for storage bucket
+    - Copy the storage folder path which appears at the top of the Storage → Files table, e.g. `gs://a-thousand-worlds.appspot.com`
+    - Open the [GCP console](console.cloud.google.com) and start a cloud terminal session by clicking the >\_ icon button in the top navbar.
+    - Click the "Open Editor" button with the pencil icon.
+    - Create `cors.json` with the contents of `firebase.storage.cors.json`.
+    - Click the "Open Terminal" button and run `gsutil cors set cors.json gs://a-thousand-worlds.appspot.com`. Use the storage folder path you copied in the first step above.
 1. Enable Email/Password authentication
     - Authentication → Sign-in method
 1. Add `firebase.rules.json` to Realtime Database access rules and publish

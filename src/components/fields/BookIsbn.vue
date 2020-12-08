@@ -15,6 +15,7 @@ export default {
   },
   methods: {
     searchGlobal() {
+      console.log('this.isbn', this.isbn)
       this.loading = true
       this.$emit('isbn-search-state', this.loading)
       isbnSearch(this.isbn)

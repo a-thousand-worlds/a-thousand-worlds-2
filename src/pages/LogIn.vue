@@ -91,6 +91,10 @@ export default {
         email: this.email,
         password: this.password
       }))
+        .then(() => {
+          // eslint-disable-next-line fp/no-mutating-methods
+          this.$router.push({ name: 'Profile' })
+        })
     },
 
     async signup() {
@@ -102,6 +106,10 @@ export default {
         password: this.password,
         ...this.signupData,
       }))
+        .then(() => {
+          // eslint-disable-next-line fp/no-mutating-methods
+          this.$router.push({ name: 'Profile' })
+        })
     },
 
     setActive(active) {
@@ -232,18 +240,6 @@ export default {
 </template>
 
 <style scoped lang="scss">
-
-.divider-bottom {
-  padding-bottom: 15px;
-  margin-bottom: 38px;
-  border-bottom: solid 1px #ddd;
-}
-
-.divider-30 {
-  padding-bottom: 30px;
-  margin-bottom: 30px;
-  border-bottom: solid 1px #ddd;
-}
 
 .field:not(:last-child) {
   margin-bottom: 30px;

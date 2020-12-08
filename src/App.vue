@@ -55,11 +55,11 @@ export default ({
       </div>
     </section>
 
-    <div class="columns" style="margin-top: 0;">
+    <div class="columns m-0">
       <section class="leftbar column is-narrow is-hidden-mobile">
         <left-bar/>
       </section>
-      <section class="main column px-0 pb-50" :class="{'with-bookmarks': $store.state.bookmarksOpen}">
+      <section class="main column px-0 pb-20" :class="{'with-bookmarks': $store.state.bookmarksOpen}">
         <router-view/>
       </section>
       <section v-if="$store.state.bookmarksOpen" class="bookmarks column px-0 pb-50">
@@ -99,6 +99,7 @@ body {
   padding-top: 30px;
   padding-bottom: 30px;
   height: 100%;
+  min-height: 100vh;
   left: 0;
   width: $leftbar-width;
   //overflow-y: scroll;
@@ -120,22 +121,20 @@ body {
 }
 
 .bookmarks {
-  margin-right: calc(#{$rightbar-width} + 0.75rem); // column gap
+  margin-right: $rightbar-width;
   height: 100%;
 
   @include until($tablet) {
     margin-left: 0px;
     margin-right: 0px;
     margin-top: 40px;
-    margin-bottom: 80px;
+    margin-bottom: $mobile-footer-height;
   }
 }
 
 .main {
   padding-top: 30px;
-  min-height: 100vh;
-  border-left: solid 1px $atw-base;
-  margin-right: calc(#{$rightbar-width} + 0.75rem); // column gap
+  margin-right: $rightbar-width;
   z-index: 1;
 
   &.with-bookmarks {
@@ -147,11 +146,15 @@ body {
     margin-left: 0px;
     margin-right: 0px;
     margin-top: 20px;
-    margin-bottom: 80px;
+    margin-bottom: $mobile-footer-height;
 
     &.with-bookmarks {
       display: none;
     }
+  }
+
+  @include from($tablet) {
+    border-left: solid 1px $atw-base;
   }
 }
 
