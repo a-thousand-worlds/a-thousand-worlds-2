@@ -58,13 +58,13 @@ export default {
 
 <template>
 <div>
-  <section v-if="showFilters" v-click-outside="clickOutsideFilters" class="mobile-filters p-2">
+  <section v-if="showFilters" v-click-outside="clickOutsideFilters" class="mobile-filters">
     <ul class="haas-text-centered">
       <li v-for="filter in $store.state.sortedTags" :key="filter.id" @click="toggleFilter(filter.tag)">
         <button v-if="filter.showOnFront" :class="{toggled:filterOn(filter.tag)}" class="p-1 filter">{{filter.tag}}</button>
       </li>
     </ul>
-    <button class="button is-rounded" @click.prevent="resetFilters">Reset Filter</button>
+    <button class="button is-rounded is-small mt-10" @click.prevent="resetFilters">Reset Filter</button>
   </section>
 
   <section class="mobile-bottom-nav is-flex is-justify-content-center has-text-centered is-uppercase">
@@ -112,13 +112,13 @@ export default {
 .mobile-filters {
   border-top: 1px solid $atw-base;
   position: fixed;
-  bottom: 95px;
+  bottom: 0;
   left: 0;
   width: 100%;
   height: auto;
-  z-index: 2;
+  z-index: 1;
   background: #fff;
-  padding-top: 11px;
+  padding: 10px 10px 110px 10px;
 
   button.filter {
     background: none;

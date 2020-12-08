@@ -137,7 +137,6 @@ export default {
 }
 
 .title {
-  font-size: 50px;
   line-height: 1;
   margin-bottom: 0;
 }
@@ -157,8 +156,7 @@ export default {
   @include until($tablet) {
     left: 0;
     width: 100%;
-    // make space for mobile-bottom-nav
-    bottom: 94px;
+    padding-bottom: $mobile-footer-height + 9px;
   }
 
   .button, input {

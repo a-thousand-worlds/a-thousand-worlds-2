@@ -59,12 +59,16 @@ hr {
 
 // override bulma title
 .title, .title:not(:last-child) {
+  font-size: 50px;
   margin-bottom: 10px;
+}
+
+button {
+  cursor: pointer;
 }
 
 .button {
   color: black;
-  cursor: pointer;
   border: solid 1px black;
   text-transform: uppercase;
 }

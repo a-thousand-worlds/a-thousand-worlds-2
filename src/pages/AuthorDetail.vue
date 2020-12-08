@@ -153,7 +153,6 @@ export default {
 }
 
 .title {
-  font-size: 50px;
   line-height: 1;
   margin-bottom: 0;
 }

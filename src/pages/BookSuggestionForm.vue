@@ -260,10 +260,6 @@ export default {
 <style scoped lang="scss">
 @import '@/assets/main.scss';
 
-.title {
-  font-size: 50px;
-}
-
 .text-14 .label {
   font-size: 14px;
 }
