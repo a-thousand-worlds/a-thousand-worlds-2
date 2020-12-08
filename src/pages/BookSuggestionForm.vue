@@ -1,5 +1,7 @@
 <script>
 
+import _ from 'lodash'
+import axios from 'axios'
 import BookTitleField from '@/components/fields/BookTitle'
 import BookIsbnField from '@/components/fields/BookIsbn'
 import PersonField from '@/components/fields/Person'
@@ -117,7 +119,24 @@ export default {
     clearSubmission(si) {
       this.books[si] = null
       this.submissions[si] = this.newSubmissionObject()
-    }
+    },
+    titleChanged: _.debounce(async function(si) {
+      const { author, title } = this.submissions[si]
+      const findISBNUrl = `${process.env.VUE_APP_FIND_ISBN_URL}?keyword=${encodeURIComponent(title || '')}%20${encodeURIComponent(author || '')}`
+      console.log(`Finding ISBN for "${title}"...`, findISBNUrl)
+      axios.get(findISBNUrl)
+        .then(result => {
+          const { isbn, thumbnail } = result.data || {}
+          if (isbn) {
+            this.submissions[si].isbn = isbn
+            this.books[si] = {
+              ...this.books[si],
+              cover: thumbnail,
+            }
+          }
+        })
+
+    }, 500)
   },
   computed: {
     draftable() {
@@ -154,7 +173,7 @@ export default {
 
             <div class="field">
               <label class="label">Book Title</label>
-              <book-title-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].title" @book-selected="fillBook($event, si)"/>
+              <book-title-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].title" @book-selected="fillBook($event, si)" @input="titleChanged(si)"/>
             </div>
 
             <div class="field">
@@ -172,6 +191,7 @@ export default {
               <book-isbn-field
                 :disabled="$uiBusy || (books[si] && books[si].id)"
                 :searchable="true"
+                ref="isbn"
                 v-model="submissions[si].isbn"
                 @book-selected="fillBook($event, si)"
                 @isbn-search-state="isbnGlobalSearchState(si, $event)"
