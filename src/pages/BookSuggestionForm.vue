@@ -185,9 +185,9 @@ export default {
                   <img :src="books[si].cover">
                 </div>
                 <div v-if="books[si].id" class="column">
-                  GREAT MINDS THINK ALIKE.<br>THIS BOOK IS ALREADY IN OUR DIRECTORY.<br>
-                  <button class="button is-primary is-outlined" @click="clearSubmission(si)">
-                    Clear
+                  <p class="mb-10 mr-50 is-uppercase">Great minds think alike. This book is already in our directory.</p>
+                  <button class="button is-rounded" @click="clearSubmission(si)">
+                    Clear Info
                   </button>
                 </div>
                 <div v-if="!books[si].id && submissions[si].isAuthor === null" class="column field">
