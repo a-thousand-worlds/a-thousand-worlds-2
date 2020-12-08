@@ -2,12 +2,14 @@
   "name": "a-thousand-worlds-functions",
   "version": "1.0.0",
   "dependencies": {
+    "amazon-buddy": "^2.2.18",
     "axios": "^0.21.0",
     "bookcovers": "^0.0.2",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "firebase-admin": "^9.4.1",
     "firebase-functions": "^3.12.0",
+    "lodash": "^4.17.20",
     "node-isbn": "^1.6.0",
     "sharp": "^0.26.3"
   },
