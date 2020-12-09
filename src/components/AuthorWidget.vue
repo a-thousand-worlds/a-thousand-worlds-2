@@ -22,7 +22,7 @@ export default {
 </script>
 
 <template>
-  <div class="mb-3 is-uppercase widget" :style="{'font-size': this.fontSize+'%'}">
+  <div class="mb-3 is-uppercase widget" :style="{'font-size': fontSize+'%'}">
     <i v-if="isAuthor" class="fas fa-pencil-alt"></i>
     <i v-if="!isAuthor" class="fas fa-palette"></i>
     <div v-if="nolink === true" class="name ml-2">{{name}}</div>
