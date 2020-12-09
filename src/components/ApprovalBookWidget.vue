@@ -1,5 +1,6 @@
 <script>
 import dayjs from 'dayjs'
+import Jimp from 'jimp'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 
 import AuthorField from '@/components/fields/Author'
@@ -72,10 +73,19 @@ export default {
       return '#ddd'
     },
     coverUrl() {
-      return this.sub.cover.url.length ? this.sub.cover.url : this.sub.cover.base64.length ? `data:image/png;base64,${this.sub.cover.base64}` : ''
+      return this.sub.cover.url.length ? this.sub.cover.url : this.sub.cover.base64.length ? this.sub.cover.base64.startsWith('data:image') ? this.sub.cover.base64 : `data:image/png;base64,${this.sub.cover.base64}` : ''
     }
   },
   methods: {
+    save() {
+
+    },
+    remove() {
+
+    },
+    approve() {
+      console.log('approve', this.sub, this.people)
+    },
     dateFormat(date) {
       const d = dayjs(date)
       return d.format('MM-DD-YYYY')
@@ -93,6 +103,38 @@ export default {
       this.sub.cover.width = book.coverWidth
       this.sub.cover.height = book.coverHeight
       this.sub.cover.base64 = book.cover
+    },
+    addAuthor() {
+      // eslint-disable-next-line fp/no-mutating-methods
+      this.people.push({ name: '', role: 'author' })
+    },
+    setTitle() {
+      console.log(this.sub.title)
+      if (this.sub.title.startsWith('<p>') && this.sub.title.endsWith('</p>')) {
+        this.sub.title = this.sub.title.slice(3, -4)
+      }
+      console.log(this.sub.title)
+    },
+    fileChange(e) {
+      const file = e.target.files[0]
+      const reader = new FileReader()
+      reader.onload = () => {
+        console.log('readed', reader.result)
+        Jimp.read(reader.result, (err, img) => {
+          if (err) {
+            console.log('jimp error', err)
+          }
+          if (img) {
+            this.sub.cover.base64 = reader.result
+            this.sub.cover.width = img.bitmap.width
+            this.sub.cover.height = img.bitmap.height
+          }
+        })
+      }
+      reader.onerror = err => {
+        console.log('rreader error', err)
+      }
+      reader.readAsDataURL(file)
     }
   }
 }
@@ -111,40 +153,45 @@ export default {
     </div>
     <div class="column is-2">
       <div class="cover-wrapper" :style="{'padding-top': coverRatio +'%', 'background-color': coverBg, 'background-image': 'url('+coverUrl+')'}">
+        <label class="upload-icon" for="cover-upload">
+          <i class="fas fa-file-upload"></i>
+        </label>
+        <input @change.prevent="fileChange($event)" type="file" id="cover-upload" class="cover-file-uploader">
       </div>
     </div>
     <div class="column is-3">
       <h3 class="title">
-        <ckeditor :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" v-model="sub.title"/>
+        <ckeditor :disabled="busy" @blur="setTitle()" class="oneline" :editor="editor" :config="ckConfig" v-model="sub.title"/>
       </h3>
       <div>
         <isbn-field
           v-model="sub.isbn"
+          :searchDb="true"
           @isbn-search-state="isbnSearchState"
           @isbn-search-result="isbnSearchResult"
         />
       </div>
       <div v-for="(person, i) of people" :key="i">
-        <author-field :disabled="busy" v-model="people[i]"/>
+        <author-field :disabled="busy" :searchDb="true" v-model="people[i]"/>
       </div>
       <div v-if="canAddAuthor">
-        <button :disabled="busy" class="is-flat">
+        <button @click="addAuthor()" :disabled="busy" class="is-flat">
           <i class="fas fa-plus"></i>
         </button>
       </div>
     </div>
-    <div class="column is-2">
+    <div class="column is-2" style="text-align:justify">
       <ckeditor :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" v-model="sub.description"/>
     </div>
     <div class="column is-2">
       <div class="field is-grouped">
         <div class="control">
-          <button class="is-flat is-uppercase is-underlined">
+          <button @click="remove()" class="is-flat is-uppercase is-underlined">
             Delete
           </button>
         </div>
         <div class="control">
-          <button class="is-flat is-uppercase is-underlined">
+          <button @click="approve()" class="is-flat is-uppercase is-underlined">
             Approve
           </button>
         </div>
@@ -178,6 +225,27 @@ input[type="checkbox"] {
 .cover-wrapper {
   width: 100%;
   background-size: cover;
+  position: relative;
+
+  .upload-icon {
+    position: absolute;
+    top: calc(50% - 2.0rem);
+    left: calc(50% - 0.9rem);
+    font-size: 3rem;
+    display: none;
+  }
+
+  &:hover {
+    .upload-icon {
+      display: block;
+      cursor: pointer;
+    }
+  }
+
+}
+
+#cover-upload {
+  display: none;
 }
 
 </style>

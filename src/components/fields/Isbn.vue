@@ -1,5 +1,5 @@
 <script>
-import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
+// import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 
 import { isbnSearch } from '@/utils'
 import AuthorWidget from '@/components/AuthorWidget'
@@ -15,7 +15,7 @@ export default {
       isbn: this.modelValue || '',
       loading: false,
       searches: [],
-      ckeditor: BalloonEditor
+      mode: 'view'
     }
   },
   methods: {
@@ -55,8 +55,38 @@ export default {
       this.$emit('update:modelValue', this.isbn)
       this.$emit('book-selected', b)
     },
+    onDivClick() {
+      this.mode = 'edit'
+      // on the moment of function execution $refs.input
+      // is still not exists beacuse of v-if
+      // so timeout 0 used to wait it to be created
+      setTimeout(() => {
+        this.$refs.input.focus()
+      }, 0)
+    },
+    onClickOutside(e) {
+      this.searches = []
+      if (e.target === this.$refs.input) {
+        return
+      }
+      this.mode = 'view'
+    },
     onEnter() {
-      console.log('on enter')
+      this.searches = []
+      this.mode = 'view'
+    },
+    onInputBlur() {
+      if (this.searches.length) {
+        return
+      }
+      this.mode = 'view'
+    },
+    onEsc() {
+      if (this.searches.length) {
+        this.searches = []
+        return
+      }
+      this.mode = 'view'
     }
   },
   watch: {
@@ -76,9 +106,19 @@ export default {
         <i class="fas fa-search"></i>
       </button>
     </div>
-    <div class="control">
-      <ckeditor class="oneline" @keyup.enter.prevent.stop="onEnter" v-model="isbn" :editor="ckeditor" @input="doSearch"/>
-      <div v-click-outside="hideSearch" v-if="searches.length" class="search-wrap">
+    <div class="control w-50">
+      <div class="w-50" v-if="mode === 'view'" @click="onDivClick()">{{isbn}}</div>
+      <input
+        v-if="mode === 'edit'"
+        @blur="onInputBlur"
+        @keyup.enter="onEnter"
+        @keyup.escape="onEsc"
+        @input="doSearch"
+        ref="input"
+        type="text"
+        class="input"
+        v-model="isbn">
+      <div v-click-outside="onClickOutside" v-if="searches.length" class="search-wrap">
         <div class="search-results">
           <div @click.prevent="fillBook(res, si)" class="media p-2" v-for="res of searches" :key="res.id">
             <div class="media-left">
@@ -100,12 +140,25 @@ export default {
 
 <style lang="scss" scoped>
 
+.input {
+  margin-top: -0.25rem;
+  margin-left: -0.25rem;
+  padding: 0.2rem;
+  height: 2rem;
+}
+
+.w-50 {
+  min-width: 50%;
+  min-height: 24px;
+}
+
 .w-100 {
   width: 100%;
 }
 
 .search-wrap {
   position: relative;
+  min-width: 250px;
   .search-results {
     position: absolute;
     width: 100%;
@@ -126,6 +179,10 @@ export default {
 
       &:hover {
         background: #eee;
+      }
+
+      img {
+        max-width: 50px;
       }
     }
   }
