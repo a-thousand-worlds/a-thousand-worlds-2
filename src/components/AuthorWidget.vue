@@ -8,14 +8,11 @@ export default {
     }
   },
   created() {
-    this.person = this.$store.state.peopleList.reduce((acc, x) => x.name === this.name ? x : acc, null)
+    this.person = this.$store.state.peopleList.find(x => x.name === this.name)
   },
   computed: {
     isAuthor() {
-      if (!this.person) {
-        return true
-      }
-      return this.person.role === 'author'
+      return !this.person || this.person.role === 'author'
     }
   }
 }
