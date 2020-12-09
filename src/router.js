@@ -48,9 +48,9 @@ const routes = [
     name: 'Signup',
     component: () => import(/* webpackChunkName: "guest" */ './pages/LogIn.vue')
   }, { // User authorized paged
-    path: '/profile',
-    name: 'Profile',
-    component: () => import(/* webpackChunkName: "user" */ './pages/Profile.vue'),
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: () => import(/* webpackChunkName: "user" */ './pages/Dashboard.vue'),
     meta: {
       access: 'authorized'
     }

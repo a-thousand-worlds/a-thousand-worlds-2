@@ -23,7 +23,7 @@ export default {
       <li><router-link :to="{name: 'Support'}">Support</router-link></li>
       <li><router-link :to="{name: 'About'}">About</router-link></li>
       <li v-if="!$iam('authorized')"><router-link :to="{name: 'LogIn'}">LogIn</router-link></li>
-      <li v-if="$iam('authorized')"><router-link :to="{name: 'Profile'}">Profile</router-link></li>
+      <li v-if="$iam('authorized')"><router-link :to="{name: 'Dashboard'}">Dashboard</router-link></li>
       <li v-if="$iam('authorized')"><router-link :to="{name: 'LogOut'}">LogOut</router-link></li>
     </ul>
     <ul v-if="$iam('superadmin')" class="menu-list mt-5">

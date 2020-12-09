@@ -93,7 +93,7 @@ export default {
       }))
         .then(() => {
           // eslint-disable-next-line fp/no-mutating-methods
-          this.$router.push({ name: 'Profile' })
+          this.$router.push({ name: 'Dashboard' })
         })
     },
 
@@ -108,7 +108,7 @@ export default {
       }))
         .then(() => {
           // eslint-disable-next-line fp/no-mutating-methods
-          this.$router.push({ name: 'Profile' })
+          this.$router.push({ name: 'Dashboard' })
         })
     },
 
@@ -156,7 +156,7 @@ export default {
       if (!prev && !!next) {
         if (this.$iam('creator') || this.$iam('contributor') || this.$iam('admin') || this.$iam('superadmin')) {
           // eslint-disable-next-line fp/no-mutating-methods
-          this.$router.push({ name: 'Profile' })
+          this.$router.push({ name: 'Dashboard' })
         }
         else {
           // eslint-disable-next-line fp/no-mutating-methods
