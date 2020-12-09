@@ -68,10 +68,6 @@ const routes = [
     meta: {
       access: ['contributor', 'admin', 'superadmin']
     }
-  }, {
-    path: '/logout',
-    name: 'LogOut',
-    component: () => import(/* webpackChunkName: "user" */ './pages/LogOut.vue')
   }, { // Admin pages
     path: '/tags-manager',
     name: 'TagsManager',

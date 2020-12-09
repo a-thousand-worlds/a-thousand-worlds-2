@@ -1,4 +1,5 @@
 <script>
+import firebase from '../firebase'
 import InstagramIcon from '../assets/icons/instagram.svg'
 import TwitterIcon from '../assets/icons/twitter.svg'
 
@@ -6,6 +7,14 @@ export default {
   components: {
     InstagramIcon,
     TwitterIcon,
+  },
+  methods: {
+    logout() {
+      firebase.auth().signOut()
+
+      // eslint-disable-next-line fp/no-mutating-methods
+      this.$router.push({ name: 'LogIn' })
+    }
   },
 }
 </script>
@@ -19,9 +28,9 @@ export default {
       <li><router-link :to="{name: 'People'}">People</router-link></li>
       <li><router-link :to="{name: 'Support'}">Support</router-link></li>
       <li><router-link :to="{name: 'About'}">About</router-link></li>
-      <li v-if="!$iam('authorized')"><router-link :to="{name: 'LogIn'}">LogIn</router-link></li>
+      <li v-if="!$iam('authorized')"><router-link :to="{name: 'LogIn'}">Log In</router-link></li>
       <li v-if="$iam('authorized')"><router-link :to="{name: 'Dashboard'}">Dashboard</router-link></li>
-      <li v-if="$iam('authorized')"><router-link :to="{name: 'LogOut'}">LogOut</router-link></li>
+      <li v-if="$iam('authorized')"><a @click.prevent="logout">Log Out</a></li>
     </ul>
 
     <ul v-if="$iam('superadmin')" class="menu-list mt-5">
