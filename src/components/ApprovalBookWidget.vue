@@ -181,7 +181,7 @@ export default {
     <div class="column is-2">
       <h3 class="title">BOOK</h3>
       <div class="createdAt font-mono">{{dateFormat(sub.createdAt)}}</div>
-      <div class="createdBy font-mono">{{submitter.firstName}} {{submitter.lastName}}</div>
+      <div class="createdBy font-mono">{{submitter.name}}</div>
     </div>
     <div class="column is-2">
       <div class="cover-wrapper" :style="{'padding-top': coverRatio +'%', 'background-color': coverBg, 'background-image': 'url('+coverUrl+')'}">

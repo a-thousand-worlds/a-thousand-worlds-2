@@ -10,6 +10,7 @@ export default {
       : window.location.pathname === '/signup' ? 'signup'
       : null,
       email: '',
+      name: '',
       // all options for enagement checkboxes
       engagementCategories: [
         { id: 0, text: 'CATEGORY' },
@@ -58,7 +59,7 @@ export default {
           this.error = null
         })
         .catch(err => {
-          console.error('err', err)
+          console.error(err)
           this.error = {
             // reword wrong-password error from "The password is invalid or the user does not have a password."
             message: err.code === 'auth/wrong-password' ? 'Wrong email or password'
@@ -104,6 +105,7 @@ export default {
 
       return this.handleResponse(this.$store.dispatch('userRegister', {
         email: this.email,
+        name: this.name,
         password: this.password,
         ...this.signupData,
       })
@@ -129,6 +131,13 @@ export default {
     validate() {
 
       this.error = null
+
+      if (this.isSignup && !this.name.length) {
+        this.error = {
+          message: 'Please check required fields',
+          fields: { ...this.error?.fields, name: true },
+        }
+      }
 
       if (!this.email.length) {
         this.error = {
@@ -185,6 +194,13 @@ export default {
         </div>
 
         <h1 class="title page-title divider-bottom">{{ isSignup ? 'Sign up for an account' : isLogin ? 'Log In' : null }}</h1>
+
+        <div class="field" v-if="isSignup">
+          <label :class="['label', { error: hasError('name') }]">NAME</label>
+          <div class="control">
+            <input :disabled="loading" type="text" class="input" v-model="name" @input="revalidate">
+          </div>
+        </div>
 
         <div class="field">
           <label :class="['label', { error: hasError('email') }]">EMAIL</label>

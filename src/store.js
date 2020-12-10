@@ -572,11 +572,14 @@ const store = createStore({
       ctx.commit('setStage0Load')
     },
 
-    userLogin(ctx, credentials) {
-      return firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password)
+    userLogin(ctx, data) {
+      return firebase.auth().signInWithEmailAndPassword(data.email, data.password)
     },
-    userRegister(ctx, credentials) {
-      return firebase.auth().createUserWithEmailAndPassword(credentials.email, credentials.password)
+
+    async userRegister(ctx, { email, name, organization, otherEngagementCategory, password }) {
+      const { user } = await firebase.auth().createUserWithEmailAndPassword(email, password)
+      await store.commit('setUser', { uid: user.uid })
+      await store.dispatch('saveProfile', { email, name, organization, otherEngagementCategory })
     },
   }
 })
@@ -594,8 +597,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     u.providerData = user.providerData
     u.profile = {
       email: u.email,
-      firstName: '',
-      lastName: '',
+      name: '',
       bundles: [],
       bookmarks: {},
       submissions: [],
