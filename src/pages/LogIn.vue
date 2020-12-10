@@ -61,9 +61,9 @@ export default {
           console.error('err', err)
           this.error = {
             // reword wrong-password error from "The password is invalid or the user does not have a password."
-            message: err.code === 'auth/wrong-password'
-              ? 'Wrong email or password'
-              : err.message
+            message: err.code === 'auth/wrong-password' ? 'Wrong email or password'
+            : err.code === 'auth/user-not-found' ? 'Email not registered'
+            : err.message
           }
           this.loading = false
         })
@@ -90,11 +90,12 @@ export default {
       return this.handleResponse(this.$store.dispatch('userLogin', {
         email: this.email,
         password: this.password
-      }))
+      })
         .then(() => {
           // eslint-disable-next-line fp/no-mutating-methods
           this.$router.push({ name: 'Dashboard' })
         })
+      )
     },
 
     async signup() {
@@ -105,11 +106,12 @@ export default {
         email: this.email,
         password: this.password,
         ...this.signupData,
-      }))
+      })
         .then(() => {
           // eslint-disable-next-line fp/no-mutating-methods
           this.$router.push({ name: 'Dashboard' })
         })
+      )
     },
 
     setActive(active) {
