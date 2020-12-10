@@ -57,7 +57,7 @@ const routes = [
   }, {
     path: '/profile',
     name: 'Profile',
-    component: () => import(/* webpackChunkName: "user" */ './pages/Profile.vue'),
+    component: () => import(/* webpackChunkName: "user" */ './pages/LogIn.vue'),
     meta: {
       access: 'authorized'
     }

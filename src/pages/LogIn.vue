@@ -8,9 +8,10 @@ export default {
       // the active tab (login or signup)
       active: window.location.pathname === '/login' ? 'login'
       : window.location.pathname === '/signup' ? 'signup'
+      : window.location.pathname === '/profile' ? 'profile'
       : null,
-      email: '',
-      name: '',
+      email: this.$store.state.user?.profile?.email || '',
+      name: this.$store.state.user?.profile?.name || '',
       // all options for enagement checkboxes
       engagementCategories: [
         { id: 0, text: 'CATEGORY' },
@@ -22,8 +23,10 @@ export default {
         { id: 6, text: 'CATEGORY' },
         { id: 7, text: 'CATEGORY' },
       ],
+      disableAfterSave: false,
       error: null,
       loading: false,
+      message: '',
       password: '',
       signupData: {
         organization: '',
@@ -42,6 +45,9 @@ export default {
     },
     isSignup() {
       return this.active === 'signup'
+    },
+    isProfile() {
+      return this.active === 'profile'
     },
     hasFieldErrors() {
       return Object.keys(this.error?.fields || {}).length > 0
@@ -82,6 +88,9 @@ export default {
       else if (this.isLogin) {
         await this.login()
       }
+      else if (this.isProfile) {
+        await this.saveProfile()
+      }
     },
 
     async login() {
@@ -116,6 +125,31 @@ export default {
       )
     },
 
+    async saveProfile() {
+
+      if (!this.validate()) return
+
+      clearTimeout(this.messageTimeout)
+      clearTimeout(this.disableAfterSave)
+      this.disableAfterSave = true
+
+      await this.handleResponse(this.$store.dispatch('saveProfile', {
+        name: this.name,
+        ...this.signupData,
+      })
+        .then(() => {
+          this.message = 'Profile saved'
+          this.messageTimeout = setTimeout(() => {
+            this.message = ''
+          }, 5000)
+        })
+      )
+
+      this.disableAfterSaveTimeout = setTimeout(() => {
+        this.disableAfterSave = false
+      }, 1000)
+    },
+
     setActive(active) {
       this.active = active
 
@@ -123,6 +157,7 @@ export default {
       this.$router.push({
         name: active === 'signup' ? 'Signup'
         : active === 'login' ? 'LogIn'
+        : active === 'profile' ? 'Profile'
         : null
       })
     },
@@ -132,21 +167,21 @@ export default {
 
       this.error = null
 
-      if (this.isSignup && !this.name.length) {
+      if ((this.active === 'signup' || this.active === 'profile') && !this.name.length) {
         this.error = {
           message: 'Please check required fields',
           fields: { ...this.error?.fields, name: true },
         }
       }
 
-      if (!this.email.length) {
+      if ((this.active === 'signup' || this.active === 'login') && !this.email.length) {
         this.error = {
           message: 'Please check required fields',
           fields: { ...this.error?.fields, email: true },
         }
       }
 
-      if (!this.password.length) {
+      if ((this.active === 'signup' || this.active === 'login') && !this.password.length) {
         this.error = {
           message: 'Please check required fields',
           fields: { ...this.error?.fields, password: true },
@@ -174,6 +209,8 @@ export default {
           this.$router.push({ name: 'Home' })
         }
       }
+
+      this.name = this.$store.state.user?.profile?.name
     }
   }
 }
@@ -188,35 +225,40 @@ export default {
       <form class="is-flex-grow-1" style="max-width: 480px;" @submit.prevent="submit">
 
         <!-- Cannot use are-small and is-rounded until #3208 is merged. See https://github.com/jgthms/bulma/pull/3208. -->
-        <div class="buttons is-centered has-addons">
+        <div class="buttons is-centered has-addons" v-if="active === 'login' || active === 'signup'">
           <button :class="['button', 'is-small', 'is-rounded', ...[isSignup ? ['is-selected', 'is-dark'] : null]]" style="width: 50%; max-width: 240px;" @click.prevent="setActive('signup')">Sign Up</button>
           <button :class="['button', 'is-small', 'is-rounded', ...[isLogin ? ['is-selected', 'is-dark'] : null]]" style="width: 50%; max-width: 240px;" @click.prevent="setActive('login')">Log In</button>
         </div>
 
-        <h1 class="title page-title divider-bottom">{{ isSignup ? 'Sign up for an account' : isLogin ? 'Log In' : null }}</h1>
+        <h1 class="title page-title divider-bottom">{{
+          isSignup ? 'Sign up for an account'
+          : isLogin ? 'Log In'
+          : isProfile ? 'Profile'
+          : null
+        }}</h1>
 
-        <div class="field" v-if="isSignup">
+        <div class="field" v-if="active === 'signup' || active === 'profile'">
           <label :class="['label', { error: hasError('name') }]">NAME</label>
           <div class="control">
             <input :disabled="loading" type="text" class="input" v-model="name" @input="revalidate">
           </div>
         </div>
 
-        <div class="field">
+        <div class="field" v-if="active ==='login' || active === 'signup'">
           <label :class="['label', { error: hasError('email') }]">EMAIL</label>
           <div class="control">
             <input :disabled="loading" type="email" class="input" v-model="email" @input="revalidate">
           </div>
         </div>
 
-        <div class="field">
+        <div class="field" v-if="active === 'login' || active === 'signup'">
           <label :class="['label', { error: hasError('password') }]">PASSWORD</label>
           <div class="control">
             <input :disabled="loading" type="password" class="input" v-model="password" @input="revalidate">
           </div>
         </div>
 
-        <div class="field" v-if="isSignup">
+        <div class="field" v-if="active === 'signup' || active === 'profile'">
           <label class="label is-uppercase">How do you engage with books?</label>
           <div style="column-count: 2;">
             <div v-for="category of engagementCategories" :key="category.id" class="control columns-2">
@@ -240,7 +282,11 @@ export default {
         </div>
 
         <div class="field my-4">
-          <input :disabled="loading || hasFieldErrors" type="submit" class="button is-primary is-rounded is-fullwidth" :class="{'is-loading':loading}" :value="isLogin ? 'LOG IN' : isSignup ? 'CREATE ACCOUNT' : null"/>
+          <input :disabled="loading || hasFieldErrors || disableAfterSave" type="submit" class="button is-primary is-rounded is-fullwidth is-uppercase" :class="{'is-loading':loading}" :value="isLogin ? 'Log In' : isSignup ? 'Create Account' : isProfile ? 'Save' : null"/>
+        </div>
+
+        <div v-if="message" class="field">
+          <p class="message has-text-centered is-uppercase">{{message}}</p>
         </div>
 
         <div v-if="error" class="field">

@@ -31,9 +31,13 @@ export default {
 
 <template>
 
-<div class="page">
+<div class="page" style="position: relative">
+
   <h1 class="title page-title">Your Dashboard</h1>
-  <router-link :to="{ name: 'Profile' }">Edit your profile</router-link>
+
+  <div class="header-options mr-10">
+    <router-link :to="{ name: 'Profile' }" style="color: black;">Edit your profile</router-link>
+  </div>
 
   <section v-if="canSuggest" class="section bordered-top">
     <h2 class="title">Suggest a book or bundle for A Thousand Worlds</h2>
@@ -74,6 +78,17 @@ export default {
 
 h2.title {
   font-size: 1.5rem;
+}
+
+.header-options {
+  display: flex;
+  justify-content: center;
+
+  @include from($desktop) {
+    position: absolute;
+    top: 35px;
+    right: 0;
+  }
 }
 
 .submission-widget {
