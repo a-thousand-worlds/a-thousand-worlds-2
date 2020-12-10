@@ -32,8 +32,7 @@ export default {
   height: 80px;
   background: $grey;
   border-radius: 50%;
-  margin-left: 20px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 </style>

@@ -22,7 +22,7 @@ export default {
 <template>
   <div>
     <ul class="menu-list is-flex-grow-1">
-      <li><router-link :to="{name: 'Home'}">Books</router-link></li>
+      <li><router-link :to="{name: 'Home'}" style="padding-bottom: 10px;">Books</router-link></li>
       <li id="books-filter-menu"></li>
       <li><router-link :to="{name: 'Bundles'}">Book Bundles</router-link></li>
       <li><router-link :to="{name: 'People'}">People</router-link></li>
@@ -42,8 +42,8 @@ export default {
 
     <ul class="menu-list mt-50">
       <li>
-        <a href="https://instagram.com" target="_blank" class="inline"><InstagramIcon /></a>
-        <a href="https://twitter.com" target="_blank" class="inline p-0"><TwitterIcon /></a>
+        <a href="https://instagram.com" target="_blank" class="inline pr-20"><InstagramIcon /></a>
+        <a href="https://twitter.com" target="_blank" class="inline"><TwitterIcon /></a>
       </li>
     </ul>
   </div>
@@ -56,7 +56,7 @@ export default {
   font-size: 18px;
   font-weight: bold;
   text-transform: uppercase;
-  padding-bottom: 0;
+  padding: 0 0 20px 0;
 
   &:hover {
     background: none;

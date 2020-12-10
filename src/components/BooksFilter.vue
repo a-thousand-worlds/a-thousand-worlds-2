@@ -16,10 +16,10 @@ export default {
 </script>
 
 <template>
-  <aside class="menu ml-3 mb-5">
+  <aside class="menu mb-5">
     <ul class="menu-list submenu">
       <li v-for="filter in $store.state.sortedTags" :key="filter.id" @click="toggleFilter(filter.tag)">
-        <button v-if="filter.showOnFront" :class="{toggled:filterOn(filter.tag)}" class="p-1">{{filter.tag}}</button>
+        <button v-if="filter.showOnFront" :class="{toggled:filterOn(filter.tag)}" class="pb-2" style="padding-left: 2px;">{{filter.tag}}</button>
       </li>
     </ul>
     <button class="button is-rounded" @click.prevent="resetFilters">Reset Filter</button>

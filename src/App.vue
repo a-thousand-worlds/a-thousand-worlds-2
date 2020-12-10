@@ -56,7 +56,7 @@ export default ({
     </section>
 
     <div class="columns m-0">
-      <section class="leftbar column is-narrow is-hidden-mobile">
+      <section class="leftbar column is-narrow is-hidden-mobile px-20 py-30">
         <left-bar/>
       </section>
       <section class="main column px-0 pb-20" :class="{'with-bookmarks': $store.state.bookmarksOpen}">
@@ -92,8 +92,6 @@ body {
 @import '@/assets/main.scss';
 
 .leftbar {
-  padding-top: 30px;
-  padding-bottom: 30px;
   height: 100%;
   min-height: 100vh;
   left: 0;

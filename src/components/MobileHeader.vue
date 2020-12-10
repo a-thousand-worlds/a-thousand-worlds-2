@@ -60,6 +60,7 @@ export default {
 }
 
 .submenu {
+  margin-top: 20px;
   position: fixed;
   left: 0;
   width: 100%;
@@ -67,12 +68,6 @@ export default {
   background: #fff;
   z-index: 4;
   // opacity: 0.8;
-
-  // override MainMenu's line-height
-  ::v-deep .menu-list {
-    line-height: 2;
-  }
-
 }
 
 .back {
