@@ -6,7 +6,9 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint src functions vue.config.js",
-    "deploy": "npm run build && firebase deploy --only hosting"
+    "deploy": "npm run build && firebase deploy --only hosting",
+    "deploy:staging": "npm run build && npm run host:staging",
+    "host:staging": "firebase hosting:channel:deploy staging --expires 30d"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-build-balloon": "^23.1.0",
