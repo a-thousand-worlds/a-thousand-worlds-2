@@ -510,6 +510,10 @@ const store = createStore({
       })
     },
 
+    deleteSubmission(ctx, id) {
+
+    },
+
     // this method doesn't use store to keep values
     // it used only by administrators
     loadContributorsSubmissions(ctx) {

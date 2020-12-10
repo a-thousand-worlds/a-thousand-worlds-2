@@ -56,6 +56,9 @@ export default {
       this.$emit('book-selected', b)
     },
     onDivClick() {
+      if (this.disabled) {
+        return
+      }
       this.mode = 'edit'
       // on the moment of function execution $refs.input
       // is still not exists beacuse of v-if
@@ -107,7 +110,7 @@ export default {
       </button>
     </div>
     <div class="control w-50">
-      <div class="w-50" v-if="mode === 'view'" @click="onDivClick()">{{isbn}}</div>
+      <div class="w-50 pointer" :class="{disabled:disabled}" v-if="mode === 'view'" @click="onDivClick()">{{isbn}}</div>
       <input
         v-if="mode === 'edit'"
         @blur="onInputBlur"
@@ -140,11 +143,22 @@ export default {
 
 <style lang="scss" scoped>
 
+.is-flat {
+  margin-left: -9px;
+}
+
 .input {
   margin-top: -0.25rem;
   margin-left: -0.25rem;
   padding: 0.2rem;
   height: 2rem;
+}
+
+.pointer {
+  cursor: text;
+  &.disabled {
+    color: #ddd;
+  }
 }
 
 .w-50 {

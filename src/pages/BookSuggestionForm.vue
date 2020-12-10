@@ -147,7 +147,7 @@ export default {
     },
     submitable() {
       return this.submissions
-        .map(x => x.title.length && x.author.length && Object.keys(x.tags).length)
+        .map(x => x.title.length && x.author.length)
         .reduce((acc, x) => x && acc, true)
         && this.books.reduce((acc, x) => x && x.id ? false : acc, true)
     }
@@ -238,9 +238,9 @@ export default {
                   </label>
                 </div>
                 <div>
-                  <input :disabled="$uiBusy" type="checkbox" class="checkbox mr-3 mb-3" v-model="otherTag">
+                  <input :disabled="$uiBusy" type="checkbox" class="checkbox mr-3 mb-3" v-model="submissions[si].tags.other">
                   <label class="label d-inline">Other</label>
-                  <input :disabled="$uiBusy" class="input" type="text" v-model="submissions[si].otherTags">
+                  <input :disabled="$uiBusy" class="input" type="text" v-model="submissions[si].otherTag">
                 </div>
               </div>
             </div>

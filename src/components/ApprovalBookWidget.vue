@@ -4,11 +4,13 @@ import Jimp from 'jimp'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 
 import AuthorField from '@/components/fields/Author'
+import MultiPersonField from '@/components/fields/MultiPerson'
 import IsbnField from '@/components/fields/Isbn'
 
 export default {
   components: {
     AuthorField,
+    MultiPersonField,
     IsbnField
   },
   props: ['modelValue', 'checked'],
@@ -26,6 +28,7 @@ export default {
   },
   created() {
     // console.log('approve book', this.sub)
+    /*
     const authors = this.sub.author.split(',')
       .map(name => name.trim())
       .map(name => ({ role: 'author', name }))
@@ -34,6 +37,7 @@ export default {
       .map(name => ({ role: 'illustrator', name }))
     this.people = [...authors, ...illustrators]
       .filter(x => x !== '')
+    */
     this.$store.dispatch('loadContributorProfile', this.sub.createdBy)
       .then(user => {
         this.submitter = user
@@ -63,9 +67,6 @@ export default {
         toolbar: []
       }
     },
-    canAddAuthor() {
-      return this.people.reduce((acc, author) => !author.name.length ? false : acc, true)
-    },
     coverRatio() {
       return this.sub.cover.height / this.sub.cover.width * 100
     },
@@ -77,14 +78,43 @@ export default {
     }
   },
   methods: {
-    save() {
-
+    approve() {
+      let warnings = []
+      if (!this.sub.title
+          || !this.sub.title.length
+          || !this.sub.author
+          || !this.sub.author.length) {
+        alert('Book can\'t be created without title and author')
+        return
+      }
+      if (!this.sub.isbn || !this.sub.isbn.length) {
+        warnings = [...warnings, 'ISBN is not defined']
+      }
+      if (!this.sub.cover || !this.sub.cover.base64 || !this.sub.cover.base64.length) {
+        warnings = [...warnings, 'no book cover - upload manually or search by isbn?']
+      }
+      if (!this.sub.description || !this.sub.description.length) {
+        warnings = [...warnings, 'no book description - add manually or search by isbn?']
+      }
+      if (!Object.keys(this.sub.tags) || (this.sub.tags.other && !this.sub.otherTag.length)) {
+        warnings = [...warnings, 'book is not categorized - you can add tags manually']
+      }
+      if (warnings.length) {
+        if (confirm('Warnings:\r' + warnings.join('\r') + '\r\rCreate book?')) {
+          console.log('do approve', this.sub)
+        }
+      }
+      else {
+        console.log('do approve', this.sub)
+      }
     },
     remove() {
-
+      if (confirm(`Delete book suggestion <${this.sub.title}>?`)) {
+        console.log('removing sub', this.sub.id)
+      }
     },
-    approve() {
-      console.log('approve', this.sub, this.people)
+    save() {
+      console.log('save back', this.sub)
     },
     dateFormat(date) {
       const d = dayjs(date)
@@ -109,11 +139,13 @@ export default {
       this.people.push({ name: '', role: 'author' })
     },
     setTitle() {
+      /*
       console.log(this.sub.title)
       if (this.sub.title.startsWith('<p>') && this.sub.title.endsWith('</p>')) {
         this.sub.title = this.sub.title.slice(3, -4)
       }
       console.log(this.sub.title)
+      */
     },
     fileChange(e) {
       const file = e.target.files[0]
@@ -153,8 +185,11 @@ export default {
     </div>
     <div class="column is-2">
       <div class="cover-wrapper" :style="{'padding-top': coverRatio +'%', 'background-color': coverBg, 'background-image': 'url('+coverUrl+')'}">
-        <label class="upload-icon" for="cover-upload">
-          <i class="fas fa-file-upload"></i>
+        <div v-if="busy" class="upload-icon loading">
+          <i class="fas fa-spinner fa-pulse fa-fw"></i>
+        </div>
+        <label v-if="!busy" class="upload-icon" for="cover-upload">
+          <i class="fas fa-file-upload fa-fw"></i>
         </label>
         <input @change.prevent="fileChange($event)" type="file" id="cover-upload" class="cover-file-uploader">
       </div>
@@ -167,17 +202,19 @@ export default {
         <isbn-field
           v-model="sub.isbn"
           :searchDb="true"
+          :disabled="busy"
           @isbn-search-state="isbnSearchState"
           @isbn-search-result="isbnSearchResult"
         />
       </div>
+      <div>
+        <multi-person-field :disabled="busy" :role="'author'" :search-db="false" v-model="sub.author"/>
+      </div>
+      <div>
+        <multi-person-field :disabled="busy" :role="'illustrator'" :search-db="false" v-model="sub.illustrator"/>
+      </div>
       <div v-for="(person, i) of people" :key="i">
         <author-field :disabled="busy" :searchDb="true" v-model="people[i]"/>
-      </div>
-      <div v-if="canAddAuthor">
-        <button @click="addAuthor()" :disabled="busy" class="is-flat">
-          <i class="fas fa-plus"></i>
-        </button>
       </div>
     </div>
     <div class="column is-2" style="text-align:justify">
@@ -186,16 +223,43 @@ export default {
     <div class="column is-2">
       <div class="field is-grouped">
         <div class="control">
-          <button @click="remove()" class="is-flat is-uppercase is-underlined">
+          <button :class="{disabled:busy}" :disabled="busy" @click="remove()" class="is-flat is-uppercase is-underlined">
             Delete
           </button>
         </div>
         <div class="control">
-          <button @click="approve()" class="is-flat is-uppercase is-underlined">
+          <button :class="{disabled:busy}" :disabled="busy" @click="approve()" class="is-flat is-uppercase is-underlined">
             Approve
           </button>
         </div>
       </div>
+    </div>
+  </div>
+  <div class="columns">
+    <div class="column is-7 is-offset-3">
+
+      <div class="field">
+        <label class="label">Categories</label>
+        <div class="columns2">
+
+          <div v-for="tag of $store.state.sortedTags" :key="tag.id" class="control">
+            <input :disabled="busy" :id="tag.id" :name="tag.id" type="checkbox" class="checkbox mr-3" v-model="sub.tags[tag.id]">
+            <label :class="{disabled:busy}" class="label is-inline" :for="tag.id">
+              {{tag.tag}} <i v-if="tag.showOnFront" class="fas fa-check has-text-primary ml-1"></i>
+            </label>
+          </div>
+
+          <div class="control">
+            <input :disabled="busy" id="otherTagCheckbox" type="checkbox" class="checkbox mr-3" v-model="sub.tags.other">
+            <label :class="{disabled:busy}" class="label is-inline" for="otherTagCheckbox">
+              Other
+            </label>
+            <input :disabled="busy || !sub.tags.other" type="text" class="input is-inline"  v-model="sub.otherTag"/>
+          </div>
+
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -222,6 +286,10 @@ input[type="checkbox"] {
   height: 25px;
 }
 
+.ck-read-only {
+  color: #aaa;
+}
+
 .cover-wrapper {
   width: 100%;
   background-size: cover;
@@ -229,10 +297,14 @@ input[type="checkbox"] {
 
   .upload-icon {
     position: absolute;
-    top: calc(50% - 2.0rem);
-    left: calc(50% - 0.9rem);
+    top: calc(50% - 36px);
+    left: calc(50% - 30px);
     font-size: 3rem;
     display: none;
+
+    &.loading {
+      display: block;
+    }
   }
 
   &:hover {
@@ -246,6 +318,19 @@ input[type="checkbox"] {
 
 #cover-upload {
   display: none;
+}
+
+.columns2 {
+  column-count: 2;
+
+  .label {
+    position: relative;
+    top: -7px;
+  }
+
+  .input.is-inline {
+    margin-top: -7px;
+  }
 }
 
 </style>
