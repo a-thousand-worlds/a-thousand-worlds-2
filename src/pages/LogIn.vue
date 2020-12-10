@@ -40,15 +40,6 @@ export default {
   },
 
   computed: {
-    isLogin() {
-      return this.active === 'login'
-    },
-    isSignup() {
-      return this.active === 'signup'
-    },
-    isProfile() {
-      return this.active === 'profile'
-    },
     hasFieldErrors() {
       return Object.keys(this.error?.fields || {}).length > 0
     }
@@ -82,13 +73,13 @@ export default {
     },
 
     async submit() {
-      if (this.isSignup) {
+      if (this.active === 'signup') {
         await this.signup()
       }
-      else if (this.isLogin) {
+      else if (this.active === 'login') {
         await this.login()
       }
-      else if (this.isProfile) {
+      else if (this.active === 'profile') {
         await this.saveProfile()
       }
     },
@@ -226,14 +217,14 @@ export default {
 
         <!-- Cannot use are-small and is-rounded until #3208 is merged. See https://github.com/jgthms/bulma/pull/3208. -->
         <div class="buttons is-centered has-addons" v-if="active === 'login' || active === 'signup'">
-          <button :class="['button', 'is-small', 'is-rounded', ...[isSignup ? ['is-selected', 'is-dark'] : null]]" style="width: 50%; max-width: 240px;" @click.prevent="setActive('signup')">Sign Up</button>
-          <button :class="['button', 'is-small', 'is-rounded', ...[isLogin ? ['is-selected', 'is-dark'] : null]]" style="width: 50%; max-width: 240px;" @click.prevent="setActive('login')">Log In</button>
+          <button :class="['button', 'is-small', 'is-rounded', ...[active === 'signup' ? ['is-selected', 'is-dark'] : null]]" style="width: 50%; max-width: 240px;" @click.prevent="setActive('signup')">Sign Up</button>
+          <button :class="['button', 'is-small', 'is-rounded', ...[active === 'login' ? ['is-selected', 'is-dark'] : null]]" style="width: 50%; max-width: 240px;" @click.prevent="setActive('login')">Log In</button>
         </div>
 
         <h1 class="title page-title divider-bottom">{{
-          isSignup ? 'Sign up for an account'
-          : isLogin ? 'Log In'
-          : isProfile ? 'Profile'
+          active === 'signup' ? 'Sign up for an account'
+          : active === 'login' ? 'Log In'
+          : active === 'profile' ? 'Profile'
           : null
         }}</h1>
 
@@ -276,13 +267,13 @@ export default {
 
         </div>
 
-        <div class="field divider-30" v-if="isSignup">
+        <div class="field divider-30" v-if="active === 'signup' || active === 'profile'">
           <label class="label is-uppercase">Are you affiliated with any organization(s)?</label>
           <input :disabled="loading" class="input" type="text" v-model="signupData.organization">
         </div>
 
         <div class="field my-4">
-          <input :disabled="loading || hasFieldErrors || disableAfterSave" type="submit" class="button is-primary is-rounded is-fullwidth is-uppercase" :class="{'is-loading':loading}" :value="isLogin ? 'Log In' : isSignup ? 'Create Account' : isProfile ? 'Save' : null"/>
+          <input :disabled="loading || hasFieldErrors || disableAfterSave" type="submit" class="button is-primary is-rounded is-fullwidth is-uppercase" :class="{'is-loading':loading}" :value="active === 'login' ? 'Log In' : active === 'signup' ? 'Create Account' : active === 'profile' ? 'Save' : null"/>
         </div>
 
         <div v-if="message" class="field">
@@ -293,7 +284,7 @@ export default {
           <p class="error has-text-centered is-uppercase">{{error.message}}</p>
         </div>
 
-        <p class="has-text-centered" v-if="isLogin">
+        <p class="has-text-centered" v-if="active === 'login'">
           <router-link :to="{name:'PasswordReset'}">FORGOT PASSWORD?</router-link>
         </p>
 
