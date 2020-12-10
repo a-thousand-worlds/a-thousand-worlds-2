@@ -1,6 +1,7 @@
 @charset "utf-8";
 @use "sass:map";
 
+@import url('https://fonts.googleapis.com/css2?family=Sen:wght@400;700&display=swap');
 @import "./mixins.scss";
 @import "./vars.scss";
 
@@ -49,6 +50,10 @@ $devices: (
       display: none;
     }
   }
+}
+
+body {
+  font-family: "Sen", sans-serif;
 }
 
 hr {

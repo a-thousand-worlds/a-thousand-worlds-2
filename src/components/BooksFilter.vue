@@ -48,7 +48,6 @@ a {
     width: 100%;
     border: 0;
     background: #fff;
-    font-family: 'Gotham SSm', Helvetica, Arial, sans-serif;
     font-size: 10px;
     text-align: left;
 

@@ -277,10 +277,6 @@ h3.title {
   font-size: 110%;
 }
 
-.font-mono {
-  font-family: $family-mono;
-}
-
 input[type="checkbox"] {
   width: 25px;
   height: 25px;
