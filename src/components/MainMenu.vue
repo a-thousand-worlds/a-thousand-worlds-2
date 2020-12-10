@@ -22,7 +22,7 @@ export default {
 <template>
   <div>
     <ul class="menu-list is-flex-grow-1">
-      <li><router-link :to="{name: 'Home'}" style="padding-bottom: 10px;">Books</router-link></li>
+      <li><router-link :to="{name: 'Home'}">Books</router-link></li>
       <li id="books-filter-menu"></li>
       <li><router-link :to="{name: 'Bundles'}">Book Bundles</router-link></li>
       <li><router-link :to="{name: 'People'}">People</router-link></li>

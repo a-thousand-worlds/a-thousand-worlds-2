@@ -39,6 +39,7 @@ a {
   padding: 0;
   width: 100%;
   margin: 0;
+  margin-top: -10px;
   margin-bottom: 0.5rem;
   word-break: break-word;
   //background: linear-gradient(to bottom, $atw-base, $atw-spin);
