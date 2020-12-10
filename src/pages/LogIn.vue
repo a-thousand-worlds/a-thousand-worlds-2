@@ -261,7 +261,7 @@ export default {
             <div>
               <input :disabled="loading" type="checkbox" class="checkbox mr-3 mb-3" v-model="signupData.selectedEngagementCategories.other">
               <label class="label is-inline mr-2">OTHER</label>
-              <input :disabled="loading" class="input is-inline" style="max-width: 200px;" type="text" v-model="signupData.otherEngagementCategory">
+              <input :disabled="loading" class="input" style="max-width: 200px;" type="text" v-model="signupData.otherEngagementCategory">
             </div>
           </div>
 
