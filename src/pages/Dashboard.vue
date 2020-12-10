@@ -10,13 +10,7 @@ export default {
   },
   computed: {
     username() {
-      if (!this.$store.state.user) {
-        return ''
-      }
-      if (this.$store.state.user.profile.firstName.length) {
-        return this.$store.state.user.profile.firstName + ' ' + this.$store.state.user.profile.lastName
-      }
-      return this.$store.state.user.profile.email
+      return this.$store.state.user?.profile.name || this.$store.state.user?.profile.email
     },
     hasSubmissions() {
       if (Array.isArray(this.$store.state.user.profile.submissions) && this.$store.state.user.profile.submissions.length) {
@@ -39,6 +33,7 @@ export default {
 
 <div class="page">
   <h1 class="title page-title">Your Dashboard</h1>
+  <router-link :to="{ name: 'Profile' }">Edit your profile</router-link>
 
   <section v-if="canSuggest" class="section bordered-top">
     <h2 class="title">Suggest a book or bundle for A Thousand Worlds</h2>
