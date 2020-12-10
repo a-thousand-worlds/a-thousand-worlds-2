@@ -1,8 +1,13 @@
 <script>
 
 import HamburgerIcon from '@/assets/icons/hamburger.svg'
+import MainMenu from '@/components/MainMenu.vue'
 
 export default {
+  components: {
+    HamburgerIcon,
+    MainMenu,
+  },
   data() {
     return {
       isOpen: false
@@ -13,9 +18,6 @@ export default {
       this.isOpen = false
     }
   },
-  components: {
-    HamburgerIcon
-  }
 }
 </script>
 
@@ -31,27 +33,8 @@ export default {
       </button>
     </section>
 
-    <section v-if="isOpen" class="submenu p-2 is-align-self-stretch is-flex-direction-column is-justify-content-space-between">
-      <ul class="has-text-centered is-flex-grow-1">
-        <li><router-link :to="{name: 'Home'}">Books</router-link></li>
-        <li><router-link :to="{name: 'Bundles'}">Book Bundles</router-link></li>
-        <li><router-link :to="{name: 'People'}">People</router-link></li>
-        <li><router-link :to="{name: 'Support'}">Support</router-link></li>
-        <li><router-link :to="{name: 'About'}">About</router-link></li>
-        <li v-if="!$iam('authorized')"><router-link :to="{name: 'LogIn'}">LogIn</router-link></li>
-        <li v-if="$iam('authorized')"><router-link :to="{name: 'Profile'}">Profile</router-link></li>
-        <li v-if="$iam('authorized')"><router-link :to="{name: 'LogOut'}">LogOut</router-link></li>
-      </ul>
-
-        <div class="level mt-5 is-flex is-justify-content-space-evenly">
-          <div class="level-item">
-            <i class="fab fa-instagram fa-2x"></i>
-          </div>
-          <div class="level-item">
-            <i class="fab fa-twitter fa-2x"></i>
-          </div>
-        </div>
-
+    <section v-if="isOpen" class="submenu p-2 has-text-centered is-align-self-stretch is-flex-direction-column is-justify-content-space-between">
+      <MainMenu />
     </section>
   </div>
 </template>
@@ -75,16 +58,23 @@ export default {
     line-height: 1;
   }
 }
+
 .submenu {
   position: fixed;
-  top: 41px;
   left: 0;
   width: 100%;
   height: 100%;
   background: #fff;
-  z-index: 5;
+  z-index: 4;
   // opacity: 0.8;
+
+  // override MainMenu's line-height
+  ::v-deep .menu-list {
+    line-height: 2;
+  }
+
 }
+
 .back {
   position: fixed;
   top: 0;
@@ -96,6 +86,7 @@ export default {
   z-index: 4;
   // opacity: 0.8;
 }
+
 .menu-button {
   background: none;
   border: none;
@@ -109,13 +100,5 @@ export default {
     outline: none;
   }
 }
-a {
-  font-size: 18px;
-  font-weight: bold;
-  text-transform: uppercase;
 
-  color: #4a4a4a;
-  display: block;
-  padding: 0.5em 0.75em;
-}
 </style>

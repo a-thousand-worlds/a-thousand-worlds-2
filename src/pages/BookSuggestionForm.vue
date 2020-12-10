@@ -86,14 +86,14 @@ export default {
       this.$store.dispatch('submitBookSubmission', this.submissions).then(() => {
         console.log('book saved')
         // eslint-disable-next-line fp/no-mutating-methods
-        this.$router.push({ name: 'Profile' })
+        this.$router.push({ name: 'Dashboard' })
       })
     },
     saveDraft() {
       this.$store.dispatch('saveBookSubmissionsDraft', this.submissions)
         .then(() => {
           // eslint-disable-next-line fp/no-mutating-methods
-          this.$router.push({ name: 'Profile' })
+          this.$router.push({ name: 'Dashboard' })
         })
     },
     newSubmissionObject() {

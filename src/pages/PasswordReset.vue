@@ -23,7 +23,7 @@ export default {
     '$store.state.user'(next, prev) {
       if (!prev && !!next) {
         // eslint-disable-next-line fp/no-mutating-methods
-        this.$router.push({ name: 'Profile' })
+        this.$router.push({ name: 'Dashboard' })
       }
     }
   }

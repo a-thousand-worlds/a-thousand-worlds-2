@@ -26,7 +26,7 @@ export default {
       this.$store.dispatch('saveBundleSubmissionDraft', data)
         .then(() => {
           // eslint-disable-next-line fp/no-mutating-methods
-          this.$router.push({ name: 'Profile' })
+          this.$router.push({ name: 'Dashboard' })
         })
     },
     submitForReview() {
@@ -39,7 +39,7 @@ export default {
       this.$store.dispatch('submitBundleSuggestion', data)
         .then(() => {
           // eslint-disable-next-line fp/no-mutating-methods
-          this.$router.push({ name: 'Profile' })
+          this.$router.push({ name: 'Dashboard' })
         })
     },
     newBookObject() {
