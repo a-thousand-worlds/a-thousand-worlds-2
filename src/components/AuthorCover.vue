@@ -2,7 +2,7 @@
 import AuthorWidget from '@/components/AuthorWidget'
 
 export default {
-  props: ['person', 'colorI'],
+  props: ['person'],
   components: {
     AuthorWidget,
   },
@@ -12,12 +12,8 @@ export default {
     }
   },
   computed: {
-    bgColor(i) {
-      const colors = ['#fefad2', '#98ba93', '#d4c0d6', '#fcf1f5', '#fcebd0', '#f3fef1']
-      return colors[parseInt(this.colorI) % colors.length]
-    },
     bgImage() {
-      return this.person.photo && this.person.photo.length ? this.$store.state.images[this.person.photo] || '' : ''
+      return this.person.photo?.length ? this.$store.state.images[this.person.photo] || '' : ''
     }
   }
 }
@@ -26,7 +22,7 @@ export default {
 
 <template>
 <router-link :to="{name:'PersonDetail', params: {id: person.id}}">
-  <div :style="{backgroundColor: bgColor, backgroundImage: 'url('+bgImage+')'}" class="photo-wrapper">
+  <div :style="{backgroundImage: 'url('+bgImage+')'}" class="photo-wrapper bg-secondary">
   </div>
   <author-widget :name="person.name" :size="120"/>
 </router-link>

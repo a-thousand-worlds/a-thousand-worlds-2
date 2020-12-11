@@ -11,8 +11,8 @@ export default {
 <template>
   <aside class="is-align-self-stretch menu is-flex-direction-column is-justify-content-space-between">
 
-    <div id="logo">
-      <router-link :to="{name: 'Home'}"><span class="wrapper"><!-- <img title="COLORFUL READS X COLORFUL PEOPLE: Picture books curated by leaders in the industry" src="@/assets/logo.png"> --></span></router-link>
+    <div class="mb-10">
+      <router-link :to="{name: 'Home'}"><span class="wrapper"><img title="COLORFUL READS X COLORFUL PEOPLE: Picture books curated by leaders in the industry" src="@/assets/logo.png" style="max-width: 100px; max-height: 100px;"></span></router-link>
     </div>
 
     <MainMenu />
@@ -22,17 +22,5 @@ export default {
 
 <style scoped lang="scss">
 @import '@/assets/vars.scss';
-
-.inline {
-  display: inline;
-}
-
-#logo {
-  width: 80px;
-  height: 80px;
-  background: $grey;
-  border-radius: 50%;
-  margin-bottom: 20px;
-}
 
 </style>

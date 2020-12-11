@@ -22,7 +22,7 @@ export default {
         <button v-if="filter.showOnFront" :class="{toggled:filterOn(filter.tag)}" class="pb-2" style="padding-left: 2px;">{{filter.tag}}</button>
       </li>
     </ul>
-    <button class="button is-rounded" @click.prevent="resetFilters">Reset Filter</button>
+    <button class="button is-rounded is-primary" @click.prevent="resetFilters">Reset Filter</button>
   </aside>
 </template>
 

@@ -1,7 +1,6 @@
 @charset "utf-8";
 @use "sass:map";
 
-@import url('https://fonts.googleapis.com/css2?family=Sen:wght@400;700&display=swap');
 @import "./mixins.scss";
 @import "./vars.scss";
 
@@ -52,12 +51,8 @@ $devices: (
   }
 }
 
-body {
-  font-family: "Sen", sans-serif;
-}
-
 hr {
-  background-color: #ddd;
+  background-color: $primary;
   height: 1px;
   width: 100%;
 }
@@ -72,12 +67,6 @@ button {
   cursor: pointer;
 }
 
-.button {
-  color: black;
-  border: solid 1px black;
-  text-transform: uppercase;
-}
-
 // flat buttons looks like links and don't extend bulma button sizes
 // is-link already exists at bulma for buttons
 button.is-flat {
@@ -86,8 +75,23 @@ button.is-flat {
   cursor: pointer;
 }
 
+button.is-selected {
+  background-color: $primary;
+  color: $primary-invert;
+}
+
 .is-underlined {
   text-decoration: underline;
+}
+
+.button {
+  border: solid 1px black;
+  text-transform: uppercase;
+
+  &.is-secondary {
+    background-color: $secondary;
+    font-weight: bold;
+  }
 }
 
 .error {
@@ -106,11 +110,21 @@ button.is-flat {
 .divider-bottom {
   padding-bottom: 0.5rem;
   margin-bottom: 1.5rem;
-  border-bottom: solid 1px #ddd;
+  border-bottom: solid 1px $primary;
 }
 
 .divider-30 {
   padding-bottom: 30px;
   margin-bottom: 30px;
-  border-bottom: solid 1px #ddd;
+  border-bottom: solid 1px $primary;
 }
+
+a.is-primary { color: $primary; }
+a.is-secondary{ color: $secondary }
+.fill-primary { fill: $primary; }
+.fill-secondary { fill: $secondary; }
+.stroke-primary { stroke: $primary; }
+.stroke-secondary { stroke: $secondary; }
+.bg-primary { background-color: $primary; }
+.bg-secondary { background-color: $secondary; }
+.is-secondary-text { color: $secondary; }

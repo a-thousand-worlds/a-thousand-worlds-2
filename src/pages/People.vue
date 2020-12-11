@@ -13,7 +13,7 @@ export default {
 
 <div class="container is-flex is-flex-direction-row is-flex-wrap-wrap p-3">
   <div :class="{'with-bookmarks': $store.state.bookmarksOpen}" class="has-text-centered person-block p-3" v-for="(person, i) of $store.state.peopleList" :key="i">
-    <author-cover :person="person" :colorI="i"/>
+    <author-cover :person="person"/>
   </div>
 </div>
 

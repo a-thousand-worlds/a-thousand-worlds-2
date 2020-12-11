@@ -1,12 +1,15 @@
 <script>
 import BookmarkIcon from '../assets/icons/bookmark.svg'
-import BookmarkMarkedIcon from '../assets/icons/bookmark-marked.svg'
 
 export default {
   props: ['book'],
+  computed: {
+    isMarked() {
+      return this.$store.state.user?.profile?.bookmarks?.[this.book.id]
+    }
+  },
   components: {
     BookmarkIcon,
-    BookmarkMarkedIcon,
   },
   methods: {
     toggleBookmark() {
@@ -29,7 +32,6 @@ export default {
 
 <template>
   <div style="cursor: pointer;" @click.prevent="toggleBookmark()">
-    <BookmarkMarkedIcon v-if="$store.state.user?.profile?.bookmarks?.[book.id]" />
-    <BookmarkIcon v-else />
+    <BookmarkIcon :class="{ 'fill-primary': isMarked }" />
   </div>
 </template>

@@ -1,5 +1,5 @@
 // Import a Google Font
-//@import url('https://fonts.googleapis.com/css?family=Nunito:400,700');
+@import url('https://fonts.googleapis.com/css2?family=Sen:wght@400;700&display=swap');
 
 // Set your brand colors
 //$purple: #8A4D76;
@@ -9,8 +9,7 @@
 //$beige-lighter: #EFF0EB;
 
 // Update Bulma's global variables
-$family-sans-serif: "DIN", sans-serif;
-$family-mono: "Roboto", sans-serif;
+$family-sans-serif: Sen, sans-serif;
 //$grey-dark: $brown;
 //$grey-light: $beige-light;
 //$primary: $purple;
@@ -25,11 +24,12 @@ $family-mono: "Roboto", sans-serif;
 //$input-shadow: none;
 
 // ATW variables
-$atw-base: black;
+$atw-base: #0135e1;
 $atw-spin: #f0e;
 
 
 $primary: $atw-base;
+$secondary: #dee6ff;
 $background: white;
 $lightgrey: #eee;
 $grey: #c4c4c4;

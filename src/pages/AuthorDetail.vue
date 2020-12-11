@@ -54,10 +54,6 @@ export default {
     books() {
       return this.author ? this.$store.state.booksList.filter(book => book.authors.includes(this.author.name)) : []
     },
-    bgColor(i) {
-      const colors = ['#fefad2', '#98ba93', '#d4c0d6', '#fcf1f5', '#fcebd0', '#f3fef1']
-      return colors[Math.floor(Math.random() * colors.length)]
-    },
     bgImage() {
       return this.$store.state.images[this.author.photo] || ''
     }
@@ -74,7 +70,7 @@ export default {
     <div class="is-flex is-flex-direction-row is-flex-wrap-wrap">
       <div class="column-author" :class="{'with-bookmarks': $store.state.bookmarksOpen}">
         <div class="cover-wrapper">
-          <div v-if="author.photo && author.photo.length" :style="{backgroundColor: bgColor, backgroundImage: 'url('+bgImage+')'}" class="cover-photo"/>
+          <div v-if="author.photo && author.photo.length" :style="{backgroundImage: 'url('+bgImage+')'}" class="cover-photo bg-secondary"/>
         </div>
 
         <div class="title-container divider-bottom">
@@ -94,7 +90,7 @@ export default {
       </div>
 
       <div class="column-books" :class="{'with-bookmarks': $store.state.bookmarksOpen}">
-        <book-list v-for="(book, i) of books" :key="i" :book="book" :colorI="i"/>
+        <book-list v-for="book of books" :key="book.id" :book="book"/>
       </div>
 
     </div>

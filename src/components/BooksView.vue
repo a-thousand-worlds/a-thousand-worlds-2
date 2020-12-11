@@ -13,9 +13,9 @@ export default {
 <template>
   <div class="mx-20">
     <div :class="{masonry:$store.state.viewMode==='covers', 'with-bookmarks': $store.state.bookmarksOpen}">
-      <div class="masonry-item" v-for="(book, i) of $store.state.booksFiltered" :key="book.id">
-        <book-cover v-if="$store.state.viewMode === 'covers'" :colorI="i" :book="book"></book-cover>
-        <book-list v-if="$store.state.viewMode === 'list'" :colorI="i" :book="book"></book-list>
+      <div class="masonry-item" v-for="book of $store.state.booksFiltered" :key="book.id">
+        <book-cover v-if="$store.state.viewMode === 'covers'" :book="book"></book-cover>
+        <book-list v-if="$store.state.viewMode === 'list'" :book="book"></book-list>
       </div>
     </div>
   </div>

@@ -47,7 +47,7 @@ export default {
 
       <ul class="menu-list">
         <li><a :href="null" class="bookmark-toggler" @click.prevent="toggleBookmarks()">
-          <BookmarkIcon/>
+          <BookmarkIcon class="fill-secondary" />
           <span v-if="$iam('authorized')" class="badge">{{bookmarksCount}}</span>
         </a></li>
       </ul>
@@ -55,13 +55,13 @@ export default {
       <ul v-if="showViewOptions" class="menu-list">
         <li>
           <a :class="{ active: $store.state.viewMode === 'covers' }" @click.prevent="toggleViewMode('covers')" href="#">
-            <CoverViewIcon/>
+            <CoverViewIcon />
             <span class="icon-label">Cover</span>
           </a>
         </li>
         <li class='my-30'>
           <a :class="{ active: $store.state.viewMode === 'list' }" @click.prevent="toggleViewMode('list')" href="#">
-            <ListViewIcon/>
+            <ListViewIcon />
             <span class="icon-label">List</span>
           </a>
         </li>
@@ -112,4 +112,5 @@ export default {
   }
 
 }
+
 </style>

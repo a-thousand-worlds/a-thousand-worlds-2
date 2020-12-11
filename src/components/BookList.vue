@@ -4,7 +4,7 @@ import AuthorWidget from '@/components/AuthorWidget'
 import BookmarkButton from '@/components/BookmarkButton'
 
 export default {
-  props: ['book', 'colorI'],
+  props: ['book'],
   components: {
     'author-widget': AuthorWidget,
     'bookmark-button': BookmarkButton
@@ -19,11 +19,6 @@ export default {
       }
       return this.book.coverHeight / this.book.coverWidth * 100
     },
-    // can generate randomly, or use some predefined list
-    bgColor() {
-      const colors = ['#fefad2', '#98ba93', '#d4c0d6', '#fcf1f5', '#fcebd0', '#f3fef1']
-      return colors[parseInt(this.colorI) % colors.length]
-    },
     bgImage() {
       return this.$store.state.images[this.book.cover] || ''
     }
@@ -35,7 +30,7 @@ export default {
   <div class="book-list-wrapper columns">
     <div class="column is-one-third">
       <router-link :to="{name:'BookDetail',params:{id:book.id}}" class="cover-data">
-        <div class="img-cover" :style="{width: '100%', paddingTop: coverRatio+'%', backgroundColor: bgColor, backgroundImage: 'url('+bgImage+')', backgroundSize: 'contain'}"></div>
+        <div class="img-cover bg-secondary" :style="{width: '100%', paddingTop: coverRatio+'%', backgroundImage: 'url('+bgImage+')', backgroundSize: 'contain'}"></div>
       </router-link>
     </div>
     <div class="column is-two-thirds is-align-content-center">

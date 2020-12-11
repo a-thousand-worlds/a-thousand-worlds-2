@@ -73,7 +73,7 @@ export default {
     <div class="columns">
       <div class="column mr-1 is-two-fifths" style="max-width: 720px">
         <div class="mb-5">
-          <router-link :to="{ name: 'Home' }" class="directory-nav-link is-uppercase">&lt; Back to Books</router-link>
+          <router-link :to="{ name: 'Home' }" class="is-uppercase is-primary">&lt; Back to Books</router-link>
         </div>
         <div class="book-cover-wrapper">
           <lazy-image class="cover" :src="book.cover"/>
@@ -84,8 +84,8 @@ export default {
 
         <div class="is-flex is-justify-content-flex-end">
           <div class="mb-5">
-            <router-link v-if="prevBook" :to="{ name: 'BookDetail', params: {id: prevBook} }" class="directory-nav-link is-uppercase mx-6">&lt; Previous Book</router-link>
-            <router-link v-if="nextBook" :to="{ name: 'BookDetail', params: {id: nextBook}  }" class="directory-nav-link is-uppercase">Next Book &gt;</router-link>
+            <router-link v-if="prevBook" :to="{ name: 'BookDetail', params: {id: prevBook} }" class="is-uppercase is-primary mx-6">&lt; Previous Book</router-link>
+            <router-link v-if="nextBook" :to="{ name: 'BookDetail', params: {id: nextBook}  }" class="is-uppercase is-primary">Next Book &gt;</router-link>
           </div>
         </div>
 
@@ -115,13 +115,13 @@ export default {
     <div class="content-footer-inner">
       <div class="from-fullhd">
         <input type="text" class="input" style="width: 16rem;" :value="pageUrl" readonly />
-        <button id="copy-link" class="button is-rounded mx-1" :data-clipboard-text="pageUrl">COPY LINK</button>
+        <button id="copy-link" class="button is-rounded is-secondary mx-10" :data-clipboard-text="pageUrl">COPY LINK</button>
       </div>
       <div>
-        <button class="button button-unstyled">FIND BOOK AT</button>
-        <button class="button is-rounded mx-1">LOCAL LIBRARY</button>
-        <button class="button is-rounded mx-1">LINK</button>
-        <button class="button is-rounded mx-1">INDIEBOUND</button>
+        <button class="button button-unstyled is-primary">FIND BOOK AT</button>
+        <button class="button is-rounded is-secondary mx-1">LOCAL LIBRARY</button>
+        <button class="button is-rounded is-secondary mx-1">LINK</button>
+        <button class="button is-rounded is-secondary mx-1">INDIEBOUND</button>
       </div>
     </div>
   </div>
@@ -131,10 +131,6 @@ export default {
 <style lang="scss" scoped>
 @import "bulma/sass/utilities/_all.sass";
 @import '@/assets/vars.scss';
-
-.directory-nav-link {
-  color: black;
-}
 
 .title {
   line-height: 1;
@@ -148,10 +144,12 @@ export default {
 .content-footer {
   position: fixed;
   bottom: 0;
-  background-color: #ddd;
+  color: $primary-invert;
+  background-color: $primary;
   width: calc(100% - #{$leftbar-width} - #{$rightbar-width} + 0.75rem);
   padding: 10px 20px;
   white-space: nowrap;
+  overflow: auto;
 
   @include until($tablet) {
     left: 0;
@@ -167,11 +165,11 @@ export default {
 .content-footer-inner {
   display: flex;
   justify-content: center;
+  margin-left: 60px;
+  margin-right: 60px;
 
   @include from($fullhd) {
     justify-content: space-between;
-    margin-left: 60px;
-    margin-right: 60px;
   }
 }
 

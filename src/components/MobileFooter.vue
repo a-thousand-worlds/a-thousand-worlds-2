@@ -93,7 +93,7 @@ export default {
 
       <li>
         <a class="bookmark-toggler" @click.prevent="toggleBookmarks()" href="#">
-          <BookmarkIcon/>
+          <BookmarkIcon class="fill-secondary" />
           <div class="icon-label mt-2">Saved Items</div>
           <span v-if="$iam('authorized')" class="badge">{{bookmarksCount}}</span>
         </a>

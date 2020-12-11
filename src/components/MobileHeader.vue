@@ -27,7 +27,9 @@ export default {
     <div class="back"/>
 
     <section class="header is-flex is-justify-content-space-between is-align-items-center">
-      <div class="title">A THOUSAND WORLDS</div>
+      <div class="title is-uppercase is-primary-text">
+        <router-link :to="{ name: 'Home' }" class="is-primary">A Thousand Worlds</router-link>
+      </div>
       <button @click="isOpen = !isOpen" class="menu-button">
         <HamburgerIcon />
       </button>
