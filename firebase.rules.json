@@ -7,11 +7,15 @@
         ".write": "$uid === auth.uid"
       }
     },
-    "tags": {
+    "books": {
       ".read": true,
       ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true"
     },
-    "books": {
+    "content": {
+      ".read": true,
+      ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true"
+    },
+    "pages": {
       ".read": true,
       ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true"
     },
@@ -19,7 +23,7 @@
       ".read": true,
       ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true"
     },
-    "pages": {
+    "tags": {
       ".read": true,
       ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true"
     },

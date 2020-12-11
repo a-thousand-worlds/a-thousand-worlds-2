@@ -13,6 +13,8 @@ const store = createStore({
       auth: false,
       loaded: false
     },
+    content: {},
+    contentDefaults: {},
     filters: [],
     bookmarksOpen: false,
     loading: false,
@@ -28,10 +30,16 @@ const store = createStore({
     booksFiltered: [],
     bundlesIndex: {},
     bundlesList: [],
-
     submissionsIndex: {},
-
     viewMode: 'covers'
+  },
+  getters: {
+
+    /** Gets the content of the given key, or its default. */
+    getContent: ctx => key => {
+      return ctx.content[key] ?? ctx.contentDefaults[key]
+    },
+
   },
   mutations: {
     setBusy(ctx, busy) {
@@ -108,7 +116,10 @@ const store = createStore({
     },
     setPages(ctx, pages) {
       ctx.pages = pages
-    }
+    },
+    setContent(ctx, content) {
+      ctx.content = content
+    },
   },
   actions: {
 
@@ -535,10 +546,31 @@ const store = createStore({
       return new Promise((resolve, reject) => {
         const ref = firebase.database().ref('pages')
         ref.once('value', snap => {
-          console.log('pages', snap.val())
-          ctx.commit('setPages', snap.val())
+          const value = snap.val() || {}
+          ctx.commit('setPages', value)
+          resolve(value)
         })
       })
+    },
+
+    /** Loads the content collection from Firebase. */
+    loadContent(ctx) {
+      return new Promise((resolve, reject) => {
+        const ref = firebase.database().ref('content')
+        ref.once('value', snap => {
+          const value = snap.val() || {}
+          ctx.commit('setContent', value)
+          resolve(value)
+        })
+      })
+    },
+
+    /** Saves a record to the content collection in Firebase. */
+    async saveContent(ctx, { key, value }) {
+      if (!key) throw new Error('key required')
+      if (value === undefined) throw new Error('value may not be undefined')
+      const ref = firebase.database().ref(`content/${key}`)
+      await ref.set(value)
     },
 
     // auth
@@ -564,6 +596,7 @@ const store = createStore({
       await ctx.dispatch('loadPeople')
       await ctx.dispatch('loadBooks')
       await ctx.dispatch('loadPages')
+      await ctx.dispatch('loadContent')
       // await ctx.dispatch('loadCovers')
       ctx.commit('setStage0Load')
     },
