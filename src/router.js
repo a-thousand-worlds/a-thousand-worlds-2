@@ -24,10 +24,6 @@ const routes = [
     name: 'PersonDetail',
     component: () => import(/* webpackChunkName: "guest" */ './pages/AuthorDetail.vue')
   }, {
-    path: '/instagram',
-    name: 'Instagram',
-    component: () => import(/* webpackChunkName: "guest" */ './pages/Instagram.vue')
-  }, {
     path: '/support',
     name: 'Support',
     component: () => import(/* webpackChunkName: "guest" */ './pages/Support.vue')
