@@ -56,12 +56,8 @@ const store = createStore({
         ctx.filters = ctx.filters.filter(x => x !== filter)
       }
       ctx.booksFiltered = ctx.booksList.filter(book => {
-        if (!ctx.filters.length) {
-          return true
-        }
-        return ctx.filters
-          .map(f => (book.tags || []).includes(f))
-          .reduce((acc, ok) => ok || acc, false)
+        if (!ctx.filters.length) return true
+        return ctx.filters.every(tag => (book.tags || []).includes(tag))
       })
     },
     setNAP(ctx, p) {

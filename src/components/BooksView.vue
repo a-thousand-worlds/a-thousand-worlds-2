@@ -6,18 +6,30 @@ export default {
   components: {
     'book-cover': BookCover,
     'book-list': BookList
-  }
+  },
+  methods: {
+    resetFilter() {
+      this.$store.commit('resetFilters')
+    },
+  },
 }
 </script>
 
 <template>
   <div class="mx-20">
+
+    <div v-if="$store.state.filter?.length && $store.state.booksFiltered.length === 0">
+      <p class="mb-20">No books matching books. </p>
+      <p><a @click.prevent="resetFilter">Reset Filter</a></p>
+    </div>
+
     <div :class="{masonry:$store.state.viewMode==='covers', 'with-bookmarks': $store.state.bookmarksOpen}">
       <div class="masonry-item" v-for="book of $store.state.booksFiltered" :key="book.id">
         <book-cover v-if="$store.state.viewMode === 'covers'" :book="book"></book-cover>
         <book-list v-if="$store.state.viewMode === 'list'" :book="book"></book-list>
       </div>
     </div>
+
   </div>
 </template>
 
