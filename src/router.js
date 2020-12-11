@@ -142,6 +142,13 @@ const routes = [
       access: 'superadmin'
     }
   }, {
+    path: '/admin/invite',
+    name: 'Invite',
+    component: () => import(/* webpackChunkName: "admin" */ './pages/Invite.vue'),
+    meta: {
+      access: ['admin', 'superadmin']
+    }
+  }, {
     path: '/:catchAll(.*)',
     name: 'NotFound',
     component: NotFound,

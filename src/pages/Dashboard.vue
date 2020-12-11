@@ -114,13 +114,7 @@ export default {
     </div>
 
     <div class="field">
-      <a @click.prevent="templates.showEmailTemplates = !templates.showEmailTemplates">
-        <span class="icon is-small" data-v-1d81e2c0=""><i class="fas mr-1" :class="{ 'fa-angle-right': !templates.showEmailTemplates, 'fa-angle-down': templates.showEmailTemplates }" aria-hidden="true" style="color: black;"></i></span>
-        Edit email templates
-      </a>
-      <div v-if="templates.showEmailTemplates" class="mt-20">
-        <p>TBD</p>
-      </div>
+      <router-link :to="{ name: 'Invite' }">Edit email templates</router-link>
     </div>
 
   </section>

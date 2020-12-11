@@ -10,7 +10,7 @@ export default {
       editorConfig: {
         placeholder: this.placeholder,
       },
-      html: '',
+      html: this.$store.getters.getContent(this.name) ?? '',
     }
   },
   watch: {
