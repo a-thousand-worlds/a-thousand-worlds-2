@@ -2,8 +2,9 @@
 export default {
   methods: {
     toggleFilter(fid) {
-      console.log('toggle filter: ', fid)
       this.$store.commit('toggleFilter', fid)
+      // eslint-disable-next-line  fp/no-mutating-methods
+      this.$router.push({ name: 'Home' })
     },
     resetFilters() {
       this.$store.commit('resetFilters')
