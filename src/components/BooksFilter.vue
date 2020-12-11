@@ -19,7 +19,7 @@ export default {
   <aside class="menu mb-5">
     <ul class="menu-list submenu">
       <li v-for="filter in $store.state.sortedTags" :key="filter.id" @click="toggleFilter(filter.tag)">
-        <button v-if="filter.showOnFront" :class="{toggled:filterOn(filter.tag)}" class="pb-2" style="padding-left: 2px;">{{filter.tag}}</button>
+        <button v-if="filter.showOnFront" :class="{toggled:filterOn(filter.tag)}" class="pb-2" style="padding-left: 2px;">{{filter.tag}}<span v-if="filterOn(filter.tag)" class="remove-tag">{{ '—' }}</span></button>
       </li>
     </ul>
     <button class="button is-rounded is-primary" @click.prevent="resetFilters">Reset Filter</button>
@@ -27,6 +27,7 @@ export default {
 </template>
 
 <style scoped lang="scss">
+@import "bulma/sass/utilities/_all.sass";
 @import '@/assets/vars.scss';
 
 a {
@@ -57,7 +58,7 @@ a {
     }
 
     &.toggled {
-      background: $lightgrey;
+      color: $primary;
       border: 0;
     }
   }
@@ -65,6 +66,19 @@ a {
 
 .button {
   font-size: 10px;
+}
+
+.remove-tag {
+  background-color: $primary;
+  color: $primary-invert;
+  display: inline-block;
+  border-radius: 99px;
+  width: 15px;
+  height: 15px;
+  margin: 0 -15px -10px 10px;
+  text-align: center;
+  position: relative;
+  top: -2px;
 }
 
 </style>
