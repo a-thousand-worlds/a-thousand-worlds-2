@@ -179,7 +179,7 @@ export default {
       <input :disabled="busy" type="checkbox" v-model="selected" @click="toggleCheck()"/>
     </div>
     <div class="column is-2">
-      <h3 class="title">BOOK</h3>
+      <h3>BOOK</h3>
       <div class="createdAt font-mono">{{dateFormat(sub.createdAt)}}</div>
       <div class="createdBy font-mono">{{submitter.name}}</div>
     </div>
@@ -195,7 +195,7 @@ export default {
       </div>
     </div>
     <div class="column is-3">
-      <h3 class="title">
+      <h3>
         <ckeditor :disabled="busy" @blur="setTitle()" class="oneline" :editor="editor" :config="ckConfig" v-model="sub.title"/>
       </h3>
       <div>

@@ -42,7 +42,7 @@ export default {
     <div class="level is-mobile">
       <div class="level-left">
         <div class="level-item">
-          <h2 class="title">Review Submissions</h2>
+          <h2>Review Submissions</h2>
         </div>
       </div>
       <div class="level-right">

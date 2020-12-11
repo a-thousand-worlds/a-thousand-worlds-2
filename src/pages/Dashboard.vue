@@ -8,6 +8,19 @@ export default {
     SubmissionWidget,
     SubmissionsReviewList
   },
+  data() {
+    return {
+      invite: {
+        dropdownActive: '',
+        emails: '',
+        role: null,
+      },
+      templates: {
+        showEmailTemplates: false,
+      },
+      roles: ['User', 'Contributor', 'Creator', 'Advisor', 'Owner'],
+    }
+  },
   computed: {
     username() {
       return this.$store.state.user?.profile.name || this.$store.state.user?.profile.email
@@ -23,15 +36,30 @@ export default {
     },
     canApprove() {
       return this.$iam('admin') || this.$iam('superadmin')
-    }
-  }
+    },
+    canInvite() {
+      return this.$iam('admin') || this.$iam('superadmin')
+    },
+  },
+  methods: {
+    setInviteRole(value) {
+      this.invite.role = value
+      this.invite.dropdownActive = false
+    },
+    setInviteDropdown(value) {
+      this.invite.dropdownActive = value
+    },
+    toggleInviteDropdown() {
+      this.invite.dropdownActive = !this.invite.dropdownActive
+    },
+  },
 }
 
 </script>
 
 <template>
 
-<div class="page" style="position: relative">
+<div class="page" style="position: relative" @click.prevent="setInviteDropdown(false)">
 
   <h1 class="title page-title">Your Dashboard</h1>
 
@@ -40,7 +68,7 @@ export default {
   </div>
 
   <section v-if="canSuggest" class="section bordered-top">
-    <h2 class="title">Suggest a book or bundle for A Thousand Worlds</h2>
+    <h2>Suggest a book or bundle for A Thousand Worlds</h2>
     <div class="field is-grouped">
       <div class="control">
         <router-link class="button is-outlined is-primary" :to="{name:'BookSuggest'}">Book</router-link>
@@ -51,8 +79,54 @@ export default {
     </div>
   </section>
 
+  <section v-if="canInvite" class="section bordered-top">
+    <h2>Invite users</h2>
+    <div class="field is-grouped is-flex">
+
+      <div class="control is-flex-grow-1">
+        <input class="input" v-model="invite.email" />
+      </div>
+
+      <div class="control">
+        <div :class="{ dropdown: true, 'is-active': invite.dropdownActive }">
+          <div class="dropdown-trigger">
+            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu" @click.prevent.stop="toggleInviteDropdown">
+              <span>{{ invite.role || 'CHOOSE ROLE' }}</span>
+              <span class="icon is-small">
+                <i class="fas fa-angle-down" aria-hidden="true"></i>
+              </span>
+            </button>
+          </div>
+          <div class="dropdown-menu" id="dropdown-menu" role="menu">
+            <div class="dropdown-content">
+              <a :class="{ 'dropdown-item': true, 'is-active': invite.role === role }" v-for="role in roles" :key="role" @click.prevent="setInviteRole(role)">
+                {{ role }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="control">
+        <button class="button is-primary">Send</button>
+      </div>
+
+    </div>
+
+    <div class="field">
+      <a @click.prevent="templates.showEmailTemplates = !templates.showEmailTemplates">
+        <span class="icon is-small" data-v-1d81e2c0=""><i class="fas mr-1" :class="{ 'fa-angle-right': !templates.showEmailTemplates, 'fa-angle-down': templates.showEmailTemplates }" aria-hidden="true" style="color: black;"></i></span>
+        Edit email templates
+      </a>
+      <div v-if="templates.showEmailTemplates" class="mt-20">
+        <p>TBD</p>
+      </div>
+    </div>
+
+  </section>
+
   <section class="section" v-if="canSuggest && hasSubmissions">
-    <h2 class="title">Your Submissions</h2>
+    <h2>Your Submissions</h2>
     <div class="columns is-multiline">
       <div class="column is-6-tablet is-4-desktop is-3-widescreen" v-for="sid of $store.state.user.profile.submissions" :key="sid">
         <submission-widget class="submission-widget" :sid="sid"></submission-widget>
