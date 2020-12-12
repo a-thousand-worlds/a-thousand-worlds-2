@@ -56,6 +56,7 @@ function _isbn(code, provider) {
   return isbn
     .provider([provider])
     .resolve(code)
+    // eslint-disable-next-line node/handle-callback-err
     .catch(err => null)
 }
 
