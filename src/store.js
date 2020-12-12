@@ -491,17 +491,7 @@ const store = createStore({
 
     // auth
     passwordReset(ctx, email) {
-      return new Promise((resolve, reject) => {
-        firebase.auth().sendPasswordResetEmail(email)
-          .then(res => {
-            console.log('reset res', res)
-            resolve()
-          })
-          .catch(err => {
-            console.log('reset erroe', err)
-            reject(err)
-          })
-      })
+      return firebase.auth().sendPasswordResetEmail(email)
     },
 
     // start
