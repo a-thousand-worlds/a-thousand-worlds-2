@@ -268,17 +268,13 @@ const store = createStore({
       ctx.commit('setImage', { url, data })
     },
 
-    loadBooks(ctx) {
-      return new Promise((resolve, reject) => {
-        ctx.commit('setBusy', true)
-        firebase.database().ref('books').once('value', snap => {
-          console.log('books', snap.val())
-          ctx.commit('setBooks', snap.val() || {})
-          ctx.commit('setBusy', false)
-          resolve()
-        })
-      })
+    async loadBooks(ctx) {
+      ctx.commit('setBusy', true)
+      const books = await firebaseGet('books')
+      ctx.commit('setBooks', books || {})
+      ctx.commit('setBusy', false)
     },
+
     async delBook(ctx, id) {
       ctx.commit('setBusy', true)
       const ref = await firebase.database().ref(`books/${id}`)
