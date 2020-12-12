@@ -89,6 +89,9 @@ button.is-flat {
 button.is-selected {
   background-color: $primary;
   color: $primary-invert;
+  &:hover, &:active, &:focus {
+    color: $primary-invert;
+  }
 }
 
 .is-underlined {
@@ -130,7 +133,7 @@ button.is-selected {
   border-bottom: solid 1px $primary;
 }
 
-a.is-primary { color: $primary; }
+a.is-primary { color: $primary }
 a.is-secondary{ color: $secondary }
 .fill-primary { fill: $primary; }
 .fill-secondary { fill: $secondary; }
