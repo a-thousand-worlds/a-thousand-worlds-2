@@ -20,10 +20,10 @@ export default {
 
 <template>
   <div class="mb-3 is-uppercase widget" :style="{'font-size': fontSize+'%'}">
-    <i v-if="isAuthor" class="fas fa-pencil-alt"></i>
-    <i v-if="!isAuthor" class="fas fa-palette"></i>
-    <div v-if="nolink === true" class="name ml-2">{{name}}</div>
-    <router-link v-else :to="{name: 'PersonDetail', params: {id: person.id}}" class="name ml-2">{{name}}</router-link>
+    <span v-if="!isAuthor">illustrated </span>
+    <span>by </span>
+    <div v-if="nolink" class="name ml-2">{{name}}</div>
+    <router-link v-else :to="{name: 'PersonDetail', params: {id: person.id}}" class="name">{{name}}</router-link>
   </div>
 </template>
 

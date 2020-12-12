@@ -74,14 +74,7 @@ export default {
         </div>
 
         <div class="title-container divider-bottom">
-          <div v-if="isAuthor">
-            <i class="fas fa-pencil-alt"></i>
-            <span class="name ml-2">Author</span>
-          </div>
-          <div v-if="!isAuthor">
-            <i class="fas fa-palette"></i>
-            <span class="name ml-2">Illustrator</span>
-          </div>
+          <div class="name ml-2">{{ isAuthor ? 'Author' : 'Illustrator' }}</div>
           <h1 class="title mt-5">{{author.name}}</h1>
         </div>
 
