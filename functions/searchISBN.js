@@ -53,17 +53,10 @@ async function loadImage2Base64(url) {
 }
 
 function _isbn(code, provider) {
-  return new Promise((resolve, reject) => {
-    isbn
-      .provider([provider])
-      .resolve(code, (err, book) => {
-        if (book && !err) {
-          resolve(book)
-          return
-        }
-        resolve(null)
-      })
-  })
+  return isbn
+    .provider([provider])
+    .resolve(code)
+    .catch(err => null)
 }
 
 async function isbnSearch(code) {
