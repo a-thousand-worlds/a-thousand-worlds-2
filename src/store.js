@@ -469,28 +469,14 @@ const store = createStore({
     },
 
     // submissions
-    indexSubmission(ctx, sid) {
-      return new Promise((resolve, reject) => {
-        const ref = firebase.database().ref(`submits/books/${sid}`)
-        ref.once('value', snap => {
-          if (snap.val()) {
-            ctx.commit('indexSubmission', snap.val())
-            resolve()
-            return
-          }
-          const ref2 = firebase.database().ref(`submits/bundles/${sid}`)
-          ref2.once('value', snap2 => {
-            if (snap2.val()) {
-              ctx.commit('indexSubmission', snap2.val())
-            }
-            resolve()
-          })
-        })
-      })
+    async indexSubmission(ctx, sid) {
+      const submissions = await firebaseGet(`submits/books/${sid}`) || await firebaseGet(`submits/bundles/${sid}`)
+      if (submissions) {
+        ctx.commit('indexSubmission', submissions)
+      }
     },
 
     deleteSubmission(ctx, id) {
-
     },
 
     // this method doesn't use store to keep values
