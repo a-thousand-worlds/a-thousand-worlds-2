@@ -338,22 +338,15 @@ const store = createStore({
       ctx.commit('setBusy', false)
     },
 
-    // bundles
-    loadBundles(ctx) {
-      return new Promise((resolve, reject) => {
-        ctx.commit('setBusy', true)
-        firebase.database().ref('bundles').once('value', snap => {
-          const v = snap.val()
-          if (!v || v.length === 0) {
-            console.error('No bundles in database')
-            resolve()
-          }
-          console.log('bundles', v)
-          store.commit('setBundles', v)
-          ctx.commit('setBusy', false)
-          resolve()
-        })
-      })
+    async loadBundles(ctx) {
+      ctx.commit('setBusy', true)
+      const bundles = await firebaseGet('bundles')
+      if (!bundles || bundles.length === 0) {
+        console.error('No bundles in database')
+        return
+      }
+      store.commit('setBundles', bundles)
+      ctx.commit('setBusy', false)
     },
     async saveBundle(ctx, info) {
       console.log('save bundle', info)
