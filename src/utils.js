@@ -1,5 +1,6 @@
 import axios from 'axios'
 import isbn from 'node-isbn'
+import firebase from './firebase'
 
 const FNURL = process.env.VUE_APP_SEARCH_SERVICE_URL
 
@@ -25,3 +26,11 @@ export async function isbnSearch(code) {
   }
   return ret
 }
+
+/** Gets the value of a Firebase reference. */
+export const firebaseGet = refString => new Promise((resolve, reject) => {
+  const ref = firebase.database().ref(refString)
+  ref.once('value', snap => {
+    resolve(snap.val())
+  })
+})

@@ -1,4 +1,5 @@
-import firebase from '../firebase'
+import firebase from '@/firebase'
+import { firebaseGet } from '@/utils'
 
 const module = {
   namespaced: true,
@@ -15,15 +16,11 @@ const module = {
   },
   actions: {
     /** Loads the content collection from Firebase. */
-    load(state) {
-      return new Promise((resolve, reject) => {
-        const ref = firebase.database().ref('content')
-        ref.once('value', snap => {
-          const value = snap.val() || {}
-          state.commit('set', value)
-          resolve(value)
-        })
-      })
+    async load(state) {
+      const value = await firebaseGet('content')
+      const valueNotNull = value || {}
+      state.commit('set', valueNotNull)
+      return valueNotNull
     },
     /** Saves a record to the content collection in Firebase. */
     async save(state, { key, value }) {
