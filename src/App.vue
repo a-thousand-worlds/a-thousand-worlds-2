@@ -62,7 +62,7 @@ export default ({
       <section class="main column px-0 pb-20" :class="{'with-bookmarks': $store.state.bookmarksOpen}">
         <router-view/>
       </section>
-      <section v-if="$store.state.bookmarksOpen" class="bookmarks column px-0 pb-50">
+      <section v-if="$store.state.bookmarksOpen" class="bookmarks column">
         <bookmarks-view/>
       </section>
       <section class="rightbar column is-hidden-mobile">

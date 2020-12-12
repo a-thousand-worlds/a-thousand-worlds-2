@@ -33,7 +33,6 @@ export default {
 .widget {
   // font-size: 10px;
   color: black !important;
-  font-weight: bold;
 
   a.name {
     color: #000;

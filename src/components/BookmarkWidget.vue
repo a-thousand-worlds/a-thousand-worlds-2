@@ -11,9 +11,6 @@ export default {
       book: null,
       bundle: null
     }
-  },
-  created() {
-    console.log('bw', this.mark)
   }
 }
 </script>

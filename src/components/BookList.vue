@@ -28,26 +28,31 @@ export default {
 
 <template>
   <div class="book-list-wrapper columns">
-    <div class="column is-one-third">
+    <div class="column is-one-third p-0 mb-20">
       <router-link :to="{name:'BookDetail',params:{id:book.id}}" class="cover-data">
         <div class="img-cover bg-secondary" :style="{width: '100%', paddingTop: coverRatio+'%', backgroundImage: 'url('+bgImage+')', backgroundSize: 'contain'}"></div>
       </router-link>
     </div>
-    <div class="column is-two-thirds is-align-content-center">
-      <div class="columns is-mobile is-vcentered">
-        <div class="column">
-          <router-link :to="{name:'BookDetail',params:{id:book.id}}" class="cover-data">
-            <div class="title">{{book.title}}</div>
-          </router-link>
-          <div class="authors" v-for="person of book.authors" :key="person">
-            <author-widget :name="person"/>
-          </div>
-        </div>
-        <div class="column">
-          <div class="bmb  has-text-centered">
+    <div class="column is-two-thirds is-align-content-center p-0">
+      <div class="columns is-mobile is-vcentered m-0" style="line-height: 1.25;">
+
+        <div class="column p-0 pl-20 pr-10">
+
+          <div class="is-flex is-justify-content-space-between mb-20">
+            <div>
+              <router-link :to="{name:'BookDetail',params:{id:book.id}}" class="cover-data">
+                <h3 class="mb-10" style="color: black; margin-right: 15px;">{{book.title}}</h3>
+              </router-link>
+              <div v-for="person of book.authors" :key="person">
+                <author-widget :name="person" />
+              </div>
+            </div>
+
             <bookmark-button :book="book"></bookmark-button>
+
           </div>
         </div>
+
       </div>
     </div>
   </div>
