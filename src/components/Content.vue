@@ -5,6 +5,9 @@ import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 export default {
   props: ['name', 'placeholder'],
   computed: {
+    canEdit() {
+      return this.$iam('admin') || this.$iam('superadmin')
+    },
     loaded() {
       return this.$store.state.content.loaded
     },
@@ -29,7 +32,9 @@ export default {
     },
 
     html: _.debounce(function() {
-      this.$store.dispatch('content/save', { key: this.name, value: this.html })
+      if (this.canEdit) {
+        this.$store.dispatch('content/save', { key: this.name, value: this.html })
+      }
     }, 500)
 
   },
@@ -38,7 +43,7 @@ export default {
 </script>
 
 <template>
-  <ckeditor :editor="editor" v-model="html" :config="editorConfig" :disabled="!loaded" />
+  <ckeditor :editor="editor" v-model="html" :config="editorConfig" :disabled="!canEdit || !loaded" />
 </template>
 
 <style scoped lang="scss">
