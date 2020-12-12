@@ -6,7 +6,7 @@ export default {
   props: ['name', 'placeholder'],
   computed: {
     loaded() {
-      return this.$store.state.stage0.loaded
+      return this.$store.state.content.loaded
     },
   },
   data() {
@@ -15,21 +15,21 @@ export default {
       editorConfig: {
         placeholder: this.placeholder,
       },
-      html: this.$store.getters.getContent(this.name) ?? '',
+      html: this.$store.getters['content/get'](this.name) ?? '',
     }
   },
   watch: {
 
     // only triggers when entire content property is changed, not single key
     // fires multiple times for some reason
-    '$store.state.content'(next, prev) {
+    '$store.state.content.data'(next, prev) {
       if (next[this.name]) {
         this.html = next[this.name]
       }
     },
 
     html: _.debounce(function() {
-      this.$store.dispatch('saveContent', { key: this.name, value: this.html })
+      this.$store.dispatch('content/save', { key: this.name, value: this.html })
     }, 500)
 
   },
