@@ -330,17 +330,12 @@ const store = createStore({
       catch (e) {}
       return await ctx.dispatch('loadPeople')
     },
-    loadPeople(ctx) {
-      return new Promise((resolve, reject) => {
-        ctx.commit('setBusy', true)
-        firebase.database().ref('people').once('value', snap => {
-          const v = snap.val()
-          console.log('people', v)
-          store.commit('setPeople', v)
-          ctx.commit('setBusy', false)
-          resolve()
-        })
-      })
+
+    async loadPeople(ctx) {
+      ctx.commit('setBusy', true)
+      const people = await firebaseGet('people')
+      store.commit('setPeople', people)
+      ctx.commit('setBusy', false)
     },
 
     // bundles
