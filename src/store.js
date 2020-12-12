@@ -3,8 +3,9 @@ import _ from 'lodash'
 import dayjs from 'dayjs'
 import { v4 } from 'uuid'
 import Jimp from 'jimp'
-import firebase from './firebase'
-import content from './modules/content'
+import firebase from '@/firebase'
+import content from '@/modules/content'
+import { firebaseGet } from '@/utils'
 
 const store = createStore({
   modules: {
@@ -160,32 +161,28 @@ const store = createStore({
       await ref.remove()
       return await ctx.dispatch('loadTags')
     },
-    loadTags(ctx) {
-      return new Promise((resolve, reject) => {
-        ctx.commit('setBusy', true)
-        firebase.database().ref('tags').once('value', snap => {
-          console.log('tags', snap.val())
-          const v = snap.val()
-          if (!v || v.length === 0) {
-            console.error('No tags in database')
-            resolve()
-          }
-          store.commit('setTags', v)
-          const tags = Object.keys(v || []).map(k => {
-            return { ...v[k] }
-          })
-          // eslint-disable-next-line fp/no-mutating-methods
-          const sorted = tags.sort((a, b) => {
-            if (a.sortOrder === b.sortOrder) {
-              return 0
-            }
-            return a.sortOrder > b.sortOrder ? 1 : -1
-          })
-          store.commit('setSortedTags', sorted)
-          ctx.commit('setBusy', false)
-          resolve()
-        })
+
+    async loadTags(ctx) {
+      ctx.commit('setBusy', true)
+      const tags = await firebaseGet('tags')
+      if (!tags || tags.length === 0) {
+        console.error('No tags in database')
+        return
+      }
+      store.commit('setTags', tags)
+      const tagObjects = Object.keys(tags || []).map(k => {
+        return { ...tags[k] }
       })
+
+      // eslint-disable-next-line fp/no-mutating-methods
+      const sorted = tagObjects.sort((a, b) => {
+        if (a.sortOrder === b.sortOrder) {
+          return 0
+        }
+        return a.sortOrder > b.sortOrder ? 1 : -1
+      })
+      store.commit('setSortedTags', sorted)
+      ctx.commit('setBusy', false)
     },
 
     // books
