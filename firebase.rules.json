@@ -15,10 +15,6 @@
       ".read": true,
       ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true"
     },
-    "pages": {
-      ".read": true,
-      ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true"
-    },
     "people": {
       ".read": true,
       ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true"

@@ -23,7 +23,6 @@ const store = createStore({
     images: {},
     user: null,
     tags: {},
-    pages: {},
     sortedTags: [],
     peopleList: [],
     peopleIndex: {},
@@ -107,9 +106,6 @@ const store = createStore({
     },
     indexSubmission(ctx, sub) {
       ctx.submissionsIndex[sub.id] = sub
-    },
-    setPages(ctx, pages) {
-      ctx.pages = pages
     },
   },
   actions: {
@@ -532,18 +528,6 @@ const store = createStore({
       })
     },
 
-    // pages
-    loadPages(ctx) {
-      return new Promise((resolve, reject) => {
-        const ref = firebase.database().ref('pages')
-        ref.once('value', snap => {
-          const value = snap.val() || {}
-          ctx.commit('setPages', value)
-          resolve(value)
-        })
-      })
-    },
-
     // auth
     passwordReset(ctx, email) {
       return new Promise((resolve, reject) => {
@@ -566,7 +550,6 @@ const store = createStore({
       await ctx.dispatch('loadTags')
       await ctx.dispatch('loadPeople')
       await ctx.dispatch('loadBooks')
-      await ctx.dispatch('loadPages')
       await ctx.dispatch('content/load')
       // await ctx.dispatch('loadCovers')
       ctx.commit('setStage0Load')
