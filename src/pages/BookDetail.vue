@@ -113,7 +113,7 @@ export default {
         <button class="button button-unstyled is-primary">FIND BOOK AT</button>
         <button class="button is-rounded is-secondary mx-1">LOCAL LIBRARY</button>
         <button class="button is-rounded is-secondary mx-1">LINK</button>
-        <button class="button is-rounded is-secondary mx-1">INDIEBOUND</button>
+        <a :href="`http://www.indiebound.org/book/${book.isbn}?aff=athousandworlds`" target="_blank"><button class="button is-rounded is-secondary mx-1">INDIEBOUND</button></a>
       </div>
     </div>
   </div>
