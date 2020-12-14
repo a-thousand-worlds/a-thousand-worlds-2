@@ -65,7 +65,7 @@ export default {
 
   <section v-if="canInvite" class="section bordered-top">
     <h2>Invite Users</h2>
-    <invite-widget ref="invite" />
+    <invite-widget ref="invite" format="compact" />
     <div class="my-20">
       <router-link :to="{ name: 'Invite' }">Edit email templates</router-link>
     </div>

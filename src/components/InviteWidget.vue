@@ -4,8 +4,10 @@ import parseRecipient from '@/util/parseRecipient'
 export default {
   props: {
     roles: {
+      type: Array,
       default: ['User', 'Contributor', 'Creator', 'Advisor', 'Owner'],
-    }
+    },
+    format: String,
   },
   data() {
     return {
@@ -23,7 +25,7 @@ export default {
     },
     recipients() {
       return this.emailInput
-        ? this.emailInput.split('\n').map(parseRecipient)
+        ? this.emailInput.split(/[\n,]/g).map(parseRecipient)
         : []
     }
   },
@@ -132,15 +134,18 @@ export default {
 <template>
   <div>
 
-    <p class="mb-10">Enter a list of names and emails (one per line)</p>
+    <p v-if="format !== 'compact'" class="mb-10">Enter a list of names and emails (one per line)</p>
 
-    <div class="field">
+    <div v-if="format !== 'compact'" class="field">
       <div class="control">
-        <textarea class="textarea" :class="{ 'is-danger': hasError('emailInput')}" v-model="emailInput" :placeholder="'Sarah Lopez  sarah@test.com\nDillon Avery  dillon@test.com\nMattie Smith  mattie@test.com\n...'" />
+        <textarea class="textarea" :class="{ 'is-danger': hasError('emailInput')}" v-model="emailInput" :placeholder="'Sarah Lopez - sarah@test.com\nDillon Avery - dillon@test.com\nMattie Smith - mattie@test.com\n...'" />
       </div>
     </div>
 
     <div class="field is-grouped is-flex">
+      <div v-if="format === 'compact'" class="control is-flex-grow-1">
+        <textarea class="textarea" :class="{ 'is-danger': hasError('emailInput')}" v-model="emailInput" placeholder="Sarah Lopez - sarah@test.com" style="min-height: 0; padding-top: 0.5rem; padding-bottom: 0.5rem;" />
+      </div>
       <div class="control">
         <div :class="{ dropdown: true, 'is-active': dropdownActive }">
           <div class="dropdown-trigger">
