@@ -121,7 +121,7 @@ export default {
       if (!this.validate()) return
 
       clearTimeout(this.messageTimeout)
-      clearTimeout(this.disableAfterSave)
+      clearTimeout(this.disableAfterSaveTimeout)
       this.disableAfterSave = true
 
       await this.handleResponse(this.$store.dispatch('saveProfile', {

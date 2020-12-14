@@ -15,6 +15,10 @@
       ".read": true,
       ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true"
     },
+    "invites": {
+      ".read": true,
+      ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true"
+    },
     "people": {
       ".read": true,
       ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true"

@@ -1,24 +1,20 @@
 <script>
 
+import InviteWidget from '@/components/InviteWidget'
 import SubmissionWidget from '@/components/SubmissionWidget'
 import SubmissionsReviewList from '@/components/SubmissionsReviewList'
 
 export default {
   components: {
+    InviteWidget,
     SubmissionWidget,
     SubmissionsReviewList
   },
   data() {
     return {
-      invite: {
-        dropdownActive: '',
-        emails: '',
-        role: null,
-      },
       templates: {
         showEmailTemplates: false,
       },
-      roles: ['User', 'Contributor', 'Creator', 'Advisor', 'Owner'],
     }
   },
   computed: {
@@ -41,25 +37,13 @@ export default {
       return this.$iam('admin') || this.$iam('superadmin')
     },
   },
-  methods: {
-    setInviteRole(value) {
-      this.invite.role = value
-      this.invite.dropdownActive = false
-    },
-    setInviteDropdown(value) {
-      this.invite.dropdownActive = value
-    },
-    toggleInviteDropdown() {
-      this.invite.dropdownActive = !this.invite.dropdownActive
-    },
-  },
 }
 
 </script>
 
 <template>
 
-<div class="page" style="position: relative" @click.prevent="setInviteDropdown(false)">
+<div class="page" style="position: relative" @click.prevent="$refs.invite?.setInviteDropdown(false)">
 
   <h1 class="title page-title">Your Dashboard</h1>
 
@@ -80,43 +64,11 @@ export default {
   </section>
 
   <section v-if="canInvite" class="section bordered-top">
-    <h2>Invite users</h2>
-    <div class="field is-grouped is-flex">
-
-      <div class="control is-flex-grow-1">
-        <input class="input" v-model="invite.email" />
-      </div>
-
-      <div class="control">
-        <div :class="{ dropdown: true, 'is-active': invite.dropdownActive }">
-          <div class="dropdown-trigger">
-            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu" @click.prevent.stop="toggleInviteDropdown">
-              <span>{{ invite.role || 'CHOOSE ROLE' }}</span>
-              <span class="icon is-small">
-                <i class="fas fa-angle-down" aria-hidden="true"></i>
-              </span>
-            </button>
-          </div>
-          <div class="dropdown-menu" id="dropdown-menu" role="menu">
-            <div class="dropdown-content">
-              <a :class="{ 'dropdown-item': true, 'is-active': invite.role === role }" v-for="role in roles" :key="role" @click.prevent="setInviteRole(role)">
-                {{ role }}
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="control">
-        <button class="button is-primary">Send</button>
-      </div>
-
-    </div>
-
-    <div class="field">
+    <h2>Invite Users</h2>
+    <invite-widget ref="invite" />
+    <div class="my-20">
       <router-link :to="{ name: 'Invite' }">Edit email templates</router-link>
     </div>
-
   </section>
 
   <section class="section" v-if="canSuggest && hasSubmissions">
