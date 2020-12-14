@@ -1,10 +1,11 @@
 <script>
 
 import _ from 'lodash'
-import axios from 'axios'
 import BookTitleField from '@/components/fields/BookTitle'
 import BookIsbnField from '@/components/fields/BookIsbn'
 import PersonField from '@/components/fields/Person'
+
+import { findBookByTitle } from '@/utils'
 
 export default {
   data() {
@@ -48,9 +49,18 @@ export default {
       this.books[si] = {
         cover: 'data:image/png;base64,' + res.cover
       }
-      this.submissions[si].title = res.google ? res.google.title : res.openlib.title
-      this.submissions[si].author = res.google ? res.google.authors.join(', ') : res.openlib.authors.join(', ')
-      this.submissions[si].illustrator = ''
+      this.submissions[si].title = res.title
+      this.submissions[si].description = res.description
+      this.submissions[si].author = res.authors.join(', ')
+      this.submissions[si].illustrator = res.illustrators.join(', ')
+      this.submissions[si].cover = {
+        url: '',
+        base64: 'data:image/png;base64,' + res.cover,
+        width: res.coverWidth,
+        height: res.coverHeight
+      }
+      this.submissions[si].year = res.year
+      this.submissions[si].publisher = res.publisher
     },
     fillBook(book, si) {
       console.log('fill book', book)
@@ -101,6 +111,13 @@ export default {
         title: '',
         author: '',
         illustrator: '',
+        cover: {
+          url: '',
+          base64: '',
+          width: 1,
+          height: 1,
+        },
+        description: '',
         isbn: '',
         isAuthor: null,
         tags: {},
@@ -121,21 +138,22 @@ export default {
       this.submissions[si] = this.newSubmissionObject()
     },
     titleChanged: _.debounce(async function(si) {
-      const { author, title } = this.submissions[si]
-      const findISBNUrl = `${process.env.VUE_APP_FIND_ISBN_URL}?keyword=${encodeURIComponent(title || '')}%20${encodeURIComponent(author || '')}`
-      console.log(`Finding ISBN for "${title}"...`, findISBNUrl)
-      axios.get(findISBNUrl)
-        .then(result => {
-          const { isbn, thumbnail } = result.data || {}
-          if (isbn) {
-            this.submissions[si].isbn = isbn
-            this.books[si] = {
-              ...this.books[si],
-              cover: thumbnail,
-            }
-          }
-        })
-
+      // const { author, title } = this.submissions[si]
+      let search = this.submissions[si].title
+      if (this.submissions[si].author && this.submissions[si].author.length) {
+        search += ' ' + this.submissions[si].author
+      }
+      console.log(`Finding ISBN for "${search}"`)
+      const result = await findBookByTitle(search)
+      console.log('Search result', result)
+      const { isbn, thumbnail } = result || {}
+      if (isbn) {
+        this.submissions[si].isbn = isbn
+        this.books[si] = {
+          ...this.books[si],
+          cover: thumbnail,
+        }
+      }
     }, 500)
   },
   computed: {
@@ -173,7 +191,7 @@ export default {
 
             <div class="field">
               <label class="label">Book Title</label>
-              <book-title-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].title" @book-selected="fillBook($event, si)" @input="titleChanged(si)"/>
+              <book-title-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].title" @book-selected="fillBook($event, si)" :searchable="false" @input="titleChanged(si)"/>
             </div>
 
             <div class="field">
@@ -232,8 +250,8 @@ export default {
               <label class="label">How would you categorize this book? Select all that apply</label>
               <div class="text-14 tablet-columns-2">
                 <div v-for="tag of $store.state.sortedTags" :key="tag.id" class="control">
-                  <input :disabled="$uiBusy" :id="tag.id" :name="tag.id" type="checkbox" class="checkbox mr-3 mb-3" v-model="submissions[si].tags[tag.id]">
-                  <label class="label d-inline" :for="tag.id">
+                  <input :disabled="$uiBusy" :id="tag.id+'-'+si" :name="tag.id" type="checkbox" class="checkbox mr-3 mb-3" v-model="submissions[si].tags[tag.id]">
+                  <label class="label d-inline" :for="tag.id+'-'+si">
                     {{tag.tag}}
                   </label>
                 </div>

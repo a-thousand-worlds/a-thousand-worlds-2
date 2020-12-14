@@ -3,7 +3,7 @@
 import AuthorWidget from '@/components/AuthorWidget'
 
 export default {
-  props: ['modelValue', 'disabled'],
+  props: ['modelValue', 'disabled', 'searchable'],
   emits: ['update:modelValue', 'bookSelected'],
   data() {
     return {
@@ -15,6 +15,9 @@ export default {
     doSearch(e) {
       const search = e.target.value.toLowerCase()
       this.$emit('update:modelValue', search)
+      if (!this.searchable) {
+        return
+      }
       this.book = null
       this.searches = this.$store.state.booksList
         .filter(book => search.length && book.title.toLowerCase().includes(search))

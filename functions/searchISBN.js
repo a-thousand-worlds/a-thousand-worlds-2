@@ -75,16 +75,28 @@ async function isbnSearch(code) {
     coverWidth: 0,
     coverHeight: 0
   }
+  //console.log('found book', book)
+  //console.log('searching covers', code)
   const covers = await bookcovers.withIsbn(code)
-  const amazonSizes = Object.keys(covers.amazon)
-  const largestAmazonCover = Math.max.apply(null, amazonSizes.map(s => parseFloat(s, 10)))
-  const url = covers.amazon[largestAmazonCover + 'x'] ||
-    covers.amazon['2x'] ||
-    covers.openLibrary.large ||
-    covers.amazon['1.5x'] ||
-    covers.openLibrary.medium ||
-    covers.amazon['1x'] ||
-    covers.openLibrary.small
+  console.log('covers', covers)
+  let url = null
+  if (covers.amazon) {
+    const amazonSizes = Object.keys(covers.amazon)
+    const largestAmazonCover = Math.max.apply(null, amazonSizes.map(s => parseFloat(s, 10)))
+    url = covers.amazon[largestAmazonCover + 'x'] ||
+      covers.amazon['2x'] ||
+      covers.amazon['1.5x'] ||
+      covers.openLibrary.medium ||
+      covers.amazon['1x']
+  }
+  else if (covers.openLibrary) {
+    url = covers.openLibrary.large ||
+      covers.openLibrary.small
+  }
+  else if (covers.google) {
+    url = covers.google.thumbnail ||
+      covers.google.smallThumbnail
+  }
   console.log(`Fetching book cover: ${url}`)
   const img = await loadImage2Base64(url)
   book.cover = img.base64

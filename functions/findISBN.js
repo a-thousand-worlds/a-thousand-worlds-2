@@ -40,6 +40,7 @@ module.exports = () => {
     })
 
     console.log(req.query.keyword, `${products.result.length} results`)
+    console.log('products', products)
 
     // find the first product with a valid ISBN extracted from its url
     const match = products.result
@@ -48,6 +49,7 @@ module.exports = () => {
         isbn: product.url.slice(product.url.lastIndexOf('/') + 1)
       }))
       .find(product => isValidIsbn(product.isbn))
+
 
     if (!match) {
       res.json(null)

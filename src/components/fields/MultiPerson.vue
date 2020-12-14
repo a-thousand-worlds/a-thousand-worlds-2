@@ -96,8 +96,8 @@ export default {
 <div class="control">
   <div class="field is-grouped">
     <div class="control" :class="{disabled:disabled}">
-      <i v-if="role === 'author'" class="fas fa-pencil-alt"></i>
-      <i v-if="role === 'illustrator'" class="fas fa-palette"></i>
+      <span v-if="role === 'author'">by</span>
+      <span v-if="role === 'illustrator'">illustrated by</span>
     </div>
     <div class="control w-50">
       <div :class="{disabled:disabled}" class="w-50 pointer" v-if="mode === 'view'" @click="onDivClick()">{{names}}</div>
