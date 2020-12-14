@@ -8,7 +8,10 @@
     "lint": "vue-cli-service lint src functions vue.config.js",
     "deploy": "npm run build && firebase deploy --only hosting",
     "deploy:staging": "npm run build && npm run host:staging",
-    "host:staging": "firebase hosting:channel:deploy staging --expires 30d"
+    "emulate": "firebase emulators:start --only functions",
+    "host:staging": "firebase hosting:channel:deploy staging --expires 30d",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-build-balloon": "^23.1.0",
@@ -17,6 +20,7 @@
     "bulma": "^0.9.1",
     "clipboard": "^2.0.6",
     "core-js": "^3.8.1",
+    "cute-animals": "^0.1.0",
     "dayjs": "^1.9.7",
     "email-validator": "^2.0.4",
     "firebase": "^8.1.2",
@@ -47,6 +51,8 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.1.0",
     "eslint-plugin-vue": "^7.2.0",
+    "firebase-tools": "^8.19.0",
+    "jest": "^26.6.3",
     "vue-svg-loader": "^0.17.0-beta.2"
   },
   "eslintConfig": {

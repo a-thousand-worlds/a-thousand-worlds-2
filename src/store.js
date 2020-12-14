@@ -5,11 +5,13 @@ import { v4 } from 'uuid'
 import Jimp from 'jimp'
 import firebase from '@/firebase'
 import content from '@/modules/content'
+import invites from '@/modules/invites'
 import { firebaseGet } from '@/utils'
 
 const store = createStore({
   modules: {
     content,
+    invites,
   },
   state: {
     uiBusy: false,
@@ -498,6 +500,7 @@ const store = createStore({
       await ctx.dispatch('loadPeople')
       await ctx.dispatch('loadBooks')
       await ctx.dispatch('content/load')
+      await ctx.dispatch('invites/subscribe')
       // await ctx.dispatch('loadCovers')
       ctx.commit('setStage0Load')
     },

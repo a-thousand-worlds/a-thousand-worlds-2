@@ -1,28 +1,5 @@
 <script>
-import _ from 'lodash'
-import { validate as validateEmail } from 'email-validator'
-
-/** Parse a line from the recipient input. */
-const parseRecipient = s => {
-
-  const words = s.split(/\s/g)
-  const email = words[words.length - 1]
-
-  if (!validateEmail(email)) {
-    return {
-      raw: s,
-      isValid: false,
-    }
-  }
-
-  return {
-    firstName: words[0],
-    lastName: words.slice(1, words.length - 1).join(' '),
-    email,
-    raw: s,
-    isValid: true
-  }
-}
+import parseRecipient from '@/util/parseRecipient'
 
 export default {
   props: {
@@ -51,10 +28,37 @@ export default {
     }
   },
   methods: {
+
+    /** Shows or clears an error for the given service response. */
+    handleResponse(response) {
+      this.loading = true
+      return response
+        .then(() => {
+          this.loading = false
+          this.error = null
+        })
+        .catch(err => {
+          console.error(err)
+          this.error = {
+            message: err.message
+          }
+          this.loading = false
+        })
+    },
+
     hasError(field) {
       return this.error?.fields?.[field]
     },
-    send() {
+
+    reset() {
+      this.role = null
+      this.emailInput = null
+      this.error = null
+    },
+
+    async send() {
+
+      this.setInviteDropdown(false)
 
       clearTimeout(this.disableSend)
       this.disableSend = setTimeout(() => {
@@ -63,28 +67,33 @@ export default {
 
       if (!this.validate()) return
 
-      console.log(this.recipients)
+      const invitePromises = this.recipients.map(recipient =>
+        this.$store.dispatch('invites/send', {
+          recipient,
+          role: this.role,
+        })
+      )
 
-      // return this.handleResponse(this.$store.dispatch('userLogin', {
-      //   email: this.email,
-      //   password: this.password
-      // })
-      //   .then(() => {
-      //     // eslint-disable-next-line fp/no-mutating-methods
-      //     this.$router.push({ name: 'Dashboard' })
-      //   })
-      // )
+      await this.handleResponse(Promise.all(invitePromises).then(() => {
+        this.message = `Email${this.recipients.length > 1 ? 's' : ''} sent!`
+        this.reset()
+      }))
     },
+
     setInviteRole(value) {
       this.role = value
       this.dropdownActive = false
+      this.validate()
     },
+
     setInviteDropdown(value) {
       this.dropdownActive = value
     },
+
     toggleInviteDropdown() {
       this.dropdownActive = !this.dropdownActive
     },
+
     /** Checks all fields for errors and updates this.error. */
     validate() {
 
@@ -105,6 +114,7 @@ export default {
 
       const invalidRecipients = this.recipients.filter(recipient => !recipient.isValid)
       if (invalidRecipients.length > 0) {
+        console.log('invalidRecipients', invalidRecipients)
         this.error = {
           message: `Invalid recipient${invalidRecipients.length > 1 ? 's' : ''}:`,
           data: invalidRecipients.map(recipient => recipient.raw).join('\n'),
@@ -114,10 +124,6 @@ export default {
 
       return !this.error
     },
-    /** Debounced validation, only if error */
-    revalidate: _.debounce(function() {
-      return !this.error || this.validate()
-    }, 50),
   },
 }
 
