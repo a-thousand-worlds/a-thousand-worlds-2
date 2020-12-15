@@ -6,10 +6,7 @@ export default {
   data() {
     return {
       // the active tab (login or signup)
-      active: window.location.pathname === '/login' ? 'login'
-      : window.location.pathname === '/signup' ? 'signup'
-      : window.location.pathname === '/profile' ? 'profile'
-      : null,
+      active: this.getActiveFromUrl(),
       email: this.$store.state.user?.profile?.email || '',
       name: this.$store.state.user?.profile?.name || '',
       // all options for enagement checkboxes
@@ -83,6 +80,13 @@ export default {
     /** Returns 'error' if a field is in error. */
     hasError(field) {
       return this.error?.fields?.[field]
+    },
+
+    getActiveFromUrl() {
+      return window.location.pathname === '/login' ? 'login'
+        : window.location.pathname === '/signup' ? 'signup'
+        : window.location.pathname === '/profile' ? 'profile'
+        : null
     },
 
     async submit() {
@@ -212,6 +216,9 @@ export default {
         this.name = `${next.firstName} ${next.lastName}`.trim()
       }
     },
+    '$route'(next) {
+      this.active = this.getActiveFromUrl()
+    },
     '$store.state.user'(next, prev) {
       if (!prev && !!next) {
         if (this.$iam('creator') || this.$iam('contributor') || this.$iam('admin') || this.$iam('superadmin')) {
@@ -235,7 +242,17 @@ export default {
 
   <div class="mx-6">
 
-    <div class="is-flex is-justify-content-center">
+    <div v-if="(code && !invite) || (invite?.used)" class="is-flex is-justify-content-center mt-20">
+      <div v-if="!$store.state.invites.loaded" class="my-50 has-text-centered">
+        <img src="@/assets/icons/loading.gif" />
+      </div>
+      <div v-else class="my-50 has-text-centered">
+        <h2>{{ invite?.used ? 'This invitation code has already been used.' : 'Invalid invitation code' }}</h2>
+        <router-link :to="{ name: 'LogIn' }"><button class="button is-primary is-rounded is-uppercase mt-20">Log In</button></router-link>
+      </div>
+    </div>
+
+    <div v-else class="is-flex is-justify-content-center">
       <form class="is-flex-grow-1" style="max-width: 480px;" @submit.prevent="submit">
 
         <!-- Cannot use are-small and is-rounded until #3208 is merged. See https://github.com/jgthms/bulma/pull/3208. -->
@@ -244,67 +261,69 @@ export default {
           <button :class="['button', 'is-small', 'is-rounded', ...[active === 'login' ? ['is-selected'] : null]]" style="width: 50%; max-width: 240px;" @click.prevent="setActive('login')">Log In</button>
         </div>
 
-        <h1 v-if="!invite || invite.role" class="title page-title divider-bottom">{{ title }}</h1>
+        <div>
+          <h1 v-if="!invite || invite.role" class="title page-title divider-bottom">{{ title }}</h1>
 
-        <div class="field" v-if="active === 'signup' || active === 'profile'">
-          <label :class="['label', { error: hasError('name') }]">NAME</label>
-          <div class="control">
-            <input :disabled="loading" type="text" class="input" v-model="name" @input="revalidate">
-          </div>
-        </div>
-
-        <div class="field" v-if="active ==='login' || active === 'signup'">
-          <label :class="['label', { error: hasError('email') }]">EMAIL</label>
-          <div class="control">
-            <input :disabled="loading" type="email" class="input" v-model="email" @input="revalidate">
-          </div>
-        </div>
-
-        <div class="field" v-if="active === 'login' || active === 'signup'">
-          <label :class="['label', { error: hasError('password') }]">PASSWORD</label>
-          <div class="control">
-            <input :disabled="loading" type="password" class="input" v-model="password" @input="revalidate">
-          </div>
-        </div>
-
-        <div class="field" v-if="active === 'signup' || active === 'profile'">
-          <label class="label is-uppercase">How do you engage with books?</label>
-          <div style="column-count: 2;">
-            <div v-for="category of engagementCategories" :key="category.id" class="control columns-2">
-              <input :disabled="loading" :id="category.id" :name="category.id" type="checkbox" class="checkbox mr-3 mb-3" v-model="signupData.selectedEngagementCategories[category.id]">
-              <label class="label is-inline" style="word-wrap: nobreak;" :for="category.id">
-                {{category.text}}
-              </label>
-            </div>
-            <div>
-              <input :disabled="loading" type="checkbox" class="checkbox mr-3 mb-3" v-model="signupData.selectedEngagementCategories.other">
-              <label class="label is-inline mr-2">OTHER</label>
-              <input :disabled="loading" class="input" style="max-width: 200px;" type="text" v-model="signupData.otherEngagementCategory">
+          <div class="field" v-if="active === 'signup' || active === 'profile'">
+            <label :class="['label', { error: hasError('name') }]">NAME</label>
+            <div class="control">
+              <input :disabled="loading" type="text" class="input" v-model="name" @input="revalidate">
             </div>
           </div>
 
-        </div>
+          <div class="field" v-if="active ==='login' || active === 'signup'">
+            <label :class="['label', { error: hasError('email') }]">EMAIL</label>
+            <div class="control">
+              <input :disabled="loading" type="email" class="input" v-model="email" @input="revalidate">
+            </div>
+          </div>
 
-        <div class="field divider-30" v-if="active === 'signup' || active === 'profile'">
-          <label class="label is-uppercase">Are you affiliated with any organization(s)?</label>
-          <input :disabled="loading" class="input" type="text" v-model="signupData.organization">
-        </div>
+          <div class="field" v-if="active === 'login' || active === 'signup'">
+            <label :class="['label', { error: hasError('password') }]">PASSWORD</label>
+            <div class="control">
+              <input :disabled="loading" type="password" class="input" v-model="password" @input="revalidate">
+            </div>
+          </div>
 
-        <div class="field my-4">
-          <input :disabled="loading || hasFieldErrors || disableAfterSave" type="submit" class="button is-primary is-rounded is-fullwidth is-uppercase" :class="{'is-loading':loading}" :value="active === 'login' ? 'Log In' : active === 'signup' ? 'Create Account' : active === 'profile' ? 'Save' : null"/>
-        </div>
+          <div class="field" v-if="active === 'signup' || active === 'profile'">
+            <label class="label is-uppercase">How do you engage with books?</label>
+            <div style="column-count: 2;">
+              <div v-for="category of engagementCategories" :key="category.id" class="control columns-2">
+                <input :disabled="loading" :id="category.id" :name="category.id" type="checkbox" class="checkbox mr-3 mb-3" v-model="signupData.selectedEngagementCategories[category.id]">
+                <label class="label is-inline" style="word-wrap: nobreak;" :for="category.id">
+                  {{category.text}}
+                </label>
+              </div>
+              <div>
+                <input :disabled="loading" type="checkbox" class="checkbox mr-3 mb-3" v-model="signupData.selectedEngagementCategories.other">
+                <label class="label is-inline mr-2">OTHER</label>
+                <input :disabled="loading" class="input" style="max-width: 200px;" type="text" v-model="signupData.otherEngagementCategory">
+              </div>
+            </div>
 
-        <div v-if="message" class="field">
-          <p class="message has-text-centered is-uppercase">{{message}}</p>
-        </div>
+          </div>
 
-        <div v-if="error" class="field">
-          <p class="error has-text-centered is-uppercase">{{error.message}}</p>
-        </div>
+          <div class="field divider-30" v-if="active === 'signup' || active === 'profile'">
+            <label class="label is-uppercase">Are you affiliated with any organization(s)?</label>
+            <input :disabled="loading" class="input" type="text" v-model="signupData.organization">
+          </div>
 
-        <p class="has-text-centered" v-if="active === 'login'">
-          <router-link :to="{name:'PasswordReset'}">FORGOT PASSWORD?</router-link>
-        </p>
+          <div class="field my-4">
+            <input :disabled="loading || hasFieldErrors || disableAfterSave" type="submit" class="button is-primary is-rounded is-fullwidth is-uppercase" :class="{'is-loading':loading}" :value="active === 'login' ? 'Log In' : active === 'signup' ? 'Create Account' : active === 'profile' ? 'Save' : null"/>
+          </div>
+
+          <div v-if="message" class="field">
+            <p class="message has-text-centered is-uppercase">{{message}}</p>
+          </div>
+
+          <div v-if="error" class="field">
+            <p class="error has-text-centered is-uppercase">{{error.message}}</p>
+          </div>
+
+          <p class="has-text-centered" v-if="active === 'login'">
+            <router-link :to="{name:'PasswordReset'}">FORGOT PASSWORD?</router-link>
+          </p>
+        </div>
 
       </form>
     </div>

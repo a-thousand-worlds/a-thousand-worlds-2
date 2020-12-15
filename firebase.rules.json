@@ -6,6 +6,7 @@
       ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true",
       "$uid": {
         ".read": true,
+          // TODO: secure
         ".write": "$uid === auth.uid"
       }
     },
@@ -19,7 +20,14 @@
     },
     "invites": {
       ".read": true,
-      ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true"
+      ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true",
+      "$code": {
+        "used": {
+          ".read": true,
+            // TODO: secure
+          ".write": true
+        }
+      }
     },
     "people": {
       ".read": true,
