@@ -1,7 +1,6 @@
 import axios from 'axios'
 import * as animal from 'cute-animals'
 import firebase from '@/firebase'
-import { firebaseGet } from '@/utils'
 import mergeOne from '@/util/mergeOne'
 import collectionModule from './collectionModule'
 // import { v4 as uid } from 'uuid'

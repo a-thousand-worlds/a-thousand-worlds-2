@@ -5,7 +5,7 @@ export default {
   props: {
     roles: {
       type: Array,
-      default: ['user', 'contributor', 'creator', 'advisor', 'owner'],
+      default: () => ['user', 'contributor', 'creator', 'advisor', 'owner'],
     },
     format: String,
   },
@@ -135,14 +135,14 @@ export default {
           fields: { ...this.error?.fields, emailInput: true },
         }
       }
-      else if(this.existingRecipients.length > 0) {
+      else if (this.existingRecipients.length > 0) {
         this.error = {
           message: `Already registered:`,
           data: this.existingRecipients.map(recipient => recipient.raw),
           fields: { ...this.error?.fields, emailInput: true },
         }
       }
-      else if(this.existingInvites.length > 0) {
+      else if (this.existingInvites.length > 0) {
         this.error = {
           message: `Already Invited:`,
           data: this.existingInvites.map(recipient => recipient.raw),
@@ -204,7 +204,7 @@ export default {
     <div v-if="error" class="field">
       <p class="error is-uppercase">{{ error.message }}</p>
       <div v-if="error.data" class="error">
-        <p v-for="item of error.data">{{ item }}</p>
+        <p v-for="item of error.data" :key="item">{{ item }}</p>
       </div>
     </div>
 

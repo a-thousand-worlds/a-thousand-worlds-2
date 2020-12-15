@@ -22,6 +22,7 @@ const collectionModule = name => ({
     },
     /**
      * Find an entry in the collection by a given key.
+     *
      * @param key    The key to match. Supports _.get key expressions.
      * @param value  The value to match. Accepts a predicate that takes the deep value returned by the key expression.
      */
