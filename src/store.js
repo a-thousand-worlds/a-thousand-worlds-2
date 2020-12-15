@@ -4,15 +4,16 @@ import dayjs from 'dayjs'
 import { v4 } from 'uuid'
 import Jimp from 'jimp'
 import firebase from '@/firebase'
+import content from '@/modules/content'
 import invites from '@/modules/invites'
-import collectionModule from '@/modules/collectionModule'
+import users from '@/modules/users'
 import { firebaseGet } from '@/utils'
 
 const store = createStore({
   modules: {
-    content: collectionModule('content'),
+    content,
     invites,
-    users: collectionModule('users'),
+    users,
   },
   state: {
     uiBusy: false,
@@ -598,23 +599,6 @@ const store = createStore({
       await ctx.dispatch('users/subscribe')
       // await ctx.dispatch('loadCovers')
       ctx.commit('setStage0Load')
-    },
-
-    userLogin(ctx, data) {
-      return firebase.auth().signInWithEmailAndPassword(data.email, data.password)
-    },
-
-    async userRegister({ state }, { code, email, name, organization, otherEngagementCategory, password }) {
-      const { user } = await firebase.auth().createUserWithEmailAndPassword(email, password)
-      await store.commit('setUser', { uid: user.uid })
-
-      const invite = state.invites.data[code]
-      const roles = invite ? {
-        roles: {
-          [invite.role]: true
-        }
-      } : null
-      await store.dispatch('saveProfile', { email, name, organization, otherEngagementCategory, ...roles })
     },
   }
 })

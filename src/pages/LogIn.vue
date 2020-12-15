@@ -101,7 +101,7 @@ export default {
 
       if (!this.validate()) return
 
-      return this.handleResponse(this.$store.dispatch('userLogin', {
+      return this.handleResponse(this.$store.dispatch('users/login', {
         email: this.email,
         password: this.password
       })
@@ -116,7 +116,7 @@ export default {
 
       if (!this.validate()) return
 
-      return this.handleResponse(this.$store.dispatch('userRegister', {
+      return this.handleResponse(this.$store.dispatch('users/signup', {
         code: this.code,
         email: this.email,
         name: this.name,
