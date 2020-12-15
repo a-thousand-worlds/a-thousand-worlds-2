@@ -50,7 +50,6 @@ module.exports = () => {
       }))
       .find(product => isValidIsbn(product.isbn))
 
-
     if (!match) {
       res.json(null)
       return

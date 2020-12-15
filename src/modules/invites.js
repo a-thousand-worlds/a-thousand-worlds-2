@@ -1,31 +1,12 @@
 import axios from 'axios'
 import * as animal from 'cute-animals'
 import firebase from '@/firebase'
-import { firebaseGet } from '@/utils'
+import mergeOne from '@/util/mergeOne'
+import collectionModule from './collectionModule'
 // import { v4 as uid } from 'uuid'
 
-const module = {
-  namespaced: true,
-  state: () => ({
-    data: {},
-    defaults: {},
-    loaded: false,
-  }),
-  mutations: {
-    set(state, data) {
-      state.data = data
-      state.loaded = true
-    },
-  },
+const module = mergeOne(collectionModule('invites'), {
   actions: {
-
-    /** Loads the invites collection from Firebase once. */
-    async load(state) {
-      const value = await firebaseGet('invites')
-      const valueNotNull = value || {}
-      state.commit('set', value || {})
-      return valueNotNull
-    },
 
     /** Sends an invite for a given role. */
     async send(state, { recipient: { email, firstName, lastName }, role }) {
@@ -103,21 +84,7 @@ const module = {
       return axios.get(`${process.env.VUE_APP_EMAIL_URL}?to=${email}&subject=${subject}&html=${encodeURIComponent(html)}`)
     },
 
-    /** Subscribes to the invites collection in Firebase, syncing with this.data */
-    subscribe(state) {
-      const ref = firebase.database().ref('invites')
-      ref.on('value', snap => {
-        state.commit('set', snap.val() || {})
-      })
-    }
-
   },
-  getters: {
-    /** Gets the invites of the given key, or its default. */
-    getById: state => id => {
-      return state.data[id]
-    },
-  },
-}
+})
 
 export default module

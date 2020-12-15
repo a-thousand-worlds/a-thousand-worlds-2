@@ -75,8 +75,8 @@ async function isbnSearch(code) {
     coverWidth: 0,
     coverHeight: 0
   }
-  //console.log('found book', book)
-  //console.log('searching covers', code)
+  // console.log('found book', book)
+  // console.log('searching covers', code)
   const covers = await bookcovers.withIsbn(code)
   console.log('covers', covers)
   let url = null

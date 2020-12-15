@@ -4,8 +4,10 @@ import parseRecipient from '@/util/parseRecipient'
 export default {
   props: {
     roles: {
-      default: ['User', 'Contributor', 'Creator', 'Advisor', 'Owner'],
-    }
+      type: Array,
+      default: () => ['user', 'contributor', 'creator', 'advisor', 'owner'],
+    },
+    format: String,
   },
   data() {
     return {
@@ -18,12 +20,25 @@ export default {
     }
   },
   computed: {
+    existingInvites() {
+      return this.recipients.filter(recipient =>
+        this.$store.getters['invites/findBy']('email', recipient.email)
+      )
+    },
+    existingRecipients() {
+      return this.recipients.filter(recipient =>
+        this.$store.getters['users/findBy']('profile.email', recipient.email)
+      )
+    },
     hasFieldErrors() {
       return Object.keys(this.error?.fields || {}).length > 0
     },
+    invalidRecipients() {
+      return this.recipients.filter(recipient => !recipient.isValid)
+    },
     recipients() {
       return this.emailInput
-        ? this.emailInput.split('\n').map(parseRecipient)
+        ? this.emailInput.split(/[\n,]/g).map(parseRecipient)
         : []
     }
   },
@@ -83,7 +98,9 @@ export default {
     setInviteRole(value) {
       this.role = value
       this.dropdownActive = false
-      this.validate()
+      if (this.error) {
+        this.validate()
+      }
     },
 
     setInviteDropdown(value) {
@@ -111,13 +128,24 @@ export default {
           fields: { ...this.error?.fields, role: true },
         }
       }
-
-      const invalidRecipients = this.recipients.filter(recipient => !recipient.isValid)
-      if (invalidRecipients.length > 0) {
-        console.log('invalidRecipients', invalidRecipients)
+      else if (this.invalidRecipients.length > 0) {
         this.error = {
-          message: `Invalid recipient${invalidRecipients.length > 1 ? 's' : ''}:`,
-          data: invalidRecipients.map(recipient => recipient.raw).join('\n'),
+          message: `Invalid recipient${this.invalidRecipients.length > 1 ? 's' : ''}:`,
+          data: this.invalidRecipients.map(recipient => recipient.raw),
+          fields: { ...this.error?.fields, emailInput: true },
+        }
+      }
+      else if (this.existingRecipients.length > 0) {
+        this.error = {
+          message: `Already registered:`,
+          data: this.existingRecipients.map(recipient => recipient.raw),
+          fields: { ...this.error?.fields, emailInput: true },
+        }
+      }
+      else if (this.existingInvites.length > 0) {
+        this.error = {
+          message: `Already Invited:`,
+          data: this.existingInvites.map(recipient => recipient.raw),
           fields: { ...this.error?.fields, emailInput: true },
         }
       }
@@ -132,15 +160,18 @@ export default {
 <template>
   <div>
 
-    <p class="mb-10">Enter a list of names and emails (one per line)</p>
+    <p v-if="format !== 'compact'" class="mb-10">Enter a list of names and emails (one per line)</p>
 
-    <div class="field">
+    <div v-if="format !== 'compact'" class="field">
       <div class="control">
-        <textarea class="textarea" :class="{ 'is-danger': hasError('emailInput')}" v-model="emailInput" :placeholder="'Sarah Lopez  sarah@test.com\nDillon Avery  dillon@test.com\nMattie Smith  mattie@test.com\n...'" />
+        <textarea class="textarea" :class="{ 'is-danger': hasError('emailInput')}" v-model="emailInput" :placeholder="'Sarah Lopez - sarah@test.com\nDillon Avery - dillon@test.com\nMattie Smith - mattie@test.com\n...'" />
       </div>
     </div>
 
     <div class="field is-grouped is-flex">
+      <div v-if="format === 'compact'" class="control is-flex-grow-1">
+        <textarea class="textarea" :class="{ 'is-danger': hasError('emailInput')}" v-model="emailInput" placeholder="Sarah Lopez - sarah@test.com" style="min-height: 0; padding-top: 0.5rem; padding-bottom: 0.5rem;" />
+      </div>
       <div class="control">
         <div :class="{ dropdown: true, 'is-active': dropdownActive }">
           <div class="dropdown-trigger">
@@ -172,7 +203,9 @@ export default {
 
     <div v-if="error" class="field">
       <p class="error is-uppercase">{{ error.message }}</p>
-      <p class="error">{{ error.data }}</p>
+      <div v-if="error.data" class="error">
+        <p v-for="item of error.data" :key="item">{{ item }}</p>
+      </div>
     </div>
 
   </div>

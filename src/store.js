@@ -4,14 +4,15 @@ import dayjs from 'dayjs'
 import { v4 } from 'uuid'
 import Jimp from 'jimp'
 import firebase from '@/firebase'
-import content from '@/modules/content'
 import invites from '@/modules/invites'
+import collectionModule from '@/modules/collectionModule'
 import { firebaseGet } from '@/utils'
 
 const store = createStore({
   modules: {
-    content,
+    content: collectionModule('content'),
     invites,
+    users: collectionModule('users'),
   },
   state: {
     uiBusy: false,
@@ -594,6 +595,7 @@ const store = createStore({
       await ctx.dispatch('loadBooks')
       await ctx.dispatch('content/load')
       await ctx.dispatch('invites/subscribe')
+      await ctx.dispatch('users/subscribe')
       // await ctx.dispatch('loadCovers')
       ctx.commit('setStage0Load')
     },
@@ -647,5 +649,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     store.commit('setUser', null)
   }
 })
+
+window.store = store
 
 export default store
