@@ -1,7 +1,7 @@
 <script>
 
 export default {
-  props: ['modelValue', 'disabled'],
+  props: ['modelValue', 'disabled', 'placeholder'],
   emits: ['update:modelValue'],
   data() {
     return {
@@ -49,7 +49,17 @@ export default {
 <div class="control">
   <div class="field is-grouped">
     <div class="control w-50">
-      <div :class="{disabled:disabled}" class="w-50 pointer" v-if="mode === 'view'" @click="onDivClick()">{{title}}</div>
+      <div
+        v-if="mode === 'view' && !title?.length && placeholder?.length"
+        :class="{disabled:disabled}"
+        class="w-50 pointer placeholder"
+        @click="onDivClick()">{{placeholder}}</div>
+      <div
+        v-if="mode === 'view' && title?.length"
+        :class="{disabled:disabled}"
+        :title="placeholder"
+        class="w-50 pointer"
+        @click="onDivClick()">{{title}}</div>
       <input
         v-if="mode === 'edit'"
         @blur="onInputBlur"
@@ -82,6 +92,11 @@ export default {
 
 .pointer {
   cursor: text;
+}
+
+.placeholder {
+  font-style: italic;
+  color: #aaa;
 }
 
 .disabled {

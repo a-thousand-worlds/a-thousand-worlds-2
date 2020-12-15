@@ -1,7 +1,7 @@
 <script>
 
 export default {
-  props: ['modelValue', 'disabled', 'searchDb', 'role'],
+  props: ['modelValue', 'disabled', 'searchDb', 'role', 'placeholder'],
   emits: ['update:modelValue', 'person-selected', 'person-removed'],
   data() {
     return {
@@ -95,12 +95,18 @@ export default {
 
 <div class="control">
   <div class="field is-grouped">
-    <div class="control" :class="{disabled:disabled}">
-      <span v-if="role === 'author'">by</span>
-      <span v-if="role === 'illustrator'">illustrated by</span>
-    </div>
     <div class="control w-50">
-      <div :class="{disabled:disabled}" class="w-50 pointer" v-if="mode === 'view'" @click="onDivClick()">{{names}}</div>
+      <div
+        :class="{disabled:disabled}"
+        class="w-50 pointer placeholder"
+        v-if="mode === 'view' && !names?.length && placeholder?.length"
+        @click="onDivClick()">{{placeholder}}</div>
+      <div
+        :class="{disabled:disabled}"
+        class="w-50 pointer"
+        :title="placeholder"
+        v-if="mode === 'view' && names?.length"
+        @click="onDivClick()">{{names}}</div>
       <input
         v-if="mode === 'edit'"
         @blur="onInputBlur"
@@ -139,6 +145,11 @@ export default {
 .w-50 {
   min-width: 50%;
   min-height: 24px;
+}
+
+.placeholder {
+  font-style: italic;
+  color: #aaa;
 }
 
 .pointer {

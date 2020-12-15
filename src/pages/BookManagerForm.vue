@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     loadBookID(bid) {
-      const b = this.$store.state.booksList[bid] || null
+      const b = this.$store.state.booksIndex[bid] || null
       // console.log('upd', p, this.$store.state.people)
       if (b) {
         this.book = b

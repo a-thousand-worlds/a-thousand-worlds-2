@@ -190,26 +190,25 @@ const store = createStore({
     // books
     async saveBook(ctx, info) {
       ctx.commit('setBusy', true)
-      // console.log('saving book store', info)
+      console.log('saving book store', info)
       /**/
       const id = info.book.id && info.book.id.length ? info.book.id : v4()
       // checking and saving authors if not exists
-      let i = 0
+      /*
       // eslint-disable-next-line fp/no-loops
       for (const person of info.book.authors) {
-        const exists = ctx.state.people.reduce((acc, x) => {
+        const exists = ctx.state.peopleList.reduce((acc, x) => {
           // console.log('checking', x.name, person)
           return x.name.toLowerCase() === person.toLowerCase() ? true : acc
         }, false)
         if (!exists) {
-          console.log('saving person', person, info.roles[i])
+          console.log('saving person', person)
           await ctx.dispatch('savePerson', {
-            name: person,
-            role: info.roles[i] || 'author'
+            name: person
           })
         }
-        i++
       }
+      */
       let photoUrl = ''
       let photoWidth = info.book.coverWidth || 0
       let photoHeight = info.book.coverHeight || 0
@@ -240,8 +239,7 @@ const store = createStore({
         .filter(x => !!x)
       const bookRef = await firebase.database().ref(`books/${id}`)
       const now = dayjs()
-      console.log('saving')
-      await bookRef.set({
+      const bookData = {
         id: id,
         isbn: info.book.isbn,
         title: info.book.title,
@@ -260,7 +258,9 @@ const store = createStore({
         approvedAt: info.book.approvedAt || info.book.approvedBy ? now.format() : null,
         approvedBy: info.book.approvedBy || null,
         updatedAt: now.format()
-      })
+      }
+      console.log('saving', bookData)
+      await bookRef.set(bookData)
       await ctx.dispatch('loadBooks')
     },
 
@@ -322,6 +322,7 @@ const store = createStore({
         updatedAt: now.format()
       })
       await ctx.dispatch('loadPeople')
+      return id
     },
     async delPerson(ctx, id) {
       ctx.commit('setBusy', true)
@@ -395,6 +396,11 @@ const store = createStore({
       ctx.commit('setBusy', true)
       const ids = []
       const submissionGroupId = v4()
+      const profile = ctx.state.user.profile
+      profile.draftBooks = []
+      if (!profile.submissions) {
+        profile.submissions = {}
+      }
       // eslint-disable-next-line  fp/no-loops
       for (const sub of list) {
         // eslint-disable-next-line  fp/no-mutating-methods
@@ -418,7 +424,6 @@ const store = createStore({
           year: sub.year || '',
           publisher: sub.publisher || '',
           cover: sub.cover ? { ...sub.cover } : { url: '', base64: '', width: 1, height: 1 },
-          submitterIsAuthor: sub.isAuthor,
           illustrator: sub.illustrator || '',
           isbn: sub.isbn || '',
           tags: sub.tags,
@@ -426,16 +431,11 @@ const store = createStore({
         }
         console.log('saving sub', sub, subData)
         await ref.set(subData)
+        profile.submissions[sid] = 'review'
         ctx.commit('indexSubmission', subData)
         // eslint-disable-next-line  fp/no-mutating-methods
         ids.push(sid)
       }
-      const profile = ctx.state.user.profile
-      profile.draftBooks = []
-      if (!Array.isArray(profile.submissions)) {
-        profile.submissions = []
-      }
-      profile.submissions = [...profile.submissions, ...ids]
       await ctx.dispatch('saveProfile', profile)
       ctx.commit('setBusy', false)
     },
@@ -487,61 +487,87 @@ const store = createStore({
       }
     },
 
-    // <<<<<<< Updated upstream
     // deleteSubmission(ctx, id) {
-    // =======
     async deleteSubmission(ctx, sub) {
+      if (!sub) {
+        return
+      }
       console.log('deleting submission', sub)
       const ref = await firebase.database().ref(`submits/${sub.type}s/${sub.id}`)
-      const pref = await firebase.database().ref(`users/${sub.createdBy}/profile/submissions`)
+      const pref = await firebase.database().ref(`users/${sub.createdBy}/profile/submissions/${sub.id}`)
+      await pref.remove()
       await ref.remove()
-      const list = sub.submitter.submissions.filter(s => s !== sub.id)
-      await pref.set(list)
     },
 
-    async approveSubmission(ctx, sub) {
-      console.log('approving', sub)
-      const authors = sub.author.split(',').map(x => x.trim())
-      const illustrators = sub.illustrator.split(',').map(x => x.trim())
+    async rejectSubmission(ctx, sub) {
+      console.log('deleting submission', sub)
+      const ref = await firebase.database().ref(`submits/${sub.type}s/${sub.id}`)
+      const now = dayjs()
+      sub.approvedBy = ctx.state.user.uid
+      sub.approvedAt = now.format()
+      await ref.set(sub)
+      const pref = await firebase.database().ref(`users/${sub.createdBy}/profile/submissions/${sub.id}`)
+      await pref.set('reject')
+    },
+
+    // approve books submission
+    async approveSubmissionBooksGroup(ctx, group) {
+      console.log('approving', group)
       // eslint-disable-next-line  fp/no-loops
-      for (const author of authors) {
-        const exists = ctx.state.peopleList.reduce((acc, person) => person.name.toLowerCase() === author.toLowerCase() ? true : acc, false)
-        if (!exists) {
-          await ctx.dispatch('savePerson', {
-            name: author,
-            role: 'author',
+      for (const sub of group.books) {
+        const authors = sub.author.split(',').map(x => x.trim())
+        const illustrators = sub.illustrator.split(',').map(x => x.trim())
+        // eslint-disable-next-line  fp/no-loops
+        for (const author of authors) {
+          const exists = ctx.state.peopleList.reduce((acc, person) => person.name.toLowerCase() === author.toLowerCase() ? person.id : acc, null)
+          if (!exists) {
+            await ctx.dispatch('savePerson', {
+              name: author,
+              approvedBy: ctx.state.user.uid,
+              createdBy: sub.createdBy
+            })
+          }
+        }
+        // eslint-disable-next-line  fp/no-loops
+        for (const author of illustrators) {
+          const exists = ctx.state.peopleList.reduce((acc, person) => person.name.toLowerCase() === author.toLowerCase() ? person.id : acc, null)
+          if (!exists) {
+            await ctx.dispatch('savePerson', {
+              name: author,
+              approvedBy: ctx.state.user.uid,
+              createdBy: sub.createdBy
+            })
+          }
+        }
+        console.log('submission before book', sub, authors, illustrators)
+        const now = dayjs()
+        await ctx.dispatch('saveBook', {
+          book: {
+            title: sub.title,
+            authors: authors.filter(x => x.length),
+            illustrators: illustrators.filter(x => x.length),
+            cover: sub.cover.base64 || null,
+            description: sub.description,
+            isbn: sub.isbn,
+            goodread: sub.goodread || '',
+            year: sub.year,
+            publisher: sub.publisher,
+            tags: sub.tags,
             approvedBy: ctx.state.user.uid,
+            approvedAt: now.format(),
+            createdAt: now.format(),
             createdBy: sub.createdBy
-          })
-        }
+          }
+        })
+        const subref = await firebase.database().ref(`submits/books/${sub.id}`)
+        sub.approvedBy = ctx.state.user.uid
+        sub.approvedAt = now.format()
+        await subref.set(sub)
+
+        const pref = await firebase.database().ref(`users/${sub.createdBy}/profile/submissions/${sub.id}`)
+        await pref.set('approve')
+        /**/
       }
-      // eslint-disable-next-line  fp/no-loops
-      for (const author of illustrators) {
-        const exists = ctx.state.peopleList.reduce((acc, person) => person.name.toLowerCase() === author.toLowerCase() ? true : acc, false)
-        if (!exists) {
-          await ctx.dispatch('savePerson', {
-            name: author,
-            role: 'illustrator',
-            approvedBy: ctx.state.user.uid,
-            createdBy: sub.createdBy
-          })
-        }
-      }
-      console.log('submission before book', sub, authors, illustrators)
-      /*
-      await ctx.dispatch('saveBook', {
-        book: {
-          // strip possible html tags from ckeditor for title
-          title: sub.title.replace(/<[^>]*>?/gm, '')
-          // hold html markup for description
-          description: sub.description,
-          authors,
-          illustrators,
-          cover,
-        }
-      })
-      */
-      // >>>>>>> Stashed changes
     },
 
     // this method doesn't use store to keep values
@@ -600,14 +626,15 @@ firebase.auth().onAuthStateChanged(function(user) {
       name: '',
       bundles: [],
       bookmarks: {},
-      submissions: [],
+      submissions: {},
       draftBooks: [],
       draftBundles: []
     }
     u.roles = {}
     const userRef = firebase.database().ref(`users/${u.uid}`)
     userRef.on('value', snap => {
-      u.profile = { ...u.profile, ...snap.val()?.profile }
+      console.log('profile', snap.val()?.profile)
+      u.profile = { ...snap.val()?.profile }
       u.roles = snap.val()?.roles || {}
       if (!u.roles.authorized) {
         u.roles.authorized = true

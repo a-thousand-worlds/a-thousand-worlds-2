@@ -3,6 +3,8 @@
 import { isbnSearch } from '@/utils'
 import AuthorWidget from '@/components/AuthorWidget'
 
+// const isValidIsbn = code => typeof code === 'string' && (code.length === 10 || code.length === 13)
+
 export default {
   props: ['modelValue', 'disabled', 'searchable'],
   emits: ['update:modelValue', 'bookSelected', 'isbnSearchState', 'isbnSearchResult'],

@@ -12,7 +12,7 @@ export default {
     }
   },
   created() {
-    const u = this.$store.state.people.reduce((acc, x) => x.name.toLowerCase() === this.name.toLowerCase() ? x : acc, null)
+    const u = this.$store.state.peopleList.reduce((acc, x) => x.name.toLowerCase() === this.name.toLowerCase() ? x : acc, null)
     if (u) {
       this.personDB = u
       this.exists = true

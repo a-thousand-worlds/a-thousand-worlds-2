@@ -1,11 +1,16 @@
 <script>
 
 export default {
-  props: ['sid'],
+  props: ['sid', 'state'],
   data() {
     return {
       loading: true,
       sub: null
+    }
+  },
+  methods: {
+    deleteSubmission() {
+      this.$store.dispatch('deleteSubmission', this.sub)
     }
   },
   created() {
@@ -20,11 +25,6 @@ export default {
         this.sub = this.$store.state.submissionsIndex[this.sid]
         this.loading = false
       })
-  },
-  computed: {
-    isApproved() {
-      return this.sub && this.sub.approved
-    }
   }
 }
 
@@ -51,10 +51,15 @@ export default {
       <div>Name: {{sub.name}}</div>
       <div>Books: {{sub.books.length}}</div>
     </div>
-    <hr>
-    <i class="fas fa-circle" :class="{ 'is-primary': isApproved, 'is-secondary': !isApproved }"></i>
-    <span class="ml-3" v-if="isApproved">Approved</span>
-    <span class="ml-3" v-if="!isApproved">Checking</span>
+    <hr/>
+    <span v-if="state === 'review'" class="ml-3">On review</span>
+    <span v-if="state === 'approve'" class="ml-3">Approved</span>
+    <div v-if="state === 'reject'">
+      <div>Rejected ({{sub?.approveComment}})</div>
+      <div>
+        <button @click="deleteSubmission()" class="is-flat">Delete</button>
+      </div>
+    </div>
   </div>
 </div>
 

@@ -42,7 +42,7 @@ export async function isbnSearch(code) {
   ret.description = src.description || ''
   ret.authors = src.authors || []
   ret.illustrators = src.illustrators || []
-  ret.year = src.year || ''
+  ret.year = src.publishedDate || ''
   ret.publisher = src.publisher || ''
   return ret
 }

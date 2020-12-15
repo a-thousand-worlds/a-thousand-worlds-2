@@ -11,7 +11,7 @@ export default {
   data() {
     return {
       books: [],
-      otherTag: null,
+      confirms: [],
       submissions: [],
     }
   },
@@ -61,6 +61,7 @@ export default {
       }
       this.submissions[si].year = res.year
       this.submissions[si].publisher = res.publisher
+      this.submissions[si].goodread = res.grid
     },
     fillBook(book, si) {
       console.log('fill book', book)
@@ -88,8 +89,8 @@ export default {
         }, '')
       }
     },
-    setIsAuthor(si, state) {
-      this.submissions[si].isAuthor = state
+    setConfirmed(si, state) {
+      this.submissions[si].confirmed = state
     },
     submitForReview() {
       console.log('save', this.submissions)
@@ -119,7 +120,7 @@ export default {
         },
         description: '',
         isbn: '',
-        isAuthor: null,
+        confirmed: false,
         tags: {},
         otherTag: ''
       }
@@ -196,12 +197,12 @@ export default {
 
             <div class="field">
               <label class="label">Author</label>
-              <person-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].author" @person-selected="fillAuthor($event, si)" :role="'author'"/>
+              <person-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].author"/>
             </div>
 
             <div class="field">
               <label class="label">Illustrator</label>
-              <person-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].illustrator" @person-selected="fillIllustrator($event, si)" :role="'illustrator'"/>
+              <person-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].illustrator"/>
             </div>
 
             <div class="field">
@@ -228,21 +229,23 @@ export default {
                     Clear Info
                   </button>
                 </div>
-                <div v-if="!books[si].id && submissions[si].isAuthor === null" class="column field">
+                <div v-if="books[si] && !submissions[si].confirmed" class="column field">
                   <label class="label">Is this your book?</label>
                   <div class="control mb-3">
-                    <button @click.prevent="setIsAuthor(si, true)" class="button is-primary is-outlined">Yes</button>
+                    <button @click.prevent="setConfirmed(si, true)" class="button is-primary is-outlined">Yes</button>
                   </div>
                   <div class="control mb-3">
                     <button @click.prevent="clearSubmission(si)" class="button is-secondary is-outlined">No (clear submission)</button>
                   </div>
                   <div class="control">
-                    <button @click.prevent="setIsAuthor(si, false)" class="button is-primary is-outlined">No (but submit info anyway)</button>
+                    <button @click.prevent="setConfirmed(si, true)" class="button is-primary is-outlined">No (but submit info anyway)</button>
                   </div>
                 </div>
-                <div v-if="!books[si].id && (submissions[si].isAuthor === true || submissions[si].isAuthor === false)" class="column field">
+                <!--
+                <div v-if="submissions[si].confirmed" class="column field">
                   Thank you!
                 </div>
+                -->
               </div>
             </div>
 

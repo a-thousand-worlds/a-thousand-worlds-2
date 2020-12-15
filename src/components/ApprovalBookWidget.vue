@@ -4,17 +4,15 @@ import Jimp from 'jimp'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 
 import MultiPersonField from '@/components/fields/MultiPerson'
-import IsbnField from '@/components/fields/Isbn'
 import InputField from '@/components/fields/SimpleInput'
 
 export default {
   components: {
     MultiPersonField,
-    IsbnField,
     InputField
   },
   props: ['modelValue', 'checked'],
-  emits: ['update:modelValue', 'mark-me', 'delete-me', 'approve-me', 'submitter-loaded'],
+  emits: ['update:modelValue', 'mark-me', 'reject-me', 'approve-me', 'submitter-loaded'],
   data() {
     return {
       busy: false,
@@ -128,8 +126,10 @@ Continue and create book?`
       }
     },
     remove() {
-      if (confirm(`Delete book suggestion <${this.sub.title}>?`)) {
-        this.$emit('delete-me', this.sub)
+      if (confirm(`Reject book suggestion <${this.sub.title}>?`)) {
+        const comment = prompt('Any comments on rejecting?')
+        this.sub.approveComment = comment || ''
+        this.$emit('reject-me', this.sub)
       }
     },
     save() {
@@ -152,7 +152,7 @@ Continue and create book?`
       this.sub.description = src.description || 'No summary'
       this.sub.year = parseInt(src.publishedDate) || 0
       this.sub.publisher = src.publisher
-      this.sub.goodreadId = book.grid || '0'
+      this.sub.goodread = book.grid || '0'
       this.sub.cover.width = book.coverWidth
       this.sub.cover.height = book.coverHeight
       this.sub.cover.base64 = book.cover
@@ -160,15 +160,6 @@ Continue and create book?`
     addAuthor() {
       // eslint-disable-next-line fp/no-mutating-methods
       this.people.push({ name: '', role: 'author' })
-    },
-    setTitle() {
-      /*
-      console.log(this.sub.title)
-      if (this.sub.title.startsWith('<p>') && this.sub.title.endsWith('</p>')) {
-        this.sub.title = this.sub.title.slice(3, -4)
-      }
-      console.log(this.sub.title)
-      */
     },
     fileChange(e) {
       const file = e.target.files[0]
@@ -208,31 +199,41 @@ Continue and create book?`
       <div>
         <input-field
           :disabled="busy"
+          :placeholder="'Title'"
           v-model="sub.title"/>
       </div>
       <div>
-        <multi-person-field :disabled="busy" :role="'author'" :search-db="false" v-model="sub.author"/>
-      </div>
-      <div>
-        <multi-person-field :disabled="busy" :role="'illustrator'" :search-db="false" v-model="sub.illustrator"/>
-      </div>
-      <div>
-        <isbn-field
-          v-model="sub.isbn"
-          :searchDb="true"
+        <multi-person-field
           :disabled="busy"
-          @isbn-search-state="isbnSearchState"
-          @isbn-search-result="isbnSearchResult"
-        />
+          :role="'author'"
+          :placeholder="'author'"
+          :search-db="false"
+          v-model="sub.author"/>
+      </div>
+      <div>
+        <multi-person-field
+        :disabled="busy"
+        :role="'illustrator'"
+        :placeholder="'illustrator'"
+        :search-db="false"
+        v-model="sub.illustrator"/>
       </div>
       <div>
         <input-field
           :disabled="busy"
+          :placeholder="'ISBN'"
+          v-model="sub.isbn"/>
+      </div>
+      <div>
+        <input-field
+          :disabled="busy"
+          :placeholder="'Year'"
           v-model="sub.year"/>
       </div>
       <div>
         <input-field
           :disabled="busy"
+          :placeholder="'Publisher'"
           v-model="sub.publisher"/>
       </div>
     </div>

@@ -21,11 +21,14 @@ export default {
     username() {
       return this.$store.state.user?.profile.name || this.$store.state.user?.profile.email
     },
-    hasSubmissions() {
-      if (Array.isArray(this.$store.state.user.profile.submissions) && this.$store.state.user.profile.submissions.length) {
-        return true
+    submissionsList() {
+      if (!this.$store.state.user.profile.submissions) {
+        return []
       }
-      return false
+      return Object.keys(this.$store.state.user.profile.submissions)
+    },
+    hasSubmissions() {
+      return !!this.submissionsList.length
     },
     canSuggest() {
       return this.$iam('contributor') || this.$iam('admin') || this.$iam('superadmin')
@@ -74,8 +77,8 @@ export default {
   <section class="section" v-if="canSuggest && hasSubmissions">
     <h2>Your Submissions</h2>
     <div class="columns is-multiline">
-      <div class="column is-6-tablet is-4-desktop is-3-widescreen" v-for="sid of $store.state.user.profile.submissions" :key="sid">
-        <submission-widget class="submission-widget" :sid="sid"></submission-widget>
+      <div class="column is-6-tablet is-4-desktop is-3-widescreen" v-for="sid of submissionsList" :key="sid">
+        <submission-widget class="submission-widget" :sid="sid" :state="$store.state.user.profile.submissions[sid]"/>
       </div>
     </div>
   </section>

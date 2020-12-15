@@ -10,7 +10,6 @@ export default {
     return {
       loading: false,
       subs: {},
-      subsList: [],
       subsGroups: [],
       submitters: {}
     }
@@ -19,20 +18,29 @@ export default {
     this.reloadSubmissions()
   },
   methods: {
+    approveGroup(group) {
+      const books = group.books.map(book => book.title).join(', ')
+      if (confirm(`Approve books <${books}>?`)) {
+        this.loading = true
+        this.$store.dispatch('approveSubmissionBooksGroup', group)
+          .then(() => {
+            this.reloadSubmissions()
+          })
+      }
+    },
     submitterLoaded(user) {
       this.submitters[user.uid] = `${user.firstName} ${user.lastName}`
-      console.log('s', user, this.submitters)
     },
     reloadSubmissions() {
       this.loading = true
       this.$store.dispatch('loadContributorsSubmissions')
         .then(data => {
           this.subs = data
-          const booksSubs = Object.keys(data.books)
+          const booksSubs = Object.keys(data?.books || {})
             .map(id => data.books[id])
-          const bundlesSubs = Object.keys(data.bundles)
-            .map(id => data.bundles[id])
-          this.subsList = []
+            .filter(sub => !sub.approved && !sub.approvedBy && !sub.approvedAt)
+          // const bundlesSubs = Object.keys(data.bundles)
+          // .map(id => data.bundles[id])
           this.subsGroups = []
           const subsGroups = booksSubs
             .reduce((acc, sub) => {
@@ -46,7 +54,7 @@ export default {
           // objects from previous list
           setTimeout(() => {
             // eslint-disable-next-line  fp/no-mutating-methods
-            this.subsList = [...booksSubs, ...bundlesSubs]
+            this.subsList = [...booksSubs]
               .sort((a, b) => {
                 const dA = dayjs(a.createdAt)
                 const dB = dayjs(b.createdAt)
@@ -67,14 +75,16 @@ export default {
           }, 0)
         })
     },
-    deleteBookSubmission(sub, i) {
-      console.log('delete', i, sub)
+    rejectBookSubmission(sub, i) {
+      console.log('reject', i, sub)
       this.loading = true
-      this.$store.dispatch('deleteSubmission', sub)
+      this.$store.dispatch('rejectSubmission', sub)
         .then(() => {
-          this.subsList = this.subsList.filter(s => s.id !== sub.id)
-          alert('Deleted')
-          // this.reloadSubmissions()
+          this.subsGroups = this.subsGroups.map(group => {
+            group.books = group.books.filter(s => s.id !== sub.id)
+            return group
+          })
+          alert('Rejected')
         })
     },
     approveBookSubmission(sub, i) {
@@ -104,15 +114,20 @@ export default {
       </div>
     </div>
 
+    <p v-if="!subsGroups.length">No Submissions to review</p>
+
     <div class="sub-group" v-for="(group, gid) of subsGroups" :key="gid">
       <div>
-        <button :disabled="loading" class="level-item is-flat is-underlined is-uppercase">Approve</button>
+        <button
+          :disabled="loading"
+          @click="approveGroup(group)"
+          class="level-item is-flat is-underlined is-uppercase">Approve</button>
         <h3>BOOK</h3>
       </div>
       <div v-for="(sub, i) of group.books" :key="i">
         <approval-book-widget
           @mark-me="markBookSubmission($event, gid, i)"
-          @delete-me="deleteBookSubmission($event, gid, i)"
+          @reject-me="rejectBookSubmission($event, gid, i)"
           @approve-me="approveBookSubmission($event, gid, i)"
           @submitter-loaded="submitterLoaded($event)"
           v-model="subsGroups[gid].books[i]"/>
