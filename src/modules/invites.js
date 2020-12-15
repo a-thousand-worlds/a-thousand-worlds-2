@@ -8,13 +8,33 @@ const module = {
   namespaced: true,
   state: () => ({
     data: {},
-    defaults: {},
     loaded: false,
   }),
   mutations: {
     set(state, data) {
       state.data = data
       state.loaded = true
+    },
+  },
+  getters: {
+    /** Gets the invites of the given key, or its default. */
+    getById: state => id => {
+      return state.data[id]
+    },
+    /**
+     * Find an entry in the collection by a given key.
+     * @param key    The key to match. Supports _.get key expressions.
+     * @param value  The value to match. Accepts a predicate that takes the deep value returned by the key expression.
+     */
+    findBy: state => (key, value) => {
+      return Object.entries(state.data).find(
+        ([entryKey, entryValue]) => {
+          const deepValue = _.get(entryValue, key)
+          return typeof value === 'function'
+            ? value(deepValue)
+            : deepValue === value
+        }
+      )
     },
   },
   actions: {
@@ -109,14 +129,8 @@ const module = {
       ref.on('value', snap => {
         state.commit('set', snap.val() || {})
       })
-    }
-
-  },
-  getters: {
-    /** Gets the invites of the given key, or its default. */
-    getById: state => id => {
-      return state.data[id]
     },
+
   },
 }
 

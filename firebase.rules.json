@@ -2,6 +2,8 @@
 {
   "rules": {
     "users": {
+      ".read": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true",
+      ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true",
       "$uid": {
         ".read": true,
         ".write": "$uid === auth.uid"
