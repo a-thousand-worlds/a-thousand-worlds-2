@@ -604,10 +604,17 @@ const store = createStore({
       return firebase.auth().signInWithEmailAndPassword(data.email, data.password)
     },
 
-    async userRegister(ctx, { email, name, organization, otherEngagementCategory, password }) {
+    async userRegister({ state }, { code, email, name, organization, otherEngagementCategory, password }) {
       const { user } = await firebase.auth().createUserWithEmailAndPassword(email, password)
       await store.commit('setUser', { uid: user.uid })
-      await store.dispatch('saveProfile', { email, name, organization, otherEngagementCategory })
+
+      const invite = state.invites.data[code]
+      const roles = invite ? {
+        roles: {
+          [invite.role]: true
+        }
+      } : null
+      await store.dispatch('saveProfile', { email, name, organization, otherEngagementCategory, ...roles })
     },
   }
 })

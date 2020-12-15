@@ -40,8 +40,21 @@ export default {
   },
 
   computed: {
+    code() {
+      return this.$route.query.code
+    },
     hasFieldErrors() {
       return Object.keys(this.error?.fields || {}).length > 0
+    },
+    invite() {
+      return this.$store.getters['invites/get'](this.code)
+    },
+    title() {
+      return this.active === 'signup' ?
+        this.invite?.role ? `You have been invited to join as a ${this.invite.role}!` : 'Sign up for an account'
+        : this.active === 'login' ? 'Log In'
+        : this.active === 'profile' ? 'Profile'
+        : null
     }
   },
 
@@ -104,6 +117,7 @@ export default {
       if (!this.validate()) return
 
       return this.handleResponse(this.$store.dispatch('userRegister', {
+        code: this.code,
         email: this.email,
         name: this.name,
         password: this.password,
@@ -189,6 +203,15 @@ export default {
 
   },
   watch: {
+    // populate name and email fields with invite data
+    invite(next, prev) {
+      if (next?.email && !this.email) {
+        this.email = next.email
+      }
+      if (next?.firstName && !this.name) {
+        this.name = `${next.firstName} ${next.lastName}`.trim()
+      }
+    },
     '$store.state.user'(next, prev) {
       if (!prev && !!next) {
         if (this.$iam('creator') || this.$iam('contributor') || this.$iam('admin') || this.$iam('superadmin')) {
@@ -216,17 +239,12 @@ export default {
       <form class="is-flex-grow-1" style="max-width: 480px;" @submit.prevent="submit">
 
         <!-- Cannot use are-small and is-rounded until #3208 is merged. See https://github.com/jgthms/bulma/pull/3208. -->
-        <div class="buttons is-centered has-addons" v-if="active === 'login' || active === 'signup'">
+        <div class="buttons is-centered has-addons" v-if="active === 'login' || (active === 'signup' && !code)">
           <button :class="['button', 'is-small', 'is-rounded', ...[active === 'signup' ? ['is-selected'] : null]]" style="width: 50%; max-width: 240px;" @click.prevent="setActive('signup')">Sign Up</button>
           <button :class="['button', 'is-small', 'is-rounded', ...[active === 'login' ? ['is-selected'] : null]]" style="width: 50%; max-width: 240px;" @click.prevent="setActive('login')">Log In</button>
         </div>
 
-        <h1 class="title page-title divider-bottom">{{
-          active === 'signup' ? 'Sign up for an account'
-          : active === 'login' ? 'Log In'
-          : active === 'profile' ? 'Profile'
-          : null
-        }}</h1>
+        <h1 v-if="!invite || invite.role" class="title page-title divider-bottom">{{ title }}</h1>
 
         <div class="field" v-if="active === 'signup' || active === 'profile'">
           <label :class="['label', { error: hasError('name') }]">NAME</label>
