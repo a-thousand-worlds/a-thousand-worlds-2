@@ -3,9 +3,8 @@
 import _ from 'lodash'
 import BookTitleField from '@/components/fields/BookTitle'
 import BookIsbnField from '@/components/fields/BookIsbn'
-import PersonField from '@/components/fields/Person'
 
-import { findBookByTitle } from '@/utils'
+import { coverImageByISBN, findBookByTitle } from '@/utils'
 
 export default {
   data() {
@@ -13,6 +12,7 @@ export default {
       books: [],
       confirms: [],
       submissions: [],
+      coverLoads: []
     }
   },
   created() {
@@ -46,48 +46,22 @@ export default {
         this.books[si] = localBook
         return
       }
-      this.books[si] = {
-        cover: 'data:image/png;base64,' + res.cover
-      }
-      this.submissions[si].title = res.title
-      this.submissions[si].description = res.description
-      this.submissions[si].author = res.authors.join(', ')
-      this.submissions[si].illustrator = res.illustrators.join(', ')
-      this.submissions[si].cover = {
-        url: '',
-        base64: 'data:image/png;base64,' + res.cover,
-        width: res.coverWidth,
-        height: res.coverHeight
-      }
-      this.submissions[si].year = res.year
-      this.submissions[si].publisher = res.publisher
-      this.submissions[si].goodread = res.grid
+      this.submissions[si] = { ...this.submissions[si], ...res }
+      this.books[si] = res
+
+      this.coverLoads[si] = true
+      coverImageByISBN(this.submissions[si].isbn)
+        .then(cover => {
+          console.log('cover', cover)
+          this.coverLoads[si] = false
+          if (!cover) return
+          this.submissions[si].cover = cover
+          this.books[si].cover = cover
+        })
     },
-    fillBook(book, si) {
-      console.log('fill book', book)
-      if (book) {
-        this.books[si] = book
-        this.submissions[si].title = book.title
-        this.submissions[si].isbn = book.isbn
-        this.submissions[si].author = this.$store.state.peopleList.reduce((acc, x) => {
-          if (book.authors.includes(x.name) && x.role === 'author') {
-            if (acc !== '') {
-              acc += ', '
-            }
-            acc += x.name
-          }
-          return acc
-        }, '')
-        this.submissions[si].illustrator = this.$store.state.peopleList.reduce((acc, x) => {
-          if (book.authors.includes(x.name) && x.role === 'illustrator') {
-            if (acc !== '') {
-              acc += ', '
-            }
-            acc += x.name
-          }
-          return acc
-        }, '')
-      }
+    coverImage(si) {
+      const cover = this.submissions[si].cover
+      return cover ? cover.base64.length ? cover.base64 : cover.url : ''
     },
     setConfirmed(si, state) {
       this.submissions[si].confirmed = state
@@ -110,15 +84,17 @@ export default {
     newSubmissionObject() {
       return {
         title: '',
-        author: '',
-        illustrator: '',
+        authors: '',
+        illustrators: '',
         cover: {
           url: '',
           base64: '',
-          width: 1,
-          height: 1,
+          width: 0,
+          height: 0,
         },
         description: '',
+        year: '',
+        publisher: '',
         isbn: '',
         confirmed: false,
         tags: {},
@@ -141,7 +117,7 @@ export default {
     titleChanged: _.debounce(async function(si) {
       // const { author, title } = this.submissions[si]
       let search = this.submissions[si].title
-      if (this.submissions[si].author && this.submissions[si].author.length) {
+      if (this.submissions[si].author && this.submissions[si].authors.length) {
         search += ' ' + this.submissions[si].author
       }
       console.log(`Finding ISBN for "${search}"`)
@@ -160,13 +136,13 @@ export default {
   computed: {
     draftable() {
       return this.submissions
-        .map(x => x.title.length || x.author.length || x.illustrator.length || x.isbn.length)
+        .map(x => x.title.length || x.authors.length || x.illustrators.length || x.isbn.length)
         .reduce((acc, x) => x || acc, false)
         && this.books.reduce((acc, x) => x && x.id ? false : acc, true)
     },
     submitable() {
       return this.submissions
-        .map(x => x.title.length && x.author.length)
+        .map(x => x.title.length && x.authors.length)
         .reduce((acc, x) => x && acc, true)
         && this.books.reduce((acc, x) => x && x.id ? false : acc, true)
     }
@@ -174,7 +150,6 @@ export default {
   components: {
     'book-title-field': BookTitleField,
     'book-isbn-field': BookIsbnField,
-    'person-field': PersonField
   }
 }
 </script>
@@ -197,12 +172,16 @@ export default {
 
             <div class="field">
               <label class="label">Author</label>
-              <person-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].author"/>
+              <div class="control">
+                <input class="input" type="text" :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].authors"/>
+              </div>
             </div>
 
             <div class="field">
               <label class="label">Illustrator</label>
-              <person-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].illustrator"/>
+              <div class="control">
+                <input class="input" type="text" :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].illustrators"/>
+              </div>
             </div>
 
             <div class="field">
@@ -221,7 +200,8 @@ export default {
             <div v-if="!!books[si]" class="field">
               <div class="columns">
                 <div class="column">
-                  <img :src="books[si].cover">
+                  <img v-if="coverLoads[si]" src="@/assets/icons/loading.gif">
+                  <img :src="coverImage(si)">
                 </div>
                 <div v-if="books[si].id" class="column">
                   <p class="mb-10 mr-50 is-uppercase">Great minds think alike. This book is already in our directory.</p>

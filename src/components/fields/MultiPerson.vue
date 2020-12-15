@@ -4,6 +4,7 @@ export default {
   props: ['modelValue', 'disabled', 'searchDb', 'role', 'placeholder'],
   emits: ['update:modelValue', 'person-selected', 'person-removed'],
   data() {
+    console.log('!!!', this.modelValue)
     return {
       names: this.modelValue || '',
       people: this.modelValue && this.modelValue.length ? this.modelValue.split(',').map(x => x.trim()) : [],

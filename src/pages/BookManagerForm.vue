@@ -1,7 +1,7 @@
 <script>
 
-import dayjs from 'dayjs'
-import { isbnSearch } from '@/utils'
+// import dayjs from 'dayjs'
+import { coverImageByISBN, metadataByISBN } from '@/utils'
 import PersonField from '@/components/PersonField'
 
 export default {
@@ -70,30 +70,17 @@ export default {
     searchISBN() {
       // console.log('search', this.book.isbn)
       this.searching = true
-      isbnSearch(this.book.isbn).then(res => {
+      metadataByISBN(this.book.isbn).then(res => {
         this.searching = false
         if (!res) {
           console.log('book not found')
           return
         }
         console.log('found book!', res)
-        this.book.title = res.google ? res.google.title : res.openlib.title
-        this.book.description = res.google ? res.google.description : ''
-        this.book.cover = 'data:image/png;base64,' + res.cover
-        this.book.publisher = res.google ? res.google.publisher : res.openlib.publisher
-        this.book.goodread = res.grid
-        this.book.year = res.google ? dayjs(res.google.publishedDate).format('YYYY') : dayjs(res.openlib.publishedDate).format('YYYY')
-        this.book.authors = []
-        this.authorsRoles = []
-        if (res.google && res.google.authors && res.google.authors.length) {
-          this.book.authors = res.google.authors
-        }
-        if (res.openlib && res.openlib.authors && res.openlib.authors.length && res.openlib.authors.length > this.book.authors.length) {
-          this.book.authors = res.openlib.authors
-        }
-        // console.log(this.book.authors)
-        this.book.google = res.goole
-        this.book.openlib = res.openlib
+        this.book = res
+        coverImageByISBN(this.book.isbn).then(cover => {
+          this.book.cover = cover
+        })
       })
     },
     save() {
@@ -108,14 +95,14 @@ export default {
     },
     reloadCover() {
       this.searching = true
-      isbnSearch(this.book.isbn).then(res => {
+      coverImageByISBN(this.book.isbn).then(res => {
         this.searching = false
         if (!res) {
           console.log('book not found')
           return
         }
         console.log('found book!', res)
-        this.book.cover = 'data:image/png;base64,' + res.cover
+        this.book.cover = res
       })
     },
     updatePerson(name, i) {

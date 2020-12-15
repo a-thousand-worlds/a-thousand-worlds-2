@@ -1,6 +1,6 @@
 <script>
 
-import { isbnSearch } from '@/utils'
+import { metadataByISBN } from '@/utils'
 import AuthorWidget from '@/components/AuthorWidget'
 
 // const isValidIsbn = code => typeof code === 'string' && (code.length === 10 || code.length === 13)
@@ -20,7 +20,7 @@ export default {
       console.log('this.isbn', this.isbn)
       this.loading = true
       this.$emit('isbn-search-state', this.loading)
-      isbnSearch(this.isbn)
+      metadataByISBN(this.isbn)
         .then(book => {
           this.loading = false
           this.$emit('isbn-search-state', this.loading)

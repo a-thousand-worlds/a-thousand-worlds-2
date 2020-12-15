@@ -25,7 +25,7 @@ export default {
     }
   },
   created() {
-    // console.log('sub?', this.sub)
+    console.log('sub?', this.sub)
     this.reloadSub()
   },
   watch: {

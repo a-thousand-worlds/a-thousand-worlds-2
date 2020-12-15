@@ -1,8 +1,10 @@
 import axios from 'axios'
 import isbn from 'node-isbn'
+import dayjs from 'dayjs'
 import firebase from './firebase'
 
-const FETCH_METADATA_URL = process.env.VUE_APP_SEARCH_SERVICE_URL
+const FETCH_METADATA_URL = process.env.VUE_APP_METADATA_SERVICE_URL
+const FETCH_COVER_IMAGE_URL = process.env.VUE_APP_COVER_IMAGE_SERVICE_URL
 const SEARCH_ISBN_URL = process.env.VUE_APP_FIND_ISBN_URL
 
 function _isbn(code, provider) {
@@ -19,31 +21,35 @@ function _isbn(code, provider) {
   })
 }
 
-export async function isbnSearch(code) {
+// loads only book cover
+export async function coverImageByISBN(code) {
+  const req = await axios.get(FETCH_COVER_IMAGE_URL + '?isbn=' + code)
+  return req.data || null
+}
+
+// loads book metadata, excluting cover image
+export async function metadataByISBN(code) {
   const req = await axios.get(FETCH_METADATA_URL + '?isbn=' + code)
-  const ret = req.data
+  const data = req.data
   // it's so happens, that sometime google data is not accessible
   // from backend, so trying to reload it on frontend
-  console.log(ret)
-  if (ret && !ret.google) {
-    ret.google = await _isbn(code, 'google')
+  if (data && !data.google) {
+    data.google = await _isbn(code, 'google')
   }
-  const src = ret.google || ret.openlib || null
-  ret.title = ''
-  ret.description = ''
-  ret.authors = ''
-  ret.illustrators = ''
-  ret.year = ''
-  ret.publisher = ''
-  if (!src) {
-    return ret
+  const src = data.google || data.openlib || null
+  // published date can be different. sometimes it's only 'YYYY',
+  // sometimes 'YYYY-MM' sometimes other formats - dayjs manages this
+  const d = dayjs(src.publishedDate)
+  const ret = {
+    isbn: data.isbn,
+    title: src.title || '',
+    description: src.description || '',
+    authors: src.authors || [],
+    illustrators: src.illustrators || [],
+    year: d.isValid() ? d.year() : '',
+    publisher: src.publisher || '',
+    goodread: data.goodread || ''
   }
-  ret.title = src.title || ''
-  ret.description = src.description || ''
-  ret.authors = src.authors || []
-  ret.illustrators = src.illustrators || []
-  ret.year = src.publishedDate || ''
-  ret.publisher = src.publisher || ''
   return ret
 }
 

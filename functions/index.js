@@ -1,4 +1,6 @@
 const functions = require('firebase-functions')
+const metadataByISBN = require('./metadataByISBN')
+const coverImageByISBN = require('./coverImageByISBN')
 const searchISBN = require('./searchISBN')
 const findISBN = require('./findISBN')
 const email = require('./email')
@@ -16,3 +18,9 @@ exports.findISBN = functions
 
 exports.email = functions
   .https.onRequest(email())
+
+exports.metadataByISBN = functions
+  .https.onRequest(metadataByISBN())
+
+exports.coverImageByISBN = functions
+  .https.onRequest(coverImageByISBN())
