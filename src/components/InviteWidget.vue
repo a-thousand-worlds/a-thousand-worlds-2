@@ -5,7 +5,7 @@ export default {
   props: {
     roles: {
       type: Array,
-      default: ['User', 'Contributor', 'Creator', 'Advisor', 'Owner'],
+      default: ['user', 'contributor', 'creator', 'advisor', 'owner'],
     },
     format: String,
   },
