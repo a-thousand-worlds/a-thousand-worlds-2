@@ -2,16 +2,16 @@
 export default {
   props: ['src'],
   created() {
-    this.$store.dispatch('loadImage', this.src)
+    // this.$store.dispatch('loadImage', this.src)
   },
   watch: {
-    src(next) {
-      this.$store.dispatch('loadImage', this.src)
-    }
+    // src(next) {
+    // this.$store.dispatch('loadImage', this.src)
+    // }
   }
 }
 </script>
 
 <template>
-  <img v-if="$store.state.images[this.src]" :src="$store.state.images[this.src]">
+  <img :src="src">
 </template>

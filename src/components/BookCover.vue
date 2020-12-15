@@ -9,7 +9,7 @@ export default {
     'bookmark-button': BookmarkButton
   },
   created() {
-    this.$store.dispatch('loadImage', this.book.cover)
+    // this.$store.dispatch('loadImage', this.book.cover)
   },
   computed: {
     coverRatio() {
@@ -19,7 +19,8 @@ export default {
       return this.book.coverHeight / this.book.coverWidth * 100
     },
     bgImage() {
-      return this.$store.state.images[this.book.cover] || ''
+      // return this.$store.state.images[this.book.cover] || ''
+      return this.book.cover || ''
     }
   }
 }

@@ -225,7 +225,7 @@ const store = createStore({
         photoHeight = img.bitmap.height
         const buff = await img.getBufferAsync(Jimp.MIME_PNG)
         const photoRef = await firebase.storage().ref(`books/${id}`)
-        await photoRef.put(buff, { contentType: 'image/png' })
+        await photoRef.put(buff, { contentType: 'image/png', cacheControl: 'public,max-age=3600' })
         photoUrl = await photoRef.getDownloadURL()
       }
 
@@ -301,7 +301,7 @@ const store = createStore({
       let photoUrl = info.photo || ''
       if (info.file) {
         const photoRef = await firebase.storage().ref(`people/${id}`)
-        await photoRef.put(info.file)
+        await photoRef.put(info.file, { contentType: 'image/png', cacheControl: 'public,max-age=3600' })
         photoUrl = await photoRef.getDownloadURL()
       }
 
@@ -312,7 +312,7 @@ const store = createStore({
         name: info.name,
         email: info.email || '',
         bio: info.bio || '',
-        role: info.role,
+        role: info.role || '',
         id: id,
         books: [],
         photo: photoUrl,
