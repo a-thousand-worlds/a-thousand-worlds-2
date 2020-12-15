@@ -1,4 +1,3 @@
-const functions = require('firebase-functions')
 const express = require('express')
 const bookcovers = require('bookcovers')
 const axios = require('axios').default
