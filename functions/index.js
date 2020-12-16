@@ -2,7 +2,6 @@ const functions = require('firebase-functions')
 const metadataByISBN = require('./metadataByISBN')
 const coverImageByISBN = require('./coverImageByISBN')
 const searchISBN = require('./searchISBN')
-const findISBN = require('./findISBN')
 const email = require('./email')
 
 // increase function memory since we are doing image processing
@@ -11,10 +10,6 @@ const email = require('./email')
 exports.searchISBN = functions
   .runWith({ memory: '1GB' })
   .https.onRequest(searchISBN())
-
-exports.findISBN = functions
-  .runWith({ memory: '1GB' })
-  .https.onRequest(findISBN())
 
 exports.email = functions
   .https.onRequest(email())
