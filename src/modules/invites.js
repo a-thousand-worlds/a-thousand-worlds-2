@@ -8,42 +8,12 @@ import collectionModule from './collectionModule'
 const module = mergeOne(collectionModule('invites'), {
   actions: {
 
-    /** Sends an invite for a given role. */
-    async send(state, { recipient: { email, firstName, lastName }, role }) {
-
-      if (!email) throw new Error('email required')
-      if (!role) throw new Error('role required')
-
-      let invite = null
-
-      // generate unique code and save invite record
-      // do not overwrite existing record if we have an invitation code collision
-      // use a transaction to check existing value and allow retries
-      const ref = firebase.database().ref('invites')
-      await ref.transaction(invites => {
-        const code = animal('adj adj animal').replace(/ /g, '-')
-
-        if (!invites) {
-          invites = {}
-        }
-
-        if (!invites[code]) {
-          invite = invites[code] = {
-            code,
-            created: Date.now(),
-            email,
-            firstName,
-            lastName,
-            role,
-          }
-        }
-
-        return invites
-      })
+    /** Sends an invitation email. */
+    send({ rootGetters }, { code, email, firstName, lastName, role }) {
 
       // generate email
-      const subjectTemplate = state.rootGetters['content/get'](`email/invite/${role}/subject`)
-      const bodyTemplate = state.rootGetters['content/get'](`email/invite/${role}/body`)
+      const subjectTemplate = rootGetters['content/get'](`email/invite/${role}/subject`)
+      const bodyTemplate = rootGetters['content/get'](`email/invite/${role}/body`)
 
       if (!subjectTemplate) {
         throw new Error(`No email subject found for "${role}"`)
@@ -52,7 +22,7 @@ const module = mergeOne(collectionModule('invites'), {
         throw new Error(`No email template found for "${role}"`)
       }
 
-      const signupUrl = `${window.location.origin}/signup?code=${invite.code}`
+      const signupUrl = `${window.location.origin}/signup?code=${code}`
 
       const template = s => s.replace(/FIRST_NAME/g, firstName || 'friend')
         .replace(/LAST_NAME/g, lastName)
@@ -65,9 +35,7 @@ const module = mergeOne(collectionModule('invites'), {
       const html = `<html>
     <head>
       <style>
-        p {
-          margin-bottom: 0;
-        }
+        p { margin-bottom: 0; }
       </style>
     </head>
     <body>
@@ -87,6 +55,42 @@ const module = mergeOne(collectionModule('invites'), {
       // https://stackoverflow.com/questions/42751074/how-to-protect-firebase-cloud-function-http-endpoint-to-allow-only-firebase-auth
       // https://www.notion.so/rainerevere/2-0-0c2ad3c668dc4b8289e856a30cb5c5e2#4ca75277c89c4db39335ffb1e6a00718
       return axios.get(`${process.env.VUE_APP_EMAIL_URL}?to=${email}&subject=${subject}&html=${encodeURIComponent(html)}`)
+    },
+
+    /** Creates and sends an invitation for a given role. */
+    async createAndSend({ dispatch, rootGetters }, { recipient: { email, firstName, lastName }, role }) {
+
+      if (!email) throw new Error('email required')
+      if (!role) throw new Error('role required')
+
+      let code = null
+
+      // generate unique code and save invite record
+      // do not overwrite existing record if we have an invitation code collision
+      // use a transaction to check existing value and allow retries
+      const ref = firebase.database().ref('invites')
+      await ref.transaction(invites => {
+        code = animal('adj adj animal').replace(/ /g, '-')
+
+        if (!invites) {
+          invites = {}
+        }
+
+        if (!invites[code]) {
+          invites[code] = {
+            code,
+            created: Date.now(),
+            email,
+            firstName,
+            lastName,
+            role,
+          }
+        }
+
+        return invites
+      })
+
+      dispatch('send', { code, email, firstName, lastName, role })
     },
 
   },

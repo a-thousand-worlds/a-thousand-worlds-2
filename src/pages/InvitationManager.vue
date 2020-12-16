@@ -22,11 +22,13 @@ export default {
   },
   methods: {
     cancel(invite) {
-      console.log('invite', invite)
       this.$store.dispatch('invites/save', {
         path: `${invite.code}/cancelled`,
         value: Date.now()
       })
+    },
+    resend(invite) {
+      this.$store.dispatch('invites/send', invite)
     },
   }
 }
@@ -46,7 +48,7 @@ export default {
 
       <section class="my-30">
         <h2>Pending</h2>
-        <InvitationTable v-if="pendingInvites.length" :invites="pendingInvites" :fields="['created', 'email', 'firstName', 'lastName', 'role', 'cancel']" @cancel="cancel" />
+        <InvitationTable v-if="pendingInvites.length" :invites="pendingInvites" :fields="['created', 'email', 'firstName', 'lastName', 'role', 'resend', 'cancel']" @resend="resend" @cancel="cancel" />
         <p v-else>There are no pending invitations.</p>
       </section>
 
