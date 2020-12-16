@@ -28,12 +28,12 @@ export default {
       return this.$store.state.books.data[this.id]
     },
     nextBook() {
-      const list = this.$store.state.books.filtered.map(x => x.id)
+      const list = this.$store.getters['books/filtered'].map(x => x.id)
       const pos = list.indexOf(this.id)
       return list[pos + 1]
     },
     prevBook() {
-      const list = this.$store.state.books.filtered.map(x => x.id)
+      const list = this.$store.getters['books/filtered'].map(x => x.id)
       const pos = list.indexOf(this.id)
       return list[pos - 1]
     }

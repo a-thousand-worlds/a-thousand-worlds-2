@@ -15,6 +15,14 @@ const module = mergeOne(collection('submits/books', 'cover'), {
           return state.filters.every(tag => (book.tags || []).includes(tag))
         })
       : []
+  },
+  actions: {
+    submit: (state, data) => {
+
+    },
+    reject: (state, data) => {
+
+    }
   }
 })
 

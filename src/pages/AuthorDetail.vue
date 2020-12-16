@@ -15,23 +15,27 @@ export default {
   },
   created() {
     const id = this.$router.currentRoute._value.params.id
-    this.author = this.$store.state.peopleIndex[id]
+    this.author = this.$store.state.creators.data[id]
     console.log('person', this.author)
+    /*
     if (this.author && this.author.photo && this.author.photo.length) {
       this.$store.dispatch('loadImage', this.author.photo)
     }
+    */
     window.scrollTo(0, 0)
   },
   watch: {
     '$route'(next) {
       const id = this.$router.currentRoute._value.params.id
-      this.author = this.$store.state.peopleIndex[id]
+      this.author = this.$store.state.creators.data[id]
+      /*
       if (this.author && this.author.photo && this.author.photo.length) {
         this.$store.dispatch('loadImage', this.author.photo)
       }
+      */
       window.scrollTo(0, 0)
     },
-    '$store.state.peopleIndex'(next, prev) {
+    '$store.state.creators.data'(next, prev) {
       const id = this.$router.currentRoute._value.params.id
       if (next && Object.keys(next).length && !next[id]) {
         // author not found! drop to 404
@@ -41,10 +45,12 @@ export default {
           this.$router.push('/404')
         }, 0)
       }
-      this.author = this.$store.state.peopleIndex[id]
+      this.author = this.$store.state.creators.data[id]
+      /*
       if (this.author && this.author.photo && this.author.photo.length) {
         this.$store.dispatch('loadImage', this.author.photo)
       }
+      */
     }
   },
   computed: {
@@ -52,10 +58,10 @@ export default {
       return this.author ? this.author.role === 'author' : true
     },
     books() {
-      return this.author ? this.$store.state.booksList.filter(book => book.authors.includes(this.author.name)) : []
+      return this.author ? this.$store.getters['books/list'].filter(book => book.authors.includes(this.author.name)) : []
     },
     bgImage() {
-      return this.$store.state.images[this.author.photo] || ''
+      return this.author.photo
     }
 
   }

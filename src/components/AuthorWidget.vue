@@ -8,7 +8,7 @@ export default {
     }
   },
   created() {
-    this.person = this.$store.state.peopleList.find(x => x.name === this.name)
+    this.person = this.$store.getters['creators/list'].find(x => x.name === this.name)
   },
   computed: {
     isAuthor() {

@@ -9,6 +9,7 @@ import books from '@/modules/books'
 import tags from '@/modules/tags'
 import ui from '@/modules/ui'
 import user from '@/modules/user'
+import creators from '@/modules/creators'
 import collectionModule from '@/modules/collection/module'
 import { firebaseGet } from '@/utils'
 
@@ -20,6 +21,7 @@ const store = createStore({
     tags,
     ui,
     user,
+    creators,
     users: collectionModule('users'),
   },
   state: {
@@ -33,18 +35,18 @@ const store = createStore({
     // bookmarksOpen: false,
     // loading: false,
     // images: {},
-    user: null,
+    // user: null,
     // tags: {},
     // sortedTags: [],
-    peopleList: [],
-    peopleIndex: {},
+    // peopleList: [],
+    // peopleIndex: {},
     // booksIndex: {},
     // booksList: [],
     // booksFiltered: [],
-    bundlesIndex: {},
-    bundlesList: [],
+    // bundlesIndex: {},
+    // bundlesList: [],
     // submissionsIndex: {},
-    viewMode: 'covers'
+    // viewMode: 'covers'
   },
   mutations: {
     /*
@@ -78,6 +80,7 @@ const store = createStore({
     setNAP(ctx, p) {
       ctx.noAccessPath = p
     },
+    /*
     setUser(ctx, u) {
       ctx.user = u
       ctx.stage0.auth = true
@@ -92,6 +95,7 @@ const store = createStore({
         ctx.user.roles = list
       }
     },
+    */
     setStage0Load(ctx) {
       ctx.stage0.loaded = true
     },
@@ -110,6 +114,7 @@ const store = createStore({
       ctx.booksFiltered = ctx.booksList
     },
     */
+    /*
     setPeople(ctx, people) {
       ctx.peopleIndex = people || {}
       ctx.peopleList = Object.keys(people || {}).map(id => people[id])
@@ -319,6 +324,7 @@ const store = createStore({
     */
 
     // people
+    /*
     async savePerson(ctx, info) {
       ctx.commit('ui/setBusy', true)
       // eslint-disable-next-line  fp/no-mutating-methods
@@ -368,6 +374,7 @@ const store = createStore({
       store.commit('setPeople', people)
       ctx.commit('ui/setBusy', false)
     },
+    */
 
     async loadBundles(ctx) {
       ctx.commit('ui/setBusy', true)
@@ -639,9 +646,10 @@ const store = createStore({
       // const ref = await firebase.database().ref(`people`)
       // await ref.remove()
       // await ctx.dispatch('loadTags')
-      await ctx.dispatch('loadPeople')
+      // await ctx.dispatch('loadPeople')
       // await ctx.dispatch('loadBooks')
       await ctx.dispatch('user/subscribe')
+      await ctx.dispatch('creators/subscribe')
       await ctx.dispatch('tags/subscribe')
       await ctx.dispatch('books/subscribe')
       await ctx.dispatch('content/load')

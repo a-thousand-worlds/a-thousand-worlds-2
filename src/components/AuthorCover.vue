@@ -1,19 +1,21 @@
 <script>
-import AuthorWidget from '@/components/AuthorWidget'
+// import AuthorWidget from '@/components/AuthorWidget'
 
 export default {
   props: ['person'],
+  /*
   components: {
     AuthorWidget,
   },
+  */
   created() {
     if (this.person.photo && this.person.photo.length) {
-      this.$store.dispatch('loadImage', this.person.photo)
+      // this.$store.dispatch('loadImage', this.person.photo)
     }
   },
   computed: {
     bgImage() {
-      return this.person.photo?.length ? this.$store.state.images[this.person.photo] || '' : ''
+      return this.person.photo
     }
   }
 }
@@ -24,7 +26,7 @@ export default {
 <router-link :to="{name:'PersonDetail', params: {id: person.id}}">
   <div :style="{backgroundImage: 'url('+bgImage+')'}" class="photo-wrapper bg-secondary">
   </div>
-  <author-widget :name="person.name" :size="120"/>
+  <router-link :to="{name: 'PersonDetail', params: {id: person.id}}" class="is-uppercase">{{person.name}}</router-link>
 </router-link>
 
 </template>
@@ -32,6 +34,10 @@ export default {
 <style scoped lang="scss">
 @import '@/assets/main.scss';
 
+a {
+  color: #000;
+  font-size: 110%;
+}
 /**/
 .photo-wrapper {
   width: 100%;
