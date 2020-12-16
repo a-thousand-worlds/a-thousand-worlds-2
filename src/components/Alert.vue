@@ -1,11 +1,18 @@
 <script>
 
 export default {
-  props: ['type'],
   computed: {
     text() {
-      return this.$store.alert
+      return this.$store.state.alert?.text
     },
+    type() {
+      return this.$store.state.alert?.type
+    }
+  },
+  methods: {
+    close() {
+      this.$store.commit('alert', null)
+    }
   },
 }
 
@@ -18,7 +25,7 @@ export default {
       'is-error': type === 'error',
       'is-primary': !type,
     }">
-      <button class="delete"></button>
+      <button class="delete" @click.prevent="close"></button>
       <p>{{ text }}</p>
     </div>
   </div>

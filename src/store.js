@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import { v4 } from 'uuid'
 import Jimp from 'jimp'
 import firebase from '@/firebase'
+import alert from '@/modules/alert'
 import content from '@/modules/content'
 import invites from '@/modules/invites'
 import users from '@/modules/users'
@@ -11,6 +12,7 @@ import { firebaseGet } from '@/utils'
 
 const store = createStore({
   modules: {
+    alert,
     content,
     invites,
     users,
