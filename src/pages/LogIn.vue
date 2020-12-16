@@ -21,6 +21,7 @@ export default {
         { id: 7, text: 'CATEGORY' },
       ],
       disableAfterSave: false,
+      disableResetPassword: false,
       error: null,
       loading: false,
       message: '',
@@ -56,6 +57,24 @@ export default {
   },
 
   methods: {
+
+    async resetPassword() {
+      this.disableResetPassword = true
+      try {
+        await this.$store.dispatch('passwordReset', this.email)
+        this.$store.dispatch('alert', {
+          text: 'Check your email to reset your password',
+          timer: 10000,
+        })
+      }
+      catch (e) {
+        this.disableResetPassword = false
+        this.$store.dispatch('alert', {
+          text: 'Error resetting password',
+          type: 'error'
+        })
+      }
+    },
 
     /** Shows or clears an error for the given service response. */
     handleResponse(response) {
@@ -323,6 +342,11 @@ export default {
           <p class="has-text-centered" v-if="active === 'login'">
             <router-link :to="{name:'PasswordReset'}">FORGOT PASSWORD?</router-link>
           </p>
+
+          <p class="has-text-centered" v-if="active === 'profile'">
+            <button class="button is-flat" @click.prevent="resetPassword" :disabled="disableResetPassword">Reset Password</button>
+          </p>
+
         </div>
 
       </form>
