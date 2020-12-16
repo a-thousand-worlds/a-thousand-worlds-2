@@ -17,47 +17,46 @@ const handleError = routeHandler => async (req, res) => {
   }
 }
 
-module.exports = () => {
+const app = express()
 
-  const app = express()
+app.get('/', handleError(async (req, res) => {
 
-  app.get('/', handleError(async (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*')
 
-    res.header('Access-Control-Allow-Origin', '*')
+  const { keyword, number } = req.query
 
-    const { keyword, number } = req.query
+  if (!keyword) {
+    res.status(500).send('"keyword" query parameter required')
+    return
+  }
 
-    if (!keyword) {
-      res.status(500).send('"keyword" query parameter required')
-      return
-    }
+  // fetch products using amazon-buddy API
+  const products = await amazon.products({
+    keyword,
+    number: number || 1,
+    category: 'stripbooks',
+  })
 
-    // fetch products using amazon-buddy API
-    const products = await amazon.products({
-      keyword,
-      number: number || 1,
-      category: 'stripbooks',
-    })
+  console.log(req.query.keyword, `${products.result.length} results`)
+  console.log('products', products)
 
-    console.log(req.query.keyword, `${products.result.length} results`)
-    console.log('products', products)
+  // find the first product with a valid ISBN extracted from its url
+  const match = products.result
+    .map(product => ({
+      ...product,
+      isbn: product.url.slice(product.url.lastIndexOf('/') + 1)
+    }))
+    .find(product => isValidIsbn(product.isbn))
 
-    // find the first product with a valid ISBN extracted from its url
-    const match = products.result
-      .map(product => ({
-        ...product,
-        isbn: product.url.slice(product.url.lastIndexOf('/') + 1)
-      }))
-      .find(product => isValidIsbn(product.isbn))
+  if (!match) {
+    res.json(null)
+    return
+  }
 
-    if (!match) {
-      res.json(null)
-      return
-    }
+  res.header('Access-Control-Allow-Origin', '*')
+  res.json(_.pick(match, ['isbn', 'thumbnail', 'title', 'url']))
+}))
 
-    res.header('Access-Control-Allow-Origin', '*')
-    res.json(_.pick(match, ['isbn', 'thumbnail', 'title', 'url']))
-  }))
-
-  return app
-}
+app.listen(3000, () => {
+  console.log(`App started on port ${3000}`)
+})
