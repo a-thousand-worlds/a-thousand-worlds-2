@@ -56,7 +56,7 @@ export default {
 
       <section class="my-30">
         <h2>Accepted</h2>
-        <InvitationTable v-if="acceptedInvites.length" :invites="acceptedInvites" :fields="['used', 'email', 'firstName', 'lastName', 'role']" />
+        <InvitationTable v-if="acceptedInvites.length" :invites="acceptedInvites" :fields="['used', 'email', 'firstName', 'lastName', 'role', 'profile']" />
         <p v-else>There are no accepted invitations.</p>
       </section>
 

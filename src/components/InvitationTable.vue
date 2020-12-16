@@ -9,7 +9,7 @@ export default {
       type: Array,
       default: () => ['created', 'email', 'firstName', 'lastName', 'role'],
       // possible values
-      // ['used', 'created', 'email', 'firstName', 'lastName', 'role', 'resend', 'cancelled'],
+      // ['created', 'used', 'cancelled', 'email', 'firstName', 'lastName', 'role', 'resend', 'cancel'],
     }
   },
   computed: {
@@ -56,7 +56,7 @@ export default {
       <th>First</th>
       <th>Last</th>
       <th>Role</th>
-      <th v-if="fields.includes('resend') || fields.includes('cancel')"></th>
+      <th></th>
     </thead>
     <tbody>
       <tr v-for="invite of invites" :key="invite.code">
@@ -65,13 +65,16 @@ export default {
         <td v-if="fields.includes('firstName')">{{ invite.firstName }}</td>
         <td v-if="fields.includes('email')">{{ invite.lastName }}</td>
         <td class="is-capitalized">{{ invite.role }}</td>
-        <td v-if="fields.includes('resend') || fields.includes('cancel')">
-          <button @click="resend(invite)" class="is-flat" title="Resend invitation" :disabled="resendDisabled">
+        <td>
+          <button v-if="fields.includes('resend')" @click="resend(invite)" class="is-flat" title="Resend invitation" :disabled="resendDisabled">
             <i class="fas fa-paper-plane"></i>
           </button>
-          <button @click="cancel(invite)" class="is-flat" title="Cancel invitation">
+          <button v-if="fields.includes('cancel')" @click="cancel(invite)" class="is-flat" title="Cancel invitation">
             <i class="fas fa-times"></i>
           </button>
+          <!-- <button v-if="fields.includes('profile')" class="is-flat" title="View profile">
+            <i class="fas fa-user"></i>
+          </button> -->
         </td>
       </tr>
     </tbody>
