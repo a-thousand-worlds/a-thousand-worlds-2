@@ -61,9 +61,9 @@ export default {
     <tbody>
       <tr v-for="invite of invites" :key="invite.code">
         <td>{{ date(invite) }}</td>
-        <td>{{ invite.email }}</td>
-        <td>{{ invite.firstName }}</td>
-        <td>{{ invite.lastName }}</td>
+        <td v-if="fields.includes('email')">{{ invite.email }}</td>
+        <td v-if="fields.includes('firstName')">{{ invite.firstName }}</td>
+        <td v-if="fields.includes('email')">{{ invite.lastName }}</td>
         <td class="is-capitalized">{{ invite.role }}</td>
         <td v-if="fields.includes('resend') || fields.includes('cancel')">
           <button @click="resend(invite)" class="is-flat" title="Resend invitation" :disabled="resendDisabled">
