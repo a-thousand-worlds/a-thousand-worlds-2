@@ -1,5 +1,6 @@
 <script>
 
+import Alert from '@/components/Alert'
 import MobileHeader from '@/components/MobileHeader'
 import MobileFooter from '@/components/MobileFooter'
 import LeftBar from '@/components/LeftBar.vue'
@@ -9,6 +10,7 @@ import BookmarksView from '@/components/BookmarksView'
 export default ({
   name: 'App',
   components: {
+    Alert,
     LeftBar,
     RightBar,
     MobileHeader,
@@ -44,6 +46,9 @@ export default ({
 
 <template>
   <div>
+
+    <Alert />
+
     <mobile-header class="is-hidden-tablet"/>
     <section v-if="showHero" class="hero">
       <div class="hero-body">
