@@ -42,20 +42,25 @@ const module = mergeOne(collectionModule('invites'), {
       })
 
       // generate email
-      const template = state.rootGetters['content/get'](`email-invite-${role}`)
-      if (!template) {
-        throw new Error(`No template found for "${role}"`)
+      const subjectTemplate = state.rootGetters['content/get'](`email/invite/${role}/subject`)
+      const bodyTemplate = state.rootGetters['content/get'](`email/invite/${role}/body`)
+
+      if (!subjectTemplate) {
+        throw new Error(`No email subject found for "${role}"`)
+      }
+      if (!bodyTemplate) {
+        throw new Error(`No email template found for "${role}"`)
       }
 
       const signupUrl = `${window.location.origin}/signup?code=${invite.code}`
 
-      const subject = 'Hello'
-
-      const body = template
-        .replace(/FIRST_NAME/g, firstName || 'friend')
+      const template = s => s.replace(/FIRST_NAME/g, firstName || 'friend')
         .replace(/LAST_NAME/g, lastName)
         .replace(/FULL_NAME/g, firstName ? `${firstName} ${lastName}` : 'friend')
         .replace(/SIGNUP_LINK/g, `<a href='${signupUrl}'>${signupUrl}</a>`)
+
+      const subject = template(subjectTemplate)
+      const body = template(bodyTemplate)
 
       const html = `<html>
     <head>

@@ -4,7 +4,7 @@ import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import get from '@/util/get'
 
 export default {
-  props: ['name', 'placeholder'],
+  props: ['name', 'placeholder', 'format'],
   computed: {
     canEdit() {
       return this.$iam('admin') || this.$iam('superadmin')
@@ -45,7 +45,8 @@ export default {
 </script>
 
 <template>
-  <ckeditor :editor="editor" v-model="html" :config="editorConfig" :disabled="!canEdit || !loaded" />
+  <input v-if="format === 'one-line'" type="text" class="input" :class="className" v-model="html" :disabled="!canEdit || !loaded" />
+  <ckeditor v-else :editor="editor" v-model="html" :config="editorConfig" :disabled="!canEdit || !loaded" :class="className" />
 </template>
 
 <style scoped lang="scss">
