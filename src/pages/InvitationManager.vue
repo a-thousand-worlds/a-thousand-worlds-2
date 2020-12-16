@@ -1,6 +1,12 @@
 <script>
 import InvitationTable from '@/components/InvitationTable'
 
+const compare = (a, b) => a > b ? 1 : b > a ? -1 : 0
+const compareBy = (prop, dir = 'asc') =>
+  (a, b) => dir === 'asc'
+    ? compare(a[prop], b[prop])
+    : compare(b[prop], a[prop])
+
 export default {
   name: 'InvitationManager',
   components: {
@@ -8,16 +14,25 @@ export default {
   },
   computed: {
     cancelledInvites() {
-      return Object.values(this.invites).filter(invite => invite.cancelled)
+      // eslint-disable-next-line fp/no-mutating-methods
+      return Object.values(this.invites)
+        .filter(invite => invite.cancelled)
+        .sort(compareBy('cancelled', 'desc'))
     },
     invites() {
       return this.$store.getters['invites/getAll']()
     },
     pendingInvites() {
-      return Object.values(this.invites).filter(invite => !invite.used && !invite.cancelled)
+      // eslint-disable-next-line fp/no-mutating-methods
+      return Object.values(this.invites)
+        .filter(invite => !invite.used && !invite.cancelled)
+        .sort(compareBy('created', 'desc'))
     },
     acceptedInvites() {
-      return Object.values(this.invites).filter(invite => invite.used)
+      // eslint-disable-next-line fp/no-mutating-methods
+      return Object.values(this.invites)
+        .filter(invite => invite.used)
+        .sort(compareBy('used', 'desc'))
     },
   },
   methods: {
