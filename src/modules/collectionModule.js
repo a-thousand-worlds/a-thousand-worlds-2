@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import firebase from '@/firebase'
 import { firebaseGet } from '@/utils'
+import get from '@/util/get'
 
 /** Wraps a Firebase collection in vuex module. */
 const collectionModule = name => ({
@@ -18,18 +19,18 @@ const collectionModule = name => ({
   getters: {
     /** Gets the value at the given key. */
     get: state => key => {
-      return state.data[key]
+      return get(state.data, key)
     },
     /**
      * Find an entry in the collection by a given key.
      *
-     * @param key    The key to match. Supports _.get key expressions.
+     * @param key    The key to match. Supports "/" or "." delimited path expressions.
      * @param value  The value to match. Accepts a predicate that takes the deep value returned by the key expression.
      */
     findBy: state => (key, value) => {
       return Object.entries(state.data).find(
         ([entryKey, entryValue]) => {
-          const deepValue = _.get(entryValue, key)
+          const deepValue = get(entryValue, key)
           return typeof value === 'function'
             ? value(deepValue)
             : deepValue === value

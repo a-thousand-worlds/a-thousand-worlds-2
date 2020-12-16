@@ -53,7 +53,7 @@ export default {
 
       <div v-for="role of roles" :key="role" class="my-30">
         <h3 class="is-capitalized my-10">{{ role === 'superadmin' ? 'owner' : role === 'admin' ? 'advisor' : role }}</h3>
-        <Content :name="'email-invite-' + role" class="editor" />
+        <Content :name="`email/invite/${role}/body`" class="editor" />
       </div>
 
     </div>

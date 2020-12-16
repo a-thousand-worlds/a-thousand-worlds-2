@@ -594,7 +594,7 @@ const store = createStore({
       await ctx.dispatch('loadTags')
       await ctx.dispatch('loadPeople')
       await ctx.dispatch('loadBooks')
-      await ctx.dispatch('content/load')
+      await ctx.dispatch('content/subscribe')
       await ctx.dispatch('invites/subscribe')
       await ctx.dispatch('users/subscribe')
       // await ctx.dispatch('loadCovers')

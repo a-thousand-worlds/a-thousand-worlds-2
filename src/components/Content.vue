@@ -1,6 +1,7 @@
 <script>
 import _ from 'lodash'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
+import get from '@/util/get'
 
 export default {
   props: ['name', 'placeholder'],
@@ -26,8 +27,9 @@ export default {
     // only triggers when entire content property is changed, not single key
     // fires multiple times for some reason
     '$store.state.content.data'(next, prev) {
-      if (next[this.name]) {
-        this.html = next[this.name]
+      const nextValue = get(next, this.name)
+      if (nextValue) {
+        this.html = nextValue
       }
     },
 
