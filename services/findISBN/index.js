@@ -57,6 +57,6 @@ app.get('/', handleError(async (req, res) => {
   res.json(_.pick(match, ['isbn', 'thumbnail', 'title', 'url']))
 }))
 
-app.listen(3000, () => {
-  console.log(`App started on port ${3000}`)
+app.listen(3001, () => {
+  console.log(`App started on port ${3001}`)
 })
