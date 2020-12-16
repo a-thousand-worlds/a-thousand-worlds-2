@@ -20,6 +20,10 @@ const collectionModule = name => ({
     get: state => key => {
       return get(state.data, key)
     },
+    /** Gets the value at the given key. */
+    getAll: state => () => {
+      return state.data
+    },
     /**
      * Find an entry in the collection by a given key.
      *

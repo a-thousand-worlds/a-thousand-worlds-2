@@ -69,9 +69,10 @@ export default {
   <section v-if="canInvite" class="section bordered-top">
     <h2>Invite Users</h2>
     <invite-widget ref="invite" format="compact" />
-    <div class="my-20">
-      <router-link :to="{ name: 'Invite' }">Edit email templates</router-link>
-    </div>
+    <ul class="my-20">
+      <li><router-link :to="{ name: 'Invite' }">Edit email templates</router-link></li>
+      <li><router-link :to="{ name: 'InvitationManager' }">View invitations</router-link></li>
+    </ul>
   </section>
 
   <section class="section" v-if="canSuggest && hasSubmissions">
