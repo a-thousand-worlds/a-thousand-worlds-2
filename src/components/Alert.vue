@@ -23,7 +23,7 @@ export default {
     <div class="notification is-success m-10 py-10 has-shadow" :class="{
       'is-success': type === 'success',
       'is-error': type === 'error',
-      'is-primary': !type,
+      'is-secondary': !type,
     }">
       <button class="delete" @click.prevent="close"></button>
       <p>{{ text }}</p>

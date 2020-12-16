@@ -29,15 +29,17 @@ const module = {
   },
   actions: {
 
-    alert(state, { text, type, timer }) {
+    alert(state, value) {
 
       state.commit('clearTimer')
-      state.commit('set', { text, type })
+      state.commit('set', value)
 
-      setTimeout(() => {
-        state.commit('clearTimer')
-        state.commit('set', { text: null, type: null })
-      }, timer || 3000)
+      if (value) {
+        setTimeout(() => {
+          state.commit('clearTimer')
+          state.commit('set', { text: null, type: null })
+        }, value.timer || 3000)
+      }
     },
 
   },

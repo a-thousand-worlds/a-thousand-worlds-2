@@ -26,9 +26,11 @@ export default {
         path: `${invite.code}/cancelled`,
         value: Date.now()
       })
+      this.$store.dispatch('alert', 'Invitation cancelled')
     },
-    resend(invite) {
-      this.$store.dispatch('invites/send', invite)
+    async resend(invite) {
+      await this.$store.dispatch('invites/send', invite)
+      this.$store.dispatch('alert', 'Invitation sent!')
     },
   }
 }
