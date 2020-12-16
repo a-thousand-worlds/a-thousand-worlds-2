@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import firebase from '@/firebase'
 import { firebaseGet } from '@/utils'
 import get from '@/util/get'
