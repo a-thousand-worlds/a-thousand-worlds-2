@@ -13,7 +13,7 @@ router.beforeEach((to, from, next) => {
     next()
     return
   }
-  if (!store.state.user || !store.state.user.roles) {
+  if (!store.state.user.user || !store.state.user.user.roles) {
     store.commit('setNAP', to.path)
     next('/404')
     return
@@ -23,7 +23,7 @@ router.beforeEach((to, from, next) => {
   if (!Array.isArray(access)) {
     access = [access]
   }
-  if (access.reduce((acc, x) => store.state.user.roles[x] || acc, false)) {
+  if (access.reduce((acc, x) => store.state.user.user.roles[x] || acc, false)) {
     next()
   }
   else {
@@ -58,11 +58,7 @@ app.directive('click-outside', {
 app.mixin({
   methods: {
     $iam(role) {
-      if (!this.$store.state.user) {
-        return false
-      }
-      // console.log('iam?', role, this.$store.state.user.roles)
-      return this.$store.state.user && this.$store.state.user.roles && this.$store.state.user.roles[role] === true
+      return this.$store.state.user.user?.roles?.[role] === true
     },
     $dateFormat(date) {
       const d = dayjs(date)

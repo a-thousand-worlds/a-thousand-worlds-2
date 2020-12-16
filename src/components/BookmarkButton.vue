@@ -5,7 +5,7 @@ export default {
   props: ['book'],
   computed: {
     isMarked() {
-      return this.$store.state.user?.profile?.bookmarks?.[this.book.id]
+      return this.$store.state.user.user?.profile?.bookmarks?.[this.book.id]
     }
   },
   components: {
@@ -19,9 +19,12 @@ export default {
       }
       else {
         // optimistic client-side toggle
-        this.$store.dispatch('toggleBookmark', {
+        this.$store.commit('ui/setBusy', true)
+        this.$store.dispatch('user/toggleBookmark', {
           id: this.book.id,
           type: 'book'
+        }).then(() => {
+          this.$store.commit('ui/setBusy', false)
         })
         // console.log('bm me!', this.book)
       }

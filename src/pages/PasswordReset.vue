@@ -12,7 +12,7 @@ export default {
       if (!this.email || !this.email.length) {
         return
       }
-      this.$store.dispatch('passwordReset', this.email)
+      this.$store.dispatch('user/passwordReset', this.email)
         .then(() => {})
         .catch(err => {
           console.log('reset error', err)
@@ -20,7 +20,7 @@ export default {
     }
   },
   watch: {
-    '$store.state.user'(next, prev) {
+    '$store.state.user.user'(next, prev) {
       if (!prev && !!next) {
         // eslint-disable-next-line fp/no-mutating-methods
         this.$router.push({ name: 'Dashboard' })

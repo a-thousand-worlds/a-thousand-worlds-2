@@ -19,7 +19,7 @@ export default ({
     '$route'(next) {
       this.showMobileFilter = next.name === 'Home' || next.name === 'Bundles'
     },
-    '$store.state.user'(next, prev) {
+    '$store.state.user.user'(next, prev) {
       if (!prev && next && this.$store.state.noAccessPath.length) {
         const nap = this.$store.state.noAccessPath + ''
         this.$store.commit('setNAP', '')

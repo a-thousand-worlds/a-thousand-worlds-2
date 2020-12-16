@@ -27,7 +27,7 @@ export default {
   },
   computed: {
     bookmarksCount() {
-      return Object.keys(this.$store.state.user.profile.bookmarks || {}).length
+      return Object.keys(this.$store.state.user.user?.profile.bookmarks || {}).length
     }
   },
   methods: {

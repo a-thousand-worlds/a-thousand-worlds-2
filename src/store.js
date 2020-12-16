@@ -8,6 +8,7 @@ import invites from '@/modules/invites'
 import books from '@/modules/books'
 import tags from '@/modules/tags'
 import ui from '@/modules/ui'
+import user from '@/modules/user'
 import collectionModule from '@/modules/collection/module'
 import { firebaseGet } from '@/utils'
 
@@ -18,6 +19,7 @@ const store = createStore({
     books,
     tags,
     ui,
+    user,
     users: collectionModule('users'),
   },
   state: {
@@ -385,6 +387,7 @@ const store = createStore({
     },
 
     // profile
+    /*
     async toggleBookmark(ctx, mark) {
       ctx.commit('ui/setBusy', true)
       const profile = ctx.state.user.profile
@@ -409,9 +412,6 @@ const store = createStore({
       ctx.commit('ui/setBusy', false)
     },
 
-    /*
-      to be deprecated veeeery soon!
-    */
     async saveBookSubmissionsDraft(ctx, draft) {
       ctx.commit('ui/setBusy', true)
       const profile = ctx.state.user.profile
@@ -472,8 +472,6 @@ const store = createStore({
     },
 
     /*
-      to be deprecated veeeery soon!
-    */
     async saveBundleSubmissionsDraft(ctx, draft) {
       ctx.commit('ui/setBusy', true)
       const profile = ctx.state.user.profile
@@ -510,11 +508,13 @@ const store = createStore({
       ctx.commit('ui/setBusy', false)
     },
 
+    /*
     async saveProfile(ctx, profile) {
       const ref = firebase.database().ref(`users/${ctx.state.user.uid}/profile`)
       await ref.set(profile)
       ctx.commit('setUserProfile', profile)
     },
+    */
 
     /*
       to be deprecated veeeery soon!
@@ -641,6 +641,7 @@ const store = createStore({
       // await ctx.dispatch('loadTags')
       await ctx.dispatch('loadPeople')
       // await ctx.dispatch('loadBooks')
+      await ctx.dispatch('user/subscribe')
       await ctx.dispatch('tags/subscribe')
       await ctx.dispatch('books/subscribe')
       await ctx.dispatch('content/load')
@@ -650,6 +651,7 @@ const store = createStore({
       ctx.commit('setStage0Load')
     },
 
+    /*
     userLogin(ctx, data) {
       return firebase.auth().signInWithEmailAndPassword(data.email, data.password)
     },
@@ -659,9 +661,11 @@ const store = createStore({
       await store.commit('setUser', { uid: user.uid })
       await store.dispatch('saveProfile', { email, name, organization, otherEngagementCategory })
     },
+    /**/
   }
 })
 
+/*
 firebase.auth().onAuthStateChanged(function(user) {
   if (user) {
     // User is signed in.
@@ -686,20 +690,21 @@ firebase.auth().onAuthStateChanged(function(user) {
     u.roles = {}
     const userRef = firebase.database().ref(`users/${u.uid}`)
     userRef.on('value', snap => {
-      console.log('profile', snap.val()?.profile)
+      // console.log('profile', snap.val()?.profile)
       u.profile = { ...defaultProfile, ...snap.val()?.profile }
       u.roles = snap.val()?.roles || {}
       if (!u.roles.authorized) {
         u.roles.authorized = true
       }
-      store.commit('setUser', u)
-      store.dispatch('saveProfile', u.profile)
+      store.commit('user/setUser', u)
+      // store.dispatch('user/saveProfile', u.profile)
     })
   }
   else {
-    store.commit('setUser', null)
+    store.commit('user/setUser', null)
   }
 })
+*/
 
 window.store = store
 

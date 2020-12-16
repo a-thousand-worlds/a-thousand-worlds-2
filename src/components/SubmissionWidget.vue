@@ -15,7 +15,7 @@ export default {
   },
   created() {
     console.log('submission widget', this.sub)
-    if (this.$store.state.submissionsIndex[this.sid]) {
+    if (this.$store.state.submissionsIndex?.[this.sid]) {
       this.sub = this.$store.state.submissionsIndex[this.sid]
       this.loading = false
       return

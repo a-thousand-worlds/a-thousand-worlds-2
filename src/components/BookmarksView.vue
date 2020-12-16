@@ -7,8 +7,8 @@ export default {
   },
   computed: {
     bookmarks() {
-      return Object.keys(this.$store.state.user.profile.bookmarks || {})
-        .map(id => ({ id, type: this.$store.state.user.profile.bookmarks[id] }))
+      return Object.keys(this.$store.state.user.user.profile.bookmarks || {})
+        .map(id => ({ id, type: this.$store.state.user.user.profile.bookmarks[id] }))
     }
   },
   methods: {

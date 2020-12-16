@@ -88,7 +88,7 @@ export default {
 
       if (!this.validate()) return
 
-      return this.handleResponse(this.$store.dispatch('userLogin', {
+      return this.handleResponse(this.$store.dispatch('user/userLogin', {
         email: this.email,
         password: this.password
       })
@@ -103,7 +103,7 @@ export default {
 
       if (!this.validate()) return
 
-      return this.handleResponse(this.$store.dispatch('userRegister', {
+      return this.handleResponse(this.$store.dispatch('user/userRegister', {
         email: this.email,
         name: this.name,
         password: this.password,
@@ -189,7 +189,7 @@ export default {
 
   },
   watch: {
-    '$store.state.user'(next, prev) {
+    '$store.state.user.user'(next, prev) {
       if (!prev && !!next) {
         if (this.$iam('creator') || this.$iam('contributor') || this.$iam('admin') || this.$iam('superadmin')) {
           // eslint-disable-next-line fp/no-mutating-methods

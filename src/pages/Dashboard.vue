@@ -19,13 +19,13 @@ export default {
   },
   computed: {
     username() {
-      return this.$store.state.user?.profile.name || this.$store.state.user?.profile.email
+      return this.$store.state.user.user?.profile.name || this.$store.state.user.user?.profile.email
     },
     submissionsList() {
-      if (!this.$store.state.user.profile.submissions) {
+      if (!this.$store.state.user.user?.profile.submissions) {
         return []
       }
-      return Object.keys(this.$store.state.user.profile.submissions)
+      return Object.keys(this.$store.state.user.user.profile.submissions)
     },
     hasSubmissions() {
       return !!this.submissionsList.length
@@ -78,7 +78,7 @@ export default {
     <h2>Your Submissions</h2>
     <div class="columns is-multiline">
       <div class="column is-6-tablet is-4-desktop is-3-widescreen" v-for="sid of submissionsList" :key="sid">
-        <submission-widget class="submission-widget" :sid="sid" :state="$store.state.user.profile.submissions[sid]"/>
+        <submission-widget class="submission-widget" :sid="sid" :state="$store.state.user.user.profile.submissions[sid]"/>
       </div>
     </div>
   </section>
