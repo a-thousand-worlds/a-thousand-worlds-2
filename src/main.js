@@ -71,7 +71,7 @@ app.mixin({
   },
   computed: {
     $uiBusy() {
-      return this.$store.state.uiBusy
+      return this.$store.state.ui.busy
     }
   }
 })

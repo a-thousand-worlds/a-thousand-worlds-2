@@ -14,6 +14,9 @@ const collectionModule = name => ({
       state.data = data
       state.loaded = true
     },
+    setOne(state, { key, data }) {
+      state.data[key] = data
+    }
   },
   getters: {
     /** Gets the value at the given key. */
@@ -45,6 +48,13 @@ const collectionModule = name => ({
       state.commit('set', valueNotNull)
       return valueNotNull
     },
+    /** Loads single element from Firebase */
+    async loadOne(state, key) {
+      const value = await firebaseGet(`${name}/${key}`)
+      const valueNotNull = value || {}
+      state.commit('setOne', { key, data: valueNotNull })
+      return valueNotNull
+    },
     /** Saves a record to the collection in Firebase. */
     async save(state, { key, value }) {
       if (!key) throw new Error('key required')
@@ -58,6 +68,12 @@ const collectionModule = name => ({
       ref.on('value', snap => {
         state.commit('set', snap.val() || {})
       })
+    },
+    /** Removes collection entry from  Firebase */
+    async remove(state, key) {
+      if (!key) throw new Error('key required')
+      const ref = firebase.database().ref(`${name}/${key}`)
+      await ref.remove()
     }
   },
 })

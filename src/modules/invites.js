@@ -2,7 +2,7 @@ import axios from 'axios'
 import * as animal from 'cute-animals'
 import firebase from '@/firebase'
 import mergeOne from '@/util/mergeOne'
-import collectionModule from './collectionModule'
+import collectionModule from './collection/module'
 // import { v4 as uid } from 'uuid'
 
 const module = mergeOne(collectionModule('invites'), {

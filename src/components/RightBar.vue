@@ -19,8 +19,7 @@ export default {
         this.$router.push({ name: 'LogIn' })
         return
       }
-      const state = this.$store.state.bookmarksOpen
-      console.log('tbm', state)
+      const state = this.$store.state.ui.bookmarksOpen
       this.$store.commit('setBookmarksOpen', !state)
     }
   },

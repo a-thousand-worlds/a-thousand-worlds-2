@@ -36,7 +36,7 @@ export default {
       </tr>
     </thead>
     <tbody>
-      <tr v-for="book of $store.state.booksList" :key="book.id">
+      <tr v-for="book of $store.getters['books/list']" :key="book.id">
         <td>{{book.id}}</td>
         <td>
           <span>{{book.isbn}}</span>

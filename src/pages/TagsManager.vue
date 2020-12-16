@@ -1,4 +1,5 @@
 <script>
+import { v4 } from 'uuid'
 
 export default {
   name: 'TagsManagerPage',
@@ -14,8 +15,9 @@ export default {
   },
   methods: {
     addTag() {
-      this.$store.dispatch('addTag', this.addTagTag).then(() => {
-        this.addTagTag = ''
+      const id = v4()
+      this.$store.dispatch('tags/save', { key: id, value: { id, ...this.addTagTag } }).then(() => {
+        this.addTagTag = {}
       })
     },
     delTag(id) {
@@ -27,9 +29,14 @@ export default {
       this.edits[id] = state
     },
     updateTag(tagid) {
-      this.$store.dispatch('updateTag', { ...this.edits[tagid] }).then(() => {
+      const tag = { ...this.edits[tagid] }
+      this.$store.commit('setBusy', true)
+      /**/
+      this.$store.dispatch('tags/save', { key: tagid, value: tag }).then(() => {
         this.edits[tagid] = null
+        this.$store.commit('setBusy', false)
       })
+      /**/
     }
   }
 }
@@ -52,7 +59,7 @@ export default {
       </tr>
     </thead>
     <tbody>
-      <tr v-for="tag of $store.state.sortedTags" :key="tag.id">
+      <tr v-for="tag of $store.getters['tags/list']" :key="tag.id">
         <td>
           <span v-if="!edits[tag.id]">
             <span class="ml-2">{{tag.sortOrder}}</span>
@@ -75,21 +82,21 @@ export default {
         <td>{{ $dateFormat(tag.created) }}/{{ $dateFormat(tag.updated) }}</td>
         <td class="actions">
           <div v-if="!edits[tag.id]" class="field is-grouped is-justify-content-flex-end">
-            <p class="control"><button @click.prevent="toggleEditTag(tag.id, tag)" class="button is-secondary">
+            <p class="control"><button @click.prevent="toggleEditTag(tag.id, tag)" :disabled="$uiBusy" class="button is-secondary">
               <i class="fas fa-pencil-alt mr-2"></i>
               <span>Edit</span>
             </button></p>
-            <p class="control"><button @click.prevent="delTag(tag.id)" class="button is-danger">
+            <p class="control"><button @click.prevent="delTag(tag.id)" :disabled="$uiBusy" class="button is-danger">
               <i class="fas fa-trash mr-2"></i>
               <span>Delete</span>
             </button></p>
           </div>
           <div v-if="edits[tag.id]" class="field is-grouped is-justify-content-flex-end">
-            <p class="control"><button @click.prevent="toggleEditTag(tag.id, null)" class="button is-secondary">
+            <p class="control"><button @click.prevent="toggleEditTag(tag.id, null)" :disabled="$uiBusy" class="button is-secondary">
               <i class="fas fa-times mr-2"></i>
               <span>Cancel</span>
             </button></p>
-            <p class="control"><button @click.prevent="updateTag(tag.id)" class="button is-primary">
+            <p class="control"><button @click.prevent="updateTag(tag.id)" :disabled="$uiBusy" class="button is-primary">
               <i class="fas fa-check mr-2"></i>
               <span>Save</span>
             </button></p>
@@ -106,24 +113,24 @@ export default {
         <a class="button is-static">Add Tag</a>
       </p>
       <p class="control w-100">
-        <input type="text" class="input" placeholder="Enter tag" v-model="addTagTag.tag"/>
+        <input type="text" :disabled="$uiBusy" class="input" placeholder="Enter tag" v-model="addTagTag.tag"/>
       </p>
       <p class="control">
         <a class="button is-static">Sort Order</a>
       </p>
       <p class="control">
-        <input type="text" class="input" placeholder="Sort order" v-model="addTagTag.sortOrder"/>
+        <input :disabled="$uiBusy" type="text" class="input" placeholder="Sort order" v-model="addTagTag.sortOrder"/>
       </p>
       <p class="control">
         <a class="button" @click.prevent="addTagTag.showOnFront=!addTagTag.showOnFront">
           Show on Front
-          <input type="checkbox" class="checkbox ml-2" placeholder="Sort order" v-model="addTagTag.showOnFront"/>
+          <input :disabled="$uiBusy" type="checkbox" class="checkbox ml-2" placeholder="Sort order" v-model="addTagTag.showOnFront"/>
         </a>
       </p>
       <p class="control">
       </p>
       <p class="control">
-        <button type="submit" class="button is-primary">
+        <button :disabled="$uiBusy" type="submit" class="button is-primary">
           <i class="fas fa-plus mr-2"></i>
           <span>Add</span>
         </button>

@@ -2,15 +2,15 @@
 export default {
   methods: {
     toggleFilter(fid) {
-      this.$store.commit('toggleFilter', fid)
+      this.$store.commit('books/toggleFilter', fid)
       // eslint-disable-next-line  fp/no-mutating-methods
       this.$router.push({ name: 'Home' })
     },
     resetFilters() {
-      this.$store.commit('resetFilters')
+      this.$store.commit('books/resetFilters')
     },
     filterOn(fid) {
-      return this.$store.state.filters.includes(fid)
+      return this.$store.state.books.filters.includes(fid)
     }
   }
 }
@@ -19,7 +19,7 @@ export default {
 <template>
   <aside class="menu mb-5">
     <ul class="menu-list submenu">
-      <li v-for="filter in $store.state.sortedTags" :key="filter.id" @click="toggleFilter(filter.tag)">
+      <li v-for="filter in $store.getters['tags/list']" :key="filter.id" @click="toggleFilter(filter.tag)">
         <button v-if="filter.showOnFront" :class="{toggled:filterOn(filter.tag)}" class="pb-2" style="padding-left: 2px;">{{filter.tag}}<span v-if="filterOn(filter.tag)" class="remove-tag">{{ '—' }}</span></button>
       </li>
     </ul>

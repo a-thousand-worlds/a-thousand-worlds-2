@@ -1,17 +1,23 @@
 import { createStore } from 'vuex'
-import _ from 'lodash'
+// import _ from 'lodash'
 import dayjs from 'dayjs'
 import { v4 } from 'uuid'
-import Jimp from 'jimp'
+// import Jimp from 'jimp'
 import firebase from '@/firebase'
 import invites from '@/modules/invites'
-import collectionModule from '@/modules/collectionModule'
+import books from '@/modules/books'
+import tags from '@/modules/tags'
+import ui from '@/modules/ui'
+import collectionModule from '@/modules/collection/module'
 import { firebaseGet } from '@/utils'
 
 const store = createStore({
   modules: {
     content: collectionModule('content'),
     invites,
+    books,
+    tags,
+    ui,
     users: collectionModule('users'),
   },
   state: {
@@ -21,21 +27,21 @@ const store = createStore({
       auth: false,
       loaded: false
     },
-    filters: [],
+    // filters: [],
     bookmarksOpen: false,
-    loading: false,
-    images: {},
+    // loading: false,
+    // images: {},
     user: null,
-    tags: {},
-    sortedTags: [],
+    // tags: {},
+    // sortedTags: [],
     peopleList: [],
     peopleIndex: {},
-    booksIndex: {},
-    booksList: [],
-    booksFiltered: [],
+    // booksIndex: {},
+    // booksList: [],
+    // booksFiltered: [],
     bundlesIndex: {},
     bundlesList: [],
-    submissionsIndex: {},
+    // submissionsIndex: {},
     viewMode: 'covers'
   },
   mutations: {
@@ -45,6 +51,7 @@ const store = createStore({
     setBookmarksOpen(ctx, state) {
       ctx.bookmarksOpen = state
     },
+    /*
     setImage(ctx, img) {
       ctx.images[img.url] = img.data
     },
@@ -65,6 +72,7 @@ const store = createStore({
         return ctx.filters.every(tag => (book.tags || []).includes(tag))
       })
     },
+    /**/
     setNAP(ctx, p) {
       ctx.noAccessPath = p
     },
@@ -85,18 +93,21 @@ const store = createStore({
     setStage0Load(ctx) {
       ctx.stage0.loaded = true
     },
+    /*
     setTags(ctx, list) {
       ctx.tags = list
     },
     setSortedTags(ctx, list) {
       ctx.sortedTags = list
     },
+    /*
     setBooks(ctx, books) {
       ctx.booksIndex = books || {}
       const list = Object.keys(books || {}).map(id => books[id])
       ctx.booksList = _.shuffle(list)
       ctx.booksFiltered = ctx.booksList
     },
+    */
     setPeople(ctx, people) {
       ctx.peopleIndex = people || {}
       ctx.peopleList = Object.keys(people || {}).map(id => people[id])
@@ -105,15 +116,18 @@ const store = createStore({
       ctx.bundlesIndex = bundles || {}
       ctx.bundlesList = Object.values(bundles || [])
     },
+    /*
     setViewMode(ctx, mode) {
       ctx.viewMode = mode
     },
     indexSubmission(ctx, sub) {
       ctx.submissionsIndex[sub.id] = sub
     },
+    */
   },
   actions: {
 
+    /*
     // tags
     async addTag(ctx, tag) {
       if (!tag || !tag.tag || !tag.tag.length) {
@@ -187,12 +201,14 @@ const store = createStore({
       store.commit('setSortedTags', sorted)
       ctx.commit('setBusy', false)
     },
+    */
 
+    /*
     // books
     async saveBook(ctx, info) {
       ctx.commit('setBusy', true)
       console.log('saving book store', info)
-      /**/
+      /*
       const id = info.book.id && info.book.id.length ? info.book.id : v4()
       // checking and saving authors if not exists
       /*
@@ -210,6 +226,7 @@ const store = createStore({
         }
       }
       */
+    /*
       let photoUrl = ''
       let photoWidth = info.book.coverWidth || 0
       let photoHeight = info.book.coverHeight || 0
@@ -264,7 +281,9 @@ const store = createStore({
       await bookRef.set(bookData)
       await ctx.dispatch('loadBooks')
     },
+    */
 
+    /*
     async loadImage(ctx, url) {
       if (ctx.state.images[url]) {
         return
@@ -274,13 +293,16 @@ const store = createStore({
       ctx.commit('setImage', { url, data })
     },
 
+    /*
     async loadBooks(ctx) {
       ctx.commit('setBusy', true)
       const books = await firebaseGet('books')
       ctx.commit('setBooks', books || {})
       ctx.commit('setBusy', false)
     },
+    */
 
+    /*
     async delBook(ctx, id) {
       ctx.commit('setBusy', true)
       const ref = await firebase.database().ref(`books/${id}`)
@@ -292,6 +314,7 @@ const store = createStore({
       catch (e) {}
       return await ctx.dispatch('loadBooks')
     },
+    */
 
     // people
     async savePerson(ctx, info) {
@@ -385,6 +408,9 @@ const store = createStore({
       ctx.commit('setBusy', false)
     },
 
+    /*
+      to be deprecated veeeery soon!
+    */
     async saveBookSubmissionsDraft(ctx, draft) {
       ctx.commit('setBusy', true)
       const profile = ctx.state.user.profile
@@ -393,6 +419,9 @@ const store = createStore({
       ctx.commit('setBusy', false)
     },
 
+    /*
+      to be deprecated veeeery soon!
+    */
     async submitBookSubmission(ctx, list) {
       ctx.commit('setBusy', true)
       const ids = []
@@ -441,6 +470,9 @@ const store = createStore({
       ctx.commit('setBusy', false)
     },
 
+    /*
+      to be deprecated veeeery soon!
+    */
     async saveBundleSubmissionsDraft(ctx, draft) {
       ctx.commit('setBusy', true)
       const profile = ctx.state.user.profile
@@ -449,6 +481,9 @@ const store = createStore({
       ctx.commit('setBusy', false)
     },
 
+    /*
+      to be deprecated veeeery soon!
+    */
     async submitBundleSuggestion(ctx, data) {
       ctx.commit('setBusy', true)
       const sid = v4()
@@ -480,6 +515,9 @@ const store = createStore({
       ctx.commit('setUserProfile', profile)
     },
 
+    /*
+      to be deprecated veeeery soon!
+    */
     // submissions
     async indexSubmission(ctx, sid) {
       const submissions = await firebaseGet(`submits/books/${sid}`) || await firebaseGet(`submits/bundles/${sid}`)
@@ -488,6 +526,9 @@ const store = createStore({
       }
     },
 
+    /*
+      to be deprecated veeeery soon!
+    */
     // deleteSubmission(ctx, id) {
     async deleteSubmission(ctx, sub) {
       if (!sub) {
@@ -500,6 +541,9 @@ const store = createStore({
       await ref.remove()
     },
 
+    /*
+      to be deprecated veeeery soon!
+    */
     async rejectSubmission(ctx, sub) {
       console.log('deleting submission', sub)
       const ref = await firebase.database().ref(`submits/${sub.type}s/${sub.id}`)
@@ -511,6 +555,9 @@ const store = createStore({
       await pref.set('reject')
     },
 
+    /*
+      to be deprecated veeeery soon!
+    */
     // approve books submission
     async approveSubmissionBooksGroup(ctx, group) {
       console.log('approving', group)
@@ -590,9 +637,11 @@ const store = createStore({
     async loadStage0(ctx) {
       // const ref = await firebase.database().ref(`people`)
       // await ref.remove()
-      await ctx.dispatch('loadTags')
+      // await ctx.dispatch('loadTags')
       await ctx.dispatch('loadPeople')
-      await ctx.dispatch('loadBooks')
+      // await ctx.dispatch('loadBooks')
+      await ctx.dispatch('tags/subscribe')
+      await ctx.dispatch('books/subscribe')
       await ctx.dispatch('content/load')
       await ctx.dispatch('invites/subscribe')
       await ctx.dispatch('users/subscribe')
