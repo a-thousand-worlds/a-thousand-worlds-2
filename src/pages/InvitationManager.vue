@@ -1,18 +1,25 @@
 <script>
-import dayjs from 'dayjs'
+import InvitationTable from '@/components/InvitationTable'
 
 export default {
   name: 'InvitationManager',
+  components: {
+    InvitationTable,
+  },
   computed: {
+    cancelledInvites() {
+      return Object.values(this.invites).filter(invite => invite.cancelled)
+    },
     invites() {
       return this.$store.getters['invites/getAll']()
-    }
+    },
+    pendingInvites() {
+      return Object.values(this.invites).filter(invite => !invite.used && !invite.cancelled)
+    },
+    acceptedInvites() {
+      return Object.values(this.invites).filter(invite => invite.used)
+    },
   },
-  methods: {
-    format(date) {
-      return dayjs(date).format('MMMM DD, YYYY')
-    }
-  }
 }
 
 </script>
@@ -29,24 +36,21 @@ export default {
       <h1 class="divider-bottom">Invitation Manager</h1>
 
       <section class="my-30">
-        <table class="table w-100">
-          <thead>
-            <th>Created</th>
-            <th>Email</th>
-            <th>First</th>
-            <th>Last</th>
-            <th>Role</th>
-          </thead>
-          <tbody>
-            <tr v-for="invite of invites" :key="invite.code">
-              <td>{{ format(invite.created) }}</td>
-              <td>{{ invite.email }}</td>
-              <td>{{ invite.firstName }}</td>
-              <td>{{ invite.lastName }}</td>
-              <td class="is-capitalized">{{ invite.role }}</td>
-            </tr>
-          </tbody>
-        </table>
+        <h2>Pending</h2>
+        <InvitationTable v-if="pendingInvites.length" :invites="pendingInvites" />
+        <p v-else>There are no pending invitations.</p>
+      </section>
+
+      <section class="my-30">
+        <h2>Accepted</h2>
+        <InvitationTable v-if="acceptedInvites.length" :invites="acceptedInvites" :showAccepted="true" />
+        <p v-else>There are no accepted invitations.</p>
+      </section>
+
+      <section class="my-30">
+        <h2>Cancelled</h2>
+        <InvitationTable v-if="cancelledInvites.length" :invites="cancelledInvites" />
+        <p v-else>There are no cancelled invitations.</p>
       </section>
 
     </div>
