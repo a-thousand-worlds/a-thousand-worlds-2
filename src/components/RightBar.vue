@@ -11,7 +11,7 @@ export default {
   },
   methods: {
     toggleViewMode(mode) {
-      this.$store.commit('setViewMode', mode)
+      this.$store.commit('ui/setViewMode', mode)
     },
     toggleBookmarks() {
       if (!this.$iam('authorized')) {
@@ -20,7 +20,7 @@ export default {
         return
       }
       const state = this.$store.state.ui.bookmarksOpen
-      this.$store.commit('setBookmarksOpen', !state)
+      this.$store.commit('ui/setBookmarksOpen', !state)
     }
   },
   computed: {
@@ -53,13 +53,13 @@ export default {
 
       <ul v-if="showViewOptions" class="menu-list">
         <li>
-          <a :class="{ active: $store.state.viewMode === 'covers' }" @click.prevent="toggleViewMode('covers')" href="#">
+          <a :class="{ active: $store.state.ui.viewMode === 'covers' }" @click.prevent="toggleViewMode('covers')" href="#">
             <CoverViewIcon />
             <span class="icon-label">Cover</span>
           </a>
         </li>
         <li class='my-30'>
-          <a :class="{ active: $store.state.viewMode === 'list' }" @click.prevent="toggleViewMode('list')" href="#">
+          <a :class="{ active: $store.state.ui.viewMode === 'list' }" @click.prevent="toggleViewMode('list')" href="#">
             <ListViewIcon />
             <span class="icon-label">List</span>
           </a>

@@ -32,7 +32,7 @@ router.beforeEach((to, from, next) => {
 })
 
 router.afterEach((to, from) => {
-  store.commit('setBookmarksOpen', false)
+  store.commit('ui/setBookmarksOpen', false)
 })
 
 const app = createApp(App)

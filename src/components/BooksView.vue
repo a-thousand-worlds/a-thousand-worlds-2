@@ -25,10 +25,10 @@ export default {
       <p><a @click.prevent="resetFilter">Reset Filter</a></p>
     </div>
 
-    <div :class="{masonry:$store.state.viewMode==='covers', 'with-bookmarks': $store.state.bookmarksOpen}">
+    <div :class="{masonry:$store.state.ui.viewMode==='covers', 'with-bookmarks': $store.state.ui.bookmarksOpen}">
       <div class="masonry-item" v-for="book of $store.getters['books/filtered']" :key="book.id">
-        <book-cover v-if="$store.state.viewMode === 'covers'" :book="book"></book-cover>
-        <book-list v-if="$store.state.viewMode === 'list'" :book="book"></book-list>
+        <book-cover v-if="$store.state.ui.viewMode === 'covers'" :book="book"></book-cover>
+        <book-list v-if="$store.state.ui.viewMode === 'list'" :book="book"></book-list>
       </div>
     </div>
 

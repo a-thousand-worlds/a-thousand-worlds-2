@@ -21,14 +21,14 @@ const store = createStore({
     users: collectionModule('users'),
   },
   state: {
-    uiBusy: false,
+    // uiBusy: false,
     noAccessPath: '',
     stage0: {
       auth: false,
       loaded: false
     },
     // filters: [],
-    bookmarksOpen: false,
+    // bookmarksOpen: false,
     // loading: false,
     // images: {},
     user: null,
@@ -45,13 +45,13 @@ const store = createStore({
     viewMode: 'covers'
   },
   mutations: {
+    /*
     setBusy(ctx, busy) {
       ctx.uiBusy = busy
     },
     setBookmarksOpen(ctx, state) {
       ctx.bookmarksOpen = state
     },
-    /*
     setImage(ctx, img) {
       ctx.images[img.url] = img.data
     },
@@ -318,7 +318,7 @@ const store = createStore({
 
     // people
     async savePerson(ctx, info) {
-      ctx.commit('setBusy', true)
+      ctx.commit('ui/setBusy', true)
       // eslint-disable-next-line  fp/no-mutating-methods
       const id = info.id && info.id.length ? info.id : v4()
       let photoUrl = info.photo || ''
@@ -349,7 +349,7 @@ const store = createStore({
       return id
     },
     async delPerson(ctx, id) {
-      ctx.commit('setBusy', true)
+      ctx.commit('ui/setBusy', true)
       const ref = await firebase.database().ref(`people/${id}`)
       const refp = await firebase.storage().ref(`people/${id}`)
       await ref.remove()
@@ -361,21 +361,21 @@ const store = createStore({
     },
 
     async loadPeople(ctx) {
-      ctx.commit('setBusy', true)
+      ctx.commit('ui/setBusy', true)
       const people = await firebaseGet('people')
       store.commit('setPeople', people)
-      ctx.commit('setBusy', false)
+      ctx.commit('ui/setBusy', false)
     },
 
     async loadBundles(ctx) {
-      ctx.commit('setBusy', true)
+      ctx.commit('ui/setBusy', true)
       const bundles = await firebaseGet('bundles')
       if (!bundles || bundles.length === 0) {
         console.error('No bundles in database')
         return
       }
       store.commit('setBundles', bundles)
-      ctx.commit('setBusy', false)
+      ctx.commit('ui/setBusy', false)
     },
     async saveBundle(ctx, info) {
       console.log('save bundle', info)
@@ -386,8 +386,9 @@ const store = createStore({
 
     // profile
     async toggleBookmark(ctx, mark) {
-      ctx.commit('setBusy', true)
+      ctx.commit('ui/setBusy', true)
       const profile = ctx.state.user.profile
+      console.log('user profile', profile)
       if (profile.bookmarks[mark.id]) {
         profile.bookmarks = Object.keys(profile.bookmarks)
           .filter(id => id !== mark.id)
@@ -397,33 +398,33 @@ const store = createStore({
         profile.bookmarks[mark.id] = mark.type
       }
       await ctx.dispatch('saveProfile', profile)
-      ctx.commit('setBusy', false)
+      ctx.commit('ui/setBusy', false)
     },
 
     async clearBookmarks(ctx, mark) {
-      ctx.commit('setBusy', true)
+      ctx.commit('ui/setBusy', true)
       const profile = ctx.state.user.profile
       profile.bookmarks = {}
       await ctx.dispatch('saveProfile', profile)
-      ctx.commit('setBusy', false)
+      ctx.commit('ui/setBusy', false)
     },
 
     /*
       to be deprecated veeeery soon!
     */
     async saveBookSubmissionsDraft(ctx, draft) {
-      ctx.commit('setBusy', true)
+      ctx.commit('ui/setBusy', true)
       const profile = ctx.state.user.profile
       profile.draftBooks = draft
       await ctx.dispatch('saveProfile', profile)
-      ctx.commit('setBusy', false)
+      ctx.commit('ui/setBusy', false)
     },
 
     /*
       to be deprecated veeeery soon!
     */
     async submitBookSubmission(ctx, list) {
-      ctx.commit('setBusy', true)
+      ctx.commit('ui/setBusy', true)
       const ids = []
       const submissionGroupId = v4()
       const profile = ctx.state.user.profile
@@ -467,25 +468,25 @@ const store = createStore({
         ids.push(sid)
       }
       await ctx.dispatch('saveProfile', profile)
-      ctx.commit('setBusy', false)
+      ctx.commit('ui/setBusy', false)
     },
 
     /*
       to be deprecated veeeery soon!
     */
     async saveBundleSubmissionsDraft(ctx, draft) {
-      ctx.commit('setBusy', true)
+      ctx.commit('ui/setBusy', true)
       const profile = ctx.state.user.profile
       profile.draftBundle = draft
       await ctx.dispatch('saveProfile', profile)
-      ctx.commit('setBusy', false)
+      ctx.commit('ui/setBusy', false)
     },
 
     /*
       to be deprecated veeeery soon!
     */
     async submitBundleSuggestion(ctx, data) {
-      ctx.commit('setBusy', true)
+      ctx.commit('ui/setBusy', true)
       const sid = v4()
       const now = dayjs()
       const sub = {
@@ -506,7 +507,7 @@ const store = createStore({
       profile.submissions = [...profile.submissions, sid]
       await ctx.dispatch('saveProfile', profile)
       ctx.commit('indexSubmission', sub)
-      ctx.commit('setBusy', false)
+      ctx.commit('ui/setBusy', false)
     },
 
     async saveProfile(ctx, profile) {
@@ -672,7 +673,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     u.isAnonymous = user.isAnonymous
     u.uid = user.uid
     u.providerData = user.providerData
-    u.profile = {
+    const defaultProfile = {
       email: u.email,
       name: '',
       bundles: [],
@@ -681,11 +682,12 @@ firebase.auth().onAuthStateChanged(function(user) {
       draftBooks: [],
       draftBundles: []
     }
+    u.profile = defaultProfile
     u.roles = {}
     const userRef = firebase.database().ref(`users/${u.uid}`)
     userRef.on('value', snap => {
       console.log('profile', snap.val()?.profile)
-      u.profile = { ...snap.val()?.profile }
+      u.profile = { ...defaultProfile, ...snap.val()?.profile }
       u.roles = snap.val()?.roles || {}
       if (!u.roles.authorized) {
         u.roles.authorized = true

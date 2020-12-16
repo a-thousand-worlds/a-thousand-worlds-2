@@ -31,7 +31,7 @@ export default {
   },
   methods: {
     isbnGlobalSearchState(si, state) {
-      this.$store.commit('setBusy', state)
+      this.$store.commit('ui/setBusy', state)
     },
     isbnGlobalSearchResult(si, res) {
       if (!res) {

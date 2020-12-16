@@ -49,8 +49,8 @@ export default {
         this.$router.push({ name: 'LogIn' })
         return
       }
-      const state = this.$store.state.bookmarksOpen
-      this.$store.commit('setBookmarksOpen', !state)
+      const state = this.$store.state.ui.bookmarksOpen
+      this.$store.commit('ui/setBookmarksOpen', !state)
     }
   }
 }
@@ -70,7 +70,7 @@ export default {
   <section class="mobile-bottom-nav is-flex is-justify-content-center has-text-centered is-uppercase">
     <ul class="menu-list">
 
-      <li v-if="isFront && !$store.state.bookmarksOpen" >
+      <li v-if="isFront && !$store.state.ui.bookmarksOpen" >
         <a :class="null" @click.stop="showFilters=!showFilters" href="#">
           <FilterIcon/>
           <div class="icon-label mt-2">Filter</div>

@@ -68,7 +68,7 @@ export default {
   <div v-if="author" class="mx-5">
 
     <div class="is-flex is-flex-direction-row is-flex-wrap-wrap">
-      <div class="column-author" :class="{'with-bookmarks': $store.state.bookmarksOpen}">
+      <div class="column-author" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
         <div class="cover-wrapper">
           <div v-if="author.photo && author.photo.length" :style="{backgroundImage: 'url('+bgImage+')'}" class="cover-photo bg-secondary"/>
         </div>
@@ -82,7 +82,7 @@ export default {
 
       </div>
 
-      <div class="column-books" :class="{'with-bookmarks': $store.state.bookmarksOpen}">
+      <div class="column-books" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
         <book-list v-for="book of books" :key="book.id" :book="book"/>
       </div>
 

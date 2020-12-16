@@ -30,11 +30,11 @@ export default {
     },
     updateTag(tagid) {
       const tag = { ...this.edits[tagid] }
-      this.$store.commit('setBusy', true)
+      this.$store.commit('ui/setBusy', true)
       /**/
       this.$store.dispatch('tags/save', { key: tagid, value: tag }).then(() => {
         this.edits[tagid] = null
-        this.$store.commit('setBusy', false)
+        this.$store.commit('ui/setBusy', false)
       })
       /**/
     }

@@ -25,15 +25,15 @@ export default {
       return this.$router.currentRoute._value.params.id
     },
     book() {
-      return this.$store.state.booksIndex[this.id]
+      return this.$store.state.books.data[this.id]
     },
     nextBook() {
-      const list = this.$store.state.booksFiltered.map(x => x.id)
+      const list = this.$store.state.books.filtered.map(x => x.id)
       const pos = list.indexOf(this.id)
       return list[pos + 1]
     },
     prevBook() {
-      const list = this.$store.state.booksFiltered.map(x => x.id)
+      const list = this.$store.state.books.filtered.map(x => x.id)
       const pos = list.indexOf(this.id)
       return list[pos - 1]
     }

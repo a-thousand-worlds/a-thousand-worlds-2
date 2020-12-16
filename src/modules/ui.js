@@ -9,8 +9,11 @@ const module = {
     setBusy: (state, next) => {
       state.busy = next
     },
-    toggleBookmarks: (state, next) => {
+    setBookmarksOpen: (state, next) => {
       state.bookmarksOpen = next
+    },
+    setViewMode: (state, next) => {
+      state.viewMode = next
     }
   }
 }
