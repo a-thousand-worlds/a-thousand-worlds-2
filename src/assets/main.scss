@@ -63,7 +63,7 @@ hr {
   margin-bottom: 10px;
 }
 
-button {
+button:not([disabled]) {
   cursor: pointer;
 }
 
@@ -89,7 +89,9 @@ h3 {
 button.is-flat {
   background: none;
   border: none;
-  cursor: pointer;
+  &:not([disabled]) {
+    cursor: pointer;
+  }
 }
 
 button.is-selected {
