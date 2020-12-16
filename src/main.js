@@ -15,20 +15,14 @@ router.beforeEach((to, from, next) => {
   }
   if (!store.state.user.user || !store.state.user.user.roles) {
     store.commit('setNAP', to.path)
-    next('/404')
+    next('/loading')
     return
   }
   // console.log('check access', to.meta.access)
   let access = to.meta.access
-  if (!Array.isArray(access)) {
-    access = [access]
-  }
-  if (access.reduce((acc, x) => store.state.user.user.roles[x] || acc, false)) {
-    next()
-  }
-  else {
-    next('/404')
-  }
+  if (!Array.isArray(access)) access = [access]
+  if (access.reduce((acc, x) => store.state.user.user.roles[x] || acc, false)) next()
+  else next('/404')
 })
 
 router.afterEach((to, from) => {
