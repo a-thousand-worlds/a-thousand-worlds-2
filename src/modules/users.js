@@ -32,7 +32,7 @@ const module = mergeOne(collectionModule('users'), {
       }, { root: true })
 
       // mark signup code as used
-      await firebase.database().ref(`invites/${code}/used`).set(true)
+      await firebase.database().ref(`invites/${code}/used`).set(Date.now())
 
       return user
     },
