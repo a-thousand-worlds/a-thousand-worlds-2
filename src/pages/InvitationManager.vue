@@ -61,7 +61,7 @@ export default {
         <router-link :to="{ name: 'Dashboard' }" class="is-uppercase is-primary">&lt; Back to Dashboard</router-link>
       </div>
 
-      <h1 class="divider-bottom">Invitation Manager</h1>
+      <h1 class="divider-bottom">Invitations</h1>
 
       <section class="my-30">
         <h2>Pending</h2>
