@@ -1,7 +1,7 @@
 <script>
 import _ from 'lodash'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
-import get from '@/util/get'
+import { get } from '@/util/get-set'
 
 export default {
   props: ['name', 'placeholder', 'format'],
@@ -35,7 +35,7 @@ export default {
 
     html: _.debounce(function() {
       if (this.canEdit) {
-        this.$store.dispatch('content/save', { key: this.name, value: this.html })
+        this.$store.dispatch('content/save', { path: this.name, value: this.html })
       }
     }, 500)
 

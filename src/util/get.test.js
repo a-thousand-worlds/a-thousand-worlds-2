@@ -1,4 +1,4 @@
-import get from './get'
+import { get } from './get-set'
 
 test('using "." delimeter', () => {
   const o = { a: { b: 1 } }

@@ -20,6 +20,15 @@ export default {
       return Object.values(this.invites).filter(invite => invite.used)
     },
   },
+  methods: {
+    cancel(invite) {
+      console.log('invite', invite)
+      this.$store.dispatch('invites/save', {
+        path: `${invite.code}/cancelled`,
+        value: Date.now()
+      })
+    },
+  }
 }
 
 </script>
@@ -37,13 +46,13 @@ export default {
 
       <section class="my-30">
         <h2>Pending</h2>
-        <InvitationTable v-if="pendingInvites.length" :invites="pendingInvites" />
+        <InvitationTable v-if="pendingInvites.length" :invites="pendingInvites" :fields="['created', 'email', 'firstName', 'lastName', 'role', 'cancel']" @cancel="cancel" />
         <p v-else>There are no pending invitations.</p>
       </section>
 
       <section class="my-30">
         <h2>Accepted</h2>
-        <InvitationTable v-if="acceptedInvites.length" :invites="acceptedInvites" :showAccepted="true" />
+        <InvitationTable v-if="acceptedInvites.length" :invites="acceptedInvites" :fields="['used', 'email', 'firstName', 'lastName', 'role']" />
         <p v-else>There are no accepted invitations.</p>
       </section>
 
