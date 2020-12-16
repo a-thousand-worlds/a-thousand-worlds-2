@@ -62,7 +62,7 @@ export default {
 
       <section class="my-30">
         <h2>Cancelled</h2>
-        <InvitationTable v-if="cancelledInvites.length" :invites="cancelledInvites" />
+        <InvitationTable v-if="cancelledInvites.length" :invites="cancelledInvites" :fields="['cancelled', 'email', 'firstName', 'lastName', 'role']" />
         <p v-else>There are no cancelled invitations.</p>
       </section>
 

@@ -12,6 +12,13 @@ export default {
       // ['used', 'created', 'email', 'firstName', 'lastName', 'role', 'resend', 'cancelled'],
     }
   },
+  computed: {
+    dateHeader() {
+      return this.fields.includes('cancelled') ? 'Cancelled'
+        : this.fields.includes('used') ? 'Accepted'
+        : 'Invited'
+    }
+  },
   data() {
     return {
       resendDisabled: false,
@@ -27,7 +34,9 @@ export default {
     },
     /** Return the appropriate date based on showAccepted. */
     date(invite) {
-      const dateField = this.fields.includes('used') ? 'used' : 'created'
+      const dateField = this.fields.includes('cancelled') ? 'cancelled'
+        : this.fields.includes('used') ? 'used'
+        : 'created'
       return invite[dateField]
         ? this.format(invite[dateField])
         : null
@@ -42,7 +51,7 @@ export default {
 <template>
   <table class="table w-100">
     <thead>
-      <th>{{ fields.includes('used') ? 'Accepted' : 'Invited' }}</th>
+      <th>{{ dateHeader }}</th>
       <th>Email</th>
       <th>First</th>
       <th>Last</th>
