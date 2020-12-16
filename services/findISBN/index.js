@@ -58,5 +58,5 @@ app.get('/', handleError(async (req, res) => {
 }))
 
 app.listen(3001, () => {
-  console.log(`App started on port ${3001}`)
+  console.log(`findISBN started on port ${3001}`)
 })
