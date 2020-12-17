@@ -37,23 +37,28 @@ app.get('/', handleError(async (req, res) => {
     category: 'stripbooks',
   })
 
-  console.log(`Query: "${req.query.keyword}" (${products.result.length} results)`, products)
-
   // find the first product with a valid ISBN extracted from its url
-  const match = products.result
+  const product = products.result
     .map(product => ({
       ...product,
       isbn: isbnFromUrl(product.url)
     }))
-    .find(product => validate(product.isbn))
+    .find(product => {
+      return validate(product.isbn)
+    })
 
-  if (!match) {
+  if (!product) {
     res.json(null)
+    console.log(`Query: "${req.query.keyword}" (${products.result.length === 0 ? 'no results' : products.result.length} results)${ products.result.length > 0 ? ': No products with valid ISBN' : ''}`)
     return
   }
 
-  res.header('Access-Control-Allow-Origin', '*')
-  res.json(_.pick(match, ['isbn', 'thumbnail', 'title', 'url']))
+  const isbn = isbnFromUrl(product.url)
+
+  console.log(`Query: "${req.query.keyword}" (${products.result.length} results)`, { isbn, ...product })
+
+  res.json({ isbn, ..._.pick(product, ['isbn', 'thumbnail', 'title', 'url']) })
+
 }))
 
 app.listen(3001, () => {
