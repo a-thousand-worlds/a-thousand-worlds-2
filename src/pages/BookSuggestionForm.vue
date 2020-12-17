@@ -11,8 +11,9 @@ export default {
     return {
       books: [],
       confirms: [],
+      loadingCover: [],
+      loadingBook: [],
       submissions: [],
-      coverLoads: []
     }
   },
   created() {
@@ -24,7 +25,7 @@ export default {
         return x
       })
       this.books = this.submissions.map(sub => {
-        return sub.description?.length && sub.cover?.base64?.length ? sub : null
+        return sub.description && sub.cover?.base64 ? sub : null
       })
     }
     else {
@@ -36,7 +37,7 @@ export default {
     isbnGlobalSearchState(si, state) {
       this.$store.commit('ui/setBusy', state)
     },
-    isbnGlobalSearchResult(si, res) {
+    async isbnGlobalSearchResult(si, res) {
       if (!res) {
         console.log('nothing found')
         return
@@ -50,18 +51,18 @@ export default {
       this.submissions[si] = { ...this.submissions[si], ...res }
       this.books[si] = res
 
-      this.coverLoads[si] = true
-      coverImageByISBN(this.submissions[si].isbn)
-        .then(cover => {
-          this.coverLoads[si] = false
-          if (!cover) return
-          this.submissions[si].cover = cover
-          this.books[si].cover = cover
-        })
+      this.loadingCover[si] = true
+      const cover = await coverImageByISBN(this.submissions[si].isbn)
+      this.loadingCover[si] = false
+      if (!cover) return
+      this.submissions[si].cover = cover
+      this.books[si].cover = cover
     },
     coverImage(si) {
       const cover = this.submissions[si].cover
-      return cover ? cover.base64.length ? cover.base64 : cover.url : ''
+      return typeof cover === 'string'
+        ? cover
+        : cover?.base64?.url || ''
     },
     setConfirmed(si, state) {
       this.submissions[si].confirmed = state
@@ -117,31 +118,35 @@ export default {
       this.submissions[si] = this.newSubmissionObject()
     },
     titleOrAuthorChanged: _.debounce(async function(si) {
-      // const { author, title } = this.submissions[si]
-      const { author, title } = this.submissions[si]
-      if (!author || !title) return
-      const search = `${title} ${author}`
+      const { authors, title } = this.submissions[si]
+      if (!authors || !title) {
+        this.submissions[si].isbn = null
+        this.submissions[si].cover = null
+        this.submissios[si].confirmed = true
+        return
+      }
+
+      this.loadingBook[si] = true
+      const search = `${title} by ${authors}`
       const result = await findBookByKeyword(search)
+      this.loadingBook[si] = false
       const { isbn, thumbnail } = result || {}
       if (isbn) {
         this.submissions[si].isbn = isbn
-        this.books[si] = {
-          ...this.books[si],
-          cover: thumbnail,
-        }
+        this.submissions[si].cover = thumbnail
       }
     }, 500)
   },
   computed: {
     draftable() {
       return this.submissions
-        .map(x => x.title.length || x.authors.length || x.illustrators.length || x.isbn.length)
+        .map(x => x.title || x.authors || x.illustrators || x.isbn)
         .reduce((acc, x) => x || acc, false)
         && this.books.reduce((acc, x) => x && x.id ? false : acc, true)
     },
     submitable() {
       return this.submissions
-        .map(x => x.title.length && x.authors.length)
+        .map(x => x.title && x.authors)
         .reduce((acc, x) => x && acc, true)
         && this.books.reduce((acc, x) => x && x.id ? false : acc, true)
     }
@@ -165,21 +170,52 @@ export default {
           <section class="basic-information">
 
             <div class="field">
-              <label class="label">Book Title</label>
+              <label class="label">Title</label>
               <book-title-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].title" @book-selected="fillBook($event, si)" :searchable="false" @input="titleOrAuthorChanged(si)"/>
             </div>
 
             <div class="field">
               <label class="label">Author</label>
               <div class="control">
-                <input class="input" type="text" :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].authors" @input="titleOrAuthorChanged(si)"/>
+                <input class="input" type="text" :disabled="$uiBusy || (books[si]?.id)" v-model="submissions[si].authors" @input="titleOrAuthorChanged(si)"/>
               </div>
             </div>
 
             <div class="field">
               <label class="label">Illustrator</label>
               <div class="control">
-                <input class="input" type="text" :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].illustrators"/>
+                <input class="input" type="text" :disabled="$uiBusy || (books[si]?.id)" v-model="submissions[si].illustrators"/>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="columns">
+                <div class="column is-narrow">
+                  <img v-if="loadingBook[si] || loadingCover[si]" src="@/assets/icons/loading.gif">
+                  <img v-else :src="coverImage(si)">
+                </div>
+                <div class="column">
+                  <div v-if="books[si] && books[si].id">
+                    <p class="mb-10 mr-50 is-uppercase">Great minds think alike. This book is already in our directory.</p>
+                    <button class="button is-rounded" @click="clearSubmission(si)">
+                      Clear Info
+                    </button>
+                  </div>
+                  <div v-if="coverImage(si) && !submissions[si].confirmed" class="column field">
+                    <label class="label">Is this your book?</label>
+                    <div class="control mb-3">
+                      <button @click.prevent="setConfirmed(si, true)" class="button is-primary is-outlined">Yes</button>
+                    </div>
+                    <div class="control">
+                      <button @click.prevent="setConfirmed(si, true)" class="button is-primary is-outlined">No</button>
+                    </div>
+                  </div>
+                  <!--
+                  <div v-if="submissions[si].confirmed" class="column field">
+                    Thank you!
+                  </div>
+                  -->
+                </div>
               </div>
             </div>
 
@@ -194,38 +230,6 @@ export default {
                 @isbn-search-state="isbnGlobalSearchState(si, $event)"
                 @isbn-search-result="isbnGlobalSearchResult(si, $event)"
               />
-            </div>
-
-            <div v-if="!!books[si]" class="field">
-              <div class="columns">
-                <div class="column">
-                  <img v-if="coverLoads[si]" src="@/assets/icons/loading.gif">
-                  <img :src="coverImage(si)">
-                </div>
-                <div v-if="books[si].id" class="column">
-                  <p class="mb-10 mr-50 is-uppercase">Great minds think alike. This book is already in our directory.</p>
-                  <button class="button is-rounded" @click="clearSubmission(si)">
-                    Clear Info
-                  </button>
-                </div>
-                <div v-if="books[si] && !submissions[si].confirmed" class="column field">
-                  <label class="label">Is this your book?</label>
-                  <div class="control mb-3">
-                    <button @click.prevent="setConfirmed(si, true)" class="button is-primary is-outlined">Yes</button>
-                  </div>
-                  <div class="control mb-3">
-                    <button @click.prevent="clearSubmission(si)" class="button is-secondary is-outlined">No (clear submission)</button>
-                  </div>
-                  <div class="control">
-                    <button @click.prevent="setConfirmed(si, true)" class="button is-primary is-outlined">No (but submit info anyway)</button>
-                  </div>
-                </div>
-                <!--
-                <div v-if="submissions[si].confirmed" class="column field">
-                  Thank you!
-                </div>
-                -->
-              </div>
             </div>
 
             <div v-if="!books[si] || (books[si] && !books[si].id)" class="field">

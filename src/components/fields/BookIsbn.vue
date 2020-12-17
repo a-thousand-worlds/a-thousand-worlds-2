@@ -33,7 +33,7 @@ export default {
         })
     },
     doSearch(e) {
-      const search = e.target.value.toLowerCase()
+      const search = e.target.value
       this.isbn = search
       this.$emit('update:modelValue', search)
       this.book = null
@@ -82,7 +82,7 @@ export default {
     </div>
   </div>
   <div v-if="searchable" class="control">
-    <button @click="searchGlobal()" :disabled="disabled || loading || !isbn.length" :class="{'is-loading': loading}" class="button is-primary">
+    <button @click="searchGlobal()" :disabled="disabled || loading || !isbn" :class="{'is-loading': loading}" class="button is-primary">
       <i class="fas fa-search"></i>
       <span class="ml-3">Search</span>
     </button>
