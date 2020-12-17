@@ -1,9 +1,9 @@
 const _ = require('lodash')
 const express = require('express')
 const amazon = require('amazon-buddy')
+const { validate } = require('is-isbn')
 
-// TODO: Replace with proper ISBN validation
-const isValidIsbn = s => s && (s.length === 10 || s.length === 14)
+const isbnFromUrl = url => url.slice(url.lastIndexOf('/') + 1)
 
 /** Wraps a route handler in a try-catch statement that sends an error as a 500 response. */
 const handleError = routeHandler => async (req, res) => {
@@ -37,16 +37,15 @@ app.get('/', handleError(async (req, res) => {
     category: 'stripbooks',
   })
 
-  console.log(req.query.keyword, `${products.result.length} results`)
-  console.log('products', products)
+  console.log(`Query: "${req.query.keyword}" (${products.result.length} results)`, products)
 
   // find the first product with a valid ISBN extracted from its url
   const match = products.result
     .map(product => ({
       ...product,
-      isbn: product.url.slice(product.url.lastIndexOf('/') + 1)
+      isbn: isbnFromUrl(product.url)
     }))
-    .find(product => isValidIsbn(product.isbn))
+    .find(product => validate(product.isbn))
 
   if (!match) {
     res.json(null)
