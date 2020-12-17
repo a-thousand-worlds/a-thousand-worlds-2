@@ -161,17 +161,43 @@ export default {
       clearTimeout(this.disableAfterSaveTimeout)
       this.disableAfterSave = true
 
-      await this.handleResponse(this.$store.dispatch('saveProfile', {
-        name: this.name,
-        ...this.signupData,
-      })
+      this.loading = true
+
+      await this.$store.dispatch('users/updateEmail', this.email)
         .then(() => {
           this.message = 'Profile saved'
           this.messageTimeout = setTimeout(() => {
             this.message = ''
           }, 5000)
+          this.loading = false
         })
-      )
+        .catch(err => {
+          console.error(err)
+          this.error = {
+            // reword requires-recent-login error from "This operation is sensitive and requires recent authentication. Log in again before retrying this request."
+            fields: { ...this.error?.fields, email: true },
+            message: err.code === 'auth/requires-recent-login' ? 'Changing your email requires a recent login. Please log in again before attempting this change.'
+            : err.message
+          }
+          this.loading = false
+        })
+
+      if (!this.error) {
+        await this.handleResponse(this.$store.dispatch('saveProfile', {
+          name: this.name,
+          email: this.email,
+          ...this.signupData,
+        })
+          .then(() => {
+            if (!this.error) {
+              this.message = 'Profile saved'
+              this.messageTimeout = setTimeout(() => {
+                this.message = ''
+              }, 5000)
+            }
+          })
+        )
+      }
 
       this.disableAfterSaveTimeout = setTimeout(() => {
         this.disableAfterSave = false
@@ -202,7 +228,7 @@ export default {
         }
       }
 
-      if ((this.active === 'signup' || this.active === 'login') && !this.email.length) {
+      if ((this.active === 'signup' || this.active === 'login' || this.active === 'profile') && !this.email.length) {
         this.error = {
           message: 'Please check required fields',
           fields: { ...this.error?.fields, email: true },
@@ -286,21 +312,21 @@ export default {
           <div class="field" v-if="active === 'signup' || active === 'profile'">
             <label :class="['label', { error: hasError('name') }]">NAME</label>
             <div class="control">
-              <input :disabled="loading" type="text" class="input" v-model="name" @input="revalidate">
+              <input :disabled="loading" type="text" class="input"  :class="{ 'is-danger': hasError('name') }" v-model="name" @input="revalidate">
             </div>
           </div>
 
-          <div class="field" v-if="active ==='login' || active === 'signup'">
+          <div class="field" v-if="active ==='login' || active === 'signup' || active === 'profile'">
             <label :class="['label', { error: hasError('email') }]">EMAIL</label>
             <div class="control">
-              <input :disabled="loading" type="email" class="input" v-model="email" @input="revalidate">
+              <input :disabled="loading" type="email" class="input" :class="{ 'is-danger': hasError('email') }" v-model="email" @input="revalidate">
             </div>
           </div>
 
           <div class="field" v-if="active === 'login' || active === 'signup'">
             <label :class="['label', { error: hasError('password') }]">PASSWORD</label>
             <div class="control">
-              <input :disabled="loading" type="password" class="input" v-model="password" @input="revalidate">
+              <input :disabled="loading" type="password" class="input" :class="{ 'is-danger': hasError('password') }" v-model="password" @input="revalidate">
             </div>
           </div>
 

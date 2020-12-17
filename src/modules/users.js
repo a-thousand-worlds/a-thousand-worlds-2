@@ -9,6 +9,13 @@ const module = mergeOne(collectionModule('users'), {
       return firebase.auth().signInWithEmailAndPassword(data.email, data.password)
     },
 
+    async updateEmail(state, email) {
+      const user = firebase.auth().currentUser
+      if (user.email !== email) {
+        await user.updateEmail(email)
+      }
+    },
+
     async signup({ commit, dispatch, rootState }, { code, email, name, organization, otherEngagementCategory, password }) {
       const { user } = await firebase.auth().createUserWithEmailAndPassword(email, password)
       await commit('setUser', { uid: user.uid }, { root: true })
