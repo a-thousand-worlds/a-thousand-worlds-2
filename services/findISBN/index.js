@@ -4,6 +4,7 @@ const amazon = require('amazon-buddy')
 const { validate } = require('is-isbn')
 
 const isbnFromUrl = url => url.slice(url.lastIndexOf('/') + 1)
+const isSponsored = product => product.title.startsWith('Sponsored Ad')
 
 /** Wraps a route handler in a try-catch statement that sends an error as a 500 response. */
 const handleError = routeHandler => async (req, res) => {
@@ -37,14 +38,12 @@ app.get('/', handleError(async (req, res) => {
     category: 'stripbooks',
   })
 
-  // find the first product with a valid ISBN extracted from its url
+  // find the first non-sponsored product with a valid ISBN extracted from its url
   const product = products.result
-    .map(product => ({
-      ...product,
-      isbn: isbnFromUrl(product.url)
-    }))
     .find(product => {
-      return validate(product.isbn)
+      if (isSponsored(product)) return false
+      const isbn = isbnFromUrl(product.url)
+      return validate(isbn)
     })
 
   if (!product) {
@@ -55,7 +54,8 @@ app.get('/', handleError(async (req, res) => {
 
   const isbn = isbnFromUrl(product.url)
 
-  console.log(`Query: "${req.query.keyword}" (${products.result.length} results)`, { isbn, ...product })
+  console.log(`Query: "${req.query.keyword}" (${products.result.length} results)`)
+  console.log('Found: ', { isbn, ...product })
 
   res.json({ isbn, ..._.pick(product, ['isbn', 'thumbnail', 'title', 'url']) })
 
