@@ -23,7 +23,7 @@ export default {
     <span v-if="!isAuthor">illustrated </span>
     <span>by </span>
     <div v-if="nolink" class="name ml-2">{{name}}</div>
-    <router-link v-else :to="{name: 'PersonDetail', params: {id: person.id}}" class="name">{{name}}</router-link>
+    <router-link v-else-if="person" :to="{name: 'PersonDetail', params: {id: person.id}}" class="name">{{name}}</router-link>
   </div>
 </template>
 
