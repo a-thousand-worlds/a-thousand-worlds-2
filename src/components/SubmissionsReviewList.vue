@@ -72,13 +72,11 @@ export default {
                 ret.by = ret.books[0].createdBy
                 return ret
               })
-            // console.log('books subs groups', this.subsGroups)
             this.loading = false
           }, 0)
         })
     },
     rejectBookSubmission(sub, i) {
-      console.log('reject', i, sub)
       this.loading = true
       this.$store.dispatch('bookSubmissions/reject', sub)
         .then(() => {

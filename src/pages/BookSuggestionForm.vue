@@ -41,10 +41,8 @@ export default {
         console.log('nothing found')
         return
       }
-      // console.log('isbn global search res', res)
       const localBook = this.$store.getters['books/filtered']
         .reduce((acc, book) => book.isbn === res.isbn ? book : acc, null)
-      // console.log('local book?', localBook)
       if (localBook) {
         this.books[si] = localBook
         return
@@ -55,7 +53,6 @@ export default {
       this.coverLoads[si] = true
       coverImageByISBN(this.submissions[si].isbn)
         .then(cover => {
-          console.log('cover', cover)
           this.coverLoads[si] = false
           if (!cover) return
           this.submissions[si].cover = cover
@@ -71,11 +68,9 @@ export default {
     },
     submitForReview() {
       this.$store.commit('ui/setBusy', true)
-      console.log('save', this.submissions)
       this.$store.dispatch('bookSubmissions/submit', this.submissions)
         .then(() => {
           this.$store.commit('ui/setBusy', false)
-          console.log('suggestion submited')
           // eslint-disable-next-line fp/no-mutating-methods
           this.$router.push({ name: 'Dashboard' })
         })
@@ -114,7 +109,6 @@ export default {
       this.submissions.push(this.newSubmissionObject())
     },
     delSubmission(si) {
-      console.log('del sub', si)
       this.books = this.books.filter((x, xi) => xi !== si)
       this.submissions = this.submissions.filter((x, xi) => xi !== si)
     },
@@ -128,9 +122,7 @@ export default {
       if (this.submissions[si].author && this.submissions[si].authors.length) {
         search += ' ' + this.submissions[si].author
       }
-      console.log(`Finding ISBN for "${search}"`)
       const result = await findBookByTitle(search)
-      console.log('Search result', result)
       const { isbn, thumbnail } = result || {}
       if (isbn) {
         this.submissions[si].isbn = isbn

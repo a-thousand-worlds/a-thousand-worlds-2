@@ -26,7 +26,6 @@ export default {
         }).then(() => {
           this.$store.commit('ui/setBusy', false)
         })
-        // console.log('bm me!', this.book)
       }
     }
   }

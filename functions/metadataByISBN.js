@@ -17,7 +17,7 @@ async function getGoodReadsBookIDByISBN(isbn) {
     })
   }
   catch (e) {
-    console.log('axios error', e)
+    console.error('axios error', e)
     res = ''
   }
   if (!res || !res.data) {
@@ -58,7 +58,7 @@ module.exports = () => {
       res.send(JSON.stringify(null))
       return
     }
-    console.log(`searchng [${req.query.isbn}]`)
+    console.log(`searching [${req.query.isbn}]`)
     const book = await isbnSearch(req.query.isbn)
     if (!book) {
       console.log(`[${req.query.isbn}] not found`)

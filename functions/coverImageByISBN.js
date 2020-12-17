@@ -11,7 +11,7 @@ async function loadImage2Base64(url) {
     })
   }
   catch (e) {
-    console.log(e, 'loadImage2Base64 error')
+    console.error(e, 'loadImage2Base64 error')
     res = null
   }
   if (!res || !res.data) {
@@ -64,7 +64,7 @@ module.exports = () => {
       res.send(JSON.stringify(null))
       return
     }
-    console.log(`searchng cover for [${req.query.isbn}]`)
+    console.log(`searching cover for [${req.query.isbn}]`)
     const img = await isbnSearch(req.query.isbn)
     if (img) {
       console.log(`[${req.query.isbn}] cover found`)

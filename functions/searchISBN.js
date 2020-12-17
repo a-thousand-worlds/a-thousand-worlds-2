@@ -19,7 +19,7 @@ async function getGoodReadsBookIDByISBN(isbn) {
     })
   }
   catch (e) {
-    console.log('axios error', e)
+    console.error('axios error', e)
     res = null
   }
   if (!res || !res.data) {
@@ -36,7 +36,7 @@ async function loadImage2Base64(url) {
     })
   }
   catch (e) {
-    console.log(e, 'loadImage2Base64 error')
+    console.error(e, 'loadImage2Base64 error')
     res = null
   }
   if (!res || !res.data) {
@@ -115,7 +115,7 @@ module.exports = () => {
       res.send(JSON.stringify(null))
       return
     }
-    console.log(`searchng [${req.query.isbn}]`)
+    console.log(`searching [${req.query.isbn}]`)
     const book = await isbnSearch(req.query.isbn)
     if (book) {
       book.grid = await getGoodReadsBookIDByISBN(req.query.isbn)

@@ -17,7 +17,6 @@ export default {
   },
   methods: {
     searchGlobal() {
-      console.log('this.isbn', this.isbn)
       this.loading = true
       this.$emit('isbn-search-state', this.loading)
       metadataByISBN(this.isbn)
@@ -27,7 +26,7 @@ export default {
           this.$emit('isbn-search-result', book)
         })
         .catch(err => {
-          console.log('error', err)
+          console.error('error', err)
           this.loading = false
           this.$emit('isbn-search-state', this.loading)
           this.$emit('isbn-search-result', null)

@@ -22,10 +22,8 @@ export default {
     }
   },
   created() {
-    // console.log('router', this.$router.currentRoute)
     if (this.$router.currentRoute._value.name === 'BundleManagerUpdateForm') {
       const b = this.$store.state.bundlesIndex[this.$router.currentRoute._value.params.uid] || null
-      // console.log('upd', p, this.$store.state.people)
       if (b) {
         this.bundle = b
         this.mode = 'update'
@@ -35,7 +33,6 @@ export default {
   },
   methods: {
     save() {
-      // console.log('saving', this.person)
       this.$store.dispatch('saveBundle', this.bundle).then(() => {
         // eslint-disable-next-line fp/no-mutating-methods
         this.$router.push({ name: 'BundlesManager' })

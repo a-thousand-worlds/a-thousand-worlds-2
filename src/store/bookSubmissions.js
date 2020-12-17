@@ -34,7 +34,6 @@ const module = mergeOne(collection('submits/books', 'cover'), {
         // eslint-disable-next-line  fp/no-mutating-methods
         const sid = v4()
         // const ref = await firebase.database().ref(`submits/books/${sid}`)
-        // console.log('set ref', ref, id)
         const subData = {
           id: sid,
           group: submissionGroupId,
@@ -54,7 +53,6 @@ const module = mergeOne(collection('submits/books', 'cover'), {
           tags: sub.tags || {},
           otherTag: sub.otherTag || ''
         }
-        console.log('saving sub', sub, subData)
         await context.dispatch('saveWithImage', { key: sid, value: subData })
         profile.submissions[sid] = 'review'
         context.commit('setOne', { key: sid, value: subData })
@@ -66,7 +64,6 @@ const module = mergeOne(collection('submits/books', 'cover'), {
     },
     /** Reject submission */
     reject: async (context, sub) => {
-      console.log('rejecting submission', sub)
       // const ref = await firebase.database().ref(`submits/${sub.type}s/${sub.id}`)
       const now = dayjs()
       sub.approvedBy = context.rootState.user.user.uid
@@ -79,7 +76,6 @@ const module = mergeOne(collection('submits/books', 'cover'), {
     },
     /** Approves submissions group */
     approve: async (context, list) => {
-      console.log('approvimg submissions group', list)
 
       // eslint-disable-next-line  fp/no-loops
       for (const sub of list) {
@@ -106,7 +102,6 @@ const module = mergeOne(collection('submits/books', 'cover'), {
           let cid = context.rootGetters['creators/list']
             .reduce((acc, person) => person.name.toLowerCase() === author.toLowerCase() ? person.id : acc, null)
           if (!cid) {
-            console.log('creating person', author)
             cid = v4()
             await context.dispatch('creators/save', { key: cid, value: { id: cid, name: author, approvedBy: context.rootState.user.user.uid } }, { root: true })
           }
@@ -117,7 +112,6 @@ const module = mergeOne(collection('submits/books', 'cover'), {
           let cid = context.rootGetters['creators/list']
             .reduce((acc, person) => person.name.toLowerCase() === author.toLowerCase() ? person.id : acc, null)
           if (!cid) {
-            console.log('creating person', author)
             cid = v4()
             await context.dispatch('creators/save', { key: cid, value: { id: cid, name: author, approvedBy: context.rootState.user.user.uid } }, { root: true })
           }
@@ -129,7 +123,6 @@ const module = mergeOne(collection('submits/books', 'cover'), {
         if (cover.url?.length) cover.downloadUrl = cover.url
 
         // saving book
-        console.log('submission before book', sub, creators)
         const bookId = v4()
         await context.dispatch('books/saveWithImage', { key: bookId, value: {
           id: bookId,

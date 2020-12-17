@@ -50,7 +50,6 @@ export async function metadataByISBN(code) {
     publisher: src.publisher || '',
     goodread: data.goodread || ''
   }
-  console.log('metadata', data, ret)
   return ret
 }
 
@@ -67,8 +66,6 @@ export async function findBookByTitle(keyword) {
     return null
   }
   const url = SEARCH_ISBN_URL + '?keyword=' + encodeURIComponent(keyword)
-  // console.log('search url', url)
   const ret = await axios.get(url)
-  // console.log('search res', ret)
   return ret.data
 }

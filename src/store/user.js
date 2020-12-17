@@ -64,7 +64,6 @@ const module = {
 
     async toggleBookmark(ctx, mark) {
       const profile = ctx.state.user.profile
-      console.log('user profile', profile)
       if (profile.bookmarks[mark.id]) {
         profile.bookmarks = Object.keys(profile.bookmarks)
           .filter(id => id !== mark.id)
@@ -126,7 +125,6 @@ const module = {
           u.roles = {}
           const userRef = firebase.database().ref(`users/${u.uid}`)
           userRef.on('value', snap => {
-            // console.log('profile', snap.val()?.profile)
             u.profile = { ...defaultProfile, ...snap.val()?.profile }
             u.roles = snap.val()?.roles || {}
             if (!u.roles.authorized) {

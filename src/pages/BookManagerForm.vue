@@ -29,7 +29,6 @@ export default {
     }
   },
   created() {
-    // console.log('router', this.$router.currentRoute)
     if (this.$router.currentRoute._value.name === 'BookManagerUpdateForm') {
       this.loadBookID(this.$router.currentRoute._value.params.bid)
     }
@@ -46,8 +45,6 @@ export default {
   methods: {
     loadBookID(bid) {
       const b = this.$store.state.books.data?.[bid] || null
-      console.log('b?', b)
-      // console.log('upd', p, this.$store.state.people)
       if (b) {
         this.book = b
         if (!this.book.tags) {
@@ -69,15 +66,12 @@ export default {
       }
     },
     searchISBN() {
-      // console.log('search', this.book.isbn)
       this.searching = true
       metadataByISBN(this.book.isbn).then(res => {
         this.searching = false
         if (!res) {
-          console.log('book not found')
           return
         }
-        console.log('found book!', res)
         this.book = res
         coverImageByISBN(this.book.isbn).then(cover => {
           this.book.cover = cover
@@ -85,10 +79,8 @@ export default {
       })
     },
     save() {
-      console.log('save', this.book, this.authorsRoles)
       /**/
       this.$store.dispatch('saveBook', { book: this.book, roles: this.authorsRoles }).then(() => {
-        console.log('book saved')
         // eslint-disable-next-line fp/no-mutating-methods
         this.$router.push({ name: 'BooksManager' })
       })
@@ -99,10 +91,8 @@ export default {
       coverImageByISBN(this.book.isbn).then(res => {
         this.searching = false
         if (!res) {
-          console.log('book not found')
           return
         }
-        console.log('found book!', res)
         this.book.cover = res
       })
     },

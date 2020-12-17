@@ -15,7 +15,7 @@ export default {
       this.$store.dispatch('user/passwordReset', this.email)
         .then(() => {})
         .catch(err => {
-          console.log('reset error', err)
+          console.error('passwordReset error', err)
         })
     }
   },

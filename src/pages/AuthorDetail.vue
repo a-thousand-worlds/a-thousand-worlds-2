@@ -16,7 +16,6 @@ export default {
   created() {
     const id = this.$router.currentRoute._value.params.id
     this.author = this.$store.state.creators.data[id]
-    console.log('person', this.author)
     /*
     if (this.author && this.author.photo && this.author.photo.length) {
       this.$store.dispatch('loadImage', this.author.photo)

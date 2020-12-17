@@ -22,7 +22,6 @@ export default {
         description: this.description || '',
         books: this.books
       }
-      console.log('save draft', data)
       this.$store.dispatch('saveBundleSubmissionDraft', data)
         .then(() => {
           // eslint-disable-next-line fp/no-mutating-methods
@@ -35,7 +34,6 @@ export default {
         description: this.description || '',
         books: this.books
       }
-      console.log('submit data', data)
       this.$store.dispatch('submitBundleSuggestion', data)
         .then(() => {
           // eslint-disable-next-line fp/no-mutating-methods

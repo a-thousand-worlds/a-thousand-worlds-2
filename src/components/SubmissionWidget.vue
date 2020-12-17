@@ -14,7 +14,6 @@ export default {
     }
   },
   created() {
-    console.log('submission widget', this.sub)
     if (this.$store.state.bookSubmissions.data.[this.sid]) {
       this.sub = this.$store.state.bookSubmissions.data[this.sid]
       this.loading = false

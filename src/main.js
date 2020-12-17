@@ -18,7 +18,6 @@ router.beforeEach((to, from, next) => {
     next('/loading')
     return
   }
-  // console.log('check access', to.meta.access)
   let access = to.meta.access
   if (!Array.isArray(access)) access = [access]
   if (access.reduce((acc, x) => store.state.user.user.roles[x] || acc, false)) next()

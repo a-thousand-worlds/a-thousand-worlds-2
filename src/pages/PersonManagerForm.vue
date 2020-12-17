@@ -44,10 +44,9 @@ export default {
         this.person.photo = reader.result
         Jimp.read(reader.result, (err, img) => {
           if (err) {
-            console.log('jimp error', err)
+            console.error('jimp error', err)
           }
           if (img) {
-            // console.log(img)
             if (img.bitmap.width !== img.bitmap.height) {
               alert('recommended to use suqare images')
             }
@@ -55,12 +54,11 @@ export default {
         })
       }
       reader.onerror = err => {
-        console.log('rreader error', err)
+        console.error('FileReader error', err)
       }
       reader.readAsDataURL(file)
     },
     save() {
-      // console.log('saving', this.person)
       this.$store.dispatch('savePerson', this.person).then(() => {
         // eslint-disable-next-line fp/no-mutating-methods
         this.$router.push({ name: 'PeopleManager' })

@@ -25,7 +25,6 @@ export default {
     }
   },
   created() {
-    console.log('sub?', this.sub)
     this.reloadSub()
   },
   watch: {
@@ -54,7 +53,6 @@ export default {
     },
     tags() {
       const tags = this.$store.getters['tags/list'].filter(tag => this.sub.tags && this.sub.tags[tag.id])
-      console.log('tags', tags)
       if (!this.sub.otherTag) return tags
       return [...tags, { tag: this.sub.otherTag }]
     }
@@ -67,7 +65,6 @@ export default {
           this.submitter = user
           this.sub.submitter = user
           this.$emit('submitter-loaded', user)
-          console.log('submitter', user)
         })
       if (!this.sub.description) {
         this.sub.description = 'No summary'
@@ -140,7 +137,6 @@ Continue and create book?`
       return d.format('MM-DD-YYYY')
     },
     isbnSearchState(state) {
-      // console.log('isbn state', state)
       this.busy = state
     },
     isbnSearchResult(book) {
@@ -165,10 +161,9 @@ Continue and create book?`
       const file = e.target.files[0]
       const reader = new FileReader()
       reader.onload = () => {
-        console.log('readed', reader.result)
         Jimp.read(reader.result, (err, img) => {
           if (err) {
-            console.log('jimp error', err)
+            console.error('jimp error', err)
           }
           if (img) {
             this.sub.cover.base64 = reader.result
@@ -178,7 +173,7 @@ Continue and create book?`
         })
       }
       reader.onerror = err => {
-        console.log('rreader error', err)
+        console.error('FileReader error', err)
       }
       reader.readAsDataURL(file)
     }
