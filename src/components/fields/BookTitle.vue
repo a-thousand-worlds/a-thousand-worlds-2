@@ -13,14 +13,14 @@ export default {
   },
   methods: {
     doSearch(e) {
-      const search = e.target.value.toLowerCase()
+      const search = e.target.value
       this.$emit('update:modelValue', search)
       if (!this.searchable) {
         return
       }
       this.book = null
       this.searches = this.$store.state.booksList
-        .filter(book => search.length && book.title.toLowerCase().includes(search))
+        .filter(book => search && book.title.toLowerCase().includes(search.toLowerCase()))
     },
     hideSearch() {
       this.searches = []
