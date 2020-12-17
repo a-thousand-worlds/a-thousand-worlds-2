@@ -2,7 +2,6 @@
   "name": "a-thousand-worlds-functions",
   "version": "1.0.0",
   "dependencies": {
-    "amazon-buddy": "^2.2.18",
     "axios": "^0.21.0",
     "bookcovers": "^0.0.2",
     "dotenv": "^8.2.0",

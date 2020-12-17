@@ -1,6 +1,7 @@
 import { createStore } from 'vuex'
 import { firebaseGet } from '@/utils'
 
+import alert from '@/store/alert'
 import invites from '@/store/invites'
 import content from '@/store/content'
 import books from '@/store/books'
@@ -12,6 +13,7 @@ import bookSubmissions from '@/store/bookSubmissions'
 
 const store = createStore({
   modules: {
+    alert,
     invites,
     content,
     books,

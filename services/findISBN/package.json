@@ -1,0 +1,17 @@
+{
+  "name": "findISBN",
+  "version": "0.0.0",
+  "dependencies": {
+    "amazon-buddy": "^2.2.18",
+    "express": "^4.17.1",
+    "lodash": "^4.17.20"
+  },
+  "engines": {
+    "node": "12"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "monitor": "nodemon -i ./node_modules index.js"
+  }
+}

@@ -83,7 +83,7 @@ export default {
       if (!this.validate()) return
 
       const invitePromises = this.recipients.map(recipient =>
-        this.$store.dispatch('invites/send', {
+        this.$store.dispatch('invites/createAndSend', {
           recipient,
           role: this.role,
         })

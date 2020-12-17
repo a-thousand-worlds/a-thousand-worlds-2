@@ -11,7 +11,8 @@
     "emulate": "firebase emulators:start --only functions",
     "host:staging": "firebase hosting:channel:deploy staging --expires 30d",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "start:services": "cd ./services/findISBN && npm run start"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-build-balloon": "^23.1.0",

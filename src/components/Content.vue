@@ -1,9 +1,10 @@
 <script>
 import _ from 'lodash'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
+import { get } from '@/util/get-set'
 
 export default {
-  props: ['name', 'placeholder'],
+  props: ['name', 'placeholder', 'format'],
   computed: {
     canEdit() {
       return this.$iam('admin') || this.$iam('superadmin')
@@ -26,14 +27,15 @@ export default {
     // only triggers when entire content property is changed, not single key
     // fires multiple times for some reason
     '$store.state.content.data'(next, prev) {
-      if (next[this.name]) {
-        this.html = next[this.name]
+      const nextValue = get(next, this.name)
+      if (nextValue) {
+        this.html = nextValue
       }
     },
 
     html: _.debounce(function() {
       if (this.canEdit) {
-        this.$store.dispatch('content/save', { key: this.name, value: this.html })
+        this.$store.dispatch('content/save', { path: this.name, value: this.html })
       }
     }, 500)
 
@@ -43,7 +45,8 @@ export default {
 </script>
 
 <template>
-  <ckeditor :editor="editor" v-model="html" :config="editorConfig" :disabled="!canEdit || !loaded" />
+  <input v-if="format === 'one-line'" type="text" class="input" :class="className" v-model="html" :disabled="!canEdit || !loaded" />
+  <ckeditor v-else :editor="editor" v-model="html" :config="editorConfig" :disabled="!canEdit || !loaded" :class="className" />
 </template>
 
 <style scoped lang="scss">

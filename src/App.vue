@@ -1,5 +1,6 @@
 <script>
 
+import Alert from '@/components/Alert'
 import MobileHeader from '@/components/MobileHeader'
 import MobileFooter from '@/components/MobileFooter'
 import LeftBar from '@/components/LeftBar.vue'
@@ -9,6 +10,7 @@ import BookmarksView from '@/components/BookmarksView'
 export default ({
   name: 'App',
   components: {
+    Alert,
     LeftBar,
     RightBar,
     MobileHeader,
@@ -44,6 +46,7 @@ export default ({
 
 <template>
   <div>
+
     <mobile-header class="is-hidden-tablet"/>
     <section v-if="showHero" class="hero">
       <div class="hero-body">
@@ -60,6 +63,7 @@ export default ({
         <left-bar/>
       </section>
       <section class="main column px-0 pb-20" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
+        <Alert />
         <router-view/>
       </section>
       <section v-if="$store.state.ui.bookmarksOpen" class="bookmarks column">

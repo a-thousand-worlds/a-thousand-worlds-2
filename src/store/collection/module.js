@@ -1,6 +1,6 @@
-import _ from 'lodash'
 import firebase from '@/firebase'
 import { firebaseGet } from '@/utils'
+import { get } from '@/util/get-set'
 
 /** Wraps a Firebase collection in vuex module. */
 const collectionModule = name => ({
@@ -19,20 +19,24 @@ const collectionModule = name => ({
     }
   },
   getters: {
-    /** Gets the value at the given key. */
-    get: state => key => {
-      return state.data[key]
+    /** Gets the value at the given path. */
+    get: state => path => {
+      return get(state.data, path)
+    },
+    /** Gets the entire collection */
+    getAll: state => () => {
+      return state.data
     },
     /**
      * Find an entry in the collection by a given key.
      *
-     * @param key    The key to match. Supports _.get key expressions.
+     * @param path   The path to match. Supports "/" or "." delimited path expressions.
      * @param value  The value to match. Accepts a predicate that takes the deep value returned by the key expression.
      */
-    findBy: state => (key, value) => {
+    findBy: state => (path, value) => {
       return Object.entries(state.data).find(
         ([entryKey, entryValue]) => {
-          const deepValue = _.get(entryValue, key)
+          const deepValue = get(entryValue, path)
           return typeof value === 'function'
             ? value(deepValue)
             : deepValue === value
@@ -56,10 +60,10 @@ const collectionModule = name => ({
       return valueNotNull
     },
     /** Saves a record to the collection in Firebase. */
-    async save(state, { key, value }) {
-      if (!key) throw new Error('key required')
+    async save(state, { path, value }) {
+      if (!path) throw new Error('path required')
       if (value === undefined) throw new Error('value may not be undefined')
-      const ref = firebase.database().ref(`${name}/${key}`)
+      const ref = firebase.database().ref(`${name}/${path}`)
       await ref.set(value)
     },
     /** Subscribes to the collection in Firebase, syncing with this.data */
