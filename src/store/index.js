@@ -8,20 +8,22 @@ import books from '@/store/books'
 import tags from '@/store/tags'
 import ui from '@/store/ui'
 import user from '@/store/user'
+import users from '@/store/users'
 import creators from '@/store/creators'
 import bookSubmissions from '@/store/bookSubmissions'
 
 const store = createStore({
   modules: {
     alert,
-    invites,
-    content,
     books,
+    bookSubmissions,
+    content,
+    creators,
+    invites,
     tags,
     ui,
     user,
-    creators,
-    bookSubmissions
+    users,
   },
   state: {
     noAccessPath: '',

@@ -1,3 +1,4 @@
+/** Vuex module for authentication and current user */
 import firebase from '@/firebase'
 
 const module = {
