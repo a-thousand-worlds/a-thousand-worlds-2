@@ -1,17 +1,14 @@
 <script>
 export default {
   props: ['src'],
-  created() {
-    // this.$store.dispatch('loadImage', this.src)
-  },
-  watch: {
-    // src(next) {
-    // this.$store.dispatch('loadImage', this.src)
-    // }
+  computed: {
+    url() {
+      return this.src?.url || this.src || ''
+    }
   }
 }
 </script>
 
 <template>
-  <img :src="src">
+  <img v-if="url.length" :src="url">
 </template>

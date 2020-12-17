@@ -20,7 +20,7 @@ export default {
 
 <template>
   <div class="mx-20">
-    <div v-if="$store.state.filter?.length && $store.state.booksFiltered.length === 0">
+    <div v-if="$store.state.filter?.length && $store.getters['books/filtered']?.length === 0">
       <p class="mb-20">No books matching books. </p>
       <p><a @click.prevent="resetFilter">Reset Filter</a></p>
     </div>

@@ -5,13 +5,13 @@ export default {
   emits: ['update:modelValue'],
   data() {
     return {
-      title: this.modelValue || '',
+      value: this.modelValue || '',
       mode: 'view'
     }
   },
   methods: {
     updateValue(e) {
-      this.$emit('update:modelValue', this.title)
+      this.$emit('update:modelValue', this.value)
     },
     onDivClick() {
       if (this.disabled) {
@@ -29,7 +29,7 @@ export default {
       this.mode = 'view'
     },
     onInputBlur() {
-      this.$emit('update:modelValue', this.title)
+      this.$emit('update:modelValue', this.value)
       this.mode = 'view'
     },
     onEsc() {
@@ -38,7 +38,12 @@ export default {
   },
   watch: {
     modelValue(next, prev) {
-      this.title = next
+      this.value = next
+    }
+  },
+  computed: {
+    hasValue() {
+      return (typeof this.value === 'string' && this.value.length) || (typeof this.value === 'number' && this.value)
     }
   }
 }
@@ -50,16 +55,16 @@ export default {
   <div class="field is-grouped">
     <div class="control w-50">
       <div
-        v-if="mode === 'view' && !title?.length && placeholder?.length"
+        v-if="mode === 'view' && !hasValue && placeholder?.length"
         :class="{disabled:disabled}"
         class="w-50 pointer placeholder"
         @click="onDivClick()">{{placeholder}}</div>
       <div
-        v-if="mode === 'view' && title?.length"
+        v-if="mode === 'view' && hasValue"
         :class="{disabled:disabled}"
         :title="placeholder"
         class="w-50 pointer"
-        @click="onDivClick()">{{title}}</div>
+        @click="onDivClick()">{{value}}</div>
       <input
         v-if="mode === 'edit'"
         @blur="onInputBlur"
@@ -69,7 +74,7 @@ export default {
         ref="input"
         type="text"
         class="input"
-        v-model="title">
+        v-model="value">
     </div>
   </div>
 </div>

@@ -16,12 +16,15 @@ export default {
     }
   },
   created() {
-    if (Array.isArray(this.$store.state.user.profile.draftBooks) && this.$store.state.user.profile.draftBooks.length) {
-      this.submissions = this.$store.state.user.profile.draftBooks.map(x => {
+    if (Array.isArray(this.$store.state.user.user?.profile.draftBooks) && this.$store.state.user.user?.profile.draftBooks.length) {
+      this.submissions = this.$store.state.user.user?.profile.draftBooks.map(x => {
         if (!x.tags) {
           x.tags = {}
         }
         return x
+      })
+      this.books = this.submissions.map(sub => {
+        return sub.description?.length && sub.cover?.base64?.length ? sub : null
       })
     }
     else {
@@ -38,10 +41,10 @@ export default {
         console.log('nothing found')
         return
       }
-      console.log('isbn global search res', res)
-      const localBook = this.$store.state.booksList
+      // console.log('isbn global search res', res)
+      const localBook = this.$store.getters['books/filtered']
         .reduce((acc, book) => book.isbn === res.isbn ? book : acc, null)
-      console.log('local book?', localBook)
+      // console.log('local book?', localBook)
       if (localBook) {
         this.books[si] = localBook
         return
@@ -67,16 +70,21 @@ export default {
       this.submissions[si].confirmed = state
     },
     submitForReview() {
+      this.$store.commit('ui/setBusy', true)
       console.log('save', this.submissions)
-      this.$store.dispatch('submitBookSubmission', this.submissions).then(() => {
-        console.log('book saved')
-        // eslint-disable-next-line fp/no-mutating-methods
-        this.$router.push({ name: 'Dashboard' })
-      })
+      this.$store.dispatch('bookSubmissions/submit', this.submissions)
+        .then(() => {
+          this.$store.commit('ui/setBusy', false)
+          console.log('suggestion submited')
+          // eslint-disable-next-line fp/no-mutating-methods
+          this.$router.push({ name: 'Dashboard' })
+        })
     },
     saveDraft() {
-      this.$store.dispatch('saveBookSubmissionsDraft', this.submissions)
+      this.$store.commit('ui/setBusy', true)
+      this.$store.dispatch('user/saveBookSubmissionsDraft', this.submissions)
         .then(() => {
+          this.$store.commit('ui/setBusy', false)
           // eslint-disable-next-line fp/no-mutating-methods
           this.$router.push({ name: 'Dashboard' })
         })

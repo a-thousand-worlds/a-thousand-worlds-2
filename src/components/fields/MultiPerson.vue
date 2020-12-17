@@ -18,7 +18,7 @@ export default {
         return false
       }
       return !this.people
-        .map(name => this.$store.state.peopleList.reduce((acc, p) => p.name.toLowerCase() === name.toLowerCase() ? true : acc, false))
+        .map(name => this.$store.getters['creators/list'].reduce((acc, p) => p.name.toLowerCase() === name.toLowerCase() ? true : acc, false))
         .reduce((acc, exists) => acc && exists, true)
     }
   },
@@ -32,7 +32,7 @@ export default {
         return
       }
       const search = this.names
-      this.searches = this.$store.state.peopleList
+      this.searches = this.$store.getters['creators/list']
         .filter(person => search.length && person.name.toLowerCase().includes(search) && person.role === this.role)
     },
     fillPerson(p) {

@@ -25,7 +25,7 @@ export default {
       return this.$router.currentRoute._value.params.id
     },
     book() {
-      return this.$store.state.books.data[this.id]
+      return this.$store.state.books.data?.[this.id]
     },
     nextBook() {
       const list = this.$store.getters['books/filtered'].map(x => x.id)

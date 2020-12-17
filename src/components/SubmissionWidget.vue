@@ -10,19 +10,19 @@ export default {
   },
   methods: {
     deleteSubmission() {
-      this.$store.dispatch('deleteSubmission', this.sub)
+      this.$store.dispatch('bookSubmissions/delete', this.sid)
     }
   },
   created() {
     console.log('submission widget', this.sub)
-    if (this.$store.state.submissionsIndex?.[this.sid]) {
-      this.sub = this.$store.state.submissionsIndex[this.sid]
+    if (this.$store.state.bookSubmissions.data.[this.sid]) {
+      this.sub = this.$store.state.bookSubmissions.data[this.sid]
       this.loading = false
       return
     }
-    this.$store.dispatch('indexSubmission', this.sid)
+    this.$store.dispatch('bookSubmissions/loadOne', this.sid)
       .then(() => {
-        this.sub = this.$store.state.submissionsIndex[this.sid]
+        this.sub = this.$store.state.bookSubmissions.data[this.sid]
         this.loading = false
       })
   }

@@ -22,7 +22,7 @@ export default {
       const books = group.books.map(book => book.title).join(', ')
       if (confirm(`Approve books <${books}>?`)) {
         this.loading = true
-        this.$store.dispatch('approveSubmissionBooksGroup', group)
+        this.$store.dispatch('bookSubmissions/approve', group.books)
           .then(() => {
             this.reloadSubmissions()
           })
@@ -78,7 +78,7 @@ export default {
     rejectBookSubmission(sub, i) {
       console.log('reject', i, sub)
       this.loading = true
-      this.$store.dispatch('rejectSubmission', sub)
+      this.$store.dispatch('bookSubmissions/reject', sub)
         .then(() => {
           this.subsGroups = this.subsGroups.map(group => {
             group.books = group.books.filter(s => s.id !== sub.id)
@@ -87,14 +87,16 @@ export default {
           alert('Rejected')
         })
     },
+    /*
     approveBookSubmission(sub, i) {
       this.loading = true
-      this.$store.dispatch('approveSubmission', sub)
+      this.$store.dispatch('bookSubmissions/approve', sub)
         .then(() => {
           this.subsList = this.subsList.filter(s => s.id !== sub.id)
           alert('approved')
         })
     },
+    */
     markBookSubmission(sub, i) {
       console.log('mark', i, sub)
     }
@@ -128,7 +130,6 @@ export default {
         <approval-book-widget
           @mark-me="markBookSubmission($event, gid, i)"
           @reject-me="rejectBookSubmission($event, gid, i)"
-          @approve-me="approveBookSubmission($event, gid, i)"
           @submitter-loaded="submitterLoaded($event)"
           v-model="subsGroups[gid].books[i]"/>
       </div>

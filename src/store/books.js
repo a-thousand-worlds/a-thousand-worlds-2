@@ -1,5 +1,5 @@
 import mergeOne from '@/util/mergeOne'
-import collection from '@/modules/collection/imaged'
+import collection from '@/store/collection/imaged'
 
 const module = mergeOne(collection('books', 'cover'), {
   state: {
@@ -30,7 +30,12 @@ const module = mergeOne(collection('books', 'cover'), {
         .map(id => state.data[id])
         .filter(book => {
           if (!state.filters.length) return true
-          return state.filters.every(tag => (book.tags || []).includes(tag))
+          return state.filters.every(tag => {
+            let list = []
+            if (Array.isArray(book.tags)) list = book.tags
+            else if (typeof book.tags === 'object') list = Object.keys(book.tags)
+            return list.includes(tag)
+          })
         })
       : []
   }

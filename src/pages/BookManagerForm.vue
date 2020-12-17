@@ -36,7 +36,7 @@ export default {
     window.scrollTo(0, 0)
   },
   watch: {
-    '$store.state.booksList'(next) {
+    '$store.state.books.data'(next) {
       if (this.$router.currentRoute._value.name === 'BookManagerUpdateForm') {
         this.loadBookID(this.$router.currentRoute._value.params.bid)
       }
@@ -128,6 +128,12 @@ export default {
       console.log('cover change', e)
     }
   },
+  computed: {
+    coverURL() {
+      if (!this.book.cover) return ''
+      return typeof this.book.cover === 'string' ? this.book.cover : this.book.cover.url || ''
+    }
+  },
   components: {
     'field-person': PersonField
   }
@@ -164,7 +170,7 @@ export default {
   <div class="columns">
     <div class="column is-one-third">
       <div>
-        <img v-if="book.cover!=''" :src="book.cover">
+        <img v-if="coverURL.length" :src="coverURL">
       </div>
       <div>
         <button class="button is-outlined" :disabled="$uiBusy || searching" @click.prevent="reloadCover()" :class="{'is-loading': searching}">Reload</button>

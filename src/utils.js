@@ -50,6 +50,7 @@ export async function metadataByISBN(code) {
     publisher: src.publisher || '',
     goodread: data.goodread || ''
   }
+  console.log('metadata', data, ret)
   return ret
 }
 

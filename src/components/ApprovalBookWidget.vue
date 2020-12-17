@@ -53,10 +53,10 @@ export default {
       return this.sub.cover.url.length ? this.sub.cover.url : this.sub.cover.base64.length ? this.sub.cover.base64.startsWith('data:image') ? this.sub.cover.base64 : `data:image/png;base64,${this.sub.cover.base64}` : ''
     },
     tags() {
-      if (!this.$store.state.sortedTags) {
-        return []
-      }
-      return this.$store.state.sortedTags.filter(tag => this.sub.tags && this.sub.tags[tag.id])
+      const tags = this.$store.getters['tags/list'].filter(tag => this.sub.tags && this.sub.tags[tag.id])
+      console.log('tags', tags)
+      if (!this.sub.otherTag) return tags
+      return [...tags, { tag: this.sub.otherTag }]
     }
   },
   methods: {
@@ -86,8 +86,8 @@ export default {
       let warnings = []
       if (!this.sub.title
           || !this.sub.title.length
-          || !this.sub.author
-          || !this.sub.author.length) {
+          || !this.sub.authors
+          || !this.sub.authors.length) {
         alert('Book can\'t be created without title and author')
         return
       }
@@ -125,7 +125,7 @@ Continue and create book?`
         this.$emit('approve-me', this.sub)
       }
     },
-    remove() {
+    reject() {
       if (confirm(`Reject book suggestion <${this.sub.title}>?`)) {
         const comment = prompt('Any comments on rejecting?')
         this.sub.approveComment = comment || ''
@@ -206,17 +206,17 @@ Continue and create book?`
         <multi-person-field
           :disabled="busy"
           :role="'author'"
-          :placeholder="'author'"
+          :placeholder="'authors'"
           :search-db="false"
-          v-model="sub.author"/>
+          v-model="sub.authors"/>
       </div>
       <div>
         <multi-person-field
         :disabled="busy"
         :role="'illustrator'"
-        :placeholder="'illustrator'"
+        :placeholder="'illustrators'"
         :search-db="false"
-        v-model="sub.illustrator"/>
+        v-model="sub.illustrators"/>
       </div>
       <div>
         <input-field
@@ -241,8 +241,11 @@ Continue and create book?`
     <div class="column is-5">
       <div class="tags">
 
-          <div v-for="tag of tags" :key="tag.id">
-            <span class="tag-label">
+          <div v-for="(tag, tagi) of tags" :key="tagi">
+            <span v-if="!tag.id" class="tag-label new" title="Tag not exists and will be created!">
+              {{tag.tag}}
+            </span>
+            <span v-else class="tag-label">
               {{tag.tag}}
             </span>
           </div>
@@ -262,7 +265,7 @@ Continue and create book?`
       </div>
     </div>
     <div class="column is-1">
-      <button :class="{disabled:busy}" :disabled="busy" @click="remove()" class="is-flat is-uppercase is-underlined">
+      <button :class="{disabled:busy}" :disabled="busy" @click="reject()" class="is-flat is-uppercase is-underlined">
         <i class="fas fa-times"></i>
       </button>
     </div>
@@ -340,5 +343,9 @@ input[type="checkbox"] {
   margin-right: 10px;
   border: 1px solid $atw-base;
   line-height: 20px;
+
+  &.new {
+    border-color: red;
+  }
 }
 </style>
