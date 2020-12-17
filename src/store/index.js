@@ -27,17 +27,15 @@ const store = createStore({
   },
   state: {
     noAccessPath: '',
-    stage0: {
-      auth: false,
-      loaded: false
-    },
+    auth: false,
+    loaded: false,
   },
   mutations: {
-    setNAP(ctx, p) {
-      ctx.noAccessPath = p
+    setNAP(state, p) {
+      state.noAccessPath = p
     },
-    setStage0Load(ctx) {
-      ctx.stage0.loaded = true
+    setLoaded(state) {
+      state.loaded = true
     }
   },
   actions: {
@@ -53,15 +51,15 @@ const store = createStore({
     },
 
     // start
-    async loadStage0(ctx) {
-      await ctx.dispatch('user/subscribe')
-      await ctx.dispatch('creators/subscribe')
-      await ctx.dispatch('tags/subscribe')
+    async load(ctx) {
       await ctx.dispatch('books/subscribe')
       await ctx.dispatch('content/subscribe')
+      await ctx.dispatch('creators/subscribe')
       await ctx.dispatch('invites/subscribe')
+      await ctx.dispatch('tags/subscribe')
+      await ctx.dispatch('user/subscribe')
       await ctx.dispatch('users/subscribe')
-      ctx.commit('setStage0Load')
+      ctx.commit('setLoaded')
     },
 
   }

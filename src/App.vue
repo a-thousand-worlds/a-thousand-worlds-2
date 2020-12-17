@@ -36,7 +36,7 @@ export default ({
     }
   },
   async created() {
-    await this.$store.dispatch('loadStage0')
+    await this.$store.dispatch('load')
   },
   beforeRouteLeave(from, to) {
     localStorage.setItem('1stVist', new Date())

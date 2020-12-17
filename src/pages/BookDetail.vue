@@ -72,7 +72,7 @@ export default {
           </div>
         </div>
 
-        <div v-if="!$store.state.stage0.loaded" class="my-50">
+        <div v-if="!$store.state.loaded" class="my-50">
           <img src="@/assets/icons/loading.gif" />
         </div>
         <div v-else-if="book">
