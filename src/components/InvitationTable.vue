@@ -21,7 +21,7 @@ export default {
   },
   data() {
     return {
-      resendDisabled: false,
+      resendDisabled: {},
     }
   },
   methods: {
@@ -30,9 +30,9 @@ export default {
     },
     resend(invite) {
       this.$emit('resend', invite)
-      this.resendDisabled = true
+      this.resendDisabled[invite.code] = true
     },
-    /** Return the appropriate date based on showAccepted. */
+    /** Return the appropriate date based on fields. */
     date(invite) {
       const dateField = this.fields.includes('cancelled') ? 'cancelled'
         : this.fields.includes('used') ? 'used'
@@ -66,7 +66,7 @@ export default {
         <td v-if="fields.includes('email')">{{ invite.lastName }}</td>
         <td class="is-capitalized">{{ invite.role }}</td>
         <td>
-          <button v-if="fields.includes('resend')" @click="resend(invite)" class="is-flat" title="Resend invitation" :disabled="resendDisabled">
+          <button v-if="fields.includes('resend')" @click="resend(invite)" class="is-flat" title="Resend invitation" :disabled="resendDisabled[invite.code]">
             <i class="fas fa-paper-plane"></i>
           </button>
           <button v-if="fields.includes('cancel')" @click="cancel(invite)" class="is-flat" title="Cancel invitation">
