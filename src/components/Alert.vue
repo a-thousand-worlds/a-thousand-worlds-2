@@ -38,9 +38,13 @@ export default {
   position: fixed;
   z-index: 999;
   top: 0;
-  left: 0;
-  width: 100%;
+  width: calc(100% - #{$leftbar-width} - #{$rightbar-width} + 0.75rem);
   font-size: 22px;
+
+  @include until($tablet) {
+    left: 0;
+    width: 100%;
+  }
 }
 
 .has-shadow {

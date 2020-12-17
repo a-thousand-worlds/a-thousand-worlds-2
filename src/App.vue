@@ -47,8 +47,6 @@ export default ({
 <template>
   <div>
 
-    <Alert />
-
     <mobile-header class="is-hidden-tablet"/>
     <section v-if="showHero" class="hero">
       <div class="hero-body">
@@ -65,6 +63,7 @@ export default ({
         <left-bar/>
       </section>
       <section class="main column px-0 pb-20" :class="{'with-bookmarks': $store.state.bookmarksOpen}">
+        <Alert />
         <router-view/>
       </section>
       <section v-if="$store.state.bookmarksOpen" class="bookmarks column">
