@@ -24,7 +24,6 @@ export default {
       disableResetPassword: false,
       error: null,
       loading: false,
-      message: '',
       password: '',
       signupData: {
         organization: '',
@@ -164,13 +163,6 @@ export default {
       this.loading = true
 
       await this.$store.dispatch('users/updateEmail', this.email)
-        .then(() => {
-          this.message = 'Profile saved'
-          this.messageTimeout = setTimeout(() => {
-            this.message = ''
-          }, 5000)
-          this.loading = false
-        })
         .catch(err => {
           console.error(err)
           this.error = {
@@ -190,10 +182,10 @@ export default {
         })
           .then(() => {
             if (!this.error) {
-              this.message = 'Profile saved'
-              this.messageTimeout = setTimeout(() => {
-                this.message = ''
-              }, 5000)
+              this.$store.dispatch('alert', {
+                text: 'Profile saved',
+                type: 'success'
+              })
             }
           })
         )
@@ -355,10 +347,6 @@ export default {
 
           <div class="field my-4">
             <input :disabled="loading || hasFieldErrors || disableAfterSave" type="submit" class="button is-primary is-rounded is-fullwidth is-uppercase" :class="{'is-loading':loading}" :value="active === 'login' ? 'Log In' : active === 'signup' ? 'Create Account' : active === 'profile' ? 'Save' : null"/>
-          </div>
-
-          <div v-if="message" class="field">
-            <p class="message has-text-centered is-uppercase">{{message}}</p>
           </div>
 
           <div v-if="error" class="field">
