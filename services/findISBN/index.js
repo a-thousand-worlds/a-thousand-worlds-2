@@ -48,14 +48,14 @@ app.get('/', handleError(async (req, res) => {
 
   if (!product) {
     res.json(null)
-    console.log(`Query: "${req.query.keyword}" (${products.result.length === 0 ? 'no results' : products.result.length} results)${ products.result.length > 0 ? ': No products with valid ISBN' : ''}`)
+    console.log(new Date(), `Query: "${req.query.keyword}" (${products.result.length === 0 ? 'no results' : products.result.length} results)${ products.result.length > 0 ? ': No products with valid ISBN' : ''}`)
     return
   }
 
   const isbn = isbnFromUrl(product.url)
 
-  console.log(`Query: "${req.query.keyword}" (${products.result.length} results)`)
-  console.log('Found: ', { isbn, ...product })
+  console.log(new Date(), `Query: "${req.query.keyword}" (${products.result.length} results)`)
+  console.log({ isbn, ...product })
 
   res.json({ isbn, ..._.pick(product, ['isbn', 'thumbnail', 'title', 'url']) })
 
