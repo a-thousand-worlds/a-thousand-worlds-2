@@ -61,7 +61,7 @@ export const firebaseGet = refString => new Promise((resolve, reject) => {
   })
 })
 
-export async function findBookByTitle(keyword) {
+export async function findBookByKeyword(keyword) {
   if (typeof keyword !== 'string' || !keyword.length) {
     return null
   }

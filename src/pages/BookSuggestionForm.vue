@@ -4,7 +4,7 @@ import _ from 'lodash'
 import BookTitleField from '@/components/fields/BookTitle'
 import BookIsbnField from '@/components/fields/BookIsbn'
 
-import { coverImageByISBN, findBookByTitle } from '@/utils'
+import { coverImageByISBN, findBookByKeyword } from '@/utils'
 
 export default {
   data() {
@@ -42,7 +42,7 @@ export default {
         return
       }
       const localBook = this.$store.getters['books/filtered']
-        .reduce((acc, book) => book.isbn === res.isbn ? book : acc, null)
+        .find((acc, book) => book.isbn === res.isbn)
       if (localBook) {
         this.books[si] = localBook
         return
@@ -116,13 +116,12 @@ export default {
       this.books[si] = null
       this.submissions[si] = this.newSubmissionObject()
     },
-    titleChanged: _.debounce(async function(si) {
+    titleOrAuthorChanged: _.debounce(async function(si) {
       // const { author, title } = this.submissions[si]
-      let search = this.submissions[si].title
-      if (this.submissions[si].author && this.submissions[si].authors.length) {
-        search += ' ' + this.submissions[si].author
-      }
-      const result = await findBookByTitle(search)
+      const { author, title } = this.submissions[si]
+      if (!author || !title) return
+      const search = `${title} ${author}`
+      const result = await findBookByKeyword(search)
       const { isbn, thumbnail } = result || {}
       if (isbn) {
         this.submissions[si].isbn = isbn
@@ -167,13 +166,13 @@ export default {
 
             <div class="field">
               <label class="label">Book Title</label>
-              <book-title-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].title" @book-selected="fillBook($event, si)" :searchable="false" @input="titleChanged(si)"/>
+              <book-title-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].title" @book-selected="fillBook($event, si)" :searchable="false" @input="titleOrAuthorChanged(si)"/>
             </div>
 
             <div class="field">
               <label class="label">Author</label>
               <div class="control">
-                <input class="input" type="text" :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].authors"/>
+                <input class="input" type="text" :disabled="$uiBusy || (books[si] && books[si].id)" v-model="submissions[si].authors" @input="titleOrAuthorChanged(si)"/>
               </div>
             </div>
 
