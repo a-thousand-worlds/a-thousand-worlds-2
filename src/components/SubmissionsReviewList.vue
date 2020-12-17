@@ -22,9 +22,11 @@ export default {
       const books = group.books.map(book => book.title).join(', ')
       if (confirm(`Approve books <${books}>?`)) {
         this.loading = true
+        this.$store.commit('ui/setBusy', true)
         this.$store.dispatch('bookSubmissions/approve', group.books)
           .then(() => {
             this.reloadSubmissions()
+            this.$store.commit('ui/setBusy', false)
           })
       }
     },

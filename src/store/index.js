@@ -1,25 +1,25 @@
 import { createStore } from 'vuex'
-import collectionModule from '@/store/collection/module'
+import { firebaseGet } from '@/utils'
+
 import invites from '@/store/invites'
+import content from '@/store/content'
 import books from '@/store/books'
 import tags from '@/store/tags'
 import ui from '@/store/ui'
 import user from '@/store/user'
 import creators from '@/store/creators'
 import bookSubmissions from '@/store/bookSubmissions'
-import { firebaseGet } from '@/utils'
 
 const store = createStore({
   modules: {
-    content: collectionModule('content'),
     invites,
+    content,
     books,
     tags,
     ui,
     user,
     creators,
-    bookSubmissions,
-    users: collectionModule('users'),
+    bookSubmissions
   },
   state: {
     noAccessPath: '',

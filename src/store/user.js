@@ -18,14 +18,36 @@ const module = {
   },
   actions: {
 
-    userLogin(ctx, data) {
+    login(ctx, data) {
       return firebase.auth().signInWithEmailAndPassword(data.email, data.password)
     },
 
-    async userRegister(ctx, { email, name, organization, otherEngagementCategory, password }) {
+    async signup({ commit, dispatch, rootState }, { code, email, name, organization, otherEngagementCategory, password }) {
       const { user } = await firebase.auth().createUserWithEmailAndPassword(email, password)
-      await ctx.commit('setUser', { uid: user.uid })
-      await ctx.dispatch('saveProfile', { email, name, organization, otherEngagementCategory })
+      await commit('setUser', { uid: user.uid }, { root: true })
+
+      // add role from signup code
+      const invite = rootState.invites.data[code]
+      const roles = invite ? {
+        roles: {
+          [invite.role]: true
+        }
+      } : null
+
+      // save profile to user record
+      await dispatch('saveProfile', {
+        email,
+        code,
+        name,
+        organization,
+        otherEngagementCategory,
+        ...roles,
+      })
+
+      // mark signup code as used
+      await firebase.database().ref(`invites/${code}/used`).set(true)
+
+      return user
     },
 
     // keep it here as 'user related'
