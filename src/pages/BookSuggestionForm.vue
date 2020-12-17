@@ -2,7 +2,6 @@
 
 import _ from 'lodash'
 import BookTitleField from '@/components/fields/BookTitle'
-import BookIsbnField from '@/components/fields/BookIsbn'
 
 import { coverImageByISBN, findBookByKeyword } from '@/utils'
 
@@ -66,6 +65,16 @@ export default {
     },
     setConfirmed(si, state) {
       this.submissions[si].confirmed = state
+      if (state && this.submissions[si].isbnLastFound) {
+        this.submissions[si].isbn = this.submissions[si].isbnLastFound
+      }
+      else if (state === false) {
+        this.submissions[si].isbnLastFound = this.submissions[si].isbn
+        this.submissions[si].isbn = null
+      }
+      else if (state === null) {
+        this.submissions[si].isbn = null
+      }
     },
     submitForReview() {
       this.$store.commit('ui/setBusy', true)
@@ -100,7 +109,7 @@ export default {
         year: '',
         publisher: '',
         isbn: '',
-        confirmed: false,
+        confirmed: null,
         tags: {},
         otherTag: ''
       }
@@ -122,7 +131,7 @@ export default {
       if (!authors || !title) {
         this.submissions[si].isbn = null
         this.submissions[si].cover = null
-        this.submissios[si].confirmed = true
+        this.submissions[si].confirmed = null
         return
       }
 
@@ -153,7 +162,6 @@ export default {
   },
   components: {
     'book-title-field': BookTitleField,
-    'book-isbn-field': BookIsbnField,
   }
 }
 </script>
@@ -192,7 +200,9 @@ export default {
               <div class="columns">
                 <div class="column is-narrow">
                   <img v-if="loadingBook[si] || loadingCover[si]" src="@/assets/icons/loading.gif">
-                  <img v-else :src="coverImage(si)">
+                  <div v-else class="bg-secondary">
+                    <img :src="coverImage(si)" style="display: block;" :style="submissions[si].confirmed === false ? { visibility: 'hidden' } : null" />
+                  </div>
                 </div>
                 <div class="column">
                   <div v-if="books[si] && books[si].id">
@@ -201,13 +211,15 @@ export default {
                       Clear Info
                     </button>
                   </div>
-                  <div v-if="coverImage(si) && !submissions[si].confirmed" class="column field">
-                    <label class="label">Is this your book?</label>
-                    <div class="control mb-3">
-                      <button @click.prevent="setConfirmed(si, true)" class="button is-primary is-outlined">Yes</button>
+                  <div v-if="coverImage(si)" class="column field">
+                    <div class="control mb-20">
+                      <label class="label">Is this your book?</label>
+                      <button @click.prevent="setConfirmed(si, true)" class="button is-rounded mr-2" :class="{ 'is-primary': submissions[si].confirmed !== false, 'is-selected': submissions[si].confirmed }" :disabled="submissions[si].confirmed" :style="submissions[si].confirmed ? { cursor: 'default' } : null">Yes</button>
+                      <button @click.prevent="setConfirmed(si, false)" class="button is-rounded" :class="{ 'is-primary': submissions[si].confirmed === false }" :disabled="submissions[si].confirmed === false" :style="submissions[si].confirmed === false ? { cursor: 'default' } : null">No</button>
                     </div>
-                    <div class="control">
-                      <button @click.prevent="setConfirmed(si, true)" class="button is-primary is-outlined">No</button>
+                    <div v-if="submissions[si].confirmed === false" class="control">
+                      <label class="label">Okay, please enter the ISBN:</label>
+                      <input class="input" v-model="submissions[si].isbn" />
                     </div>
                   </div>
                   <!--
@@ -217,19 +229,6 @@ export default {
                   -->
                 </div>
               </div>
-            </div>
-
-            <div class="field">
-              <label class="label">ISBN</label>
-              <book-isbn-field
-                :disabled="$uiBusy || (books[si] && books[si].id)"
-                :searchable="true"
-                ref="isbn"
-                v-model="submissions[si].isbn"
-                @book-selected="fillBook($event, si)"
-                @isbn-search-state="isbnGlobalSearchState(si, $event)"
-                @isbn-search-result="isbnGlobalSearchResult(si, $event)"
-              />
             </div>
 
             <div v-if="!books[si] || (books[si] && !books[si].id)" class="field">
