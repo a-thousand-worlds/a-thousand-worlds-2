@@ -49,7 +49,11 @@ export default {
       return '#ddd'
     },
     coverUrl() {
-      return this.sub.cover.url.length ? this.sub.cover.url : this.sub.cover.base64.length ? this.sub.cover.base64.startsWith('data:image') ? this.sub.cover.base64 : `data:image/png;base64,${this.sub.cover.base64}` : ''
+      return this.sub.cover.url || this.sub.cover.base64
+        ? this.sub.cover.base64.startsWith('data:image')
+          ? this.sub.cover.base64
+          : `data:image/png;base64,${this.sub.cover.base64}`
+        : ''
     },
     tags() {
       const tags = this.$store.getters['tags/list'].filter(tag => this.sub.tags && this.sub.tags[tag.id])
