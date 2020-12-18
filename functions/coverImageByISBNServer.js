@@ -20,12 +20,7 @@ module.exports = () => {
     else {
       console.log(`[${req.query.isbn}] cover not found`)
     }
-    res.json({
-      url: img.url,
-      base64: 'data:image/png;base64,' + img.buffer.toString('base64'),
-      width: img.width,
-      height: img.height,
-    })
+    res.json(img)
   })
 
   return app

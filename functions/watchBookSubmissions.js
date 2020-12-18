@@ -2,22 +2,6 @@ const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 const coverImageByISBN = require('./util/coverImageByISBN')
 
-/** Retries a function a given number of times. */
-const retry = async (f, n) => {
-  // eslint-disable-next-line fp/no-loops
-  for (let i = 0; i < n; i++) {
-    try {
-      const output = await f()
-      return output
-    }
-    catch (e) {
-      if (i === n - 1) {
-        throw e
-      }
-    }
-  }
-}
-
 const watchBookSubmissions = functions
   .runWith({
     timeoutSeconds: 300,
@@ -32,11 +16,7 @@ const watchBookSubmissions = functions
     await snap.ref.child('findingCover').set(true)
     let img
     try {
-      img = await retry(() => {
-        const img = coverImageByISBN(book.isbn)
-        if (!img) throw new Error('No cover; retry')
-        return img
-      }, 3)
+      img = await coverImageByISBN(book.isbn)
     }
     finally {
       await snap.ref.child('findingCover').remove()
@@ -49,11 +29,12 @@ const watchBookSubmissions = functions
 
     console.log(new Date(), 'Saving cover to storage:', book.isbn)
     await admin.storage()
-      .bucket('gs://' + process.env.FIREBASE_CONFIG.storageBucket)
+      .bucket('gs://' + JSON.parse(process.env.FIREBASE_CONFIG).storageBucket)
       .file(`books/${context.params.id}`)
-      .save(img.buffer, {
+      .save(img.base64, {
         contentType: 'image/png',
-        cacheControl: 'public,max-age=31536000'
+        cacheControl: 'public,max-age=31536000',
+        resumable: false,
       })
 
     console.log(new Date(), 'Cover saved:', book.isbn)

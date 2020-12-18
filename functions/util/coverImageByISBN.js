@@ -16,12 +16,13 @@ async function loadImage(url) {
   if (!res || !res.data) {
     return null
   }
-  const img = await sharp(res.data).toFormat('png')
-  const meta = await img.metadata()
-  const buffer = await img.toBuffer()
+  // use sharp to convert webp to png (Jimp does not support webp)
+  const sharpImage = await sharp(res.data).toFormat('png')
+  const meta = await sharpImage.metadata()
+  const buffer = await sharpImage.toBuffer()
   return {
     url,
-    buffer,
+    base64: 'data:image/png;base64,' + buffer.toString('base64'),
     width: meta.width,
     height: meta.height
   }
@@ -30,7 +31,8 @@ async function loadImage(url) {
 async function coverImageByISBN(isbn) {
 
   console.log('Searching covers')
-  const covers = await bookcovers.withIsbn(isbn)
+  // only search Amazon, as Google and OpenLibrary images are too small
+  const covers = await bookcovers.withIsbn(isbn, { type: 'amazon' })
 
   console.log('Retrieved covers', covers)
   let url = null
@@ -38,18 +40,10 @@ async function coverImageByISBN(isbn) {
     const amazonSizes = Object.keys(covers.amazon)
     const largestAmazonCover = Math.max.apply(null, amazonSizes.map(s => parseFloat(s, 10)))
     url = covers.amazon[largestAmazonCover + 'x'] ||
+      covers.amazon['3x'] ||
       covers.amazon['2x'] ||
       covers.amazon['1.5x'] ||
-      (covers.openLibrary && covers.openLibrary.medium) ||
       covers.amazon['1x']
-  }
-  else if (covers.openLibrary && !covers.openLibrary.error) {
-    url = covers.openLibrary.large ||
-      covers.openLibrary.small
-  }
-  else if (covers.google && !covers.google.error) {
-    url = covers.google.thumbnail ||
-      covers.google.smallThumbnail
   }
 
   if (!url) {
