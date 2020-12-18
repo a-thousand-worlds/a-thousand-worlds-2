@@ -60,7 +60,7 @@ export default {
     async resetPassword() {
       this.disableResetPassword = true
       try {
-        await this.$store.dispatch('passwordReset', this.email)
+        await this.$store.dispatch('user/passwordReset', this.email)
         this.$store.dispatch('alert', {
           text: 'Check your email to reset your password',
           timer: 10000,
@@ -162,7 +162,7 @@ export default {
 
       this.loading = true
 
-      await this.$store.dispatch('users/updateEmail', this.email)
+      await this.$store.dispatch('user/updateEmail', this.email)
         .catch(err => {
           console.error(err)
           this.error = {
@@ -175,7 +175,7 @@ export default {
         })
 
       if (!this.error) {
-        await this.handleResponse(this.$store.dispatch('saveProfile', {
+        await this.handleResponse(this.$store.dispatch('user/saveProfile', {
           name: this.name,
           email: this.email,
           ...this.signupData,
@@ -198,6 +198,7 @@ export default {
 
     setActive(active) {
       this.active = active
+      this.error = null
 
       // eslint-disable-next-line fp/no-mutating-methods
       this.$router.push({

@@ -139,7 +139,14 @@ const module = {
         }
       })
 
-    }
+    },
+
+    async updateEmail(ctx, email) {
+      const user = firebase.auth().currentUser
+      if (user.email !== email) {
+        await user.updateEmail(email)
+      }
+    },
 
   }
 }
