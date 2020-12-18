@@ -11,7 +11,7 @@ export default {
   },
   methods: {
     close() {
-      this.$store.commit('alert', null)
+      this.$store.dispatch('alert', null)
     }
   },
 }
