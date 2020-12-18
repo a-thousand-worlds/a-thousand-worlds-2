@@ -3,16 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint src functions vue.config.js",
     "deploy": "npm run build && firebase deploy --only hosting",
     "deploy:staging": "npm run build && npm run host:staging",
-    "emulate": "firebase emulators:start --only functions",
+    "emulate": "firebase emulators:start --only database,functions",
     "host:staging": "firebase hosting:channel:deploy staging --expires 30d",
+    "lint": "vue-cli-service lint src functions vue.config.js",
+    "serve": "vue-cli-service serve",
+    "serve:local": "npm run build && VUE_APP_DATABASE_EMULATOR vue-cli-service serve",
+    "start:services": "cd ./services/findISBN && npm run start",
     "test": "jest",
-    "test:watch": "jest --watch",
-    "start:services": "cd ./services/findISBN && npm run start"
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-build-balloon": "^23.1.0",

@@ -1,8 +1,9 @@
 const functions = require('firebase-functions')
-const metadataByISBN = require('./metadataByISBN')
-const coverImageByISBN = require('./coverImageByISBN')
-const searchISBN = require('./searchISBN')
+const coverImageByISBN = require('./coverImageByISBNServer')
 const email = require('./email')
+const metadataByISBN = require('./metadataByISBN')
+const searchISBN = require('./searchISBN')
+const watchBookSubmissions = require('./watchBookSubmissions')
 
 // increase function memory since we are doing image processing
 // https://firebase.google.com/docs/functions/manage-functions#set_timeout_and_memory_allocation
@@ -19,3 +20,5 @@ exports.metadataByISBN = functions
 
 exports.coverImageByISBN = functions
   .https.onRequest(coverImageByISBN())
+
+exports.watchBookSubmissions = watchBookSubmissions

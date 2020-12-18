@@ -1,4 +1,7 @@
 {
+  "database": {
+    "rules": "firebase.rules.json"
+  },
   "functions": {
     "source": "functions"
   },
@@ -17,6 +20,9 @@
     ]
   },
   "emulators": {
+    "database": {
+      "port": 5002
+    },
     "functions": {
       "port": 5001
     },
