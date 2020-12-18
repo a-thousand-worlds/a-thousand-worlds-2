@@ -17,30 +17,39 @@ export default {
   },
   data() {
     return {
+      isbn: this.$router.currentRoute._value.params.isbn,
       pageUrl: window.location.href,
     }
   },
   computed: {
-    id() {
-      return this.$router.currentRoute._value.params.id
-    },
     book() {
-      return this.$store.state.books.data?.[this.id]
+      return this.$store.state.books.loaded
+        ? Object.values(this.$store.state.books.data).find(book => book.isbn === this.isbn)
+        : null
+    },
+    id() {
+      return this.book?.id
     },
     nextBook() {
-      const list = this.$store.getters['books/filtered'].map(x => x.id)
-      const pos = list.indexOf(this.id)
+      const list = this.$store.getters['books/filtered']
+      const pos = list.map(x => x.id).indexOf(this.id)
       return list[pos + 1]
     },
     prevBook() {
-      const list = this.$store.getters['books/filtered'].map(x => x.id)
-      const pos = list.indexOf(this.id)
+      const list = this.$store.getters['books/filtered']
+      const pos = list.map(x => x.id).indexOf(this.id)
       return list[pos - 1]
     }
   },
   mounted() {
     new Clipboard('#copy-link') // eslint-disable-line no-new
-  }
+  },
+  watch: {
+    '$route'() {
+      this.isbn = this.$router.currentRoute._value.params.isbn
+      this.pageUrl = window.location.href
+    }
+  },
 }
 
 </script>
@@ -67,8 +76,8 @@ export default {
 
         <div class="is-flex is-justify-content-flex-end">
           <div class="mb-5">
-            <router-link v-if="prevBook" :to="{ name: 'BookDetail', params: {id: prevBook} }" class="is-uppercase is-primary mx-6">&lt; Previous Book</router-link>
-            <router-link v-if="nextBook" :to="{ name: 'BookDetail', params: {id: nextBook}  }" class="is-uppercase is-primary">Next Book &gt;</router-link>
+            <router-link v-if="prevBook" :to="{ name: 'BookDetail', params: {isbn: prevBook.isbn} }" class="is-uppercase is-primary mx-6">&lt; Previous Book</router-link>
+            <router-link v-if="nextBook" :to="{ name: 'BookDetail', params: {isbn: nextBook.isbn}  }" class="is-uppercase is-primary">Next Book &gt;</router-link>
           </div>
         </div>
 

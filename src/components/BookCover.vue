@@ -29,7 +29,7 @@ export default {
 </script>
 
 <template>
-  <router-link :to="{name: 'BookDetail',params:{id:book.id}}">
+  <router-link :to="{name: 'BookDetail',params:{isbn:book.isbn}}">
     <div :style="{width: '100%', paddingTop: coverRatio+'%', backgroundImage: 'url('+bgImage+')', backgroundSize: 'contain'}" class="book-cover-wrapper bg-secondary">
       <div class="cover-shadow"></div>
       <div class="cover-data">

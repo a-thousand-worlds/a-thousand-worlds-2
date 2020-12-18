@@ -34,7 +34,7 @@ export default {
 <template>
   <div class="book-list-wrapper columns">
     <div class="column is-one-third p-0 mb-20">
-      <router-link :to="{name:'BookDetail',params:{id:book.id}}" class="cover-data">
+      <router-link :to="{name:'BookDetail',params:{isbn:book.isbn}}" class="cover-data">
         <div class="img-cover bg-secondary" :style="{width: '100%', paddingTop: coverRatio+'%', backgroundImage: 'url('+bgImage+')', backgroundSize: 'contain'}"></div>
       </router-link>
     </div>
@@ -45,7 +45,7 @@ export default {
 
           <div class="is-flex is-justify-content-space-between mb-20">
             <div>
-              <router-link :to="{name:'BookDetail',params:{id:book.id}}" class="cover-data">
+              <router-link :to="{name:'BookDetail',params:{isbn:book.isbn}}" class="cover-data">
                 <h3 class="mb-10" style="color: black; margin-right: 15px;">{{book.title}}</h3>
               </router-link>
               <div v-for="person of book.authors" :key="person">
