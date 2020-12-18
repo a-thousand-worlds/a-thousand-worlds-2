@@ -1,18 +1,41 @@
 <script>
-
 import _ from 'lodash'
+import ISBN from 'isbn3'
 import BookTitleField from '@/components/fields/BookTitle'
-
 import { coverImageByISBN, findBookByKeyword } from '@/utils'
 
 export default {
+  components: {
+    'book-title-field': BookTitleField,
+  },
   data() {
     return {
-      books: [],
       confirms: [],
       loadingCover: [],
       loadingBook: [],
       submissions: [],
+    }
+  },
+  computed: {
+    books() {
+      return this.submissions.map(({ confirmed, isbn }) =>
+        confirmed === null ? null : Object.values(this.$store.state.books.data || {}).find(
+          // note that hardcover and softcover have different ISBNs, so duplicates cannot be detected automatically
+          book => ISBN.asIsbn10(book.isbn || '') === ISBN.asIsbn10(isbn || '')
+        )
+      )
+    },
+    draftable() {
+      return this.submissions
+        .map(x => x.title || x.authors || x.illustrators || x.isbn)
+        .reduce((acc, x) => x || acc, false)
+        && this.books.reduce((acc, x) => x && x.id ? false : acc, true)
+    },
+    submitable() {
+      return this.submissions
+        .map(x => x.title && x.authors)
+        .reduce((acc, x) => x && acc, true)
+        && this.books.reduce((acc, x) => x && x.id ? false : acc, true)
     }
   },
   created() {
@@ -22,9 +45,6 @@ export default {
           x.tags = {}
         }
         return x
-      })
-      this.books = this.submissions.map(sub => {
-        return sub.description && sub.cover?.base64 ? sub : null
       })
     }
     else {
@@ -41,32 +61,27 @@ export default {
         console.log('nothing found')
         return
       }
-      const localBook = this.$store.getters['books/filtered']
-        .find((acc, book) => book.isbn === res.isbn)
-      if (localBook) {
-        this.books[si] = localBook
-        return
-      }
       this.submissions[si] = { ...this.submissions[si], ...res }
-      this.books[si] = res
 
       this.loadingCover[si] = true
       const cover = await coverImageByISBN(this.submissions[si].isbn)
       this.loadingCover[si] = false
       if (!cover) return
       this.submissions[si].cover = cover
-      this.books[si].cover = cover
     },
     coverImage(si) {
-      const cover = this.submissions[si].cover
+      const cover = this.books[si]?.cover || this.submissions[si].cover
       return typeof cover === 'string'
         ? cover
         : cover?.base64?.url || ''
     },
     setConfirmed(si, state) {
+
       this.submissions[si].confirmed = state
-      if (state && this.submissions[si].isbnLastFound) {
-        this.submissions[si].isbn = this.submissions[si].isbnLastFound
+      if (state) {
+        if (this.submissions[si].isbnLastFound) {
+          this.submissions[si].isbn = this.submissions[si].isbnLastFound
+        }
       }
       else if (state === false) {
         this.submissions[si].isbnLastFound = this.submissions[si].isbn
@@ -119,11 +134,9 @@ export default {
       this.submissions.push(this.newSubmissionObject())
     },
     delSubmission(si) {
-      this.books = this.books.filter((x, xi) => xi !== si)
       this.submissions = this.submissions.filter((x, xi) => xi !== si)
     },
     clearSubmission(si) {
-      this.books[si] = null
       this.submissions[si] = this.newSubmissionObject()
     },
     titleOrAuthorChanged: _.debounce(async function(si) {
@@ -146,23 +159,6 @@ export default {
       }
     }, 500)
   },
-  computed: {
-    draftable() {
-      return this.submissions
-        .map(x => x.title || x.authors || x.illustrators || x.isbn)
-        .reduce((acc, x) => x || acc, false)
-        && this.books.reduce((acc, x) => x && x.id ? false : acc, true)
-    },
-    submitable() {
-      return this.submissions
-        .map(x => x.title && x.authors)
-        .reduce((acc, x) => x && acc, true)
-        && this.books.reduce((acc, x) => x && x.id ? false : acc, true)
-    }
-  },
-  components: {
-    'book-title-field': BookTitleField,
-  }
 }
 </script>
 
@@ -201,17 +197,17 @@ export default {
                 <div class="column is-narrow">
                   <img v-if="loadingBook[si] || loadingCover[si]" src="@/assets/icons/loading.gif">
                   <div v-else class="bg-secondary">
-                    <img :src="coverImage(si)" style="display: block;" :style="submissions[si].confirmed === false ? { visibility: 'hidden' } : null" />
+                    <img :src="coverImage(si)" style="display: block; min-width: 100px; max-width: 265px;" :style="submissions[si].confirmed === false && !books[si] ? { visibility: 'hidden' } : null" />
                   </div>
                 </div>
                 <div class="column">
-                  <div v-if="books[si] && books[si].id">
-                    <p class="mb-10 mr-50 is-uppercase">Great minds think alike. This book is already in our directory.</p>
+                  <div v-if="books[si]">
+                    <p class="mb-10 is-uppercase" style="font-weight: bold; max-width: 265px;">Great minds think alike. This book is already in our directory.</p>
                     <button class="button is-rounded" @click="clearSubmission(si)">
                       Clear Info
                     </button>
                   </div>
-                  <div v-if="coverImage(si)" class="column field">
+                  <div v-else-if="coverImage(si)" class="column field">
                     <div class="control mb-20">
                       <label class="label">Is this your book?</label>
                       <button @click.prevent="setConfirmed(si, true)" class="button is-rounded mr-2" :class="{ 'is-primary': submissions[si].confirmed !== false, 'is-selected': submissions[si].confirmed }" :disabled="submissions[si].confirmed" :style="submissions[si].confirmed ? { cursor: 'default' } : null">Yes</button>
