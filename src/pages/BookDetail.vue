@@ -3,6 +3,7 @@ import Clipboard from 'clipboard'
 import LazyImage from '@/components/LazyImage'
 import AuthorWidget from '@/components/AuthorWidget'
 import BookmarkButton from '@/components/BookmarkButton'
+import BookDetailRoute from '@/components/BookDetailRoute'
 import BooksFilter from '@/components/BooksFilter'
 import NotFound from '@/pages/NotFound'
 
@@ -11,6 +12,7 @@ export default {
   components: {
     AuthorWidget,
     BookmarkButton,
+    BookDetailRoute,
     BooksFilter,
     LazyImage,
     NotFound,
@@ -76,8 +78,8 @@ export default {
 
         <div class="is-flex is-justify-content-flex-end">
           <div class="mb-5">
-            <router-link v-if="prevBook" :to="{ name: 'BookDetail', params: {isbn: prevBook.isbn} }" class="is-uppercase is-primary mx-6">&lt; Previous Book</router-link>
-            <router-link v-if="nextBook" :to="{ name: 'BookDetail', params: {isbn: nextBook.isbn}  }" class="is-uppercase is-primary">Next Book &gt;</router-link>
+            <BookDetailRoute v-if="prevBook" :book="prevBook" class="is-uppercase is-primary mx-6">&lt; Previous Book</BookDetailRoute>
+            <BookDetailRoute v-if="nextBook" :book="nextBook" class="is-uppercase is-primary">Next Book &gt;</BookDetailRoute>
           </div>
         </div>
 

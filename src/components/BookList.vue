@@ -2,12 +2,14 @@
 
 import AuthorWidget from '@/components/AuthorWidget'
 import BookmarkButton from '@/components/BookmarkButton'
+import BookDetailRoute from '@/components/BookDetailRoute'
 
 export default {
   props: ['book'],
   components: {
-    'author-widget': AuthorWidget,
-    'bookmark-button': BookmarkButton
+    AuthorWidget,
+    BookmarkButton,
+    BookDetailRoute,
   },
   created() {
     // this.$store.dispatch('loadImage', this.book.cover)
@@ -34,9 +36,9 @@ export default {
 <template>
   <div class="book-list-wrapper columns">
     <div class="column is-one-third p-0 mb-20">
-      <router-link :to="{name:'BookDetail',params:{isbn:book.isbn}}" class="cover-data">
+      <BookDetailRoute :book="book" class="cover-data">
         <div class="img-cover bg-secondary" :style="{width: '100%', paddingTop: coverRatio+'%', backgroundImage: 'url('+bgImage+')', backgroundSize: 'contain'}"></div>
-      </router-link>
+      </BookDetailRoute>
     </div>
     <div class="column is-two-thirds is-align-content-center p-0">
       <div class="columns is-mobile is-vcentered m-0" style="line-height: 1.25;">
@@ -45,9 +47,9 @@ export default {
 
           <div class="is-flex is-justify-content-space-between mb-20">
             <div>
-              <router-link :to="{name:'BookDetail',params:{isbn:book.isbn}}" class="cover-data">
+              <BookDetailRoute :book="book" class="cover-data">
                 <h3 class="mb-10" style="color: black; margin-right: 15px;">{{book.title}}</h3>
-              </router-link>
+              </BookDetailRoute>
               <div v-for="person of book.authors" :key="person">
                 <author-widget :name="person" />
               </div>

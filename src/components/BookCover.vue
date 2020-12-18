@@ -1,12 +1,14 @@
 <script>
 import AuthorWidget from '@/components/AuthorWidget'
 import BookmarkButton from '@/components/BookmarkButton'
+import BookDetailRoute from '@/components/BookDetailRoute'
 
 export default {
   props: ['book'],
   components: {
-    'author-widget': AuthorWidget,
-    'bookmark-button': BookmarkButton
+    AuthorWidget,
+    BookmarkButton,
+    BookDetailRoute,
   },
   computed: {
     coverRatio() {
@@ -29,7 +31,7 @@ export default {
 </script>
 
 <template>
-  <router-link :to="{name: 'BookDetail',params:{isbn:book.isbn}}">
+  <BookDetailRoute :book="book">
     <div :style="{width: '100%', paddingTop: coverRatio+'%', backgroundImage: 'url('+bgImage+')', backgroundSize: 'contain'}" class="book-cover-wrapper bg-secondary">
       <div class="cover-shadow"></div>
       <div class="cover-data">
@@ -57,7 +59,7 @@ export default {
         </div>
 
     </div>
-  </router-link>
+  </BookDetailRoute>
 </template>
 
 <style lang="scss" scoped>
