@@ -57,7 +57,11 @@ export default {
       return this.author ? this.author.role === 'author' : true
     },
     books() {
-      return this.author ? this.$store.getters['books/list'].filter(book => book.authors.includes(this.author.name)) : []
+      return this.author ? this.$store.getters['books/list'].filter(book =>
+        (book.authors || []).includes(this.author.name) ||
+        (book.illustrators || []).includes(this.author.name) ||
+        Object.keys(book.creators || {}).includes(this.author.id)
+      ) : []
     },
     bgImage() {
       return this.author.photo

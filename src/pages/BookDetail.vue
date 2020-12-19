@@ -2,6 +2,7 @@
 import Clipboard from 'clipboard'
 import LazyImage from '@/components/LazyImage'
 import AuthorWidget from '@/components/AuthorWidget'
+import CreatorsWidget from '@/components/CreatorsWidget'
 import BookmarkButton from '@/components/BookmarkButton'
 import BookDetailRoute from '@/components/BookDetailRoute'
 import BooksFilter from '@/components/BooksFilter'
@@ -11,6 +12,7 @@ export default {
   name: 'BookDetail',
   components: {
     AuthorWidget,
+    CreatorsWidget,
     BookmarkButton,
     BookDetailRoute,
     BooksFilter,
@@ -93,9 +95,8 @@ export default {
           </div>
 
           <div class="authors divider-bottom">
-            <div v-for="person of book.authors" :key="person" class="mb-2">
-              <author-widget :name="person"></author-widget>
-            </div>
+            <author-widget class="mb-2" v-for="person of book.authors" :key="person" :name="person"></author-widget>
+            <creators-widget class="mb-2" v-if="book.creators" :creators="book.creators" :linked="true"/>
           </div>
 
           <p style="font-size: 22px;">{{book.description}}</p>

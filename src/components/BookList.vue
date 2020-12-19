@@ -1,6 +1,7 @@
 <script>
 
 import AuthorWidget from '@/components/AuthorWidget'
+import CreatorsWidget from '@/components/CreatorsWidget'
 import BookmarkButton from '@/components/BookmarkButton'
 import BookDetailRoute from '@/components/BookDetailRoute'
 
@@ -8,6 +9,7 @@ export default {
   props: ['book'],
   components: {
     AuthorWidget,
+    CreatorsWidget,
     BookmarkButton,
     BookDetailRoute,
   },
@@ -50,8 +52,9 @@ export default {
               <BookDetailRoute :book="book" class="cover-data">
                 <h3 class="mb-10" style="color: black; margin-right: 15px;">{{book.title}}</h3>
               </BookDetailRoute>
-              <div v-for="person of book.authors" :key="person">
-                <author-widget :name="person" />
+              <div class="authors">
+                <author-widget v-for="person of book.authors" :key="person" :name="person"></author-widget>
+                <creators-widget v-if="book.creators" :creators="book.creators" :linked="true"/>
               </div>
             </div>
 

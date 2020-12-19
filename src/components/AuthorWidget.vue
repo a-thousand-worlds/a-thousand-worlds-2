@@ -10,6 +10,11 @@ export default {
   created() {
     this.person = this.$store.getters['creators/list'].find(x => x.name === this.name)
   },
+  watch: {
+    '$store.state.creators.data'(next) {
+      this.person = this.$store.getters['creators/list'].find(x => x.name === this.name)
+    }
+  },
   computed: {
     isAuthor() {
       return !this.person || this.person.role === 'author'
