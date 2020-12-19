@@ -29,7 +29,7 @@ export default {
       }
     },
     submitterLoaded(user) {
-      this.submitters[user.uid] = `${user.firstName} ${user.lastName}`
+      this.submitters[user.uid] = user.name
     },
     async reloadSubmissions() {
       this.loading = true
@@ -105,13 +105,12 @@ export default {
     </div>
     <p v-if="!subsGroups.length">No Submissions to review</p>
     <div v-else>
-      <div class="sub-group" v-for="(group, gid) of subsGroups" :key="gid">
+      <div class="sub-group py-20" v-for="(group, gid) of subsGroups" :key="gid">
         <div>
           <button
             :disabled="loading"
             @click="approveGroup(group)"
             class="level-item is-flat is-underlined is-uppercase">Approve</button>
-          <h3>BOOK</h3>
         </div>
         <div v-for="(sub, i) of group.books" :key="i">
           <approval-book-widget
@@ -121,7 +120,7 @@ export default {
             v-model="subsGroups[gid].books[i]"/>
         </div>
         <div class="has-text-right">
-          by {{submitters[group.by]}} at {{$dateFormat(group.at)}}
+          {{ submitters[group.by] }}
         </div>
       </div>
     </div>

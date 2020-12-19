@@ -45,15 +45,12 @@ export default {
     coverRatio() {
       return this.sub?.cover?.height / this.sub?.cover?.width * 100
     },
-    coverBg() {
-      return '#ddd'
-    },
     coverUrl() {
       return this.sub?.cover?.url || this.sub?.cover?.base64
         ? this.sub?.cover?.base64.startsWith('data:image')
           ? this.sub?.cover?.base64
           : `data:image/png;base64,${this.sub?.cover?.base64}`
-        : ''
+        : this.sub.thumbnail || ''
     },
     tags() {
       const tags = this.$store.getters['tags/list'].filter(tag => this.sub.tags && this.sub.tags[tag.id])
@@ -194,9 +191,24 @@ Continue and create book?`
       <input :disabled="busy" type="checkbox" v-model="selected"/>
     </div>
     -->
-    <div class="column is-3 is-offset-1">
 
-      <div>
+    <!-- cover -->
+    <div class="column is-2 is-offset-1">
+      <div class="bg-secondary cover-wrapper" :style="{'padding-top': coverRatio +'%', 'background-image': 'url('+coverUrl+')'}">
+        <div v-if="busy" class="upload-icon loading">
+          <i class="fas fa-spinner fa-pulse fa-fw"></i>
+        </div>
+        <label v-if="!busy" class="upload-icon" for="cover-upload">
+          <i class="fas fa-file-upload fa-fw"></i>
+        </label>
+        <input @change.prevent="fileChange($event)" type="file" id="cover-upload" class="cover-file-uploader">
+      </div>
+    </div>
+
+    <!-- title, authors, illustrators -->
+    <div class="column is-3">
+
+      <div style="font-weight: bold;">
         <input-field
           :disabled="busy"
           :placeholder="'Title'"
@@ -206,25 +218,27 @@ Continue and create book?`
         <multi-person-field
           :disabled="busy"
           :role="'author'"
-          :placeholder="'authors'"
+          :placeholder="'author(s)'"
           :search-db="false"
+          pre-text="by"
           v-model="sub.authors"/>
       </div>
       <div>
         <multi-person-field
         :disabled="busy"
         :role="'illustrator'"
-        :placeholder="'illustrators'"
+        :placeholder="'illustrator(s)'"
         :search-db="false"
+          pre-text="illustrated by"
         v-model="sub.illustrators"/>
       </div>
-      <div>
+      <!-- <div>
         <input-field
           :disabled="busy"
           :placeholder="'ISBN'"
           v-model="sub.isbn"/>
       </div>
-      <!-- <div>
+      <div>
         <input-field
           :disabled="busy"
           :placeholder="'Year'"
@@ -238,9 +252,9 @@ Continue and create book?`
       </div> -->
     </div>
 
-    <div class="column is-5">
+    <!-- tags -->
+    <div class="column is-5" style="margin-top: -20px;">
       <div class="tags">
-
           <div v-for="(tag, tagi) of tags" :key="tagi">
             <span v-if="!tag.id" class="tag-label new" title="Tag not exists and will be created!">
               {{tag.tag}}
@@ -251,20 +265,13 @@ Continue and create book?`
           </div>
 
       </div>
-      <ckeditor :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" v-model="sub.summary"/>
-    </div>
-    <div class="column is-2">
-      <div class="cover-wrapper" :style="{'padding-top': coverRatio +'%', 'background-color': coverBg, 'background-image': 'url('+coverUrl+')'}">
-        <div v-if="busy" class="upload-icon loading">
-          <i class="fas fa-spinner fa-pulse fa-fw"></i>
-        </div>
-        <label v-if="!busy" class="upload-icon" for="cover-upload">
-          <i class="fas fa-file-upload fa-fw"></i>
-        </label>
-        <input @change.prevent="fileChange($event)" type="file" id="cover-upload" class="cover-file-uploader">
+      <div v-if="sub && sub.summary">
+        <ckeditor :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" v-model="sub.summary"/>
       </div>
     </div>
-    <div class="column is-1">
+
+    <!-- delete -->
+    <div class="column is-1 has-text-right">
       <button :class="{disabled:busy}" :disabled="busy" @click="reject()" class="is-flat is-uppercase is-underlined">
         <i class="fas fa-times"></i>
       </button>

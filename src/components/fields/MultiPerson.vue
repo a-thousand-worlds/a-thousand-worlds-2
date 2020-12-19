@@ -1,7 +1,7 @@
 <script>
 
 export default {
-  props: ['modelValue', 'disabled', 'searchDb', 'role', 'placeholder'],
+  props: ['modelValue', 'disabled', 'pre-text', 'searchDb', 'role', 'placeholder'],
   emits: ['update:modelValue', 'person-selected', 'person-removed'],
   data() {
     return {
@@ -94,7 +94,8 @@ export default {
 
 <div class="control">
   <div class="field is-grouped">
-    <div class="control w-50">
+    <div class="control is-flex is-flex-wrap-wrap w-100">
+      <div class="mr-1" style="white-space: nowrap;">{{ preText }}</div>
       <div
         :class="{disabled:disabled}"
         class="w-50 pointer placeholder"
@@ -114,7 +115,7 @@ export default {
         @input="doSearch"
         ref="input"
         type="text"
-        class="input"
+        class="input w-50"
         v-model="names">
       <div v-click-outside="onClickOutside" v-if="searches.length" class="search-wrap">
         <div class="search-results">
@@ -124,9 +125,9 @@ export default {
         </div>
       </div>
     </div>
-    <div v-if="mode === 'view' && hasNewPeople" class="control">
+    <!-- <div v-if="mode === 'view' && hasNewPeople" class="control">
       <i :class="{disabled:disabled}" class="fas fa-exclamation-triangle fa-danger" title="There is a not existing in database person. On book approve they will be automatically approved and created without biography"></i>
-    </div>
+    </div> -->
   </div>
 </div>
 

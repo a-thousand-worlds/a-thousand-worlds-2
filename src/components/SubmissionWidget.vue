@@ -6,10 +6,9 @@ export default {
   components: {
     StaticBookCover,
   },
-  data() {
-    return {
-      loading: true,
-      sub: null
+  computed: {
+    sub() {
+      return this.$store.state.bookSubmissions.data[this.sid]
     }
   },
   methods: {
@@ -17,18 +16,6 @@ export default {
       this.$store.dispatch('bookSubmissions/delete', this.sid)
     }
   },
-  created() {
-    if (this.$store.state.bookSubmissions.data.[this.sid]) {
-      this.sub = this.$store.state.bookSubmissions.data[this.sid]
-      this.loading = false
-      return
-    }
-    this.$store.dispatch('bookSubmissions/loadOne', this.sid)
-      .then(() => {
-        this.sub = this.$store.state.bookSubmissions.data[this.sid]
-        this.loading = false
-      })
-  }
 }
 
 </script>
@@ -37,13 +24,13 @@ export default {
 
 <div>
 
-  <div v-if="loading">
+  <div v-if="!$store.state.bookSubmissions.loaded">
     <div class="button is-static is-loading">loading</div>
   </div>
-  <div v-else-if="sub.type === 'book'">
+  <div v-else-if="sub?.type === 'book'">
     <StaticBookCover :book="sub" />
   </div>
-  <div v-else-if="sub.type === 'bundle'">
+  <div v-else-if="sub?.type === 'bundle'">
     <h4>
       <i class="fas fa-cubes"></i> Bundle
     </h4>

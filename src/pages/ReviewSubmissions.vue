@@ -10,6 +10,14 @@ export default {
     return {
       type: this.$router.currentRoute._value.params.type,
     }
+  },
+  computed: {
+    label() {
+      return this.type === 'books' ? 'Book'
+        : this.type === 'bundles' ? 'Bundle'
+        : this.type === 'people' ? 'People'
+        : null
+    },
   }
 }
 
@@ -24,7 +32,7 @@ export default {
         <router-link :to="{ name: 'Dashboard' }" class="is-uppercase is-primary">&lt; Back to Dashboard</router-link>
       </div>
 
-      <h1 class="divider-bottom">Review Submissions</h1>
+      <h1 class="divider-bottom is-capitalized">Review {{ label }} Submissions</h1>
       <SubmissionsReviewList />
     </div>
   </div>
