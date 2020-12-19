@@ -20,8 +20,10 @@ async function loadImage(url) {
   const sharpImage = await sharp(res.data).toFormat('png')
   const meta = await sharpImage.metadata()
   const buffer = await sharpImage.toBuffer()
+
   return {
     url,
+    buffer,
     base64: 'data:image/png;base64,' + buffer.toString('base64'),
     width: meta.width,
     height: meta.height

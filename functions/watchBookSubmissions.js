@@ -1,6 +1,9 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 const coverImageByISBN = require('./util/coverImageByISBN')
+const UUID = require('uuid')
+
+const getDownloadUrl = (fileName, bucketName, token) => `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(fileName)}?alt=media&token=${token}`
 
 const watchBookSubmissions = functions
   .runWith({
@@ -28,16 +31,29 @@ const watchBookSubmissions = functions
     }
 
     console.log(new Date(), 'Saving cover to storage:', book.isbn)
-    await admin.storage()
-      .bucket('gs://' + JSON.parse(process.env.FIREBASE_CONFIG).storageBucket)
-      .file(`books/${context.params.id}`)
-      .save(img.base64, {
-        contentType: 'image/png',
-        cacheControl: 'public,max-age=31536000',
-        resumable: false,
-      })
 
-    console.log(new Date(), 'Cover saved:', book.isbn)
+    const bucket = admin.storage().bucket()
+    const uuid = UUID.v4()
+    const fname = `submits/${context.params.id}`
+    const file = await bucket.file(fname)
+    await file
+      .save(img.buffer, {
+        metadata: {
+          contentType: 'image/png',
+          cacheControl: 'public,max-age=31536000',
+          metadata: {
+            firebaseStorageDownloadTokens: uuid
+          }
+        }
+      })
+    const url = getDownloadUrl(fname, bucket.name, uuid)
+
+    await snap.ref.child('cover').set({
+      url,
+      width: img.width,
+      height: img.height
+    })
+    console.log(new Date(), 'Cover saved:', book.isbn, url)
 
   })
 
