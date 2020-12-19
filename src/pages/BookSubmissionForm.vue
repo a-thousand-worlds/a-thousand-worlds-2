@@ -25,25 +25,21 @@ export default {
       )
     },
     draftable() {
-      return this.submissions
-        .map(x => x.title || x.authors || x.illustrators || x.isbn)
-        .reduce((acc, x) => x || acc, false)
-        && this.books.reduce((acc, x) => x && x.id ? false : acc, true)
+      return this.submissions.every(sub => sub.title || sub.authors || sub.illustrators || sub.isbn)
+        && !this.books.some(book => book?.id)
     },
     submitable() {
-      return this.submissions
-        .map(x => x.title && x.authors)
-        .reduce((acc, x) => x && acc, true)
-        && this.books.reduce((acc, x) => x && x.id ? false : acc, true)
+      return this.submissions.every(sub => sub.title && sub.authors && sub.isbn && sub.confirmed !== null)
+        && !this.books.some(book => book?.id)
     }
   },
   created() {
     if (Array.isArray(this.$store.state.user.user?.profile.draftBooks) && this.$store.state.user.user?.profile.draftBooks.length) {
-      this.submissions = this.$store.state.user.user?.profile.draftBooks.map(x => {
-        if (!x.tags) {
-          x.tags = {}
+      this.submissions = this.$store.state.user.user?.profile.draftBooks.map(book => {
+        if (!book.tags) {
+          book.tags = {}
         }
-        return x
+        return book
       })
     }
     else {
@@ -74,23 +70,19 @@ export default {
         this.submissions[si].isbn = null
       }
     },
-    submitForReview() {
+    async submitForReview() {
       this.$store.commit('ui/setBusy', true)
-      this.$store.dispatch('bookSubmissions/submit', this.submissions)
-        .then(() => {
-          this.$store.commit('ui/setBusy', false)
-          // eslint-disable-next-line fp/no-mutating-methods
-          this.$router.push({ name: 'Dashboard' })
-        })
+      await this.$store.dispatch('bookSubmissions/submit', this.submissions)
+      this.$store.commit('ui/setBusy', false)
+      // eslint-disable-next-line fp/no-mutating-methods
+      this.$router.push({ name: 'Dashboard' })
     },
-    saveDraft() {
+    async saveDraft() {
       this.$store.commit('ui/setBusy', true)
-      this.$store.dispatch('user/saveBookSubmissionsDraft', this.submissions)
-        .then(() => {
-          this.$store.commit('ui/setBusy', false)
-          // eslint-disable-next-line fp/no-mutating-methods
-          this.$router.push({ name: 'Dashboard' })
-        })
+      await this.$store.dispatch('user/saveBookSubmissionsDraft', this.submissions)
+      this.$store.commit('ui/setBusy', false)
+      // eslint-disable-next-line fp/no-mutating-methods
+      this.$router.push({ name: 'Dashboard' })
     },
     newSubmissionObject() {
       return {
@@ -157,14 +149,14 @@ export default {
             </div>
 
             <div class="field">
-              <label class="label">Author</label>
+              <label class="label">Author(s)</label>
               <div class="control">
                 <input class="input" type="text" :disabled="$uiBusy || (books[si]?.id)" v-model="submissions[si].authors" @input="titleOrAuthorChanged(si)"/>
               </div>
             </div>
 
             <div class="field">
-              <label class="label">Illustrator</label>
+              <label class="label">Illustrator(s)</label>
               <div class="control">
                 <input class="input" type="text" :disabled="$uiBusy || (books[si]?.id)" v-model="submissions[si].illustrators"/>
               </div>
@@ -245,8 +237,8 @@ export default {
         <hr />
 
         <div class="field is-grouped">
-          <button :disabled="!draftable||$uiBusy" :class="{'is-loading':$uiBusy}" @click.prevent="saveDraft()" class="button is-rounded is-fullwidth mr-20">Save as draft</button>
-          <button :disabled="!submitable||$uiBusy" :class="{'is-loading':$uiBusy}" @click.prevent="submitForReview()" class="button is-rounded is-primary is-fullwidth">Submit for review</button>
+          <button :disabled="!draftable || $uiBusy" :class="{'is-loading':$uiBusy}" @click.prevent="saveDraft()" class="button is-rounded is-fullwidth mr-20">Save as draft</button>
+          <button :disabled="!submitable || $uiBusy" :class="{'is-loading':$uiBusy}" @click.prevent="submitForReview()" class="button is-rounded is-primary is-fullwidth">Submit for review</button>
         </div>
 
       </form>
