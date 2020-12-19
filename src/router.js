@@ -160,6 +160,13 @@ const routes = [
       access: ['admin', 'superadmin']
     }
   }, {
+    path: '/admin/review/:type',
+    name: 'ReviewSubmissions',
+    component: () => import(/* webpackChunkName: "admin" */ './pages/ReviewSubmissions.vue'),
+    meta: {
+      access: ['admin', 'superadmin']
+    }
+  }, {
     path: '/:catchAll(.*)',
     name: 'NotFound',
     component: NotFound,

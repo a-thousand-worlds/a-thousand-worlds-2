@@ -56,6 +56,7 @@ const store = createStore({
       await ctx.dispatch('content/subscribe')
       await ctx.dispatch('creators/subscribe')
       await ctx.dispatch('invites/subscribe')
+      await ctx.dispatch('bookSubmissions/subscribe')
       await ctx.dispatch('tags/subscribe')
       await ctx.dispatch('user/subscribe')
       await ctx.dispatch('users/subscribe')

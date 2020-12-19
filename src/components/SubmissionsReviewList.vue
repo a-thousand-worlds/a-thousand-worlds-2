@@ -108,33 +108,29 @@ export default {
 
   <section class="section">
 
-    <div class="level is-mobile">
-      <div class="level-left">
-        <div class="level-item">
-          <h2>Review Submissions</h2>
-        </div>
-      </div>
+    <div v-if="loading" class="my-50">
+      <img src="@/assets/icons/loading.gif" />
     </div>
-
     <p v-if="!subsGroups.length">No Submissions to review</p>
-
-    <div class="sub-group" v-for="(group, gid) of subsGroups" :key="gid">
-      <div>
-        <button
-          :disabled="loading"
-          @click="approveGroup(group)"
-          class="level-item is-flat is-underlined is-uppercase">Approve</button>
-        <h3>BOOK</h3>
-      </div>
-      <div v-for="(sub, i) of group.books" :key="i">
-        <approval-book-widget
-          @mark-me="markBookSubmission($event, gid, i)"
-          @reject-me="rejectBookSubmission($event, gid, i)"
-          @submitter-loaded="submitterLoaded($event)"
-          v-model="subsGroups[gid].books[i]"/>
-      </div>
-      <div class="has-text-right">
-        by {{submitters[group.by]}} at {{$dateFormat(group.at)}}
+    <div v-else>
+      <div class="sub-group" v-for="(group, gid) of subsGroups" :key="gid">
+        <div>
+          <button
+            :disabled="loading"
+            @click="approveGroup(group)"
+            class="level-item is-flat is-underlined is-uppercase">Approve</button>
+          <h3>BOOK</h3>
+        </div>
+        <div v-for="(sub, i) of group.books" :key="i">
+          <approval-book-widget
+            @mark-me="markBookSubmission($event, gid, i)"
+            @reject-me="rejectBookSubmission($event, gid, i)"
+            @submitter-loaded="submitterLoaded($event)"
+            v-model="subsGroups[gid].books[i]"/>
+        </div>
+        <div class="has-text-right">
+          by {{submitters[group.by]}} at {{$dateFormat(group.at)}}
+        </div>
       </div>
     </div>
 
@@ -147,6 +143,9 @@ export default {
 .sub-group {
   padding-top: 2rem;
   margin-top: 2rem;
-  border-top: 1px solid $atw-base;
+  border-bottom: 1px solid $atw-base;
+}
+.sub-group:last-child {
+  border: none;
 }
 </style>
