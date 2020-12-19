@@ -259,7 +259,7 @@ export default {
     },
     '$store.state.user.user'(next, prev) {
       if (!prev && !!next) {
-        if (this.$iam('creator') || this.$iam('contributor') || this.$iam('admin') || this.$iam('superadmin')) {
+        if (this.$can('viewDashboard')) {
           // eslint-disable-next-line fp/no-mutating-methods
           this.$router.push({ name: 'Dashboard' })
         }

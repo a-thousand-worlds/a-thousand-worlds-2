@@ -1,6 +1,6 @@
 import firebase from '@/firebase'
 import { firebaseGet } from '@/utils'
-import { get } from '@/util/get-set'
+import { get, set } from '@/util/get-set'
 
 /** Wraps a Firebase collection in vuex module. */
 const collectionModule = name => ({
@@ -14,8 +14,8 @@ const collectionModule = name => ({
       state.data = data
       state.loaded = true
     },
-    setOne(state, { key, data }) {
-      state.data[key] = data
+    setOne(state, { path, data }) {
+      set(state.data, path, data)
     }
   },
   getters: {
@@ -53,10 +53,10 @@ const collectionModule = name => ({
       return valueNotNull
     },
     /** Loads single element from Firebase */
-    async loadOne(state, key) {
-      const value = await firebaseGet(`${name}/${key}`)
+    async loadOne(state, path) {
+      const value = await firebaseGet(`${name}/${path}`)
       const valueNotNull = value || {}
-      state.commit('setOne', { key, data: valueNotNull })
+      state.commit('setOne', { path, data: valueNotNull })
       return valueNotNull
     },
     /** Saves a record to the collection in Firebase. */
@@ -73,10 +73,10 @@ const collectionModule = name => ({
         state.commit('set', snap.val() || {})
       })
     },
-    /** Removes collection entry from  Firebase */
-    async remove(state, key) {
-      if (!key) throw new Error('key required')
-      const ref = firebase.database().ref(`${name}/${key}`)
+    /** Removes collection entry from Firebase */
+    async remove(state, path) {
+      if (!path) throw new Error('path required')
+      const ref = firebase.database().ref(`${name}/${path}`)
       await ref.remove()
     }
   },

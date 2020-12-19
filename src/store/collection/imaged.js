@@ -6,14 +6,14 @@ import Jimp from 'jimp'
 
 const module = (name, field) => mergeOne(collection(name), {
   actions: {
-    async saveWithImage(state, { key, value }) {
-      if (!key) throw new Error('key required')
+    async saveWithImage(state, { path, value }) {
+      if (!path) throw new Error('path required')
       if (typeof value !== 'object') throw new Error('value should be object')
       const image = value[field]
       if (image?.downloadUrl?.length) {
         const img = await Jimp.read(image.downloadUrl)
         const buff = await img.getBufferAsync(Jimp.MIME_PNG)
-        const ref = await firebase.storage().ref(`${name}/${key}`)
+        const ref = await firebase.storage().ref(`${name}/${path}`)
         await ref.put(buff, { contentType: 'image/png', cacheControl: 'public,max-age=3600' })
         const url = await ref.getDownloadURL()
         value[field] = {
@@ -26,7 +26,7 @@ const module = (name, field) => mergeOne(collection(name), {
       if (image?.base64?.length) {
         const img = await Jimp.read(image.base64)
         const buff = await img.getBufferAsync(Jimp.MIME_PNG)
-        const ref = await firebase.storage().ref(`${name}/${key}`)
+        const ref = await firebase.storage().ref(`${name}/${path}`)
         await ref.put(buff, { contentType: 'image/png', cacheControl: 'public,max-age=3600' })
         const url = await ref.getDownloadURL()
         value[field] = {
@@ -36,13 +36,13 @@ const module = (name, field) => mergeOne(collection(name), {
           height: img.bitmap.height
         }
       }
-      await state.dispatch('save', { key, value })
+      await state.dispatch('save', { path, value })
     },
     /** removes element and related image from firestore */
-    async removeWithImage(state, key) {
-      if (!key) throw new Error('key required')
-      await state.dispatch(`remove`, key)
-      const ref = await firebase.storage().ref(`${name}/${key}`)
+    async removeWithImage(state, path) {
+      if (!path) throw new Error('path required')
+      await state.dispatch(`remove`, path)
+      const ref = await firebase.storage().ref(`${name}/${path}`)
       await ref.delete()
     }
   }

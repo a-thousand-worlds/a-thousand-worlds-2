@@ -16,7 +16,7 @@ export default {
   methods: {
     addTag() {
       const id = v4()
-      this.$store.dispatch('tags/save', { key: id, value: { id, ...this.addTagTag } }).then(() => {
+      this.$store.dispatch('tags/save', { path: id, value: { id, ...this.addTagTag } }).then(() => {
         this.addTagTag = {}
       })
     },
@@ -32,7 +32,7 @@ export default {
       const tag = { ...this.edits[tagid] }
       this.$store.commit('ui/setBusy', true)
       /**/
-      this.$store.dispatch('tags/save', { key: tagid, value: tag }).then(() => {
+      this.$store.dispatch('tags/save', { path: tagid, value: tag }).then(() => {
         this.edits[tagid] = null
         this.$store.commit('ui/setBusy', false)
       })

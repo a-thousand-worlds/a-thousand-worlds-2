@@ -22,7 +22,7 @@ export default {
         description: this.description || '',
         books: this.books
       }
-      this.$store.dispatch('saveBundleSubmissionDraft', data)
+      this.$store.dispatch('saveBundleSubmissionsDraft', data)
         .then(() => {
           // eslint-disable-next-line fp/no-mutating-methods
           this.$router.push({ name: 'Dashboard' })
@@ -34,7 +34,7 @@ export default {
         description: this.description || '',
         books: this.books
       }
-      this.$store.dispatch('submitBundleSuggestion', data)
+      this.$store.dispatch('submitBundleSubmission', data)
         .then(() => {
           // eslint-disable-next-line fp/no-mutating-methods
           this.$router.push({ name: 'Dashboard' })

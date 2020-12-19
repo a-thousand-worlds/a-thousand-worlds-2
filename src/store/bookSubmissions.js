@@ -1,9 +1,9 @@
 import mergeOne from '@/util/mergeOne'
-import collection from '@/store/collection/imaged'
+import collection from '@/store/collection/module'
 import { v4 } from 'uuid'
 import dayjs from 'dayjs'
 
-const module = mergeOne(collection('submits/books', 'cover'), {
+const module = mergeOne(collection('submits/books'), {
   getters: {
     list: state => state.loaded
       ? Object.keys(state.data)
@@ -47,15 +47,15 @@ const module = mergeOne(collection('submits/books', 'cover'), {
           description: sub.description || '',
           year: sub.year || '',
           publisher: sub.publisher || '',
-          cover: sub.cover ? { ...sub.cover } : { url: '', base64: '', width: 0, height: 0 },
+          thumbnail: sub.thumbnail,
           illustrators: Array.isArray(sub.illustrators) ? sub.illustrators.join('. ') : sub.illustrators || '',
           isbn: sub.isbn || '',
           tags: sub.tags || {},
           otherTag: sub.otherTag || ''
         }
-        await context.dispatch('saveWithImage', { key: sid, value: subData })
+        await context.dispatch('save', { path: sid, value: subData })
         profile.submissions[sid] = 'review'
-        context.commit('setOne', { key: sid, value: subData })
+        context.commit('setOne', { path: sid, value: subData })
         // eslint-disable-next-line  fp/no-mutating-methods
         ids.push(sid)
       }
@@ -68,8 +68,8 @@ const module = mergeOne(collection('submits/books', 'cover'), {
       const now = dayjs()
       sub.approvedBy = context.rootState.user.user.uid
       sub.approvedAt = now.format()
-      await context.dispatch('save', { key: sub.id, value: sub })
-      context.commit('setOne', { key: sub.id, value: sub })
+      await context.dispatch('save', { path: sub.id, value: sub })
+      context.commit('setOne', { path: sub.id, value: sub })
       const profile = context.rootState.user.user.profile
       profile.submissions[sub.id] = 'reject'
       await context.dispatch('user/saveProfile', profile, { root: true })
@@ -83,7 +83,7 @@ const module = mergeOne(collection('submits/books', 'cover'), {
         // create tags if required
         if (sub.otherTag?.length) {
           const tagId = v4()
-          await context.dispatch('tags/save', { key: tagId, value: {
+          await context.dispatch('tags/save', { path: tagId, value: {
             id: tagId,
             tag: sub.otherTag,
             showOnFront: false,
@@ -103,7 +103,7 @@ const module = mergeOne(collection('submits/books', 'cover'), {
             .reduce((acc, person) => person.name.toLowerCase() === author.toLowerCase() ? person.id : acc, null)
           if (!cid) {
             cid = v4()
-            await context.dispatch('creators/save', { key: cid, value: { id: cid, name: author, approvedBy: context.rootState.user.user.uid } }, { root: true })
+            await context.dispatch('creators/save', { path: cid, value: { id: cid, name: author, approvedBy: context.rootState.user.user.uid } }, { root: true })
           }
           creators[cid] = creators[cid] ? 'both' : 'author'
         }
@@ -113,29 +113,25 @@ const module = mergeOne(collection('submits/books', 'cover'), {
             .reduce((acc, person) => person.name.toLowerCase() === author.toLowerCase() ? person.id : acc, null)
           if (!cid) {
             cid = v4()
-            await context.dispatch('creators/save', { key: cid, value: { id: cid, name: author, approvedBy: context.rootState.user.user.uid } }, { root: true })
+            await context.dispatch('creators/save', { path: cid, value: { id: cid, name: author, approvedBy: context.rootState.user.user.uid } }, { root: true })
           }
           creators[cid] = creators[cid] ? 'both' : 'illustrator'
         }
 
-        // push imaged collection download and resave book cover at Firesore books collection path
-        const cover = sub.cover
-        if (cover.url?.length) cover.downloadUrl = cover.url
-
         // saving book
         const bookId = v4()
-        await context.dispatch('books/saveWithImage', { key: bookId, value: {
+        await context.dispatch('books/save', { path: bookId, value: {
           id: bookId,
           submissionId: sub.id,
           title: sub.title,
           creators: creators,
-          cover: cover,
           description: sub.description,
           isbn: sub.isbn,
           goodread: sub.goodread || '',
           year: sub.year,
           publisher: sub.publisher,
           tags: sub.tags,
+          thumbnail: sub.thumbnail,
           approvedBy: context.rootState.user.user.uid,
           createdBy: sub.createdBy
         } }, { root: true })
@@ -148,13 +144,13 @@ const module = mergeOne(collection('submits/books', 'cover'), {
         // updating submission
         sub.approvedBy = context.rootState.user.user.uid
         sub.approved = true
-        await context.dispatch('save', { key: sub.id, value: sub })
+        await context.dispatch('save', { path: sub.id, value: sub })
       }
 
     },
     /** Delete submission from Firebase */
     delete: async (context, sid) => {
-      await context.dispatch('removeWithImage', sid)
+      await context.dispatch('remove', sid)
       const profile = context.rootState.user.user.profile
       profile.submissions = Object.keys(profile.submissions)
         .filter(id => id !== sid)

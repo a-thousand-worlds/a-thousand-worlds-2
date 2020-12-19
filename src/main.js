@@ -1,10 +1,10 @@
 import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
-import store from './store/'
-
 import dayjs from 'dayjs'
 import CKEditor from '@ckeditor/ckeditor5-vue'
+import App from './App.vue'
+import router from './router'
+import store from './store'
+import rights from './rights'
 
 require('@/assets/main.scss')
 
@@ -50,8 +50,15 @@ app.directive('click-outside', {
 
 app.mixin({
   methods: {
+    $can(actionName) {
+      if (!(actionName in rights)) {
+        throw new Error(`Unrecognized action name: "${actionName}"`)
+      }
+      if (this.$iam('superadmin')) return true
+      return rights[actionName].some(role => this.$iam(role))
+    },
     $iam(role) {
-      return this.$store.state.user.user?.roles?.[role] === true
+      return this.$store.state.user.user?.roles?.[role]
     },
     $dateFormat(date) {
       const d = dayjs(date)
