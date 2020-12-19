@@ -51,16 +51,16 @@ const store = createStore({
     },
 
     // start
-    async load(ctx) {
-      await ctx.dispatch('books/subscribe')
-      await ctx.dispatch('content/subscribe')
-      await ctx.dispatch('creators/subscribe')
-      await ctx.dispatch('invites/subscribe')
-      await ctx.dispatch('bookSubmissions/subscribe')
-      await ctx.dispatch('tags/subscribe')
-      await ctx.dispatch('user/subscribe')
-      await ctx.dispatch('users/subscribe')
-      ctx.commit('setLoaded')
+    async load({ state, dispatch, commit }) {
+      await dispatch('books/subscribe')
+      await dispatch('bookSubmissions/subscribe')
+      await dispatch('content/subscribe')
+      await dispatch('creators/subscribe')
+      await dispatch('invites/subscribe')
+      await dispatch('tags/subscribe')
+      await dispatch('user/subscribe')
+      await dispatch('users/subscribe')
+      commit('setLoaded')
     },
 
   }
