@@ -68,8 +68,8 @@ export default {
       this.submitter = user
       this.sub.submitter = user
       this.$emit('submitter-loaded', user)
-      if (!this.sub.description) {
-        this.sub.description = 'No summary'
+      if (!this.sub.summary) {
+        this.sub.summary = 'No summary'
       }
       if (!this.sub.cover) {
         this.sub.cover = {
@@ -101,8 +101,8 @@ export default {
         total++
         isbn++
       }
-      if (!this.sub.description || !this.sub.description.length || this.sub.description === 'No summary') {
-        warnings = [...warnings, 'no book description - add manually or search by isbn?']
+      if (!this.sub.summary || !this.sub.summary.length || this.sub.summary === 'No summary') {
+        warnings = [...warnings, 'no book summary - add manually or search by isbn?']
         total++
         isbn++
       }
@@ -147,7 +147,7 @@ Continue and create book?`
         return
       }
       const src = book.google || book.openlib
-      this.sub.description = src.description || 'No summary'
+      this.sub.summary = src.summary || 'No summary'
       this.sub.year = parseInt(src.publishedDate) || 0
       this.sub.publisher = src.publisher
       this.sub.goodread = book.grid || '0'
@@ -224,7 +224,7 @@ Continue and create book?`
           :placeholder="'ISBN'"
           v-model="sub.isbn"/>
       </div>
-      <div>
+      <!-- <div>
         <input-field
           :disabled="busy"
           :placeholder="'Year'"
@@ -235,7 +235,7 @@ Continue and create book?`
           :disabled="busy"
           :placeholder="'Publisher'"
           v-model="sub.publisher"/>
-      </div>
+      </div> -->
     </div>
 
     <div class="column is-5">
@@ -251,7 +251,7 @@ Continue and create book?`
           </div>
 
       </div>
-      <ckeditor :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" v-model="sub.description"/>
+      <ckeditor :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" v-model="sub.summary"/>
     </div>
     <div class="column is-2">
       <div class="cover-wrapper" :style="{'padding-top': coverRatio +'%', 'background-color': coverBg, 'background-image': 'url('+coverUrl+')'}">

@@ -94,17 +94,17 @@ export default {
     },
     newSubmissionObject() {
       return {
-        title: '',
         authors: '',
-        illustrators: '',
-        description: '',
-        year: '',
-        publisher: '',
-        isbn: '',
         confirmed: null,
+        illustrators: '',
+        isbn: '',
+        otherTag: '',
+        publisher: '',
+        summary: '',
         tags: {},
         thumbnail: '',
-        otherTag: ''
+        title: '',
+        year: '',
       }
     },
     addMoreSubmission() {

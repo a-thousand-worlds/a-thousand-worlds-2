@@ -33,23 +33,23 @@ const module = mergeOne(managedCollection('submits/books'), {
         const sid = v4()
         // const ref = await firebase.database().ref(`submits/books/${sid}`)
         const subData = {
-          id: sid,
-          group: submissionGroupId,
-          type: 'book',
-          approved: false,
-          approvedBy: null,
-          approvedAt: null,
           approveComment: '',
-          title: sub.title,
+          approved: false,
+          approvedAt: null,
+          approvedBy: null,
           authors: Array.isArray(sub.authors) ? sub.authors.join(', ') : sub.authors || '',
-          description: sub.description || '',
-          year: sub.year || '',
-          publisher: sub.publisher || '',
-          thumbnail: sub.thumbnail,
+          group: submissionGroupId,
+          id: sid,
           illustrators: Array.isArray(sub.illustrators) ? sub.illustrators.join('. ') : sub.illustrators || '',
           isbn: sub.isbn || '',
+          otherTag: sub.otherTag || '',
+          publisher: sub.publisher || '',
+          summary: sub.summary || '',
           tags: sub.tags || {},
-          otherTag: sub.otherTag || ''
+          thumbnail: sub.thumbnail,
+          title: sub.title,
+          type: 'book',
+          year: sub.year || '',
         }
         await context.dispatch('save', { path: sid, value: subData })
         profile.submissions[sid] = 'review'
@@ -119,19 +119,19 @@ const module = mergeOne(managedCollection('submits/books'), {
         // saving book
         const bookId = v4()
         await context.dispatch('books/save', { path: bookId, value: {
-          id: bookId,
-          submissionId: sub.id,
-          title: sub.title,
+          approvedBy: context.rootState.user.user.uid,
+          createdBy: sub.createdBy,
           creators: creators,
-          description: sub.description,
-          isbn: sub.isbn,
           goodread: sub.goodread || '',
-          year: sub.year,
+          id: bookId,
+          isbn: sub.isbn,
           publisher: sub.publisher,
+          submissionId: sub.id,
+          summary: sub.summary,
           tags: sub.tags,
           thumbnail: sub.thumbnail,
-          approvedBy: context.rootState.user.user.uid,
-          createdBy: sub.createdBy
+          title: sub.title,
+          year: sub.year,
         } }, { root: true })
 
         // updating user profile

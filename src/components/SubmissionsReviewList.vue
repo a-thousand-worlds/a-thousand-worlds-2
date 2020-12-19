@@ -98,7 +98,7 @@ export default {
 
 <template>
 
-  <section class="section">
+  <div>
 
     <div v-if="loading" class="my-50">
       <img src="@/assets/icons/loading.gif" />
@@ -126,7 +126,7 @@ export default {
       </div>
     </div>
 
-  </section>
+  </div>
 
 </template>
 

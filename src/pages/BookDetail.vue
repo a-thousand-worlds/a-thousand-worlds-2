@@ -99,7 +99,7 @@ export default {
             <creators-widget class="mb-2" v-if="book.creators" :creators="book.creators" :linked="true"/>
           </div>
 
-          <p style="font-size: 22px;">{{book.description}}</p>
+          <p style="font-size: 22px;">{{book.summary}}</p>
 
         </div>
         <div v-else>

@@ -12,18 +12,18 @@ export default {
       found: false,
       authorsRoles: [],
       book: {
-        title: '',
-        isbn: '',
-        description: '',
-        cover: '',
-        goodread: '',
-        // file: null,
-        tags: {},
         authors: [],
+        cover: '',
+        // file: null,
+        goodread: '',
         goodReads: null,
         google: null,
+        isbn: '',
         openlib: null,
         publisher: '',
+        summary: '',
+        tags: {},
+        title: '',
         year: 2020,
       }
     }
@@ -176,9 +176,9 @@ export default {
       </div>
 
       <div class="field">
-        <label class="label">Description</label>
+        <label class="label">Summary</label>
         <div class="control">
-          <textarea class="textarea" v-model="book.description"></textarea>
+          <textarea class="textarea" v-model="book.summary"></textarea>
         </div>
       </div>
 
