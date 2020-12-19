@@ -43,6 +43,16 @@ export default {
 .square {
   position: relative;
   padding: 20px;
+  white-space: nowrap;
+
+  // shrink text on tablet
+  // not mobile since the container becomes big again when stacked
+  @include tablet-only {
+    h3 {
+      font-size: 20px;
+    }
+  }
+
 }
 
 .square:after {
