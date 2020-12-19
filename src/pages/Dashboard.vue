@@ -128,12 +128,6 @@ h2.title {
   }
 }
 
-.submission-widget {
-  border: 1px solid $atw-base;
-  // margin-bottom: 0.75rem;
-  // margin-left: 0.75rem;
-}
-
 .bordered-top {
   padding-top: 2rem;
   margin-top: 2rem;

@@ -2,7 +2,7 @@
 import _ from 'lodash'
 import ISBN from 'isbn3'
 import BookTitleField from '@/components/fields/BookTitle'
-import { coverImageByISBN, findBookByKeyword } from '@/utils'
+import { findBookByKeyword } from '@/utils'
 
 export default {
   components: {
@@ -11,7 +11,6 @@ export default {
   data() {
     return {
       confirms: [],
-      loadingCover: [],
       loadingBook: [],
       submissions: [],
     }
@@ -53,24 +52,8 @@ export default {
     window.scrollTo(0, 0)
   },
   methods: {
-    isbnGlobalSearchState(si, state) {
-      this.$store.commit('ui/setBusy', state)
-    },
-    async isbnGlobalSearchResult(si, res) {
-      if (!res) {
-        console.log('nothing found')
-        return
-      }
-      this.submissions[si] = { ...this.submissions[si], ...res }
-
-      this.loadingCover[si] = true
-      const cover = await coverImageByISBN(this.submissions[si].isbn)
-      this.loadingCover[si] = false
-      if (!cover) return
-      this.submissions[si].cover = cover
-    },
     coverImage(si) {
-      const cover = this.books[si]?.cover || this.submissions[si].cover
+      const cover = this.books[si]?.cover || this.submissions[si].thumbnail
       return typeof cover === 'string'
         ? cover
         : cover?.base64?.url || ''
@@ -114,18 +97,13 @@ export default {
         title: '',
         authors: '',
         illustrators: '',
-        cover: {
-          url: '',
-          base64: '',
-          width: 0,
-          height: 0,
-        },
         description: '',
         year: '',
         publisher: '',
         isbn: '',
         confirmed: null,
         tags: {},
+        thumbnail: '',
         otherTag: ''
       }
     },
@@ -143,8 +121,8 @@ export default {
       const { authors, title } = this.submissions[si]
       if (!authors || !title) {
         this.submissions[si].isbn = null
-        this.submissions[si].cover = null
         this.submissions[si].confirmed = null
+        this.submissions[si].thumbnail = ''
         return
       }
 
@@ -155,7 +133,7 @@ export default {
       const { isbn, thumbnail } = result || {}
       if (isbn) {
         this.submissions[si].isbn = isbn
-        this.submissions[si].cover = thumbnail
+        this.submissions[si].thumbnail = thumbnail
       }
     }, 500)
   },
@@ -195,7 +173,7 @@ export default {
             <div class="field">
               <div class="columns">
                 <div class="column is-narrow">
-                  <img v-if="loadingBook[si] || loadingCover[si]" src="@/assets/icons/loading.gif">
+                  <img v-if="loadingBook[si]" src="@/assets/icons/loading.gif">
                   <div v-else class="bg-secondary">
                     <img :src="coverImage(si)" style="display: block; min-width: 100px; max-width: 265px;" :style="submissions[si].confirmed === false && !books[si] ? { visibility: 'hidden' } : null" />
                   </div>
