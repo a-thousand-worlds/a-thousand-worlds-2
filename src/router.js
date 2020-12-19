@@ -16,7 +16,7 @@ const routes = [
     name: 'People',
     component: () => import(/* webpackChunkName: "guest" */ './pages/People.vue')
   }, {
-    path: '/book/:isbn/:slug?',
+    path: '/book/:slug?-:isbn',
     name: 'BookDetail',
     component: () => import(/* webpackChunkName: "guest" */ './pages/BookDetail.vue')
   }, {
