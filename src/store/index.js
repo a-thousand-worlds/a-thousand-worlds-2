@@ -42,25 +42,21 @@ const store = createStore({
 
     // this method doesn't use store to keep values
     // it used only by administrators
-    loadContributorsSubmissions(ctx) {
-      return firebaseGet('submits')
-    },
-    // -- same
     loadContributorProfile(ctx, uid) {
       return firebaseGet(`users/${uid}/profile`)
     },
 
     // start
-    async load(ctx) {
-      await ctx.dispatch('books/subscribe')
-      await ctx.dispatch('content/subscribe')
-      await ctx.dispatch('creators/subscribe')
-      await ctx.dispatch('invites/subscribe')
-      await ctx.dispatch('bookSubmissions/subscribe')
-      await ctx.dispatch('tags/subscribe')
-      await ctx.dispatch('user/subscribe')
-      await ctx.dispatch('users/subscribe')
-      ctx.commit('setLoaded')
+    async load({ state, dispatch, commit }) {
+      await dispatch('books/subscribe')
+      await dispatch('bookSubmissions/subscribe')
+      await dispatch('content/subscribe')
+      await dispatch('creators/subscribe')
+      await dispatch('invites/subscribe')
+      await dispatch('tags/subscribe')
+      await dispatch('user/subscribe')
+      await dispatch('users/subscribe')
+      commit('setLoaded')
     },
 
   }

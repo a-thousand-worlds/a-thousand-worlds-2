@@ -14,14 +14,14 @@ export default {
   },
   computed: {
     coverRatio() {
-      if (this.updatedCover) return this.book.cover.height / this.book.cover.width * 100
+      if (this.updatedCover) return this.book.cover?.height / this.book.cover?.width * 100
       if (!this.book || !this.book.coverWidth || !this.book.coverHeight) {
         return 1
       }
       return this.book.coverHeight / this.book.coverWidth * 100
     },
     bgImage() {
-      if (this.updatedCover) return this.book.cover.url
+      if (this.updatedCover) return this.book.cover?.url
       // return this.$store.state.images[this.book.cover] || ''
       return this.book.cover || ''
     },

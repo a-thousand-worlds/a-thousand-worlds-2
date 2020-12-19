@@ -41,14 +41,14 @@ export async function metadataByISBN(code) {
   // sometimes 'YYYY-MM' sometimes other formats - dayjs manages this
   const d = dayjs(src.publishedDate)
   const ret = {
-    isbn: data.isbn,
-    title: src.title || '',
-    description: src.description || '',
     authors: src.authors || [],
+    goodread: data.goodread || '',
     illustrators: src.illustrators || [],
-    year: d.isValid() ? d.year() : '',
+    isbn: data.isbn,
     publisher: src.publisher || '',
-    goodread: data.goodread || ''
+    summary: src.description || '',
+    title: src.title || '',
+    year: d.isValid() ? d.year() : '',
   }
   return ret
 }

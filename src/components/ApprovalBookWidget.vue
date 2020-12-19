@@ -43,16 +43,16 @@ export default {
       }
     },
     coverRatio() {
-      return this.sub.cover.height / this.sub.cover.width * 100
+      return this.sub?.cover?.height / this.sub?.cover?.width * 100
     },
     coverBg() {
       return '#ddd'
     },
     coverUrl() {
-      return this.sub.cover.url || this.sub.cover.base64
-        ? this.sub.cover.base64.startsWith('data:image')
-          ? this.sub.cover.base64
-          : `data:image/png;base64,${this.sub.cover.base64}`
+      return this.sub?.cover?.url || this.sub?.cover?.base64
+        ? this.sub?.cover?.base64.startsWith('data:image')
+          ? this.sub?.cover?.base64
+          : `data:image/png;base64,${this.sub?.cover?.base64}`
         : ''
     },
     tags() {
@@ -62,16 +62,14 @@ export default {
     }
   },
   methods: {
-    reloadSub() {
-      this.$store.dispatch('loadContributorProfile', this.sub.createdBy)
-        .then(user => {
-          user.uid = this.sub.createdBy
-          this.submitter = user
-          this.sub.submitter = user
-          this.$emit('submitter-loaded', user)
-        })
-      if (!this.sub.description) {
-        this.sub.description = 'No summary'
+    async reloadSub() {
+      const user = await this.$store.dispatch('loadContributorProfile', this.sub.createdBy)
+      user.uid = this.sub.createdBy
+      this.submitter = user
+      this.sub.submitter = user
+      this.$emit('submitter-loaded', user)
+      if (!this.sub.summary) {
+        this.sub.summary = 'No summary'
       }
       if (!this.sub.cover) {
         this.sub.cover = {
@@ -98,13 +96,13 @@ export default {
         warnings = [...warnings, 'ISBN is not defined']
         total++
       }
-      if (!this.sub.cover || !this.sub.cover.base64 || !this.sub.cover.base64.length) {
+      if (!this.sub.cover || !this.sub?.cover?.base64 || !this.sub?.cover?.base64.length) {
         warnings = [...warnings, 'no book cover - upload manually or search by isbn?']
         total++
         isbn++
       }
-      if (!this.sub.description || !this.sub.description.length || this.sub.description === 'No summary') {
-        warnings = [...warnings, 'no book description - add manually or search by isbn?']
+      if (!this.sub.summary || !this.sub.summary.length || this.sub.summary === 'No summary') {
+        warnings = [...warnings, 'no book summary - add manually or search by isbn?']
         total++
         isbn++
       }
@@ -149,13 +147,14 @@ Continue and create book?`
         return
       }
       const src = book.google || book.openlib
-      this.sub.description = src.description || 'No summary'
+      this.sub.summary = src.summary || 'No summary'
       this.sub.year = parseInt(src.publishedDate) || 0
       this.sub.publisher = src.publisher
       this.sub.goodread = book.grid || '0'
-      this.sub.cover.width = book.coverWidth
-      this.sub.cover.height = book.coverHeight
-      this.sub.cover.base64 = book.cover
+      this.sub.cover = {
+        height: book.coverHeight,
+        width: book.coverWidth,
+      }
     },
     addAuthor() {
       // eslint-disable-next-line fp/no-mutating-methods
@@ -170,9 +169,11 @@ Continue and create book?`
             console.error('jimp error', err)
           }
           if (img) {
-            this.sub.cover.base64 = reader.result
-            this.sub.cover.width = img.bitmap.width
-            this.sub.cover.height = img.bitmap.height
+            this.sub.cover = {
+              base64: reader.result,
+              height: img.bitmap.width,
+              width: img.bitmap.height,
+            }
           }
         })
       }
@@ -223,7 +224,7 @@ Continue and create book?`
           :placeholder="'ISBN'"
           v-model="sub.isbn"/>
       </div>
-      <div>
+      <!-- <div>
         <input-field
           :disabled="busy"
           :placeholder="'Year'"
@@ -234,7 +235,7 @@ Continue and create book?`
           :disabled="busy"
           :placeholder="'Publisher'"
           v-model="sub.publisher"/>
-      </div>
+      </div> -->
     </div>
 
     <div class="column is-5">
@@ -250,7 +251,7 @@ Continue and create book?`
           </div>
 
       </div>
-      <ckeditor :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" v-model="sub.description"/>
+      <ckeditor :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" v-model="sub.summary"/>
     </div>
     <div class="column is-2">
       <div class="cover-wrapper" :style="{'padding-top': coverRatio +'%', 'background-color': coverBg, 'background-image': 'url('+coverUrl+')'}">

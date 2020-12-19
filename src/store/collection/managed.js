@@ -7,8 +7,8 @@ import dayjs from 'dayjs'
 const module = name => mergeOne(collection(name), {
   actions: {
     /** save method overrides parents collection/abstract::save */
-    async save(state, { key, value }) {
-      if (!key) throw new Error('key required')
+    async save(state, { path, value }) {
+      if (!path) throw new Error('path required')
       // managed collection element should be object
       if (typeof value !== 'object') throw new Error('value should be object')
 
@@ -23,7 +23,7 @@ const module = name => mergeOne(collection(name), {
       if (value.approvedBy && !value.approvedAt) {
         value.approvedAt = now.format()
       }
-      const ref = firebase.database().ref(`${name}/${key}`)
+      const ref = firebase.database().ref(`${name}/${path}`)
       await ref.set(value)
     }
   }
