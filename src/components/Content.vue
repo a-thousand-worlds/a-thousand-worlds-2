@@ -6,9 +6,6 @@ import { get } from '@/util/get-set'
 export default {
   props: ['name', 'placeholder', 'format'],
   computed: {
-    canEdit() {
-      return this.$iam('admin') || this.$iam('superadmin')
-    },
     loaded() {
       return this.$store.state.content.loaded
     },
@@ -34,7 +31,7 @@ export default {
     },
 
     html: _.debounce(function() {
-      if (this.canEdit) {
+      if (this.$can('editContent')) {
         this.$store.dispatch('content/save', { path: this.name, value: this.html })
       }
     }, 500)
@@ -45,8 +42,8 @@ export default {
 </script>
 
 <template>
-  <input v-if="format === 'one-line'" type="text" class="input" :class="className" v-model="html" :disabled="!canEdit || !loaded" />
-  <ckeditor v-else :editor="editor" v-model="html" :config="editorConfig" :disabled="!canEdit || !loaded" :class="className" />
+  <input v-if="format === 'one-line'" type="text" class="input" :class="className" v-model="html" :disabled="!$can('editContent') || !loaded" />
+  <ckeditor v-else :editor="editor" v-model="html" :config="editorConfig" :disabled="!$can('editContent') || !loaded" :class="className" />
 </template>
 
 <style scoped lang="scss">

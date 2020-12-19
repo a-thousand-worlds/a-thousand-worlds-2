@@ -32,15 +32,6 @@ export default {
     hasSubmissions() {
       return !!this.submissionsList.length
     },
-    canSuggest() {
-      return this.$iam('contributor') || this.$iam('admin') || this.$iam('superadmin')
-    },
-    canApprove() {
-      return this.$iam('admin') || this.$iam('superadmin')
-    },
-    canInvite() {
-      return this.$iam('admin') || this.$iam('superadmin')
-    },
     username() {
       return this.$store.state.user.user?.profile.name || this.$store.state.user.user?.profile.email
     },
@@ -60,7 +51,7 @@ export default {
         <router-link :to="{ name: 'Profile' }" style="color: black;">Edit your profile</router-link>
       </div>
 
-      <section v-if="canSuggest" class="section bordered-top">
+      <section v-if="$can('submit')" class="section bordered-top">
         <h2>Suggest a book or bundle for A Thousand Worlds</h2>
         <div class="field is-grouped">
           <div class="control">
@@ -72,7 +63,7 @@ export default {
         </div>
       </section>
 
-      <section v-if="canInvite" class="section bordered-top">
+      <section v-if="$can('invite')" class="section bordered-top">
         <h2>Invite Users</h2>
         <invite-widget ref="invite" format="compact" />
         <ul class="my-20">
@@ -81,11 +72,11 @@ export default {
         </ul>
       </section>
 
-      <section class="section" v-if="canSuggest && hasSubmissions">
+      <section v-if="$can('invite') && hasSubmissions" class="section">
         <DashboardYourSubmissions />
       </section>
 
-      <section v-if="canApprove" class="section">
+      <section v-if="$can('review')" class="section">
         <h2>Review Submissions</h2>
         <DashboardReviewSubmissionsPreview :bookSubmissions="bookSubmissions" :peopleSubmissions="peopleSubmissions" :bundleSubmissions="bundleSubmissions" />
       </section>

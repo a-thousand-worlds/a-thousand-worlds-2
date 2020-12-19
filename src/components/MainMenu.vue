@@ -33,7 +33,7 @@ export default {
       <li v-if="$iam('authorized')"><a @click.prevent="logout">Log Out</a></li>
     </ul>
 
-    <ul v-if="$iam('superadmin')" class="menu-list mt-5">
+    <ul v-if="$can('manageCollections')" class="menu-list mt-5">
       <li><router-link :to="{name: 'TagsManager'}">Tags Manager</router-link></li>
       <li><router-link :to="{name: 'BooksManager'}">Books Manager</router-link></li>
       <li><router-link :to="{name: 'BundlesManager'}">Bundle Manager</router-link></li>
