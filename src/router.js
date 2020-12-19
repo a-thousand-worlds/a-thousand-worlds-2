@@ -64,14 +64,14 @@ const routes = [
   }, {
     path: '/suggest/book',
     name: 'BookSuggest',
-    component: () => import(/* webpackChunkName: "contributor" */ './pages/BookSuggestionForm.vue'),
+    component: () => import(/* webpackChunkName: "contributor" */ './pages/BookSubmissionForm.vue'),
     meta: {
       access: ['contributor', 'admin', 'superadmin']
     }
   }, {
     path: '/suggest/bundle',
     name: 'BundleSuggest',
-    component: () => import(/* webpackChunkName: "contributor" */ './pages/BundleSuggestionForm.vue'),
+    component: () => import(/* webpackChunkName: "contributor" */ './pages/BundleSubmissionForm.vue'),
     meta: {
       access: ['contributor', 'admin', 'superadmin']
     }
