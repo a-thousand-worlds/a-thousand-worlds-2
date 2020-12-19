@@ -55,7 +55,7 @@ const module = mergeOne(collection('submits/books'), {
         }
         await context.dispatch('save', { path: sid, value: subData })
         profile.submissions[sid] = 'review'
-        context.commit('setOne', { key: sid, value: subData })
+        context.commit('setOne', { path: sid, value: subData })
         // eslint-disable-next-line  fp/no-mutating-methods
         ids.push(sid)
       }
@@ -69,7 +69,7 @@ const module = mergeOne(collection('submits/books'), {
       sub.approvedBy = context.rootState.user.user.uid
       sub.approvedAt = now.format()
       await context.dispatch('save', { path: sub.id, value: sub })
-      context.commit('setOne', { key: sub.id, value: sub })
+      context.commit('setOne', { path: sub.id, value: sub })
       const profile = context.rootState.user.user.profile
       profile.submissions[sub.id] = 'reject'
       await context.dispatch('user/saveProfile', profile, { root: true })
@@ -83,7 +83,7 @@ const module = mergeOne(collection('submits/books'), {
         // create tags if required
         if (sub.otherTag?.length) {
           const tagId = v4()
-          await context.dispatch('tags/save', { key: tagId, value: {
+          await context.dispatch('tags/save', { path: tagId, value: {
             id: tagId,
             tag: sub.otherTag,
             showOnFront: false,
@@ -103,7 +103,7 @@ const module = mergeOne(collection('submits/books'), {
             .reduce((acc, person) => person.name.toLowerCase() === author.toLowerCase() ? person.id : acc, null)
           if (!cid) {
             cid = v4()
-            await context.dispatch('creators/save', { key: cid, value: { id: cid, name: author, approvedBy: context.rootState.user.user.uid } }, { root: true })
+            await context.dispatch('creators/save', { path: cid, value: { id: cid, name: author, approvedBy: context.rootState.user.user.uid } }, { root: true })
           }
           creators[cid] = creators[cid] ? 'both' : 'author'
         }
@@ -113,7 +113,7 @@ const module = mergeOne(collection('submits/books'), {
             .reduce((acc, person) => person.name.toLowerCase() === author.toLowerCase() ? person.id : acc, null)
           if (!cid) {
             cid = v4()
-            await context.dispatch('creators/save', { key: cid, value: { id: cid, name: author, approvedBy: context.rootState.user.user.uid } }, { root: true })
+            await context.dispatch('creators/save', { path: cid, value: { id: cid, name: author, approvedBy: context.rootState.user.user.uid } }, { root: true })
           }
           creators[cid] = creators[cid] ? 'both' : 'illustrator'
         }
@@ -144,7 +144,7 @@ const module = mergeOne(collection('submits/books'), {
         // updating submission
         sub.approvedBy = context.rootState.user.user.uid
         sub.approved = true
-        await context.dispatch('save', { key: sub.id, value: sub })
+        await context.dispatch('save', { path: sub.id, value: sub })
       }
 
     },
