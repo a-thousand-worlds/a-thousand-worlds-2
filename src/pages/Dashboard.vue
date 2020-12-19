@@ -1,13 +1,13 @@
 <script>
 import DashboardReviewSubmissionsPreview from '@/components/DashboardReviewSubmissionsPreview'
+import DashboardYourSubmissions from '@/components/DashboardYourSubmissions'
 import InviteWidget from '@/components/InviteWidget'
-import SubmissionWidget from '@/components/SubmissionWidget'
 
 export default {
   components: {
     DashboardReviewSubmissionsPreview,
+    DashboardYourSubmissions,
     InviteWidget,
-    SubmissionWidget,
   },
   data() {
     return {
@@ -27,10 +27,7 @@ export default {
       return this.$store.state.peopleSubmissions?.data || {}
     },
     submissionsList() {
-      if (!this.$store.state.user.user?.profile.submissions) {
-        return []
-      }
-      return Object.keys(this.$store.state.user.user.profile.submissions)
+      return Object.keys(this.$store.state.user.user.profile.submissions || {})
     },
     hasSubmissions() {
       return !!this.submissionsList.length
@@ -85,12 +82,7 @@ export default {
       </section>
 
       <section class="section" v-if="canSuggest && hasSubmissions">
-        <h2>Your Submissions</h2>
-        <div class="columns is-multiline">
-          <div class="column is-6-tablet is-4-desktop is-3-widescreen" v-for="sid of submissionsList" :key="sid">
-            <submission-widget class="submission-widget" :sid="sid" :state="$store.state.user.user.profile.submissions[sid]"/>
-          </div>
-        </div>
+        <DashboardYourSubmissions />
       </section>
 
       <section v-if="canApprove" class="section">
