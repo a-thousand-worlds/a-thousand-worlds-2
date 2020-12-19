@@ -31,7 +31,7 @@ export default {
 <template>
   <div>
     <div v-if="pendingSubmissions.length">
-      <h2>Pending Submissions</h2>
+      <h2>{{ $can('review') ? 'Your ' : '' }}Pending Submissions</h2>
       <div class="columns is-multiline">
         <div class="column is-6-tablet is-4-desktop is-3-widescreen" v-for="(sid, status) of pendingSubmissions" :key="sid">
           <SubmissionWidget :sid="sid" :state="status"/>
@@ -40,7 +40,7 @@ export default {
     </div>
 
     <div v-if="acceptedSubmissions.length">
-      <h2>Accepted Submissions</h2>
+      <h2>{{ $can('review') ? 'Your ' : '' }}Accepted Submissions</h2>
       <div class="columns is-multiline">
         <div class="column is-6-tablet is-4-desktop is-3-widescreen" v-for="(sid, status) of acceptedSubmissions" :key="sid">
           <SubmissionWidget :sid="sid" :state="status"/>
