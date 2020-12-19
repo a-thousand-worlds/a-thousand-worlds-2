@@ -18,74 +18,68 @@ export default {
     this.reloadSubmissions()
   },
   methods: {
-    approveGroup(group) {
+    async approveGroup(group) {
       const books = group.books.map(book => book.title).join(', ')
       if (confirm(`Approve books <${books}>?`)) {
         this.loading = true
         this.$store.commit('ui/setBusy', true)
-        this.$store.dispatch('bookSubmissions/approve', group.books)
-          .then(() => {
-            this.reloadSubmissions()
-            this.$store.commit('ui/setBusy', false)
-          })
+        await this.$store.dispatch('bookSubmissions/approve', group.books)
+        this.reloadSubmissions()
+        this.$store.commit('ui/setBusy', false)
       }
     },
     submitterLoaded(user) {
       this.submitters[user.uid] = `${user.firstName} ${user.lastName}`
     },
-    reloadSubmissions() {
+    async reloadSubmissions() {
       this.loading = true
-      this.$store.dispatch('loadContributorsSubmissions')
-        .then(data => {
-          this.subs = data
-          const booksSubs = Object.keys(data?.books || {})
-            .map(id => data.books[id])
-            .filter(sub => !sub.approved && !sub.approvedBy && !sub.approvedAt)
-          // const bundlesSubs = Object.keys(data.bundles)
-          // .map(id => data.bundles[id])
-          this.subsGroups = []
-          const subsGroups = booksSubs
-            .reduce((acc, sub) => {
-              if (!acc[sub.group]) {
-                acc[sub.group] = {}
-              }
-              acc[sub.group][sub.id] = sub
-              return acc
-            }, {})
-          // use 0 timout to give vue time to destroy
-          // objects from previous list
-          setTimeout(() => {
-            // eslint-disable-next-line  fp/no-mutating-methods
-            this.subsList = [...booksSubs]
-              .sort((a, b) => {
-                const dA = dayjs(a.createdAt)
-                const dB = dayjs(b.createdAt)
-                return dA.isSame(dB) ? 0 : dA.isBefore(dB) ? 1 : -1
-              })
-            this.subsGroups = Object.keys(subsGroups)
-              .map(gid => {
-                const ret = {
-                  id: gid,
-                  books: Object.keys(subsGroups[gid]).reduce((acc, sid) => [...acc, subsGroups[gid][sid]], [])
-                }
-                ret.at = ret.books[0].createdAt
-                ret.by = ret.books[0].createdBy
-                return ret
-              })
-            this.loading = false
-          }, 0)
-        })
-    },
-    rejectBookSubmission(sub, i) {
-      this.loading = true
-      this.$store.dispatch('bookSubmissions/reject', sub)
-        .then(() => {
-          this.subsGroups = this.subsGroups.map(group => {
-            group.books = group.books.filter(s => s.id !== sub.id)
-            return group
+      const data = await this.$store.dispatch('loadContributorsSubmissions')
+      this.subs = data
+      const booksSubs = Object.keys(data?.books || {})
+        .map(id => data.books[id])
+        .filter(sub => !sub.approved && !sub.approvedBy && !sub.approvedAt)
+      // const bundlesSubs = Object.keys(data.bundles)
+      // .map(id => data.bundles[id])
+      this.subsGroups = []
+      const subsGroups = booksSubs
+        .reduce((acc, sub) => {
+          if (!acc[sub.group]) {
+            acc[sub.group] = {}
+          }
+          acc[sub.group][sub.id] = sub
+          return acc
+        }, {})
+      // use 0 timout to give vue time to destroy
+      // objects from previous list
+      setTimeout(() => {
+        // eslint-disable-next-line  fp/no-mutating-methods
+        this.subsList = [...booksSubs]
+          .sort((a, b) => {
+            const dA = dayjs(a.createdAt)
+            const dB = dayjs(b.createdAt)
+            return dA.isSame(dB) ? 0 : dA.isBefore(dB) ? 1 : -1
           })
-          alert('Rejected')
-        })
+        this.subsGroups = Object.keys(subsGroups)
+          .map(gid => {
+            const ret = {
+              id: gid,
+              books: Object.keys(subsGroups[gid]).reduce((acc, sid) => [...acc, subsGroups[gid][sid]], [])
+            }
+            ret.at = ret.books[0].createdAt
+            ret.by = ret.books[0].createdBy
+            return ret
+          })
+        this.loading = false
+      }, 0)
+    },
+    async rejectBookSubmission(sub, i) {
+      this.loading = true
+      await this.$store.dispatch('bookSubmissions/reject', sub)
+      this.subsGroups = this.subsGroups.map(group => {
+        group.books = group.books.filter(s => s.id !== sub.id)
+        return group
+      })
+      alert('Rejected')
     },
     /*
     approveBookSubmission(sub, i) {
