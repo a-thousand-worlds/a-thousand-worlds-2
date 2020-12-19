@@ -1,17 +1,15 @@
 import mergeOne from '@/util/mergeOne'
-import collection from '@/store/collection/module'
+import managedCollection from '@/store/collection/managed'
 import { v4 } from 'uuid'
 import dayjs from 'dayjs'
 
-const module = mergeOne(collection('submits/books'), {
+const module = mergeOne(managedCollection('submits/books'), {
   getters: {
     list: state => state.loaded
-      ? Object.keys(state.data)
-        .map(id => state.data[id])
+      ? Object.values(state.data)
       : [],
     filtered: state => state.loaded
-      ? Object.keys(state.data)
-        .map(id => state.data[id])
+      ? Object.values(state.data)
         .filter(book => {
           if (!state.filters.length) return true
           return state.filters.every(tag => (book.tags || []).includes(tag))

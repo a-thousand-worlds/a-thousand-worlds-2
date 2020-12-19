@@ -33,11 +33,9 @@ export default {
     },
     async reloadSubmissions() {
       this.loading = true
-      const data = await this.$store.dispatch('loadContributorsSubmissions')
-      this.subs = data
-      const booksSubs = Object.keys(data?.books || {})
-        .map(id => data.books[id])
+      const booksSubs = this.$store.getters['bookSubmissions/list']
         .filter(sub => !sub.approved && !sub.approvedBy && !sub.approvedAt)
+      this.subs = { books: booksSubs }
       // const bundlesSubs = Object.keys(data.bundles)
       // .map(id => data.bundles[id])
       this.subsGroups = []

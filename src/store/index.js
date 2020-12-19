@@ -42,10 +42,6 @@ const store = createStore({
 
     // this method doesn't use store to keep values
     // it used only by administrators
-    loadContributorsSubmissions(ctx) {
-      return firebaseGet('submits')
-    },
-    // -- same
     loadContributorProfile(ctx, uid) {
       return firebaseGet(`users/${uid}/profile`)
     },
