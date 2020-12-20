@@ -62,6 +62,13 @@ const routes = [
       access: 'authorized'
     }
   }, {
+    path: '/suggest/thankyou',
+    name: 'SubmissionThankYou',
+    component: () => import(/* webpackChunkName: "contributor" */ './pages/SubmissionThankYou.vue'),
+    meta: {
+      access: ['contributor', 'admin', 'superadmin']
+    }
+  }, {
     path: '/suggest/book',
     name: 'BookSuggest',
     component: () => import(/* webpackChunkName: "contributor" */ './pages/BookSubmissionForm.vue'),
