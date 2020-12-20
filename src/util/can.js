@@ -7,7 +7,7 @@ const can = (state, actionName) => {
     throw new Error(`Unrecognized action name: "${actionName}"`)
   }
   if (iam(state, 'superadmin')) return true
-  return rights[actionName].some(iam)
+  return rights[actionName].some(role => iam(state, role))
 }
 
 export default can
