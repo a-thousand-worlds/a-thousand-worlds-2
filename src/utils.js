@@ -22,21 +22,21 @@ function _isbn(code, provider) {
 }
 
 // loads only book cover
-export async function coverImageByISBN(code) {
-  const req = await axios.get(FETCH_COVER_IMAGE_URL + '?isbn=' + code)
+export async function coverImageByISBN(isbn) {
+  const req = await axios.get(FETCH_COVER_IMAGE_URL + '?isbn=' + isbn)
   return req.data || null
 }
 
 // loads book metadata, excluting cover image
-export async function metadataByISBN(code) {
-  const req = await axios.get(FETCH_METADATA_URL + '?isbn=' + code)
-  const data = req.data
+export async function metadataByISBN(isbn) {
+  const req = await axios.get(FETCH_METADATA_URL + '?isbn=' + isbn)
+  const data = req.data || {}
   // it's so happens, that sometime google data is not accessible
   // from backend, so trying to reload it on frontend
   if (data && !data.google) {
-    data.google = await _isbn(code, 'google')
+    data.google = await _isbn(isbn, 'google')
   }
-  const src = data.google || data.openlib || null
+  const src = data.google || data.openlib || {}
   // published date can be different. sometimes it's only 'YYYY',
   // sometimes 'YYYY-MM' sometimes other formats - dayjs manages this
   const d = dayjs(src.publishedDate)
