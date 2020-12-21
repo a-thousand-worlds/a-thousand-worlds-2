@@ -14,7 +14,7 @@ const module = (name, field) => mergeOne(collection(name), {
         const img = await Jimp.read(image.downloadUrl)
         const buff = await img.getBufferAsync(Jimp.MIME_PNG)
         const ref = await firebase.storage().ref(`${name}/${path}`)
-        await ref.put(buff, { contentType: 'image/png', cacheControl: 'public,max-age=3600' })
+        await ref.put(buff, { contentType: 'image/png', cacheControl: 'public,max-age=31536000' })
         const url = await ref.getDownloadURL()
         value[field] = {
           url: url,
@@ -27,7 +27,7 @@ const module = (name, field) => mergeOne(collection(name), {
         const img = await Jimp.read(image.base64)
         const buff = await img.getBufferAsync(Jimp.MIME_PNG)
         const ref = await firebase.storage().ref(`${name}/${path}`)
-        await ref.put(buff, { contentType: 'image/png', cacheControl: 'public,max-age=3600' })
+        await ref.put(buff, { contentType: 'image/png', cacheControl: 'public,max-age=31536000' })
         const url = await ref.getDownloadURL()
         value[field] = {
           url: url,
