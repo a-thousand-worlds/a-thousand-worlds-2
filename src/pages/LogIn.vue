@@ -107,6 +107,12 @@ export default {
         : null
     },
 
+    async onPasswordKeyEnter() {
+      if (this.active === 'login') {
+        await this.login()
+      }
+    },
+
     async submit() {
       if (this.active === 'signup') {
         await this.signup()
@@ -319,7 +325,7 @@ export default {
           <div class="field" v-if="active === 'login' || active === 'signup'">
             <label :class="['label', { error: hasError('password') }]">PASSWORD</label>
             <div class="control">
-              <input :disabled="loading" type="password" class="input" :class="{ 'is-danger': hasError('password') }" v-model="password" @input="revalidate">
+              <input :disabled="loading" type="password" class="input" @keypress.enter.prevent="onPasswordKeyEnter" :class="{ 'is-danger': hasError('password') }" v-model="password" @input="revalidate">
             </div>
           </div>
 
