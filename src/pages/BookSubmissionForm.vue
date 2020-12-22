@@ -1,9 +1,10 @@
 <script>
 import _ from 'lodash'
 import ISBN from 'isbn3'
-import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
+// import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import BookTitleField from '@/components/fields/BookTitle'
 import { findBookByKeyword, metadataByISBN } from '@/utils'
+import isValidISBN from '@/util/isValidISBN'
 
 export default {
   components: {
@@ -15,7 +16,7 @@ export default {
         toolbar: []
       },
       confirms: [],
-      editor: BalloonEditor,
+      // editor: BalloonEditor,
       loadingBook: [],
       submissions: [],
     }
@@ -34,7 +35,7 @@ export default {
         && !this.books.some(book => book?.id)
     },
     submitable() {
-      return this.submissions.every(sub => sub.title && sub.authors && sub.isbn && sub.confirmed !== null)
+      return this.submissions.every(sub => sub.title && sub.authors && sub.isbn && sub.confirmed !== null && Object.keys(sub.tags).length)
         && !this.books.some(book => book?.id)
     }
   },
@@ -118,6 +119,7 @@ export default {
     },
     titleOrAuthorChanged: _.debounce(async function(si) {
       const { authors, title } = this.submissions[si]
+      this.setConfirmed(si, null)
       if (!authors || !title) {
         this.submissions[si].isbn = null
         this.submissions[si].confirmed = null
@@ -142,13 +144,40 @@ export default {
       const meta = await metadataByISBN(sub.isbn)
       sub.loadingMetadata = false
       if (meta) {
+        console.log('meta', meta)
         this.suggested = meta
         if (meta.summary && !sub.summary) sub.summary = meta.summary
         if (meta.goodread && !sub.goodread) sub.goodread = meta.goodread
         if (meta.publisher && !sub.publisher) sub.publisher = meta.publisher
         if (meta.year && !sub.year) sub.year = meta.year
+        // let's update all data possible , cuz metadata may have more information
+        // then user input
+        if (meta.title && sub.title !== meta.title) sub.title = meta.title
+        if (meta.authors?.length && meta.authors?.join(', ') !== sub.authors) sub.authors = meta.authors.join(', ')
+        if (meta.illustrators?.length && meta.illustrators?.join(', ') !== sub.illustrators) sub.illustrators = meta.illustrators.join(', ')
       }
     }, 500),
+    isbnInput: _.debounce(async function(si) {
+      if (!isValidISBN(this.submissions[si].isbn)) return
+
+      this.loadingBook[si] = true
+      const search = `${this.submissions[si].isbn}`
+      const result = await findBookByKeyword(search)
+      console.log('thumb', result)
+      this.loadingBook[si] = false
+      const { isbn, thumbnail } = result || {}
+      if (isbn) {
+        this.submissions[si].isbn = isbn
+        this.submissions[si].thumbnail = thumbnail
+        this.updateMetadata(si)
+      }
+
+    }, 500),
+    checkOtherTag(si) {
+      // console.log('check', this.submissions[si].otherTag)
+      if (this.submissions[si].otherTag.length) this.submissions[si].tags.other = true
+      else this.submissions[si].tags.other = false
+    }
   },
 }
 </script>
@@ -166,20 +195,20 @@ export default {
 
             <div class="field">
               <label class="label">Title</label>
-              <book-title-field :disabled="$uiBusy || (books[si] && books[si].id)" v-model="sub.title" @book-selected="fillBook($event, si)" :searchable="false" @input="titleOrAuthorChanged(si)"/>
+              <book-title-field :disabled="$uiBusy || (books[si]?.id) || sub.loadingMetadata" v-model="sub.title" @book-selected="fillBook($event, si)" :searchable="false" @input="titleOrAuthorChanged(si)"/>
             </div>
 
             <div class="field">
               <label class="label">Author(s)</label>
               <div class="control">
-                <input class="input" type="text" :disabled="$uiBusy || (books[si]?.id)" v-model="sub.authors" @input="titleOrAuthorChanged(si)"/>
+                <input class="input" type="text" :disabled="$uiBusy || (books[si]?.id) || sub.loadingMetadata" v-model="sub.authors" @input="titleOrAuthorChanged(si)"/>
               </div>
             </div>
 
             <div class="field">
               <label class="label">Illustrator(s)</label>
               <div class="control">
-                <input class="input" type="text" :disabled="$uiBusy || (books[si]?.id)" v-model="sub.illustrators"/>
+                <input class="input" type="text" :disabled="$uiBusy || (books[si]?.id) || sub.loadingMetadata" v-model="sub.illustrators"/>
               </div>
             </div>
 
@@ -190,7 +219,10 @@ export default {
                 <div class="column is-narrow">
                   <img v-if="loadingBook[si]" src="@/assets/icons/loading.gif">
                   <div v-else class="bg-secondary">
+                    <!--
                     <img :src="coverImage(si)" style="display: block; min-width: 100px; max-width: 265px;" :style="sub.confirmed === false && !books[si] ? { visibility: 'hidden' } : null" />
+                    -->
+                    <img :src="coverImage(si)" v-if="coverImage(si)" style="display: block; min-width: 100px; max-width: 265px;" />
                   </div>
                 </div>
                 <div class="column">
@@ -205,15 +237,19 @@ export default {
 
                   <!-- Is this your book? -->
                   <div v-else-if="coverImage(si)" class="column field">
-                    <div class="control mb-20">
+                    <div v-if="sub.confirmed === null" class="control mb-20">
                       <label class="label">Is this your book?</label>
                       <button @click.prevent="setConfirmed(si, true)" class="button is-rounded mr-2" :class="{ 'is-primary': sub.confirmed !== false, 'is-selected': sub.confirmed }" :disabled="sub.confirmed" :style="sub.confirmed ? { cursor: 'default' } : null">Yes</button>
                       <button @click.prevent="setConfirmed(si, false)" class="button is-rounded" :class="{ 'is-primary': sub.confirmed === false }" :disabled="sub.confirmed === false" :style="sub.confirmed === false ? { cursor: 'default' } : null">No</button>
                     </div>
+                    <div v-if="sub.confirmed === true" class="control">
+                      <label class="label">Got it, thank you</label>
+                    </div>
                     <div v-if="sub.confirmed === false" class="control">
                       <label class="label">Okay, please enter the ISBN:</label>
-                      <input class="input" v-model="sub.isbn" @input="updateMetadata(si)" />
+                      <input class="input" :disabled="$uiBusy || sub.loadingMetadata" v-model="sub.isbn" @input="isbnInput(si)" />
                     </div>
+                    <img v-if="sub.loadingMetadata" style="max-height: 100px;" src="@/assets/icons/loading.gif">
                   </div>
                   <!--
                   <div v-if="sub.confirmed" class="column field">
@@ -225,27 +261,35 @@ export default {
             </div>
 
             <!-- summary -->
+            <!--
             <div class="field">
               <label class="label">Summary</label>
               <div style="border-radius: 4px; border: solid 1px #dbdbdb; color: #363636;">
                 <ckeditor :disabled="$uiBusy || submissions[si].oadingMetadata || (books[si]?.id)" :editor="editor" :config="ckConfig" v-model="sub.summary" />
               </div>
             </div>
+            -->
 
             <!-- optional questions -->
             <div v-if="!books[si] || (books[si] && !books[si].id)" class="field">
               <label class="label">How would you categorize this book? Select all that apply</label>
               <div class="text-14 tablet-columns-2">
                 <div v-for="tag of $store.getters['tags/list']" :key="tag.id" class="control">
-                  <input :disabled="$uiBusy" :id="tag.id+'-'+si" :name="tag.id" type="checkbox" class="checkbox mr-3 mb-3" v-model="sub.tags[tag.id]">
+                  <input :disabled="$uiBusy || sub.loadingMetadata" :id="tag.id+'-'+si" :name="tag.id" type="checkbox" class="checkbox mr-3 mb-3" v-model="sub.tags[tag.id]">
                   <label class="label d-inline" :for="tag.id+'-'+si">
                     {{tag.tag}}
                   </label>
                 </div>
-                <div>
+                <div class="field is-grouped">
+                  <div class="control">
                   <input :disabled="$uiBusy" type="checkbox" class="checkbox mr-3 mb-3" v-model="sub.tags.other">
+                  </div>
+                  <div class="control">
+                  <!--
                   <label class="label d-inline">Other</label>
-                  <input :disabled="$uiBusy" class="input" type="text" v-model="sub.otherTag">
+                  -->
+                  <input :disabled="$uiBusy || sub.loadingMetadata" @input="checkOtherTag(si)" class="input d-inline" type="text" v-model="sub.otherTag">
+                  </div>
                 </div>
               </div>
             </div>
