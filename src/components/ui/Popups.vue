@@ -1,0 +1,32 @@
+<script>
+
+import Popup from '@/components/ui/Popup'
+
+export default {
+  components: {
+    Popup
+  }
+}
+
+</script>
+
+<template>
+  <div class="popups-area">
+    <div v-for="(pp, i) of $store.state.ui.popups" :key="i">
+      <popup :popup="pp"/>
+    </div>
+  </div>
+</template>
+
+<style scoped lang="scss">
+@import '@/assets/main.scss';
+
+.popups-area {
+  position: absolute;
+  top: 30;
+  left: 50%;
+  width: 200px;
+  margin-left: -100px;
+}
+
+</style>

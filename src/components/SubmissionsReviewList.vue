@@ -20,7 +20,12 @@ export default {
   methods: {
     async approveGroup(group) {
       const books = group.books.map(book => book.title).join(', ')
-      if (confirm(`Approve books <${books}>?`)) {
+      const doApprove = await this.$store.dispatch('ui/confirm', {
+        header: 'Approve books?',
+        text: books,
+        type: 'info'
+      })
+      if (doApprove) {
         this.loading = true
         this.$store.commit('ui/setBusy', true)
         await this.$store.dispatch('bookSubmissions/approve', group.books)
@@ -77,7 +82,8 @@ export default {
         group.books = group.books.filter(s => s.id !== sub.id)
         return group
       })
-      alert('Rejected')
+      this.loading = false
+      this.$store.dispatch('ui/popup', 'Book rejected')
     },
     /*
     approveBookSubmission(sub, i) {

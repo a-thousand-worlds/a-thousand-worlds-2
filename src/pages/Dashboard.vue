@@ -17,15 +17,6 @@ export default {
     }
   },
   computed: {
-    bookSubmissions() {
-      return this.$store.state.bookSubmissions?.data || {}
-    },
-    bundleSubmissions() {
-      return this.$store.state.bundleSubmissions?.data || {}
-    },
-    peopleSubmissions() {
-      return this.$store.state.peopleSubmissions?.data || {}
-    },
     submissionsList() {
       return Object.keys(this.$store.state.user.user.profile.submissions || {})
     },
@@ -78,7 +69,7 @@ export default {
 
       <section v-if="$can('review')" class="section">
         <h2>Review Submissions</h2>
-        <DashboardReviewSubmissionsPreview :bookSubmissions="bookSubmissions" :peopleSubmissions="peopleSubmissions" :bundleSubmissions="bundleSubmissions" />
+        <DashboardReviewSubmissionsPreview />
       </section>
 
     </div>

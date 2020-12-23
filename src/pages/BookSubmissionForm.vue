@@ -141,10 +141,10 @@ export default {
     updateMetadata: _.debounce(async function(si) {
       const sub = this.submissions[si]
       sub.loadingMetadata = true
+      this.$store.dispatch('ui/popup', 'Loading book metadata')
       const meta = await metadataByISBN(sub.isbn)
       sub.loadingMetadata = false
       if (meta) {
-        console.log('meta', meta)
         this.suggested = meta
         if (meta.summary && !sub.summary) sub.summary = meta.summary
         if (meta.goodread && !sub.goodread) sub.goodread = meta.goodread
@@ -156,14 +156,17 @@ export default {
         if (meta.authors?.length && meta.authors?.join(', ') !== sub.authors) sub.authors = meta.authors.join(', ')
         if (meta.illustrators?.length && meta.illustrators?.join(', ') !== sub.illustrators) sub.illustrators = meta.illustrators.join(', ')
       }
+      else {
+        this.$store.dispatch('ui/popup', { text: 'No book metadate found', type: 'warning' })
+      }
     }, 500),
     isbnInput: _.debounce(async function(si) {
       if (!isValidISBN(this.submissions[si].isbn)) return
 
       this.loadingBook[si] = true
       const search = `${this.submissions[si].isbn}`
+      this.$store.dispatch('ui/popup', 'Looking for book cover')
       const result = await findBookByKeyword(search)
-      console.log('thumb', result)
       this.loadingBook[si] = false
       const { isbn, thumbnail } = result || {}
       if (isbn) {

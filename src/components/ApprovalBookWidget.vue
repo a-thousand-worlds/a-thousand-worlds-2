@@ -121,12 +121,12 @@ Continue and create book?`
         this.$emit('approve-me', this.sub)
       }
     },
-    reject() {
-      if (confirm(`Reject book suggestion <${this.sub.title}>?`)) {
-        const comment = prompt('Any comments on rejecting?')
-        this.sub.approveComment = comment || ''
-        this.$emit('reject-me', this.sub)
-      }
+    async reject() {
+      const ok = await this.$store.dispatch('ui/confirm', { header: 'Rejecting submission', text: 'Reject submission?' })
+      if (!ok) return
+      const comment = await this.$store.dispatch('ui/prompt', { type: 'info', header: 'Rejecting submission', text: 'Any comments on rejecting?' })
+      this.sub.approveComment = comment || ''
+      this.$emit('reject-me', this.sub)
     },
     save() {
       console.log('save back', this.sub)
@@ -232,7 +232,14 @@ Continue and create book?`
           pre-text="illustrated by"
         v-model="sub.illustrators"/>
       </div>
-      <!-- <div>
+      <div>
+        <input-field
+          :disabled="busy"
+          :placeholder="'Year'"
+          v-model="sub.year"/>
+      </div>
+      <!--
+      <div>
         <input-field
           :disabled="busy"
           :placeholder="'ISBN'"
@@ -241,15 +248,10 @@ Continue and create book?`
       <div>
         <input-field
           :disabled="busy"
-          :placeholder="'Year'"
-          v-model="sub.year"/>
-      </div>
-      <div>
-        <input-field
-          :disabled="busy"
           :placeholder="'Publisher'"
           v-model="sub.publisher"/>
-      </div> -->
+      </div>
+      -->
     </div>
 
     <!-- tags -->
@@ -278,6 +280,7 @@ Continue and create book?`
     </div>
   </div>
 </div>
+
 </template>
 
 <style lang="scss" scoped>

@@ -1,6 +1,9 @@
 <script>
 
 import Alert from '@/components/Alert'
+import Popups from '@/components/ui/Popups'
+import Confirm from '@/components/ui/Confirm'
+import Prompt from '@/components/ui/Prompt'
 import MobileHeader from '@/components/MobileHeader'
 import MobileFooter from '@/components/MobileFooter'
 import LeftBar from '@/components/LeftBar.vue'
@@ -11,6 +14,9 @@ export default ({
   name: 'App',
   components: {
     Alert,
+    Popups,
+    Confirm,
+    Prompt,
     LeftBar,
     RightBar,
     MobileHeader,
@@ -63,6 +69,9 @@ export default ({
         <left-bar/>
       </section>
       <section class="main column px-0 pb-20" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
+        <Popups />
+        <Confirm />
+        <Prompt />
         <Alert />
         <router-view/>
       </section>
