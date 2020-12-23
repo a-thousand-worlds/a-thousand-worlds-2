@@ -286,6 +286,10 @@ export default {
 
   <div class="mx-6">
 
+    <div v-if="active === 'profile'" class="mb-5">
+      <router-link :to="{ name: 'Dashboard' }" class="is-uppercase is-primary">&lt; Back to Dashboard</router-link>
+    </div>
+
     <div v-if="(code && !invite) || (invite?.used)" class="is-flex is-justify-content-center mt-20">
       <div v-if="!$store.state.invites.loaded" class="my-50 has-text-centered">
         <img src="@/assets/icons/loading.gif" />
