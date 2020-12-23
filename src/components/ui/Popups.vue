@@ -13,7 +13,7 @@ export default {
 <template>
   <div class="popups-area">
     <div v-for="(pp, i) of $store.state.ui.popups" :key="i">
-      <popup :popup="pp"/>
+      <popup class="mb-2" :popup="pp"/>
     </div>
   </div>
 </template>
@@ -27,6 +27,7 @@ export default {
   left: 50%;
   width: 200px;
   margin-left: -100px;
+  z-index: 100;
 }
 
 </style>

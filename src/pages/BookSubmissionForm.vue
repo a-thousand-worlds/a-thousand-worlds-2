@@ -129,6 +129,7 @@ export default {
 
       this.loadingBook[si] = true
       const search = `${title} by ${authors}`
+      this.$store.dispatch('ui/popup', 'Searching book')
       const result = await findBookByKeyword(search)
       this.loadingBook[si] = false
       const { isbn, thumbnail } = result || {}

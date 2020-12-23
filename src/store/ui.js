@@ -43,7 +43,6 @@ const module = {
       const { text, type } = typeof data === 'string'
         ? { text: data, type: 'info' }
         : data
-      console.log('ui/popup', text, type)
       context.commit('pushPopup', { text, type })
       setTimeout(() => {
         context.commit('shiftPopup')

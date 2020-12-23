@@ -63,7 +63,7 @@ export default {
         </ul>
       </section>
 
-      <section v-if="$can('invite') && hasSubmissions" class="section">
+      <section v-if="$can('submit') && hasSubmissions" class="section">
         <DashboardYourSubmissions />
       </section>
 

@@ -21,6 +21,7 @@ export default {
     recalculate() {
       this.people = Object.keys(this.creators || {})
         .map(creatorId => ({ person: this.$store.state.creators.data[creatorId] || null, role: this.creators[creatorId] }))
+      console.log('people', this.people)
     }
   },
   watch: {
@@ -37,8 +38,8 @@ export default {
       <span class="comma mr-2">by</span>
       <span v-for="(person, i) of authors" :key="i">
         <router-link class="name" v-if="person.person && linked" :to="{name: 'PersonDetail', params: {id: person.person.id}}" >{{person.person.name}}</router-link>
-        <span class="name" v-if="person.person && !linked">{{person.person.name}}</span>
-        <span class="comma mr-2" v-if="authors.length > 1 && i !== authorsSeparated.length - 1">,</span>
+        <span class="name" v-if="person.person && !linked">{{person.person?.name}}</span>
+        <span class="comma mr-2" v-if="authors?.length > 1 && i !== authorsSeparated?.length - 1">,</span>
       </span>
     </div>
     <div class="person-block" v-if="illustrators.length">
@@ -46,7 +47,7 @@ export default {
       <span v-for="(person, i) of authors" :key="i">
         <router-link class="name" v-if="person.person && linked" :to="{name: 'PersonDetail', params: {id: person.person.id}}" >{{person.person.name}}</router-link>
         <span class="name" v-if="person.person && !linked">{{person.person.name}}</span>
-        <span class="comma mr-2" v-if="authors.length > 1 && i !== authorsSeparated.length - 1">,</span>
+        <span class="comma mr-2" v-if="authors.length > 1 && i !== authorsSeparated?.length - 1">,</span>
       </span>
     </div>
   </div>

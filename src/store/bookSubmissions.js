@@ -52,7 +52,7 @@ const module = mergeOne(managedCollection('submits/books'), {
           year: sub.year || '',
         }
         await context.dispatch('save', { path: sid, value: subData })
-        profile.submissions[sid] = 'review'
+        profile.submissions[sid] = 'approve'
         context.commit('setOne', { path: sid, value: subData })
         // eslint-disable-next-line  fp/no-mutating-methods
         ids.push(sid)

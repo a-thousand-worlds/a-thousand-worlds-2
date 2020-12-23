@@ -9,7 +9,7 @@ export default {
     bookSubmissions() {
       const subs = this.$store.state.bookSubmissions?.data || {}
       return Object.keys(subs)
-        .filter(sid => !subs[sid].approvedAt)
+        .filter(sid => !subs[sid]?.approvedAt)
         .map(sid => subs[sid])
     },
     bundleSubmissions() {
