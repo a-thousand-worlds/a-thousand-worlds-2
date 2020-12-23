@@ -129,7 +129,6 @@ export default {
 
       this.loadingBook[si] = true
       const search = `${title} by ${authors}`
-      this.$store.dispatch('ui/popup', 'Searching book')
       const result = await findBookByKeyword(search)
       this.loadingBook[si] = false
       const { isbn, thumbnail } = result || {}
@@ -142,31 +141,25 @@ export default {
     updateMetadata: _.debounce(async function(si) {
       const sub = this.submissions[si]
       sub.loadingMetadata = true
-      this.$store.dispatch('ui/popup', 'Loading book metadata')
       const meta = await metadataByISBN(sub.isbn)
       sub.loadingMetadata = false
-      if (meta) {
-        this.suggested = meta
-        if (meta.summary && !sub.summary) sub.summary = meta.summary
-        if (meta.goodread && !sub.goodread) sub.goodread = meta.goodread
-        if (meta.publisher && !sub.publisher) sub.publisher = meta.publisher
-        if (meta.year && !sub.year) sub.year = meta.year
-        // let's update all data possible , cuz metadata may have more information
-        // then user input
-        if (meta.title && sub.title !== meta.title) sub.title = meta.title
-        if (meta.authors?.length && meta.authors?.join(', ') !== sub.authors) sub.authors = meta.authors.join(', ')
-        if (meta.illustrators?.length && meta.illustrators?.join(', ') !== sub.illustrators) sub.illustrators = meta.illustrators.join(', ')
-      }
-      else {
-        this.$store.dispatch('ui/popup', { text: 'No book metadate found', type: 'warning' })
-      }
+      if (!meta) return
+      this.suggested = meta
+      if (meta.summary && !sub.summary) sub.summary = meta.summary
+      if (meta.goodread && !sub.goodread) sub.goodread = meta.goodread
+      if (meta.publisher && !sub.publisher) sub.publisher = meta.publisher
+      if (meta.year && !sub.year) sub.year = meta.year
+      // let's update all data possible , cuz metadata may have more information
+      // then user input
+      if (meta.title && sub.title !== meta.title) sub.title = meta.title
+      if (meta.authors?.length && meta.authors?.join(', ') !== sub.authors) sub.authors = meta.authors.join(', ')
+      if (meta.illustrators?.length && meta.illustrators?.join(', ') !== sub.illustrators) sub.illustrators = meta.illustrators.join(', ')
     }, 500),
     isbnInput: _.debounce(async function(si) {
       if (!isValidISBN(this.submissions[si].isbn)) return
 
       this.loadingBook[si] = true
       const search = `${this.submissions[si].isbn}`
-      this.$store.dispatch('ui/popup', 'Looking for book cover')
       const result = await findBookByKeyword(search)
       this.loadingBook[si] = false
       const { isbn, thumbnail } = result || {}
