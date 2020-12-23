@@ -2,18 +2,23 @@
 import StaticBookCover from '@/components/StaticBookCover'
 
 export default {
-  props: ['sid', 'state'],
+  props: ['sid'],
   components: {
     StaticBookCover,
   },
   computed: {
     sub() {
       return this.$store.state.bookSubmissions.data[this.sid]
+    },
+    state() {
+      return this.sub?.approvedAt ? this.sub?.approved ? 'approve' : 'reject' : 'review'
     }
   },
   methods: {
-    deleteSubmission() {
-      this.$store.dispatch('bookSubmissions/delete', this.sid)
+    async deleteSubmission() {
+      const ok = await this.$store.dispatch('ui/confirm', 'Remove submission?')
+      if (ok) this.$store.dispatch('bookSubmissions/delete', this.sid)
+      this.$store.dispatch('ui/popup', 'Removed')
     }
   },
 }
@@ -37,9 +42,10 @@ export default {
     <div>Name: {{sub.name}}</div>
     <div>Books: {{sub.books.length}}</div>
   </div>
-
+  <!-- // separated by bloks already
   <span v-if="state === 'review'" class="ml-3">On review</span>
   <span v-if="state === 'approve'" class="ml-3">Approved</span>
+  -->
   <div v-if="state === 'reject'">
     <div>Rejected ({{sub?.approveComment}})</div>
     <div>

@@ -61,6 +61,12 @@ export const firebaseGet = refString => new Promise((resolve, reject) => {
   })
 })
 
+/** Sets the value to a Firebase reference. */
+export const firebaseSet = async (path, value) => {
+  const ref = await firebase.database().ref(path)
+  await ref.set(value)
+}
+
 export async function findBookByKeyword(keyword) {
   if (typeof keyword !== 'string' || !keyword.length) {
     return null

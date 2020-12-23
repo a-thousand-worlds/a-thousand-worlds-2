@@ -60,7 +60,7 @@ export default {
   },
   methods: {
     async reloadSub() {
-      const user = await this.$store.dispatch('loadContributorProfile', this.sub.createdBy)
+      const user = await this.$store.dispatch('bookSubmissions/loadContributorProfile', this.sub.createdBy)
       user.uid = this.sub.createdBy
       this.submitter = user
       this.sub.submitter = user

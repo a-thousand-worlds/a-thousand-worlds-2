@@ -51,13 +51,19 @@ const module = {
     /* @param data = { text, header, type } */
     confirm(context, data) {
       return new Promise((resolve, reject) => {
-        context.commit('doConfirm', { ...data, resolve })
+        const { text, type, header } = typeof data === 'string'
+          ? { text: data, type: 'info', header: 'Confirmation required' }
+          : data
+        context.commit('doConfirm', { text, type, header, resolve })
       })
     },
     /* @param data = { text, header, type } */
     prompt(context, data) {
       return new Promise((resolve, reject) => {
-        context.commit('doPrompt', { ...data, resolve })
+        const { text, type, header } = typeof data === 'string'
+          ? { text: data, type: 'info', header: 'Input required' }
+          : data
+        context.commit('doPrompt', { text, type, header, resolve })
       })
     }
   }

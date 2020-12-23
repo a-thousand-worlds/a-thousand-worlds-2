@@ -13,6 +13,9 @@ export default {
     pendingSubmissions() {
       return this.submissionsByStatus('review')
     },
+    rejectedSubmissions() {
+      return this.submissionsByStatus('reject')
+    },
     userSubmissions() {
       return this.$store.state.user.user.profile.submissions || {}
     },
@@ -33,8 +36,8 @@ export default {
     <div v-if="pendingSubmissions.length">
       <h2>{{ $can('review') ? 'Your ' : '' }}Pending Submissions</h2>
       <div class="columns is-multiline">
-        <div class="column is-6-tablet is-4-desktop is-3-widescreen" v-for="(sid, status) of pendingSubmissions" :key="sid">
-          <SubmissionWidget :sid="sid" :state="status"/>
+        <div class="column is-6-tablet is-4-desktop is-3-widescreen" v-for="(sid, i) of pendingSubmissions" :key="i">
+          <SubmissionWidget :sid="sid"/>
         </div>
       </div>
     </div>
@@ -42,8 +45,17 @@ export default {
     <div v-if="acceptedSubmissions.length">
       <h2>{{ $can('review') ? 'Your ' : '' }}Accepted Submissions</h2>
       <div class="columns is-multiline">
-        <div class="column is-6-tablet is-4-desktop is-3-widescreen" v-for="(sid, status) of acceptedSubmissions" :key="sid">
-          <SubmissionWidget :sid="sid" :state="status"/>
+        <div class="column is-6-tablet is-4-desktop is-3-widescreen" v-for="(sid, i) of acceptedSubmissions" :key="i">
+          <SubmissionWidget :sid="sid"/>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="rejectedSubmissions.length">
+      <h2>{{ $can('review') ? 'Your ' : '' }}Rejected Submissions</h2>
+      <div class="columns is-multiline">
+        <div class="column is-6-tablet is-4-desktop is-3-widescreen" v-for="(sid, i) of rejectedSubmissions" :key="i">
+          <SubmissionWidget :sid="sid"/>
         </div>
       </div>
     </div>

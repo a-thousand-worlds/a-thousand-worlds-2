@@ -1,5 +1,4 @@
 import { createStore } from 'vuex'
-import { firebaseGet } from '@/utils'
 
 import alert from '@/store/alert'
 import invites from '@/store/invites'
@@ -39,13 +38,6 @@ const store = createStore({
     }
   },
   actions: {
-
-    // this method doesn't use store to keep values
-    // it used only by administrators
-    loadContributorProfile(ctx, uid) {
-      return firebaseGet(`users/${uid}/profile`)
-    },
-
     // start
     async load({ state, dispatch, commit }) {
       await dispatch('books/subscribe')

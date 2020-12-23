@@ -1,3 +1,4 @@
+import { firebaseGet, firebaseSet } from '@/utils'
 import mergeOne from '@/util/mergeOne'
 import managedCollection from '@/store/collection/managed'
 import { v4 } from 'uuid'
@@ -17,6 +18,17 @@ const module = mergeOne(managedCollection('submits/books'), {
       : []
   },
   actions: {
+
+    // this method doesn't use store to keep values
+    // it used only by administrators
+    loadContributorProfile(context, uid) {
+      return firebaseGet(`users/${uid}/profile`)
+    },
+
+    saveContributorProfile(context, data) {
+      return firebaseSet(`users/${data.uid}/profile`, data.profile)
+    },
+
     /** Submit books suggestions to Firebase */
     submit: async (context, list) => {
       /**/
@@ -52,7 +64,7 @@ const module = mergeOne(managedCollection('submits/books'), {
           year: sub.year || '',
         }
         await context.dispatch('save', { path: sid, value: subData })
-        profile.submissions[sid] = 'approve'
+        profile.submissions[sid] = 'review'
         context.commit('setOne', { path: sid, value: subData })
         // eslint-disable-next-line  fp/no-mutating-methods
         ids.push(sid)
@@ -68,9 +80,12 @@ const module = mergeOne(managedCollection('submits/books'), {
       sub.approvedAt = now.format()
       await context.dispatch('save', { path: sub.id, value: sub })
       context.commit('setOne', { path: sub.id, value: sub })
-      const profile = context.rootState.user.user.profile
+      // const profile = context.rootState.user.user.profile
+      const profile = await context.dispatch('loadContributorProfile', sub.createdBy)
+      console.log('rejector', profile)
       profile.submissions[sub.id] = 'reject'
-      await context.dispatch('user/saveProfile', profile, { root: true })
+
+      await context.dispatch('saveContributorProfile', { uid: sub.createdBy, profile })
     },
     /** Approves submissions group */
     approve: async (context, list) => {
@@ -135,9 +150,9 @@ const module = mergeOne(managedCollection('submits/books'), {
         } }, { root: true })
 
         // updating user profile
-        const profile = context.rootState.user.user.profile
+        const profile = await context.dispatch('loadContributorProfile', sub.createdBy)
         profile.submissions[sub.id] = 'approve'
-        await context.dispatch('user/saveProfile', profile, { root: true })
+        await context.dispatch('saveContributorProfile', { uid: sub.createdBy, profile })
 
         // updating submission
         sub.approvedBy = context.rootState.user.user.uid
@@ -148,15 +163,16 @@ const module = mergeOne(managedCollection('submits/books'), {
     },
     /** Delete submission from Firebase */
     delete: async (context, sid) => {
-      await context.dispatch('remove', sid)
-      const profile = context.rootState.user.user.profile
+      const sub = context.state.data[sid]
+      const profile = await context.dispatch('loadContributorProfile', sub.createdBy)
       profile.submissions = Object.keys(profile.submissions)
         .filter(id => id !== sid)
         .reduce((acc, id) => {
           acc[id] = profile.submissions[id]
           return acc
         }, {})
-      await context.dispatch('user/saveProfile', profile, { root: true })
+      await context.dispatch('saveContributorProfile', { uid: sub.createdBy, profile })
+      await context.dispatch('remove', sid)
     }
   }
 })

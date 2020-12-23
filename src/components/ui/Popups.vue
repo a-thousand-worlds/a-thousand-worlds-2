@@ -22,7 +22,7 @@ export default {
 @import '@/assets/main.scss';
 
 .popups-area {
-  position: absolute;
+  position: fixed;
   top: 30;
   left: 50%;
   width: 200px;
