@@ -275,7 +275,7 @@ Continue and create book?`
     <!-- delete -->
     <div class="column is-1 has-text-right">
       <button :class="{disabled:busy}" :disabled="busy" @click="reject()" class="is-flat is-uppercase is-underlined">
-        <i class="fas fa-times"></i>
+        <i class="fas fa-times" style="font-size: 20px;"></i>
       </button>
     </div>
   </div>
