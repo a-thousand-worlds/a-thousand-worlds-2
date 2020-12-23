@@ -117,10 +117,10 @@ export default {
     clearSubmission(si) {
       this.submissions[si] = this.newSubmissionObject()
     },
-    titleOrAuthorChanged: _.debounce(async function(si) {
-      const { authors, title } = this.submissions[si]
+    metadataInputsChanged: _.debounce(async function(si) {
+      const { authors, illustrators, title } = this.submissions[si]
       this.setConfirmed(si, null)
-      if (!authors || !title) {
+      if (!title || (!authors && !illustrators)) {
         this.submissions[si].isbn = null
         this.submissions[si].confirmed = null
         this.submissions[si].thumbnail = ''
@@ -128,7 +128,7 @@ export default {
       }
 
       this.loadingBook[si] = true
-      const search = `${title} by ${authors}`
+      const search = `${title} by ${authors} ${illustrators}`
       const result = await findBookByKeyword(search)
       this.loadingBook[si] = false
       const { isbn, thumbnail } = result || {}
@@ -192,20 +192,20 @@ export default {
 
             <div class="field">
               <label class="label">Title</label>
-              <book-title-field :disabled="$uiBusy || (books[si]?.id) || sub.loadingMetadata" v-model="sub.title" @book-selected="fillBook($event, si)" :searchable="false" @input="titleOrAuthorChanged(si)"/>
+              <book-title-field :disabled="$uiBusy || (books[si]?.id) || sub.loadingMetadata" v-model="sub.title" @book-selected="fillBook($event, si)" :searchable="false" @input="metadataInputsChanged(si)"/>
             </div>
 
             <div class="field">
               <label class="label">Author(s)</label>
               <div class="control">
-                <input class="input" type="text" :disabled="$uiBusy || (books[si]?.id) || sub.loadingMetadata" v-model="sub.authors" @input="titleOrAuthorChanged(si)"/>
+                <input class="input" type="text" :disabled="$uiBusy || (books[si]?.id) || sub.loadingMetadata" v-model="sub.authors" @input="metadataInputsChanged(si)"/>
               </div>
             </div>
 
             <div class="field">
               <label class="label">Illustrator(s)</label>
               <div class="control">
-                <input class="input" type="text" :disabled="$uiBusy || (books[si]?.id) || sub.loadingMetadata" v-model="sub.illustrators"/>
+                <input class="input" type="text" :disabled="$uiBusy || (books[si]?.id) || sub.loadingMetadata" v-model="sub.illustrators" @input="metadataInputsChanged(si)"/>
               </div>
             </div>
 
