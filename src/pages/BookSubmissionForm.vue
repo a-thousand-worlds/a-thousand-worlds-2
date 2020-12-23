@@ -149,11 +149,13 @@ export default {
       if (meta.goodread && !sub.goodread) sub.goodread = meta.goodread
       if (meta.publisher && !sub.publisher) sub.publisher = meta.publisher
       if (meta.year && !sub.year) sub.year = meta.year
-      // let's update all data possible , cuz metadata may have more information
-      // then user input
-      if (meta.title && sub.title !== meta.title) sub.title = meta.title
-      if (meta.authors?.length && meta.authors?.join(', ') !== sub.authors) sub.authors = meta.authors.join(', ')
-      if (meta.illustrators?.length && meta.illustrators?.join(', ') !== sub.illustrators) sub.illustrators = meta.illustrators.join(', ')
+
+      // correct capitalization of user title but do not override (will be validated during approval)
+      if (meta.title && meta.title?.toLowerCase() === sub.title.toLowerCase()) sub.title = meta.title
+
+      // set authors or illustrators only if not specified by user (will be validated during approval)
+      if (meta.authors?.length && meta.authors?.join(', ') !== sub.authors && !sub.authors) sub.authors = meta.authors.join(', ')
+      if (meta.illustrators?.length && meta.illustrators?.join(', ') !== sub.illustrators && !sub.illustrators) sub.illustrators = meta.illustrators.join(', ')
     }, 500),
     isbnInput: _.debounce(async function(si) {
       if (!isValidISBN(this.submissions[si].isbn)) return
