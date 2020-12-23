@@ -243,7 +243,7 @@ export default {
                       <label class="label">Got it, thank you</label>
                     </div>
                     <div v-if="sub.confirmed === false" class="control">
-                      <label class="label">Okay, please enter the ISBN:</label>
+                      <label class="label" style="margin-right: -10px;">Okay, please enter the ISBN:</label>
                       <input class="input" :disabled="$uiBusy || sub.loadingMetadata" v-model="sub.isbn" @input="isbnInput(si)" />
                     </div>
                     <img v-if="sub.loadingMetadata" style="max-height: 100px;" src="@/assets/icons/loading.gif">
