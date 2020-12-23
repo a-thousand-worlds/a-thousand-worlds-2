@@ -52,7 +52,7 @@ export default {
 <template>
 
 <div class="control">
-  <div class="field is-grouped">
+  <div class="field">
     <div class="control w-50">
       <div
         v-if="mode === 'view' && !hasValue && placeholder?.length"

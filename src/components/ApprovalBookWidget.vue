@@ -4,12 +4,12 @@ import Jimp from 'jimp'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 
 import MultiPersonField from '@/components/fields/MultiPerson'
-import InputField from '@/components/fields/SimpleInput'
+import SimpleInput from '@/components/fields/SimpleInput'
 
 export default {
   components: {
     MultiPersonField,
-    InputField
+    SimpleInput
   },
   props: ['modelValue', 'checked'],
   emits: ['update:modelValue', 'mark-me', 'reject-me', 'approve-me', 'submitter-loaded'],
@@ -209,7 +209,7 @@ Continue and create book?`
     <div class="column is-3">
 
       <div style="font-weight: bold;">
-        <input-field
+        <SimpleInput
           :disabled="busy"
           :placeholder="'Title'"
           v-model="sub.title"/>
@@ -233,20 +233,20 @@ Continue and create book?`
         v-model="sub.illustrators"/>
       </div>
       <div>
-        <input-field
+        <SimpleInput
           :disabled="busy"
           :placeholder="'Year'"
           v-model="sub.year"/>
       </div>
       <!--
       <div>
-        <input-field
+        <SimpleInput
           :disabled="busy"
           :placeholder="'ISBN'"
           v-model="sub.isbn"/>
       </div>
       <div>
-        <input-field
+        <SimpleInput
           :disabled="busy"
           :placeholder="'Publisher'"
           v-model="sub.publisher"/>
