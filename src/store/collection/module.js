@@ -43,6 +43,9 @@ const collectionModule = name => ({
         }
       )
     },
+    list: state => () => state.loaded
+      ? Object.values(state.data)
+      : [],
   },
   actions: {
     /** Loads the collection from Firebase. */
