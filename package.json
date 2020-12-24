@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "test:unit": "vue-cli-service test:unit",
+    "lint": "vue-cli-service lint src functions vue.config.js",
     "deploy": "npm run build && firebase deploy --only hosting",
     "deploy:staging": "npm run build && npm run host:staging",
     "emulate": "firebase emulators:start --only database,functions",
     "host:staging": "firebase hosting:channel:deploy staging --expires 30d",
-    "lint": "vue-cli-service lint src functions vue.config.js",
-    "serve": "vue-cli-service serve",
     "serve:local": "npm run build && VUE_APP_DATABASE_EMULATOR vue-cli-service serve",
     "start:services": "cd ./services/findISBN && npm run start",
     "test": "jest",
@@ -40,10 +41,13 @@
     "vuex": "^4.0.0-rc.1"
   },
   "devDependencies": {
+    "@testing-library/vue": "^6.3.1",
     "@vue/cli-plugin-babel": "~4.5.9",
     "@vue/cli-plugin-eslint": "~4.5.9",
+    "@vue/cli-plugin-unit-jest": "^4.5.9",
     "@vue/cli-service": "~4.5.9",
     "@vue/compiler-sfc": "^3.0.4",
+    "@vue/test-utils": "^2.0.0-0",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.15.0",
     "eslint-config-raine": "^0.1.2",
@@ -56,7 +60,9 @@
     "eslint-plugin-standard": "^4.1.0",
     "eslint-plugin-vue": "^7.2.0",
     "firebase-tools": "^8.19.0",
-    "jest": "^26.6.3",
+    "jest-transform-stub": "^2.0.0",
+    "typescript": "~3.9.3",
+    "vue-jest": "^5.0.0-0",
     "vue-svg-loader": "^0.17.0-beta.2"
   },
   "eslintConfig": {
@@ -67,7 +73,18 @@
     ],
     "parserOptions": {
       "parser": "babel-eslint"
-    }
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/__tests__/*.{j,t}s?(x)",
+          "**/*.test.{j,t}s?(x)"
+        ],
+        "env": {
+          "jest": true
+        }
+      }
+    ]
   },
   "browserslist": [
     "> 1%",
