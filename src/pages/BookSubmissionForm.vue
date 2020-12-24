@@ -176,7 +176,7 @@ export default {
 
 <template>
 
-  <div class="mx-20">
+  <div class="mx-20 mb-30">
     <div class="is-flex is-justify-content-center">
       <form class="is-flex-grow-1" style="max-width: 540px;" @submit.prevent="submit">
 
