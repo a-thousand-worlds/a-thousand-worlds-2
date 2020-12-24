@@ -1,13 +1,10 @@
 import { createApp } from 'vue'
-import dayjs from 'dayjs'
 import CKEditor from '@ckeditor/ckeditor5-vue'
 import App from '@/App.vue'
 import router from '@/router'
 import store from '@/store'
-import iam from '@/util/iam'
-import can from '@/util/can'
-
-const withState = f => (...args) => f(store.state, ...args)
+import directives from '@/directives'
+import mixins from '@/mixins'
 
 require('@/assets/main.scss')
 
@@ -37,34 +34,8 @@ const app = createApp(App)
   .use(CKEditor)
 
 // sourced from https://stackoverflow.com/questions/63869859/detect-click-outside-element-on-vue-3
-app.directive('click-outside', {
-  beforeMount(el, binding, vnode) {
-    el.clickOutsideEvent = function(event) {
-      if (!(el === event.target || el.contains(event.target))) {
-        binding.value(event, el)
-      }
-    }
-    document.body.addEventListener('click', el.clickOutsideEvent)
-  },
-  unmounted(el) {
-    document.body.removeEventListener('click', el.clickOutsideEvent)
-  }
-})
+Object.entries(directives).forEach(([name, directive]) => app.directive(name, directive))
 
-app.mixin({
-  methods: {
-    $can: withState(can),
-    $iam: withState(iam),
-    $dateFormat(date) {
-      const d = dayjs(date)
-      return d.format('D MMM YY')
-    }
-  },
-  computed: {
-    $uiBusy() {
-      return this.$store.state.ui.busy
-    }
-  }
-})
+app.mixin(mixins)
 
 app.mount('#app')
