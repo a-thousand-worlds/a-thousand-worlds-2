@@ -183,6 +183,11 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  // scroll to top on navigate, except for back/forward
+  // https://router.vuejs.org/guide/advanced/scroll-behavior.html#async-scrolling
+  scrollBehavior(to, from, savedPosition) {
+    return savedPosition || { left: 0, top: 0 }
+  }
 })
 
 export default router

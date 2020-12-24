@@ -21,7 +21,6 @@ export default {
       this.$store.dispatch('loadImage', this.author.photo)
     }
     */
-    window.scrollTo(0, 0)
   },
   watch: {
     '$route'(next) {
@@ -32,7 +31,6 @@ export default {
         this.$store.dispatch('loadImage', this.author.photo)
       }
       */
-      window.scrollTo(0, 0)
     },
     '$store.state.creators.data'(next, prev) {
       const id = this.$router.currentRoute._value.params.id

@@ -5,24 +5,6 @@ import BooksView from '../components/BooksView.vue'
 export default {
   name: 'HomePage',
   components: { BooksFilter, BooksView },
-  data() {
-    return {
-      prevRoute: null
-    }
-  },
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      vm.prevRoute = from
-    })
-  },
-  created() {
-    setTimeout(() => {
-      if (this.prevRoute && this.prevRoute.name === 'BookDetail') {
-        return
-      }
-      window.scrollTo(0, 0)
-    }, 0)
-  }
 }
 
 </script>

@@ -32,14 +32,12 @@ export default {
     if (this.$router.currentRoute._value.name === 'BookManagerUpdateForm') {
       this.loadBookID(this.$router.currentRoute._value.params.bid)
     }
-    window.scrollTo(0, 0)
   },
   watch: {
     '$store.state.books.data'(next) {
       if (this.$router.currentRoute._value.name === 'BookManagerUpdateForm') {
         this.loadBookID(this.$router.currentRoute._value.params.bid)
       }
-      window.scrollTo(0, 0)
     }
   },
   methods: {

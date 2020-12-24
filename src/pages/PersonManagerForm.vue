@@ -29,7 +29,6 @@ export default {
         this.mode = 'update'
       }
     }
-    window.scrollTo(0, 0)
   },
   methods: {
     fileChange(e) {

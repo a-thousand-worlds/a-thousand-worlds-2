@@ -51,7 +51,6 @@ export default {
     else {
       this.submissions = [this.newSubmissionObject()]
     }
-    window.scrollTo(0, 0)
   },
   methods: {
     coverImage(si) {
