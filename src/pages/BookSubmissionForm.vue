@@ -115,6 +115,7 @@ export default {
     clearSubmission(si) {
       this.submissions[si] = this.newSubmissionObject()
     },
+
     metadataInputsChanged: _.debounce(async function(si) {
       const { authors, illustrators, title } = this.submissions[si]
       this.setConfirmed(si, null)
@@ -134,7 +135,14 @@ export default {
         this.submissions[si].isbn = isbn
         this.submissions[si].thumbnail = thumbnail
       }
+      else {
+        this.submissions[si].isbn = null
+        this.submissions[si].confirmed = null
+        this.submissions[si].thumbnail = ''
+        this.setConfirmed(si, false)
+      }
     }, 500),
+
     // populate empty and suggested fields with metadata
     updateMetadata: _.debounce(async function(si) {
       const sub = this.submissions[si]
@@ -155,7 +163,8 @@ export default {
       if (meta.authors?.length && meta.authors?.join(', ') !== sub.authors && !sub.authors) sub.authors = meta.authors.join(', ')
       if (meta.illustrators?.length && meta.illustrators?.join(', ') !== sub.illustrators && !sub.illustrators) sub.illustrators = meta.illustrators.join(', ')
     }, 500),
-    isbnInput: _.debounce(async function(si) {
+
+    async confirmManualIsbn(si) {
       if (!isValidISBN(this.submissions[si].isbn)) return
 
       this.loadingBook[si] = true
@@ -168,8 +177,12 @@ export default {
         this.submissions[si].thumbnail = thumbnail
         this.updateMetadata(si)
       }
+      this.setConfirmed(si, null)
+    },
 
-    }, 500),
+    isbnChanged: _.debounce(async function(si) {
+    }, 500)
+
   },
 }
 </script>
@@ -187,37 +200,34 @@ export default {
 
             <div class="field">
               <label class="label">Title</label>
-              <book-title-field :disabled="$uiBusy || (books[si]?.id) || sub.loadingMetadata" v-model="sub.title" @book-selected="fillBook($event, si)" :searchable="false" @input="metadataInputsChanged(si)"/>
+              <book-title-field :disabled="$uiBusy || (books[si]?.id)" v-model="sub.title" @book-selected="fillBook($event, si)" :searchable="false" @input="metadataInputsChanged(si)"/>
             </div>
 
             <div class="field">
               <label class="label">Author(s)</label>
               <div class="control">
-                <input class="input" type="text" :disabled="$uiBusy || (books[si]?.id) || sub.loadingMetadata" v-model="sub.authors" @input="metadataInputsChanged(si)"/>
+                <input class="input" type="text" :disabled="$uiBusy || (books[si]?.id)" v-model="sub.authors" @input="metadataInputsChanged(si)"/>
               </div>
             </div>
 
             <div class="field">
               <label class="label">Illustrator(s)</label>
               <div class="control">
-                <input class="input" type="text" :disabled="$uiBusy || (books[si]?.id) || sub.loadingMetadata" v-model="sub.illustrators" @input="metadataInputsChanged(si)"/>
+                <input class="input" type="text" :disabled="$uiBusy || (books[si]?.id)" v-model="sub.illustrators" @input="metadataInputsChanged(si)"/>
               </div>
             </div>
 
-            <div v-if="loadingBook[si] || books[si] || coverImage(si)" class="field">
+            <div v-if="loadingBook[si] || books[si] || coverImage(si) || sub.confirmed === false" class="field">
               <div class="columns">
 
                 <!-- cover/loading -->
                 <div class="column is-narrow">
                   <img v-if="loadingBook[si]" src="@/assets/icons/loading.gif">
                   <div v-else class="bg-secondary">
-                    <!--
-                    <img :src="coverImage(si)" style="display: block; min-width: 100px; max-width: 265px;" :style="sub.confirmed === false && !books[si] ? { visibility: 'hidden' } : null" />
-                    -->
-                    <img :src="coverImage(si)" v-if="coverImage(si)" style="display: block; min-width: 100px; max-width: 265px;" />
+                    <img :src="coverImage(si) || sub.confirmed === false" style="display: block; min-width: 120px; min-height: 150px; max-width: 265px;" :style="sub.confirmed === false && !books[si] ? { visibility: 'hidden' } : null" />
                   </div>
                 </div>
-                <div class="column">
+                <div class="column is-flex is-align-items-center">
 
                   <!-- Duplicate -->
                   <div v-if="books[si]">
@@ -228,20 +238,30 @@ export default {
                   </div>
 
                   <!-- Is this your book? -->
-                  <div v-else-if="coverImage(si)" class="column field">
+                  <div v-else-if="coverImage(si) || sub.confirmed === false" class="column field">
                     <div v-if="sub.confirmed === null" class="control mb-20">
                       <label class="label">Is this your book?</label>
                       <button @click.prevent="setConfirmed(si, true)" class="button is-rounded mr-2" :class="{ 'is-primary': sub.confirmed !== false, 'is-selected': sub.confirmed }" :disabled="sub.confirmed" :style="sub.confirmed ? { cursor: 'default' } : null">Yes</button>
                       <button @click.prevent="setConfirmed(si, false)" class="button is-rounded" :class="{ 'is-primary': sub.confirmed === false }" :disabled="sub.confirmed === false" :style="sub.confirmed === false ? { cursor: 'default' } : null">No</button>
                     </div>
                     <div v-if="sub.confirmed === true" class="control">
-                      <label class="label">Got it, thank you</label>
+                      <label class="label">Great - Thanks!</label>
                     </div>
                     <div v-if="sub.confirmed === false" class="control">
-                      <label class="label" style="margin-right: -10px;">Okay, please enter the ISBN:</label>
-                      <input class="input" :disabled="$uiBusy || sub.loadingMetadata" v-model="sub.isbn" @input="isbnInput(si)" />
+                      <div class="field mb-20">
+                        <label v-if="!sub.thumbnail" class="label">Hmmm... we couldn't find that book.</label>
+                        <label class="label" style="margin-right: -20px;">{{sub.thumbnail ? 'Okay, ' : '' }}please enter the ISBN:</label>
+                        <div class="control">
+                          <input class="input" :disabled="$uiBusy" v-model="sub.isbn" @input="isbnChanged(si)" />
+                        </div>
+                      </div>
+                      <div class="field">
+                        <div class="control">
+                          <button class="button is-rounded is-primary" @click="confirmManualIsbn(si)" :disabled="!sub.isbn">Confirm</button>
+                          <button class="button is-flat" @click="setConfirmed(si, null)">Cancel</button>
+                        </div>
+                      </div>
                     </div>
-                    <img v-if="sub.loadingMetadata" style="max-height: 100px;" src="@/assets/icons/loading.gif">
                   </div>
                   <!--
                   <div v-if="sub.confirmed" class="column field">
@@ -267,7 +287,7 @@ export default {
               <label class="label">How would you categorize this book? Select all that apply</label>
               <div class="text-14 tablet-columns-2">
                 <div v-for="tag of $store.getters['tags/list']" :key="tag.id" class="control is-flex">
-                  <input :disabled="$uiBusy || sub.loadingMetadata" :id="tag.id+'-'+si" :name="tag.id" type="checkbox" class="checkbox mr-3 mb-3 mt-1" v-model="sub.tags[tag.id]">
+                  <input :disabled="$uiBusy" :id="tag.id+'-'+si" :name="tag.id" type="checkbox" class="checkbox mr-3 mb-3 mt-1" v-model="sub.tags[tag.id]">
                   <label class="label mb-1" :for="tag.id+'-'+si">
                     {{tag.tag}}
                   </label>
