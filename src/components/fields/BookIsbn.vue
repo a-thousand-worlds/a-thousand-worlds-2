@@ -37,7 +37,7 @@ export default {
       this.isbn = search
       this.$emit('update:modelValue', search)
       this.book = null
-      this.searches = this.$store.getters['books/list']
+      this.searches = this.$store.getters['books/list']()
         .filter(book => search.length && book.isbn.includes(search))
     },
     hideSearch() {

@@ -21,10 +21,6 @@ const module = mergeOne(collection('books', 'cover'), {
     }
   },
   getters: {
-    list: state => state.loaded
-      ? Object.keys(state.data)
-        .map(id => state.data[id])
-      : [],
     filtered: state => state.loaded
       ? Object.keys(state.data)
         .map(id => state.data[id])
