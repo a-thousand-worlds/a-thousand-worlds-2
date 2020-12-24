@@ -6,9 +6,6 @@ import dayjs from 'dayjs'
 
 const module = mergeOne(managedCollection('submits/books'), {
   getters: {
-    list: state => state.loaded
-      ? Object.values(state.data)
-      : [],
     filtered: state => state.loaded
       ? Object.values(state.data)
         .filter(book => {

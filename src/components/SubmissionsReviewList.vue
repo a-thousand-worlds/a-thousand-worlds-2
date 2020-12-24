@@ -38,7 +38,7 @@ export default {
     },
     async reloadSubmissions() {
       this.loading = true
-      const booksSubs = this.$store.getters['bookSubmissions/list']
+      const booksSubs = this.$store.getters['bookSubmissions/list']()
         .filter(sub => !sub.approved && !sub.approvedBy && !sub.approvedAt)
       this.subs = { books: booksSubs }
       // const bundlesSubs = Object.keys(data.bundles)
