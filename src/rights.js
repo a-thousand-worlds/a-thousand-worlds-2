@@ -7,7 +7,7 @@
 module.exports = {
   invite: ['admin'],
   manageCollections: [],
-  editContent: ['admin'],
+  editContent: [],
   review: ['admin'],
   submit: ['admin', 'contributor'],
   viewDashboard: ['admin', 'contributor', 'creator'],
