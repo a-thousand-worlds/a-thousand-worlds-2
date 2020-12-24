@@ -96,7 +96,6 @@ export default {
         confirmed: null,
         illustrators: '',
         isbn: '',
-        otherTag: '',
         publisher: '',
         summary: '',
         tags: {},
@@ -171,11 +170,6 @@ export default {
       }
 
     }, 500),
-    checkOtherTag(si) {
-      // console.log('check', this.submissions[si].otherTag)
-      if (this.submissions[si].otherTag.length) this.submissions[si].tags.other = true
-      else this.submissions[si].tags.other = false
-    }
   },
 }
 </script>
@@ -277,17 +271,6 @@ export default {
                   <label class="label mb-1" :for="tag.id+'-'+si">
                     {{tag.tag}}
                   </label>
-                </div>
-                <div class="field is-grouped">
-                  <div class="control">
-                  <input :disabled="$uiBusy" type="checkbox" class="checkbox mr-3 mb-3" v-model="sub.tags.other">
-                  </div>
-                  <div class="control">
-                  <!--
-                  <label class="label d-inline">Other</label>
-                  -->
-                  <input :disabled="$uiBusy || sub.loadingMetadata" @input="checkOtherTag(si)" class="input d-inline" type="text" v-model="sub.otherTag">
-                  </div>
                 </div>
               </div>
             </div>
