@@ -14,29 +14,24 @@ export default {
     }
   },
   methods: {
-    addTag() {
+    async addTag() {
       const id = v4()
-      this.$store.dispatch('tags/save', { path: id, value: { id, ...this.addTagTag } }).then(() => {
-        this.addTagTag = {}
-      })
+      await this.$store.dispatch('tags/save', { path: id, value: { id, ...this.addTagTag } })
+      this.addTagTag = {}
     },
-    delTag(id) {
-      this.$store.dispatch('delTag', id).then(() => {
-        this.addTagTag = ''
-      })
+    async remove(id) {
+      await this.$store.dispatch('tags/remove', id)
+      this.addTagTag = ''
     },
     toggleEditTag(id, state) {
       this.edits[id] = state
     },
-    updateTag(tagid) {
+    async updateTag(tagid) {
       const tag = { ...this.edits[tagid] }
       this.$store.commit('ui/setBusy', true)
-      /**/
-      this.$store.dispatch('tags/save', { path: tagid, value: tag }).then(() => {
-        this.edits[tagid] = null
-        this.$store.commit('ui/setBusy', false)
-      })
-      /**/
+      await this.$store.dispatch('tags/save', { path: tagid, value: tag })
+      this.edits[tagid] = null
+      this.$store.commit('ui/setBusy', false)
     }
   }
 }
@@ -51,16 +46,29 @@ export default {
   <table class="table w-100">
     <thead>
       <tr>
-        <th>Sort</th>
-        <th>Show on Front</th>
-        <th>Tag</th>
-        <th>Created/Updated</th>
-        <th>Actions</th>
+        <th style="width: 100%;">Tag</th>
+        <th class="has-text-right" style="white-space: nowrap;">Sort Order</th>
+        <th class="has-text-centered" title="Show this tag in the book filters" style="white-space: nowrap;">Show
+          <i class="far fa-question-circle"></i>
+        </th>
+        <th>Edit/Delete</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="tag of $store.getters['tags/list']" :key="tag.id">
+
+        <!-- tag -->
         <td>
+          <div class="field">
+            <div class="control">
+              <span v-if="edits[tag.id]"><input type="text" class="input" v-model="edits[tag.id].tag"/></span>
+              <span v-else>{{tag.tag}}</span>
+            </div>
+          </div>
+        </td>
+
+        <!-- sort order -->
+        <td class="has-text-right">
           <span v-if="!edits[tag.id]">
             <span class="ml-2">{{tag.sortOrder}}</span>
           </span>
@@ -68,40 +76,37 @@ export default {
             <input type="text" class="input" v-model="edits[tag.id].sortOrder"/>
           </span>
         </td>
-        <td>
+
+        <!-- show in book filters -->
+        <td class="has-text-centered">
           <span v-if="!edits[tag.id]">
             <i v-if="tag.showOnFront" class="fas fa-check has-text-primary"></i>
-            <i v-if="!tag.showOnFront" class="fas fa-minus has-text-secondary"></i>
+            <i v-else class="fas fa-minus has-text-secondary"></i>
           </span>
           <span v-if="edits[tag.id]"><input type="checkbox" class="checkbox" v-model="edits[tag.id].showOnFront"/></span>
         </td>
-        <td>
-          <span v-if="!edits[tag.id]">{{tag.tag}}</span>
-          <span v-if="edits[tag.id]"><input type="text" class="input" v-model="edits[tag.id].tag"/></span>
-        </td>
-        <td>{{ $dateFormat(tag.created) }}/{{ $dateFormat(tag.updated) }}</td>
+
+        <!-- edit/delete -->
         <td class="actions">
           <div v-if="!edits[tag.id]" class="field is-grouped is-justify-content-flex-end">
-            <p class="control"><button @click.prevent="toggleEditTag(tag.id, tag)" :disabled="$uiBusy" class="button is-secondary">
-              <i class="fas fa-pencil-alt mr-2"></i>
-              <span>Edit</span>
-            </button></p>
-            <p class="control"><button @click.prevent="delTag(tag.id)" :disabled="$uiBusy" class="button is-danger">
-              <i class="fas fa-trash mr-2"></i>
-              <span>Delete</span>
+            <p class="control"><button @click.prevent="toggleEditTag(tag.id, tag)" :disabled="$uiBusy" class="button is-flat">
+              <i class="fas fa-pencil-alt"></i>
+            </button>
+            <button @click.prevent="remove(tag.id)" :disabled="$uiBusy" class="button is-flat">
+              <i class="fas fa-times"></i>
             </button></p>
           </div>
           <div v-if="edits[tag.id]" class="field is-grouped is-justify-content-flex-end">
-            <p class="control"><button @click.prevent="toggleEditTag(tag.id, null)" :disabled="$uiBusy" class="button is-secondary">
-              <i class="fas fa-times mr-2"></i>
+            <p class="control"><button @click.prevent="toggleEditTag(tag.id, null)" :disabled="$uiBusy" class="button is-rounded">
               <span>Cancel</span>
             </button></p>
-            <p class="control"><button @click.prevent="updateTag(tag.id)" :disabled="$uiBusy" class="button is-primary">
+            <p class="control"><button @click.prevent="updateTag(tag.id)" :disabled="$uiBusy" class="button is-rounded is-primary">
               <i class="fas fa-check mr-2"></i>
               <span>Save</span>
             </button></p>
           </div>
         </td>
+
       </tr>
     </tbody>
   </table>
@@ -123,7 +128,7 @@ export default {
       </p>
       <p class="control">
         <a class="button" @click.prevent="addTagTag.showOnFront=!addTagTag.showOnFront">
-          Show on Front
+          Show
           <input :disabled="$uiBusy" type="checkbox" class="checkbox ml-2" placeholder="Sort order" v-model="addTagTag.showOnFront"/>
         </a>
       </p>
@@ -144,5 +149,8 @@ export default {
 <style scoped lang="scss">
 th:last-child {
   text-align: right;
+}
+td {
+  vertical-align: middle;
 }
 </style>
