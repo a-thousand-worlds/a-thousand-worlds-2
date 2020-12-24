@@ -268,13 +268,13 @@ export default {
             </div>
             -->
 
-            <!-- optional questions -->
+            <!-- tags -->
             <div v-if="!books[si] || (books[si] && !books[si].id)" class="field">
               <label class="label">How would you categorize this book? Select all that apply</label>
               <div class="text-14 tablet-columns-2">
-                <div v-for="tag of $store.getters['tags/list']" :key="tag.id" class="control">
-                  <input :disabled="$uiBusy || sub.loadingMetadata" :id="tag.id+'-'+si" :name="tag.id" type="checkbox" class="checkbox mr-3 mb-3" v-model="sub.tags[tag.id]">
-                  <label class="label d-inline" :for="tag.id+'-'+si">
+                <div v-for="tag of $store.getters['tags/list']" :key="tag.id" class="control is-flex">
+                  <input :disabled="$uiBusy || sub.loadingMetadata" :id="tag.id+'-'+si" :name="tag.id" type="checkbox" class="checkbox mr-3 mb-3 mt-1" v-model="sub.tags[tag.id]">
+                  <label class="label mb-1" :for="tag.id+'-'+si">
                     {{tag.tag}}
                   </label>
                 </div>
@@ -338,9 +338,6 @@ export default {
 .label {
   text-transform: uppercase;
   font-size: 18px;
-}
-.d-inline {
-  display: inline !important;
 }
 .tablet-columns-2 {
   column-count: 1;
