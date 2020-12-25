@@ -53,10 +53,12 @@
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-fp": "^2.3.0",
     "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest-dom": "^3.6.4",
     "eslint-plugin-jsdoc": "^30.7.8",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.1.0",
+    "eslint-plugin-testing-library": "^3.10.1",
     "eslint-plugin-vue": "^7.2.0",
     "firebase-tools": "^8.19.0",
     "jest-transform-stub": "^2.0.0",
@@ -67,12 +69,18 @@
   "eslintConfig": {
     "extends": [
       "eslint:recommended",
+      "plugin:jest-dom/recommended",
+      "plugin:testing-library/recommended",
       "plugin:vue/vue3-essential",
       "raine"
     ],
     "parserOptions": {
       "parser": "babel-eslint"
-    }
+    },
+    "plugins": [
+      "jest-dom",
+      "testing-library"
+    ]
   },
   "browserslist": [
     "> 1%",
