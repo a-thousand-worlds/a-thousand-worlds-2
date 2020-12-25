@@ -136,3 +136,17 @@ test('search for thumbnail after typing in ISBN', async () => {
   expect(component.getByAltText('thumbnail'))
     .not.toHaveStyle({ visibility: 'hidden' })
 })
+
+test('thank you after clicking "No, but keep anyway"', async () => {
+  const component = render(BookSubmissionForm)
+  await fireEvent.update(component.getByLabelText('Title'), 'bear')
+  await fireEvent.update(component.getByLabelText('Author(s)'), 'm')
+  expect(await component.findByText('Is this your book?', {}, { timeout: 5000 }))
+  await fireEvent.click(component.getByText('No'))
+  await fireEvent.update(component.getByLabelText('Okay, please enter the ISBN:'), '1452171912')
+  await fireEvent.click(component.getByText('Search'))
+  expect(component.queryByText('Okay, please enter the ISBN:')).toBe(null)
+  expect(await component.findByText('Is this your book?', {}, { timeout: 5000 }))
+  await fireEvent.click(component.getByText('No, but keep anyway'))
+  expect(component.getByText('Got it - Thanks!'))
+})

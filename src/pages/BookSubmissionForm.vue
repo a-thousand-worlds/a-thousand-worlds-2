@@ -94,6 +94,7 @@ export default {
     },
     newSubmissionObject() {
       return {
+        attempts: 0,
         authors: '',
         confirmed: null,
         illustrators: '',
@@ -136,6 +137,7 @@ export default {
       if (isbn && isbn !== this.submissions[si].isbn) {
         this.submissions[si].isbn = isbn
         this.submissions[si].thumbnail = thumbnail
+        this.submissions[si].attempts++
       }
       else {
         this.submissions[si].isbn = null
@@ -177,6 +179,7 @@ export default {
       if (isbn) {
         this.submissions[si].isbn = isbn
         this.submissions[si].thumbnail = thumbnail
+        this.submissions[si].attempts++
         this.updateMetadata(si)
       }
       this.setConfirmed(si, null)
@@ -243,11 +246,20 @@ export default {
                   <div v-else-if="!loadingBook[si] && (coverImage(si) || sub.confirmed === false)" class="column field">
                     <div v-if="sub.confirmed === null" class="control mb-20">
                       <label class="label">Is this your book?</label>
-                      <button @click.prevent="setConfirmed(si, true)" class="button is-rounded mr-2" :class="{ 'is-primary': sub.confirmed !== false, 'is-selected': sub.confirmed }" :disabled="sub.confirmed" :style="sub.confirmed ? { cursor: 'default' } : null">Yes</button>
-                      <button @click.prevent="setConfirmed(si, false)" class="button is-rounded" :class="{ 'is-primary': sub.confirmed === false }" :disabled="sub.confirmed === false" :style="sub.confirmed === false ? { cursor: 'default' } : null">No</button>
+                      <div class="field" :class="{ 'is-grouped': sub.attempts === 1 }">
+                        <div class="control mb-2">
+                          <button @click.prevent="setConfirmed(si, true)" class="button is-rounded" :class="{ 'is-primary': sub.confirmed !== false, 'is-selected': sub.confirmed }" :disabled="sub.confirmed" :style="sub.confirmed ? { cursor: 'default' } : null">Yes</button>
+                        </div>
+                        <div class="control mb-2">
+                          <button @click.prevent="setConfirmed(si, false)" class="button is-rounded">No{{ sub.attempts > 1 ? ', try again' : ''}}</button>
+                        </div>
+                        <div class="control mb-2">
+                          <button v-if="sub.attempts > 1" @click.prevent="setConfirmed(si, true)" class="button is-rounded">No, but keep anyway</button>
+                        </div>
+                      </div>
                     </div>
                     <div v-if="sub.confirmed === true" class="control">
-                      <label class="label">Great - Thanks!</label>
+                      <label class="label">{{ sub.attempts > 1 ? 'Got it' : 'Great' }} - Thanks!</label>
                     </div>
                     <div v-if="sub.confirmed === false" class="control">
                       <div class="field mb-20">
