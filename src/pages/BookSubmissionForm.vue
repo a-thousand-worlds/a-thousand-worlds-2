@@ -18,6 +18,7 @@ export default {
       },
       confirms: [],
       // editor: BalloonEditor,
+      errors: [],
       loadingBook: [],
       submissions: [],
       titleId: uid(),
@@ -32,14 +33,6 @@ export default {
         )
       )
     },
-    draftable() {
-      return this.submissions.every(sub => sub.title || sub.authors || sub.illustrators || sub.isbn)
-        && !this.books.some(book => book?.id)
-    },
-    submitable() {
-      return this.submissions.every(sub => sub.title && sub.authors && sub.isbn && sub.confirmed !== null && Object.keys(sub.tags).length)
-        && !this.books.some(book => book?.id)
-    }
   },
   created() {
     if (Array.isArray(this.$store.state.user.user?.profile.draftBooks) && this.$store.state.user.user?.profile.draftBooks.length) {
@@ -61,6 +54,11 @@ export default {
         ? cover
         : cover?.base64?.url || ''
     },
+
+    hasError(name) {
+      return this.errors.some(error => error.name === name)
+    },
+
     async setConfirmed(si, state) {
 
       const sub = this.submissions[si]
@@ -79,8 +77,13 @@ export default {
       else if (state === null) {
         sub.isbn = null
       }
+
+      this.revalidate()
     },
     async submitForReview() {
+
+      if (!this.validate()) return
+
       this.$store.commit('ui/setBusy', true)
       await this.$store.dispatch('bookSubmissions/submit', this.submissions)
       this.$store.commit('ui/setBusy', false)
@@ -119,9 +122,15 @@ export default {
       this.submissions[si] = this.newSubmissionObject()
     },
 
-    metadataInputsChanged: _.debounce(async function(si) {
+    metadataInputsChanged(si) {
+      this.metadataInputsChangedDebounced(si)
+      this.revalidate()
+    },
+
+    metadataInputsChangedDebounced: _.debounce(async function(si) {
       const { authors, illustrators, title } = this.submissions[si]
       this.setConfirmed(si, null)
+      this.submissions[si].attempts = 0
       if (!title || (!authors && !illustrators)) {
         this.submissions[si].isbn = null
         this.submissions[si].confirmed = null
@@ -132,12 +141,12 @@ export default {
       this.loadingBook[si] = true
       const search = `${title} by ${authors} ${illustrators}`
       const result = await findBookByKeyword(search)
+      this.submissions[si].attempts = 1
       this.loadingBook[si] = false
       const { isbn, thumbnail } = result || {}
       if (isbn && isbn !== this.submissions[si].isbn) {
         this.submissions[si].isbn = isbn
         this.submissions[si].thumbnail = thumbnail
-        this.submissions[si].attempts++
       }
       else {
         this.submissions[si].isbn = null
@@ -185,7 +194,28 @@ export default {
       this.setConfirmed(si, null)
     },
 
-    isbnChanged: _.debounce(async function(si) {
+    validateSubmission(sub) {
+      return [
+        !sub.title ? { name: 'title', message: 'Title is required' } : null,
+        !sub.authors ? { name: 'authors', message: 'Author is required' } : null,
+        sub.confirmed === null ? { name: 'confirm', message: 'Confirm book' } : null,
+        Object.keys(sub.tags).length === 0 ? { name: 'tags', message: 'Tags are required' } : null,
+      ].filter(x => x)
+    },
+
+    validate() {
+
+      this.errors = this.submissions
+        .flatMap(this.validateSubmission)
+        .filter(x => x)
+
+      return this.errors.length === 0
+    },
+
+    revalidate: _.throttle(function() {
+      if (this.errors.length > 0) {
+        this.validate()
+      }
     }, 500)
 
   },
@@ -196,7 +226,7 @@ export default {
 
   <div class="mx-20 mb-30">
     <div class="is-flex is-justify-content-center">
-      <form class="is-flex-grow-1" style="max-width: 540px;" @submit.prevent="submit">
+      <form class="is-flex-grow-1" style="max-width: 540px;" @submit.prevent="submitForReview">
 
         <h1 class="title page-title divider-bottom">Submit a book</h1>
 
@@ -204,14 +234,14 @@ export default {
           <section class="basic-information">
 
             <div class="field">
-              <label class="label" :for="titleId">Title</label>
-              <book-title-field :disabled="$uiBusy || (books[si]?.id)" :inputId="titleId" v-model="sub.title" @book-selected="fillBook($event, si)" :searchable="false" @input="metadataInputsChanged(si)"/>
+              <label class="label" :class="{ 'has-text-danger': hasError('title') }" :for="titleId">Title</label>
+              <book-title-field :disabled="$uiBusy || (books[si]?.id)" :inputClass="{ 'is-danger': hasError('title') }" :inputId="titleId" v-model="sub.title" @book-selected="fillBook($event, si)" :searchable="false" @input="metadataInputsChanged(si)"/>
             </div>
 
             <div class="field">
-              <label class="label" for="authors">Author(s)</label>
+              <label class="label" :class="{ 'has-text-danger': hasError('authors') }" for="authors">Author(s)</label>
               <div class="control">
-                <input id="authors" class="input" type="text" :disabled="$uiBusy || (books[si]?.id)" v-model="sub.authors" @input="metadataInputsChanged(si)"/>
+                <input id="authors" class="input" :class="{ 'is-danger': hasError('authors') }" type="text" :disabled="$uiBusy || (books[si]?.id)" v-model="sub.authors" @input="metadataInputsChanged(si)"/>
               </div>
             </div>
 
@@ -245,7 +275,7 @@ export default {
                   <!-- Is this your book? -->
                   <div v-else-if="!loadingBook[si] && (coverImage(si) || sub.confirmed === false)" class="column field">
                     <div v-if="sub.confirmed === null" class="control mb-20">
-                      <label class="label">Is this your book?</label>
+                      <label class="label" :class="{ 'has-text-danger': hasError('tags') }">Is this your book?</label>
                       <div class="field" :class="{ 'is-grouped': sub.attempts === 1 }">
                         <div class="control mb-2">
                           <button @click.prevent="setConfirmed(si, true)" class="button is-rounded" :class="{ 'is-primary': sub.confirmed !== false, 'is-selected': sub.confirmed }" :disabled="sub.confirmed" :style="sub.confirmed ? { cursor: 'default' } : null">Yes</button>
@@ -266,7 +296,7 @@ export default {
                         <label v-if="!sub.thumbnail" class="label">Hmmm... we couldn't find that book.</label>
                         <label for="isbn" class="label" style="margin-right: -20px;">{{sub.thumbnail ? 'Okay, ' : '' }}please enter the ISBN:</label>
                         <div class="control">
-                          <input id="isbn" class="input" :disabled="$uiBusy" v-model="sub.isbn" @input="isbnChanged(si)" />
+                          <input id="isbn" class="input" :disabled="$uiBusy" v-model="sub.isbn" />
                         </div>
                       </div>
                       <div class="field">
@@ -298,10 +328,10 @@ export default {
 
             <!-- tags -->
             <div v-if="!books[si] || (books[si] && !books[si].id)" class="field">
-              <label class="label">How would you categorize this book? Select all that apply</label>
+              <label class="label" :class="{ 'has-text-danger': hasError('tags') }">How would you categorize this book? Select all that apply</label>
               <div class="text-14 tablet-columns-2">
                 <div v-for="tag of $store.getters['tags/listSorted']()" :key="tag.id" class="control is-flex">
-                  <input :disabled="$uiBusy" :id="tag.id+'-'+si" :name="tag.id" type="checkbox" class="checkbox mr-3 mb-3 mt-1" v-model="sub.tags[tag.id]">
+                  <input :id="tag.id+'-'+si" :name="tag.id" type="checkbox" class="checkbox mr-3 mb-3 mt-1" v-model="sub.tags[tag.id]" @input="revalidate">
                   <label class="label mb-1" :for="tag.id+'-'+si">
                     {{tag.tag}}
                   </label>
@@ -332,8 +362,12 @@ export default {
         <hr />
 
         <div class="field is-grouped">
-          <button :disabled="!draftable || $uiBusy" :class="{'is-loading':$uiBusy}" @click.prevent="saveDraft()" class="button is-rounded is-fullwidth mr-20">Save as draft</button>
-          <button :disabled="!submitable || $uiBusy" :class="{'is-loading':$uiBusy}" @click.prevent="submitForReview()" class="button is-rounded is-primary is-fullwidth">Submit for review</button>
+          <button :class="{'is-loading':$uiBusy}" @click.prevent="saveDraft()" class="button is-rounded is-fullwidth mr-20">Save as draft</button>
+          <button :class="{'is-loading': $uiBusy}" @click.prevent="submitForReview()" class="button is-rounded is-primary is-fullwidth">Submit for review</button>
+        </div>
+
+        <div v-if="errors.length" class="field">
+          <p v-for="(error, i) of errors" :key="i" class="error has-text-centered is-uppercase">{{error.message}}</p>
         </div>
 
       </form>
