@@ -226,7 +226,7 @@ export default {
                 <div class="column is-narrow">
                   <img v-if="loadingBook[si]" role="loading" src="@/assets/icons/loading.gif">
                   <div v-else class="bg-secondary">
-                    <img :src="coverImage(si) || sub.confirmed === false" style="display: block; min-width: 120px; min-height: 150px; max-width: 265px;" :style="sub.confirmed === false && !books[si] ? { visibility: 'hidden' } : null" />
+                    <img :src="coverImage(si) || sub.confirmed === false" role="thumbnail" alt="thumbnail" style="display: block; min-width: 120px; min-height: 150px; max-width: 265px;" :style="sub.confirmed === false && !books[si] ? { visibility: 'hidden' } : null" />
                   </div>
                 </div>
                 <div class="column is-flex is-align-items-center">
@@ -252,9 +252,9 @@ export default {
                     <div v-if="sub.confirmed === false" class="control">
                       <div class="field mb-20">
                         <label v-if="!sub.thumbnail" class="label">Hmmm... we couldn't find that book.</label>
-                        <label class="label" style="margin-right: -20px;">{{sub.thumbnail ? 'Okay, ' : '' }}please enter the ISBN:</label>
+                        <label for="isbn" class="label" style="margin-right: -20px;">{{sub.thumbnail ? 'Okay, ' : '' }}please enter the ISBN:</label>
                         <div class="control">
-                          <input class="input" :disabled="$uiBusy" v-model="sub.isbn" @input="isbnChanged(si)" />
+                          <input id="isbn" class="input" :disabled="$uiBusy" v-model="sub.isbn" @input="isbnChanged(si)" />
                         </div>
                       </div>
                       <div class="field">

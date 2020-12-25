@@ -1,7 +1,6 @@
 import BookSubmissionForm from '@/pages/BookSubmissionForm.vue'
 import { render } from '@/test-helpers'
 import { fireEvent } from '@testing-library/vue'
-import { within } from '@testing-library/dom'
 import '@testing-library/jest-dom'
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
@@ -67,6 +66,15 @@ test('do not search for isbn after typing in only illustrator', async () => {
     .toBe(null)
 })
 
+test('show the thumbnail after it has loaded', async () => {
+  const component = render(BookSubmissionForm)
+  await fireEvent.update(component.getByLabelText('Title'), 'The Bear and the Moon')
+  await fireEvent.update(component.getByLabelText('Author(s)'), 'Catia Chien')
+  await component.findByText('Is this your book?', {}, { timeout: 5000 })
+  expect(component.getByAltText('thumbnail'))
+    .not.toHaveStyle({ visibility: 'hidden' })
+})
+
 test('thank the user if they confirm it is their book', async () => {
   const component = render(BookSubmissionForm)
   await fireEvent.update(component.getByLabelText('Title'), 'The Bear and the Moon')
@@ -76,11 +84,21 @@ test('thank the user if they confirm it is their book', async () => {
   component.getByText('Great - Thanks!')
 })
 
-test('ask for the isbn if the user says the book is not theirs', async () => {
+test('ask for the isbn if the book is not theirs', async () => {
   const component = render(BookSubmissionForm)
   await fireEvent.update(component.getByLabelText('Title'), 'The Bear and the Moon')
   await fireEvent.update(component.getByLabelText('Author(s)'), 'Catia Chien')
   await component.findByText('Is this your book?', {}, { timeout: 5000 })
   await fireEvent.click(component.getByText('No'))
   component.getByText('Okay, please enter the ISBN:')
+})
+
+test('hide the thumbnail if the book is not theirs', async () => {
+  const component = render(BookSubmissionForm)
+  await fireEvent.update(component.getByLabelText('Title'), 'The Bear and the Moon')
+  await fireEvent.update(component.getByLabelText('Author(s)'), 'Catia Chien')
+  await component.findByText('Is this your book?', {}, { timeout: 5000 })
+  await fireEvent.click(component.getByText('No'))
+  expect(component.getByAltText('thumbnail'))
+    .toHaveStyle({ visibility: 'hidden' })
 })
