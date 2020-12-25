@@ -166,7 +166,7 @@ export default {
       if (meta.illustrators?.length && meta.illustrators?.join(', ') !== sub.illustrators && !sub.illustrators) sub.illustrators = meta.illustrators.join(', ')
     }, 500),
 
-    async confirmManualIsbn(si) {
+    async searchManualIsbn(si) {
       if (!isValidISBN(this.submissions[si].isbn)) return
 
       this.loadingBook[si] = true
@@ -240,7 +240,7 @@ export default {
                   </div>
 
                   <!-- Is this your book? -->
-                  <div v-else-if="coverImage(si) || sub.confirmed === false" class="column field">
+                  <div v-else-if="!loadingBook[si] && (coverImage(si) || sub.confirmed === false)" class="column field">
                     <div v-if="sub.confirmed === null" class="control mb-20">
                       <label class="label">Is this your book?</label>
                       <button @click.prevent="setConfirmed(si, true)" class="button is-rounded mr-2" :class="{ 'is-primary': sub.confirmed !== false, 'is-selected': sub.confirmed }" :disabled="sub.confirmed" :style="sub.confirmed ? { cursor: 'default' } : null">Yes</button>
@@ -259,7 +259,7 @@ export default {
                       </div>
                       <div class="field">
                         <div class="control">
-                          <button class="button is-rounded is-primary" @click="confirmManualIsbn(si)" :disabled="!sub.isbn">Confirm</button>
+                          <button class="button is-rounded is-primary" @click="searchManualIsbn(si)" :disabled="!sub.isbn">Search</button>
                           <button class="button is-flat" @click="setConfirmed(si, null)">Cancel</button>
                         </div>
                       </div>
