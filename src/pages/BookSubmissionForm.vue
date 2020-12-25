@@ -199,21 +199,21 @@ export default {
           <section class="basic-information">
 
             <div class="field">
-              <label class="label" id="title">Title</label>
-              <book-title-field aria-labelledby="title" :disabled="$uiBusy || (books[si]?.id)" v-model="sub.title" @book-selected="fillBook($event, si)" :searchable="false" @input="metadataInputsChanged(si)"/>
+              <label class="label" id="title-label">Title</label>
+              <book-title-field aria-labelledby="title-label" :disabled="$uiBusy || (books[si]?.id)" v-model="sub.title" @book-selected="fillBook($event, si)" :searchable="false" @input="metadataInputsChanged(si)"/>
             </div>
 
             <div class="field">
-              <label class="label">Author(s)</label>
+              <label class="label" for="authors">Author(s)</label>
               <div class="control">
-                <input class="input" type="text" :disabled="$uiBusy || (books[si]?.id)" v-model="sub.authors" @input="metadataInputsChanged(si)"/>
+                <input id="authors" class="input" type="text" :disabled="$uiBusy || (books[si]?.id)" v-model="sub.authors" @input="metadataInputsChanged(si)"/>
               </div>
             </div>
 
             <div class="field">
-              <label class="label">Illustrator(s)</label>
+              <label class="label" for="illustrators">Illustrator(s)</label>
               <div class="control">
-                <input class="input" type="text" :disabled="$uiBusy || (books[si]?.id)" v-model="sub.illustrators" @input="metadataInputsChanged(si)"/>
+                <input id="illustrators" class="input" type="text" :disabled="$uiBusy || (books[si]?.id)" v-model="sub.illustrators" @input="metadataInputsChanged(si)"/>
               </div>
             </div>
 
@@ -222,7 +222,7 @@ export default {
 
                 <!-- cover/loading -->
                 <div class="column is-narrow">
-                  <img v-if="loadingBook[si]" src="@/assets/icons/loading.gif">
+                  <img v-if="loadingBook[si]" role="loading" src="@/assets/icons/loading.gif">
                   <div v-else class="bg-secondary">
                     <img :src="coverImage(si) || sub.confirmed === false" style="display: block; min-width: 120px; min-height: 150px; max-width: 265px;" :style="sub.confirmed === false && !books[si] ? { visibility: 'hidden' } : null" />
                   </div>
