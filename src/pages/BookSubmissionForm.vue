@@ -1,6 +1,7 @@
 <script>
 import _ from 'lodash'
 import ISBN from 'isbn3'
+import { v4 as uid } from 'uuid'
 // import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import BookTitleField from '@/components/fields/BookTitle'
 import { findBookByKeyword, metadataByISBN } from '@/utils'
@@ -19,6 +20,7 @@ export default {
       // editor: BalloonEditor,
       loadingBook: [],
       submissions: [],
+      titleId: uid(),
     }
   },
   computed: {
@@ -199,8 +201,8 @@ export default {
           <section class="basic-information">
 
             <div class="field">
-              <label class="label" id="title-label">Title</label>
-              <book-title-field aria-labelledby="title-label" :disabled="$uiBusy || (books[si]?.id)" v-model="sub.title" @book-selected="fillBook($event, si)" :searchable="false" @input="metadataInputsChanged(si)"/>
+              <label class="label" :for="titleId">Title</label>
+              <book-title-field :disabled="$uiBusy || (books[si]?.id)" :inputId="titleId" v-model="sub.title" @book-selected="fillBook($event, si)" :searchable="false" @input="metadataInputsChanged(si)"/>
             </div>
 
             <div class="field">
