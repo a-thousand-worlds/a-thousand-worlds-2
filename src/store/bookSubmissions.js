@@ -109,7 +109,7 @@ const module = mergeOne(managedCollection('submits/books'), {
         const creators = {}
         // eslint-disable-next-line  fp/no-loops
         for (const author of authors) {
-          let cid = context.rootGetters['creators/list']
+          let cid = context.rootGetters['creators/list']()
             .reduce((acc, person) => person.name.toLowerCase() === author.toLowerCase() ? person.id : acc, null)
           if (!cid) {
             cid = v4()
@@ -119,7 +119,7 @@ const module = mergeOne(managedCollection('submits/books'), {
         }
         // eslint-disable-next-line  fp/no-loops
         for (const author of illustrators) {
-          let cid = context.rootGetters['creators/list']
+          let cid = context.rootGetters['creators/list']()
             .reduce((acc, person) => person.name.toLowerCase() === author.toLowerCase() ? person.id : acc, null)
           if (!cid) {
             cid = v4()
