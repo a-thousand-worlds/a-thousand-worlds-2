@@ -55,7 +55,7 @@ export default {
       </tr>
     </thead>
     <tbody>
-      <tr v-for="tag of $store.getters['tags/list']" :key="tag.id">
+      <tr v-for="tag of $store.getters['tags/listSorted']()" :key="tag.id">
 
         <!-- tag -->
         <td>

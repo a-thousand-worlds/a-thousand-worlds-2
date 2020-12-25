@@ -286,7 +286,7 @@ export default {
             <div v-if="!books[si] || (books[si] && !books[si].id)" class="field">
               <label class="label">How would you categorize this book? Select all that apply</label>
               <div class="text-14 tablet-columns-2">
-                <div v-for="tag of $store.getters['tags/list']" :key="tag.id" class="control is-flex">
+                <div v-for="tag of $store.getters['tags/listSorted']" :key="tag.id" class="control is-flex">
                   <input :disabled="$uiBusy" :id="tag.id+'-'+si" :name="tag.id" type="checkbox" class="checkbox mr-3 mb-3 mt-1" v-model="sub.tags[tag.id]">
                   <label class="label mb-1" :for="tag.id+'-'+si">
                     {{tag.tag}}
