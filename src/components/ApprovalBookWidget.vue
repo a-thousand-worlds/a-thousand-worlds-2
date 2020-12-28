@@ -1,5 +1,4 @@
 <script>
-import dayjs from 'dayjs'
 import Jimp from 'jimp'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 
@@ -123,18 +122,10 @@ Continue and create book?`
       }
     },
     async reject() {
-      const ok = await this.$store.dispatch('ui/confirm', { header: 'Rejecting submission', text: 'Reject submission?' })
-      if (!ok) return
-      const comment = await this.$store.dispatch('ui/prompt', { type: 'info', header: 'Rejecting submission', text: 'Any comments on rejecting?' })
-      this.sub.approveComment = comment || ''
       this.$emit('reject-me', this.sub)
     },
     save() {
       console.log('save back', this.sub)
-    },
-    dateFormat(date) {
-      const d = dayjs(date)
-      return d.format('MM-DD-YYYY')
     },
     isbnSearchState(state) {
       this.busy = state
