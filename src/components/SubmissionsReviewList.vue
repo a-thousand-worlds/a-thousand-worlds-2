@@ -9,54 +9,55 @@ export default {
   data() {
     return {
       loading: false,
-      subs: {},
       subsGroups: [],
       submitters: {}
     }
   },
   created() {
-    this.reloadSubmissions()
+    this.loadGroups()
+  },
+  computed: {
+    bookSubmissions() {
+      return this.$store.getters['bookSubmissions/list']()
+        .filter(sub => sub && !sub.approved && !sub.approvedBy && !sub.approvedAt)
+    }
   },
   methods: {
+    async approveAll() {
+      this.loading = true
+      this.$store.commit('ui/setBusy', true)
+      await this.$store.dispatch('bookSubmissions/approve', this.bookSubmissions)
+      this.loadGroups()
+      this.$store.commit('ui/setBusy', false)
+    },
     async approveGroup(group) {
-      const books = group.books.map(book => book.title).join(', ')
-      const doApprove = await this.$store.dispatch('ui/confirm', {
-        header: 'Approve books?',
-        text: books,
-        type: 'info'
-      })
-      if (doApprove) {
-        this.loading = true
-        this.$store.commit('ui/setBusy', true)
-        await this.$store.dispatch('bookSubmissions/approve', group.books)
-        this.reloadSubmissions()
-        this.$store.commit('ui/setBusy', false)
-      }
+      this.loading = true
+      this.$store.commit('ui/setBusy', true)
+      await this.$store.dispatch('bookSubmissions/approve', group.books)
+      this.loadGroups()
+      this.$store.commit('ui/setBusy', false)
     },
     submitterLoaded(user) {
       this.submitters[user.uid] = user.name
     },
-    async reloadSubmissions() {
+    async loadGroups() {
       this.loading = true
-      const booksSubs = this.$store.getters['bookSubmissions/list']()
-        .filter(sub => !sub.approved && !sub.approvedBy && !sub.approvedAt)
-      this.subs = { books: booksSubs }
       // const bundlesSubs = Object.keys(data.bundles)
       // .map(id => data.bundles[id])
       this.subsGroups = []
-      const subsGroups = booksSubs
-        .reduce((acc, sub) => {
-          if (!acc[sub.group]) {
-            acc[sub.group] = {}
+      const subsGroups = this.bookSubmissions
+        .reduce((acc, sub) => ({
+          ...acc,
+          [sub.group]: {
+            ...acc[sub.id],
+            sub,
           }
-          acc[sub.group][sub.id] = sub
-          return acc
-        }, {})
+        }), {})
       // use 0 timout to give vue time to destroy
       // objects from previous list
       setTimeout(() => {
         // eslint-disable-next-line  fp/no-mutating-methods
-        this.subsList = [...booksSubs]
+        this.subsList = [...this.bookSubmissions]
           .sort((a, b) => {
             const dA = dayjs(a.createdAt)
             const dB = dayjs(b.createdAt)
@@ -75,7 +76,7 @@ export default {
         this.loading = false
       }, 0)
     },
-    async rejectBookSubmission(sub, i) {
+    async rejectBookSubmission(sub) {
       this.loading = true
       await this.$store.dispatch('bookSubmissions/reject', sub)
       this.subsGroups = this.subsGroups.map(group => {
@@ -106,10 +107,16 @@ export default {
 
   <div>
 
+    <div v-if="bookSubmissions.length" class="is-flex is-justify-content-flex-end">
+      <div><button class="button is-rounded" @click="approveAll">Approve all ({{bookSubmissions.length}})</button></div>
+    </div>
+
     <div v-if="loading" class="my-50">
       <img src="@/assets/icons/loading.gif" />
     </div>
-    <p v-if="!subsGroups.length">No Submissions to review</p>
+
+    <p v-if="!subsGroups.length" style="font-size: 20px;">No Submissions to review</p>
+
     <div v-else>
       <div class="sub-group py-20" v-for="(group, gid) of subsGroups" :key="gid">
         <div>
@@ -125,7 +132,7 @@ export default {
             @submitter-loaded="submitterLoaded($event)"
             v-model="subsGroups[gid].books[i]"/>
         </div>
-        <div class="has-text-right">
+        <div class="has-text-right mt-20">
           {{ submitters[group.by] }}
         </div>
       </div>
