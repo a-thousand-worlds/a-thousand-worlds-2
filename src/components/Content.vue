@@ -11,12 +11,13 @@ export default {
     },
   },
   data() {
+    const slotDefault = this.$slots.default?.()[0].children || ''
     return {
       editor: BalloonEditor,
       editorConfig: {
         placeholder: this.placeholder,
       },
-      html: this.$store.getters['content/get'](this.name) ?? '',
+      html: this.$store.getters['content/get'](this.name) ?? slotDefault,
     }
   },
   watch: {
