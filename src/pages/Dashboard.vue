@@ -72,11 +72,11 @@ export default {
         </ul>
       </section>
 
-      <section v-if="$can('submit') && hasSubmissions" class="section">
+      <section v-if="$can('submit') && hasSubmissions" class="section my-30 py-0">
         <DashboardYourSubmissions />
       </section>
 
-      <section v-if="$can('review')" class="section">
+      <section v-if="$can('review')" class="section my-30 py-0">
         <h2>Review Submissions</h2>
         <DashboardReviewSubmissionsPreview />
       </section>
