@@ -25,7 +25,11 @@ export default {
   <div class="m-20 is-flex is-justify-content-center">
     <div class="is-flex-grow-1 mx-20" style="max-width: 760px;">
 
-      <h1 class="title page-title level-item">Tags Manager</h1>
+      <div class="mb-5">
+        <router-link :to="{ name: 'Dashboard' }" class="is-uppercase is-primary">&lt; Back to Dashboard</router-link>
+      </div>
+
+      <h1 class="title divider-bottom mb-30">Tags Manager</h1>
 
       <div class="tabs">
         <ul>
