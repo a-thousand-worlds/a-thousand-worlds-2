@@ -255,21 +255,14 @@ Continue and create book?`
       -->
     </div>
 
-    <!-- tags -->
     <div class="column is-5" style="margin-top: -20px;">
-      <div class="tags">
-          <div v-for="(tag, tagi) of tags" :key="tagi">
-            <span v-if="!tag.id" class="tag-label new" title="Tag not exists and will be created!">
-              {{tag.tag}}
-            </span>
-            <span v-else class="tag-label">
-              {{tag.tag}}
-            </span>
-          </div>
-
-      </div>
+      <!-- summary -->
       <div v-if="sub && sub.summary">
-        <ckeditor :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" v-model="sub.summary"/>
+        <ckeditor :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" v-model="sub.summary" style="padding: 0;" />
+      </div>
+      <!-- tags -->
+      <div class="tags">
+        <div v-for="(tag, tagi) of tags" :key="tagi" class="button is-primary is-rounded is-mini mr-1 mb-1" style="cursor: default;">{{tag.tag}}</div>
       </div>
     </div>
 
@@ -345,18 +338,6 @@ input[type="checkbox"] {
 
   .input.is-inline {
     margin-top: -7px;
-  }
-}
-
-.tag-label {
-  padding: 5px;
-  border-radius: 15px;
-  margin-right: 10px;
-  border: 1px solid $atw-base;
-  line-height: 20px;
-
-  &.new {
-    border-color: red;
   }
 }
 </style>

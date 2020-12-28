@@ -150,3 +150,10 @@ a.is-secondary{ color: $secondary }
 .bg-primary { background-color: $primary; }
 .bg-secondary { background-color: $secondary; }
 .is-secondary-text { color: $secondary; }
+
+// event smaller than is-small. Useful for tags.
+.button.is-mini {
+  font-size: 0.75rem;
+  padding: 0 0.5rem;
+  height: auto;
+}
