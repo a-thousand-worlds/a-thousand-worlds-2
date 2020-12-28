@@ -8,18 +8,13 @@ export default {
     Content,
     InviteWidget,
   },
-  data() {
-    return {
-      roles: ['user', 'contributor', 'creator', 'admin', 'superadmin'],
-    }
-  },
 }
 
 </script>
 
 <template>
 
-  <div class="is-flex is-justify-content-center">
+  <div class="is-flex is-justify-content-center" @click.prevent="$refs.invite?.setInviteDropdown(false)">
     <div class="is-flex-grow-1 mx-20" style="max-width: 760px;">
 
       <div class="mb-5">
@@ -29,7 +24,7 @@ export default {
       <h1 class="divider-bottom">Invitation Email Templates</h1>
 
       <div class="mt-20 mb-50">
-        <InviteWidget :roles="roles" class="my-20" />
+        <InviteWidget ref="invite" class="my-20" />
       </div>
 
       <h2 class="divider-bottom">Templates</h2>
@@ -51,7 +46,7 @@ export default {
 
       </div>
 
-      <div v-for="role of roles" :key="role" class="my-30">
+      <div v-for="role of $allowedInviteeRoles()" :key="role" class="my-30">
         <h3 class="is-capitalized my-10">{{ role === 'superadmin' ? 'owner' : role === 'admin' ? 'advisor' : role }}</h3>
         <div class="my-20">
           <p class="my-10" style="font-weight: bold;">Subject: </p>

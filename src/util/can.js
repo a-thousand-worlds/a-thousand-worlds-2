@@ -1,4 +1,4 @@
-import rights from '@/rights'
+import { rights } from '@/rights'
 import iam from './iam'
 
 /** Returns true if the logged in user can perform the specified action, based on rights.js. */

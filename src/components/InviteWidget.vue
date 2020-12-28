@@ -3,10 +3,6 @@ import parseRecipient from '@/util/parseRecipient'
 
 export default {
   props: {
-    roles: {
-      type: Array,
-      default: () => ['user', 'contributor', 'creator', 'advisor', 'owner'],
-    },
     format: String,
   },
   data() {
@@ -40,7 +36,7 @@ export default {
       return this.emailInput
         ? this.emailInput.split(/[\n,]/g).map(parseRecipient)
         : []
-    }
+    },
   },
   methods: {
 
@@ -63,6 +59,12 @@ export default {
 
     hasError(field) {
       return this.error?.fields?.[field]
+    },
+
+    formatRole(role) {
+      return role === 'superadmin' ? 'owner' :
+        role === 'admin' ? 'advisor' :
+        role
     },
 
     reset() {
@@ -158,7 +160,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div @click.prevent="setInviteDropdown(false)" >
 
     <p v-if="format !== 'compact'" class="mb-10">Enter a list of names and emails (one per line)</p>
 
@@ -172,7 +174,8 @@ export default {
       <div v-if="format === 'compact'" class="control is-flex-grow-1">
         <textarea class="textarea" :class="{ 'is-danger': hasError('emailInput')}" v-model="emailInput" placeholder="Sarah Lopez - sarah@test.com" style="min-height: 0; padding-top: 0.5rem; padding-bottom: 0.5rem;" />
       </div>
-      <div class="control">
+
+      <div v-if="$allowedInviteeRoles().length > 1" class="control">
         <div :class="{ dropdown: true, 'is-active': dropdownActive }">
           <div class="dropdown-trigger">
             <button class="button" aria-haspopup="true" aria-controls="dropdown-menu" @click.prevent.stop="toggleInviteDropdown">
@@ -184,8 +187,8 @@ export default {
           </div>
           <div class="dropdown-menu" :class="{ 'is-danger': hasError('role') }" id="dropdown-menu" role="menu">
             <div class="dropdown-content">
-              <a class="dropdown-item is-capitalized" :class="{ 'is-active': role === userRole }" v-for="userRole in roles" :key="userRole" @click.prevent="setInviteRole(userRole)">
-                {{ userRole }}
+              <a class="dropdown-item is-capitalized" :class="{ 'is-active': role === userRole }" v-for="userRole in $allowedInviteeRoles()" :key="userRole" @click.prevent="setInviteRole(userRole)">
+                {{ formatRole(userRole) }}
               </a>
             </div>
           </div>
