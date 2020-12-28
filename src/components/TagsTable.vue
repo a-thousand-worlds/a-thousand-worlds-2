@@ -7,18 +7,17 @@ export default {
     type: {
       type: String,
       default: 'books',
-      requried: true,
+      required: true,
     },
   },
   data() {
     return {
-      addTagTag: {
-        tag: '',
-        sortOrder: 0,
-        showOnFront: false
-      },
-      edits: {}
+      edits: {},
+      newTag: {},
     }
+  },
+  created() {
+    this.resetNewTag()
   },
   computed: {
     tags() {
@@ -28,12 +27,21 @@ export default {
   methods: {
     async addTag() {
       const id = v4()
-      await this.$store.dispatch(`tags/${this.type}/save`, { path: id, value: { id, ...this.addTagTag } })
-      this.addTagTag = {}
+      await this.$store.dispatch(`tags/${this.type}/save`, { path: id, value: { id, ...this.newTag } })
+      this.resetNewTag()
     },
     async remove(id) {
       await this.$store.dispatch(`tags/${this.type}/remove`, id)
-      this.addTagTag = ''
+      this.resetNewTag()
+    },
+    resetNewTag() {
+      this.newTag = {
+        tag: '',
+        showOnFront: true,
+        sortOrder: this.tags.length > 0
+          ? (this.tags[this.tags.length - 1].sortOrder || 0) + 1
+          : 1,
+      }
     },
     toggleEditTag(id, state) {
       this.edits[id] = state
@@ -45,7 +53,12 @@ export default {
       this.edits[tagid] = null
       this.$store.commit('ui/setBusy', false)
     }
-  }
+  },
+  watch: {
+    type(next) {
+      this.resetNewTag()
+    }
+  },
 }
 
 </script>
@@ -57,9 +70,7 @@ export default {
       <tr>
         <th style="width: 100%;">Tag</th>
         <th class="has-text-right" style="white-space: nowrap;">Sort Order</th>
-        <th class="has-text-centered" title="Show this tag in the book filters" style="white-space: nowrap;">Show
-          <i class="far fa-question-circle"></i>
-        </th>
+        <th class="has-text-centered" title="Show this tag in the book filters" style="white-space: nowrap;">Show <i class="far fa-question-circle"></i></th>
         <th>Edit/Delete</th>
       </tr>
     </thead>
@@ -126,18 +137,17 @@ export default {
         <a class="button is-static">Add Tag</a>
       </p>
       <p class="control w-100">
-        <input type="text" :disabled="$uiBusy" class="input" placeholder="Enter tag" v-model="addTagTag.tag"/>
+        <input type="text" :disabled="$uiBusy" class="input" placeholder="Enter tag" v-model="newTag.tag"/>
       </p>
       <p class="control">
         <a class="button is-static">Sort Order</a>
       </p>
       <p class="control">
-        <input :disabled="$uiBusy" type="text" class="input" placeholder="Sort order" v-model="addTagTag.sortOrder"/>
+        <input :disabled="$uiBusy" type="number" class="input" placeholder="Sort order" v-model="newTag.sortOrder"/>
       </p>
       <p class="control">
-        <a class="button" @click.prevent="addTagTag.showOnFront=!addTagTag.showOnFront">
-          Show
-          <input :disabled="$uiBusy" type="checkbox" class="checkbox ml-2" placeholder="Sort order" v-model="addTagTag.showOnFront"/>
+        <a class="button" @click.prevent="newTag.showOnFront = !newTag.showOnFront">
+          Show <input :disabled="$uiBusy" type="checkbox" class="checkbox ml-2" v-model="newTag.showOnFront"/>
         </a>
       </p>
       <p class="control">
