@@ -1,14 +1,30 @@
-import mergeOne from '@/util/mergeOne'
-import collection from '@/store/collection/managed'
+import bookTags from '@/store/bookTags'
+import bundleTags from '@/store/bundleTags'
+import peopleTags from '@/store/peopleTags'
 
-const module = mergeOne(collection('tags'), {
-  getters: {
-    listSorted: (state, getters) => () => state.loaded
-      // eslint-disable-next-line fp/no-mutating-methods
-      ? getters.list()
-        .sort((a, b) => parseInt(a.sortOrder) === parseInt(b.sortOrder) ? 0 : parseInt(a.sortOrder) > parseInt(b.sortOrder) ? 1 : -1)
-      : []
-  }
-})
+const module = {
+  namespaced: true,
+  modules: {
+    books: bookTags,
+    bundles: bundleTags,
+    people: peopleTags,
+  },
+  state: {
+    loaded: false,
+  },
+  mutations: {
+    setLoaded(state) {
+      state.loaded = true
+    }
+  },
+  actions: {
+    async subscribe({ dispatch, commit }) {
+      await dispatch('books/subscribe')
+      await dispatch('bundles/subscribe')
+      await dispatch('people/subscribe')
+      commit('setLoaded')
+    }
+  },
+}
 
 export default module

@@ -1,15 +1,15 @@
 import { createStore } from 'vuex'
 
 import alert from '@/store/alert'
-import invites from '@/store/invites'
-import content from '@/store/content'
 import books from '@/store/books'
+import bookSubmissions from '@/store/bookSubmissions'
+import content from '@/store/content'
+import creators from '@/store/creators'
+import invites from '@/store/invites'
 import tags from '@/store/tags'
 import ui from '@/store/ui'
 import user from '@/store/user'
 import users from '@/store/users'
-import creators from '@/store/creators'
-import bookSubmissions from '@/store/bookSubmissions'
 
 const store = createStore({
   modules: {

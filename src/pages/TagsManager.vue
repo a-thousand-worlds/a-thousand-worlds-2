@@ -1,156 +1,43 @@
 <script>
-import { v4 } from 'uuid'
+import TagsTable from '@/components/TagsTable'
 
 export default {
   name: 'TagsManagerPage',
+  components: {
+    TagsTable,
+  },
   data() {
     return {
-      addTagTag: {
-        tag: '',
-        sortOrder: 0,
-        showOnFront: false
-      },
-      edits: {}
+      active: 'books'
     }
   },
   methods: {
-    async addTag() {
-      const id = v4()
-      await this.$store.dispatch('tags/save', { path: id, value: { id, ...this.addTagTag } })
-      this.addTagTag = {}
+    setActive(value) {
+      this.active = value
     },
-    async remove(id) {
-      await this.$store.dispatch('tags/remove', id)
-      this.addTagTag = ''
-    },
-    toggleEditTag(id, state) {
-      this.edits[id] = state
-    },
-    async updateTag(tagid) {
-      const tag = { ...this.edits[tagid] }
-      this.$store.commit('ui/setBusy', true)
-      await this.$store.dispatch('tags/save', { path: tagid, value: tag })
-      this.edits[tagid] = null
-      this.$store.commit('ui/setBusy', false)
-    }
-  }
+  },
 }
 
 </script>
 
 <template>
 
-<h1 class="title page-title level-item">Tags Manager</h1>
+  <div class="m-20 is-flex is-justify-content-center">
+    <div class="is-flex-grow-1 mx-20" style="max-width: 760px;">
 
-<section class="section">
-  <table class="table w-100">
-    <thead>
-      <tr>
-        <th style="width: 100%;">Tag</th>
-        <th class="has-text-right" style="white-space: nowrap;">Sort Order</th>
-        <th class="has-text-centered" title="Show this tag in the book filters" style="white-space: nowrap;">Show
-          <i class="far fa-question-circle"></i>
-        </th>
-        <th>Edit/Delete</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="tag of $store.getters['tags/listSorted']()" :key="tag.id">
+      <h1 class="title page-title level-item">Tags Manager</h1>
 
-        <!-- tag -->
-        <td>
-          <div class="field">
-            <div class="control">
-              <span v-if="edits[tag.id]"><input type="text" class="input" v-model="edits[tag.id].tag"/></span>
-              <span v-else>{{tag.tag}}</span>
-            </div>
-          </div>
-        </td>
+      <div class="tabs">
+        <ul>
+          <li :class="{ 'is-active': active === 'books' }"><a @click.prevent="setActive('books')">Books</a></li>
+          <li :class="{ 'is-active': active === 'bundles' }"><a @click.prevent="setActive('bundles')">Bundles</a></li>
+          <li :class="{ 'is-active': active === 'people' }"><a @click.prevent="setActive('people')">People</a></li>
+        </ul>
+      </div>
 
-        <!-- sort order -->
-        <td class="has-text-right">
-          <span v-if="!edits[tag.id]">
-            <span class="ml-2">{{tag.sortOrder}}</span>
-          </span>
-          <span v-if="edits[tag.id]">
-            <input type="text" class="input" v-model="edits[tag.id].sortOrder"/>
-          </span>
-        </td>
+      <TagsTable :type="active" />
 
-        <!-- show in book filters -->
-        <td class="has-text-centered">
-          <span v-if="!edits[tag.id]">
-            <i v-if="tag.showOnFront" class="fas fa-check has-text-primary"></i>
-            <i v-else class="fas fa-minus has-text-secondary"></i>
-          </span>
-          <span v-if="edits[tag.id]"><input type="checkbox" class="checkbox" v-model="edits[tag.id].showOnFront"/></span>
-        </td>
-
-        <!-- edit/delete -->
-        <td class="actions">
-          <div v-if="!edits[tag.id]" class="field is-grouped is-justify-content-flex-end">
-            <p class="control"><button @click.prevent="toggleEditTag(tag.id, tag)" :disabled="$uiBusy" class="button is-flat">
-              <i class="fas fa-pencil-alt"></i>
-            </button>
-            <button @click.prevent="remove(tag.id)" :disabled="$uiBusy" class="button is-flat">
-              <i class="fas fa-times"></i>
-            </button></p>
-          </div>
-          <div v-if="edits[tag.id]" class="field is-grouped is-justify-content-flex-end">
-            <p class="control"><button @click.prevent="toggleEditTag(tag.id, null)" :disabled="$uiBusy" class="button is-rounded">
-              <span>Cancel</span>
-            </button></p>
-            <p class="control"><button @click.prevent="updateTag(tag.id)" :disabled="$uiBusy" class="button is-rounded is-primary">
-              <i class="fas fa-check mr-2"></i>
-              <span>Save</span>
-            </button></p>
-          </div>
-        </td>
-
-      </tr>
-    </tbody>
-  </table>
-</section>
-<section class="section">
-  <form class="w-100" @submit.prevent="addTag()">
-    <div class="field has-addons">
-      <p class="control">
-        <a class="button is-static">Add Tag</a>
-      </p>
-      <p class="control w-100">
-        <input type="text" :disabled="$uiBusy" class="input" placeholder="Enter tag" v-model="addTagTag.tag"/>
-      </p>
-      <p class="control">
-        <a class="button is-static">Sort Order</a>
-      </p>
-      <p class="control">
-        <input :disabled="$uiBusy" type="text" class="input" placeholder="Sort order" v-model="addTagTag.sortOrder"/>
-      </p>
-      <p class="control">
-        <a class="button" @click.prevent="addTagTag.showOnFront=!addTagTag.showOnFront">
-          Show
-          <input :disabled="$uiBusy" type="checkbox" class="checkbox ml-2" placeholder="Sort order" v-model="addTagTag.showOnFront"/>
-        </a>
-      </p>
-      <p class="control">
-      </p>
-      <p class="control">
-        <button :disabled="$uiBusy" type="submit" class="button is-primary">
-          <i class="fas fa-plus mr-2"></i>
-          <span>Add</span>
-        </button>
-      </p>
     </div>
-  </form>
-</section>
+  </div>
 
 </template>
-
-<style scoped lang="scss">
-th:last-child {
-  text-align: right;
-}
-td {
-  vertical-align: middle;
-}
-</style>

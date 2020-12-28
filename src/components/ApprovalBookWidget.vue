@@ -52,7 +52,7 @@ export default {
         : this.sub.thumbnail || ''
     },
     tags() {
-      const tags = this.$store.getters['tags/listSorted']()
+      const tags = this.$store.getters['tags/books/listSorted']()
         .filter(tag => this.sub.tags && this.sub.tags[tag.id])
       if (!this.sub.otherTag) return tags
       return [...tags, { tag: this.sub.otherTag }]

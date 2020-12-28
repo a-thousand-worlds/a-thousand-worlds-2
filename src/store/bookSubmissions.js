@@ -93,7 +93,7 @@ const module = mergeOne(managedCollection('submits/books'), {
         // create tags if required
         if (sub.otherTag?.length) {
           const tagId = v4()
-          await context.dispatch('tags/save', { path: tagId, value: {
+          await context.dispatch('tags/books/save', { path: tagId, value: {
             id: tagId,
             tag: sub.otherTag,
             showOnFront: false,

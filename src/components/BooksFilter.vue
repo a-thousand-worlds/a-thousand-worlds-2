@@ -19,7 +19,7 @@ export default {
 <template>
   <aside class="menu mb-5">
     <ul class="menu-list submenu">
-      <li v-for="filter in $store.getters['tags/listSorted']()" :key="filter.id" @click="toggleFilter(filter.tag)">
+      <li v-for="filter in $store.getters['tags/books/listSorted']()" :key="filter.id" @click="toggleFilter(filter.tag)">
         <button v-if="filter.showOnFront" :class="{toggled:filterOn(filter.tag)}" class="pb-2" style="padding-left: 2px;">{{filter.tag}}<span v-if="filterOn(filter.tag)" class="remove-tag">{{ '—' }}</span></button>
       </li>
     </ul>
