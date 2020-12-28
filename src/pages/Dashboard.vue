@@ -38,9 +38,18 @@ export default {
 
       <h1 class="title page-title">Your Dashboard</h1>
 
-      <div class="header-options mr-10">
+      <div v-if="!$iam('creator')" class="header-options mr-10">
         <router-link :to="{ name: 'Profile' }" style="color: black;">Edit your profile</router-link>
       </div>
+
+      <section v-if="$iam('creator')" class="section bordered-top">
+        <h2>Please fill our your profile for the People Directory</h2>
+        <div class="field is-grouped">
+          <div class="control my-20">
+            <router-link class="button is-primary" :to="{name:'PeopleSubmissionForm'}">People</router-link>
+          </div>
+        </div>
+      </section>
 
       <section v-if="$can('submit')" class="section bordered-top">
         <h2>Suggest a book or bundle for A Thousand Worlds</h2>

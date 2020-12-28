@@ -82,7 +82,14 @@ const routes = [
     meta: {
       access: ['contributor', 'admin', 'superadmin']
     }
-  }, { // Admin pages
+  }, {
+    path: '/suggest/people',
+    name: 'PeopleSubmissionForm',
+    component: () => import(/* webpackChunkName: "creator" */ './pages/PeopleSubmissionForm.vue'),
+    meta: {
+      access: ['creator', 'admin', 'superadmin']
+    }
+  }, {
     path: '/tags-manager',
     name: 'TagsManager',
     component: () => import(/* webpackChunkName: "admin" */ './pages/TagsManager.vue'),
