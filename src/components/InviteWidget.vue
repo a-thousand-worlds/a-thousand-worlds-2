@@ -61,12 +61,6 @@ export default {
       return this.error?.fields?.[field]
     },
 
-    formatRole(role) {
-      return role === 'owner' ? 'owner' :
-        role === 'admin' ? 'advisor' :
-        role
-    },
-
     reset() {
       this.role = null
       this.emailInput = null
@@ -188,7 +182,7 @@ export default {
           <div class="dropdown-menu" :class="{ 'is-danger': hasError('role') }" id="dropdown-menu" role="menu">
             <div class="dropdown-content">
               <a class="dropdown-item is-capitalized" :class="{ 'is-active': role === userRole }" v-for="userRole in $allowedInviteeRoles()" :key="userRole" @click.prevent="setInviteRole(userRole)">
-                {{ formatRole(userRole) }}
+                {{ userRole }}
               </a>
             </div>
           </div>

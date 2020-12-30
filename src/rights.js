@@ -6,19 +6,19 @@
  */
 
 export const rights = {
-  invite: ['admin', 'contributor', 'creator'],
+  invite: ['advisor', 'contributor', 'creator'],
   manageCollections: [],
   manageInvites: [],
   editContent: [],
-  review: ['admin'],
-  submit: ['admin', 'contributor'],
-  viewDashboard: ['admin', 'contributor', 'creator'],
+  review: ['advisor'],
+  submit: ['advisor', 'contributor'],
+  viewDashboard: ['advisor', 'contributor', 'creator'],
 }
 
 export const allowedInvitees = {
-  user: ['contributor', 'creator', 'admin'],
-  contributor: ['admin'],
-  creator: ['admin'],
-  admin: ['admin'],
+  user: ['contributor', 'creator', 'advisor'],
+  contributor: ['advisor'],
+  creator: ['advisor'],
+  advisor: ['advisor'],
   owner: [],
 }
