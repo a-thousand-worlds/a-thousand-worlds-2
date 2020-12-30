@@ -62,7 +62,7 @@ export default {
     },
 
     formatRole(role) {
-      return role === 'superadmin' ? 'owner' :
+      return role === 'owner' ? 'owner' :
         role === 'admin' ? 'advisor' :
         role
     },

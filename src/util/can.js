@@ -6,7 +6,7 @@ const can = (state, actionName) => {
   if (!(actionName in rights)) {
     throw new Error(`Unrecognized action name: "${actionName}"`)
   }
-  if (iam(state, 'superadmin')) return true
+  if (iam(state, 'owner')) return true
   return rights[actionName].some(role => iam(state, role))
 }
 

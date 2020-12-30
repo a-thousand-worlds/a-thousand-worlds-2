@@ -2,7 +2,7 @@
  *
  * - Multiple roles are OR'd together
  * - Must be compatible with firebase.rules.json
- * - superadmin has all rights.
+ * - owner has all rights.
  */
 
 export const rights = {
@@ -20,5 +20,5 @@ export const allowedInvitees = {
   contributor: ['admin'],
   creator: ['admin'],
   admin: ['admin'],
-  superadmin: [],
+  owner: [],
 }

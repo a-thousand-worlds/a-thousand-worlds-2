@@ -66,119 +66,119 @@ const routes = [
     name: 'SubmissionThankYou',
     component: () => import(/* webpackChunkName: "contributor" */ './pages/SubmissionThankYou.vue'),
     meta: {
-      access: ['contributor', 'admin', 'superadmin']
+      access: ['contributor', 'admin', 'owner']
     }
   }, {
     path: '/suggest/book',
     name: 'BookSuggest',
     component: () => import(/* webpackChunkName: "contributor" */ './pages/BookSubmissionForm.vue'),
     meta: {
-      access: ['contributor', 'admin', 'superadmin']
+      access: ['contributor', 'admin', 'owner']
     }
   }, {
     path: '/suggest/bundle',
     name: 'BundleSuggest',
     component: () => import(/* webpackChunkName: "contributor" */ './pages/BundleSubmissionForm.vue'),
     meta: {
-      access: ['contributor', 'admin', 'superadmin']
+      access: ['contributor', 'admin', 'owner']
     }
   }, {
     path: '/suggest/people',
     name: 'PeopleSubmissionForm',
     component: () => import(/* webpackChunkName: "creator" */ './pages/PeopleSubmissionForm.vue'),
     meta: {
-      access: ['creator', 'admin', 'superadmin']
+      access: ['creator', 'admin', 'owner']
     }
   }, {
     path: '/tags-manager',
     name: 'TagsManager',
     component: () => import(/* webpackChunkName: "admin" */ './pages/TagsManager.vue'),
     meta: {
-      access: 'superadmin'
+      access: 'owner'
     }
   }, {
     path: '/admin/people',
     name: 'PeopleManager',
     component: () => import(/* webpackChunkName: "admin" */ './pages/PeopleManagerList.vue'),
     meta: {
-      access: 'superadmin'
+      access: 'owner'
     }
   }, {
     path: '/admin/people/add',
     name: 'PeopleManagerAddForm',
     component: () => import(/* webpackChunkName: "admin" */ './pages/PersonManagerForm.vue'),
     meta: {
-      access: 'superadmin'
+      access: 'owner'
     }
   }, {
     path: '/admin/people/update/:uid',
     name: 'PersonManagerUpdateForm',
     component: () => import(/* webpackChunkName: "admin" */ './pages/PersonManagerForm.vue'),
     meta: {
-      access: 'superadmin'
+      access: 'owner'
     }
   }, {
     path: '/admin/books',
     name: 'BooksManager',
     component: () => import(/* webpackChunkName: "admin" */ './pages/BooksManagerList.vue'),
     meta: {
-      access: 'superadmin'
+      access: 'owner'
     }
   }, {
     path: '/admin/books/update/:bid',
     name: 'BookManagerUpdateForm',
     component: () => import(/* webpackChunkName: "admin" */ './pages/BookManagerForm.vue'),
     meta: {
-      access: 'superadmin'
+      access: 'owner'
     }
   }, {
     path: '/admin/books/add',
     name: 'BookManagerAddForm',
     component: () => import(/* webpackChunkName: "admin" */ './pages/BookManagerForm.vue'),
     meta: {
-      access: 'superadmin'
+      access: 'owner'
     }
   }, {
     path: '/admin/bundles',
     name: 'BundlesManager',
     component: () => import(/* webpackChunkName: "admin" */ './pages/BundleManagerList.vue'),
     meta: {
-      access: 'superadmin'
+      access: 'owner'
     }
   }, {
     path: '/admin/bundles/update/:bid',
     name: 'BundleManagerUpdateForm',
     component: () => import(/* webpackChunkName: "admin" */ './pages/BundleManagerForm.vue'),
     meta: {
-      access: 'superadmin'
+      access: 'owner'
     }
   }, {
     path: '/admin/bundles/add',
     name: 'BundleManagerNewForm',
     component: () => import(/* webpackChunkName: "admin" */ './pages/BundleManagerForm.vue'),
     meta: {
-      access: 'superadmin'
+      access: 'owner'
     }
   }, {
     path: '/admin/invite',
     name: 'Invite',
     component: () => import(/* webpackChunkName: "admin" */ './pages/Invite.vue'),
     meta: {
-      access: ['admin', 'superadmin']
+      access: ['admin', 'owner']
     }
   }, {
     path: '/admin/invitation-manager',
     name: 'InvitationManager',
     component: () => import(/* webpackChunkName: "admin" */ './pages/InvitationManager.vue'),
     meta: {
-      access: ['admin', 'superadmin']
+      access: ['admin', 'owner']
     }
   }, {
     path: '/admin/review/:type',
     name: 'ReviewSubmissions',
     component: () => import(/* webpackChunkName: "admin" */ './pages/ReviewSubmissions.vue'),
     meta: {
-      access: ['admin', 'superadmin']
+      access: ['admin', 'owner']
     }
   }, {
     path: '/:catchAll(.*)',

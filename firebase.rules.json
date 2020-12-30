@@ -2,8 +2,8 @@
 {
   "rules": {
     "users": {
-      ".read": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true",
-      ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true",
+      ".read": "root.child('users/'+auth.uid+'/roles/owner').val() === true",
+      ".write": "root.child('users/'+auth.uid+'/roles/owner').val() === true",
       "$uid": {
         ".read": true,
           // TODO: secure
@@ -12,15 +12,15 @@
     },
     "books": {
       ".read": true,
-      ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true"
+      ".write": "root.child('users/'+auth.uid+'/roles/owner').val() === true"
     },
     "content": {
       ".read": true,
-      ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true"
+      ".write": "root.child('users/'+auth.uid+'/roles/owner').val() === true"
     },
     "invites": {
       ".read": true,
-      ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true",
+      ".write": "root.child('users/'+auth.uid+'/roles/owner').val() === true",
       "$code": {
         "used": {
           ".read": true,
@@ -31,11 +31,11 @@
     },
     "people": {
       ".read": true,
-      ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true"
+      ".write": "root.child('users/'+auth.uid+'/roles/owner').val() === true"
     },
     "tags": {
       ".read": true,
-      ".write": "root.child('users/'+auth.uid+'/roles/superadmin').val() === true"
+      ".write": "root.child('users/'+auth.uid+'/roles/owner').val() === true"
     },
     "submits": {
       ".read": true,
