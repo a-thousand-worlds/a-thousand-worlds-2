@@ -15,9 +15,12 @@
     "test": "vue-cli-service test:unit",
     "test:watch": "npm run test -- --watch"
   },
+  "//dependencies": {
+    "@ckeditor/ckeditor5-vue": "Waiting on https://github.com/ckeditor/ckeditor5-vue/pull/173"
+  },
   "dependencies": {
     "@ckeditor/ckeditor5-build-balloon": "^23.1.0",
-    "@ckeditor/ckeditor5-vue": "^2.0.1",
+    "@ckeditor/ckeditor5-vue": "https://github.com/raineorshine/ckeditor5-vue#emits",
     "@sindresorhus/slugify": "^1.1.0",
     "axios": "^0.21.0",
     "bulma": "^0.9.1",

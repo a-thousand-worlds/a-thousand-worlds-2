@@ -43,8 +43,8 @@ export default {
 </script>
 
 <template>
-  <input v-if="format === 'one-line'" type="text" class="input" :class="className" v-model="html" :disabled="!$can('editContent') || !loaded" />
-  <ckeditor v-else :editor="editor" v-model="html" :config="editorConfig" :disabled="!$can('editContent') || !loaded" :class="className" />
+  <input v-if="format === 'one-line'" type="text" class="input" v-model="html" :disabled="!$can('editContent') || !loaded" />
+  <ckeditor v-else :editor="editor" v-model="html" :config="editorConfig" :disabled="!$can('editContent') || !loaded" />
 </template>
 
 <style scoped lang="scss">
