@@ -65,10 +65,6 @@ export default {
   }
 }
 
-.comma {
-  white-space: nowrap;
-}
-
 .person-block {
   width: 100%;
   margin-bottom: 20px;
