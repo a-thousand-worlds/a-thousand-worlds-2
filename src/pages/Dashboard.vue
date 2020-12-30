@@ -66,9 +66,9 @@ export default {
       <section v-if="$can('invite')" class="section bordered-top">
         <h2>Invite Users</h2>
         <invite-widget ref="invite" format="compact" />
-        <ul v-if="$can('manageInvites')" class="my-20">
-          <li><router-link :to="{ name: 'Invite' }">Edit email templates</router-link></li>
-          <li><router-link :to="{ name: 'InvitationManager' }">View invitations</router-link></li>
+        <ul class="my-20">
+          <li v-if="$can('editEmailTemplates')"><router-link :to="{ name: 'Invite' }">Edit email templates</router-link></li>
+          <li v-if="$can('manageInvites')"><router-link :to="{ name: 'InvitationManager' }">View invitations</router-link></li>
         </ul>
       </section>
 

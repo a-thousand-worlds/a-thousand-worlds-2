@@ -8,8 +8,9 @@
 export const rights = {
   invite: ['advisor', 'contributor', 'creator'],
   manageCollections: [],
-  manageInvites: [],
+  manageInvites: ['advisor'],
   editContent: [],
+  editEmailTemplates: [],
   review: ['advisor'],
   submit: ['advisor', 'contributor'],
   viewDashboard: ['advisor', 'contributor', 'creator'],
