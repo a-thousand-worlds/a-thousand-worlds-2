@@ -36,13 +36,13 @@ export default {
 </script>
 
 <template>
-  <div class="book-list-wrapper columns">
-    <div class="column is-one-third p-0 mb-20">
+  <div class="columns">
+    <div class="column is-one-third is-one-quarter-desktop is-offset-one-quarter-desktop p-0 mb-20">
       <BookDetailRoute :book="book" class="cover-data">
         <div class="img-cover bg-secondary" :style="{width: '100%', paddingTop: coverRatio+'%', backgroundImage: 'url('+bgImage+')', backgroundSize: 'contain'}"></div>
       </BookDetailRoute>
     </div>
-    <div class="column is-two-thirds is-align-content-center p-0">
+    <div class="column is-two-thirds is-one-quarter-desktop is-align-content-center p-0">
       <div class="columns is-mobile is-vcentered m-0" style="line-height: 1.25;">
 
         <div class="column p-0 pl-20 pr-10">
