@@ -50,7 +50,7 @@ export default {
         <h3 class="is-capitalized my-10">{{ role }}</h3>
         <div class="my-20">
           <p class="my-10" style="font-weight: bold;">Subject: </p>
-          <Content :name="`email/invite/${role}/subject`" format="one-line" />
+          <Content :name="`email/invite/${role}/subject`" format="oneline" />
         </div>
         <div class="my-20">
           <p class="my-10" style="font-weight: bold;">Message:</p>

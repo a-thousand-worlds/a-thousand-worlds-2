@@ -14,8 +14,8 @@ export default {
 
   <div class="columns m-20">
     <div class="column p-0 is-half-desktop is-offset-one-quarter-desktop">
-      <h1 class="title page-title">Support</h1>
-      <Content name="support" placeholder="Enter page content here" />
+      <Content name="support/title" format="inline" class="title page-title">Support</Content>
+      <Content name="support/body" placeholder="Enter page content here" />
     </div>
   </div>
 

@@ -4,7 +4,15 @@ import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import { get } from '@/util/get-set'
 
 export default {
-  props: ['name', 'placeholder', 'format'],
+  props: {
+    name: String,
+    placeholder: String,
+    format: {
+      type: String,
+      validator: value => ['inline', 'oneline', 'multiline'].indexOf(value) !== -1,
+      default: 'multiline'
+    }
+  },
   computed: {
     loaded() {
       return this.$store.state.content.loaded
@@ -43,11 +51,18 @@ export default {
 </script>
 
 <template>
-  <input v-if="format === 'one-line'" type="text" class="input" v-model="html" :disabled="!$can('editContent') || !loaded" />
+  <input v-if="format === 'oneline' || format === 'inline'" type="text" :class="format === 'oneline' ? 'input' : format" v-model="html" :disabled="!$can('editContent') || !loaded" />
   <ckeditor v-else :editor="editor" v-model="html" :config="editorConfig" :disabled="!$can('editContent') || !loaded" />
 </template>
 
 <style scoped lang="scss">
 @import '@/assets/main.scss';
+
+.inline {
+  border: none;
+  box-shadow: none;
+  max-width: 100%;
+  width: 100%;
+}
 
 </style>
