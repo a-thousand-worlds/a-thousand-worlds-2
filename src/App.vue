@@ -1,27 +1,29 @@
 <script>
 
 import Alert from '@/components/Alert'
-import Popups from '@/components/ui/Popups'
-import Confirm from '@/components/ui/Confirm'
-import Prompt from '@/components/ui/Prompt'
-import MobileHeader from '@/components/MobileHeader'
-import MobileFooter from '@/components/MobileFooter'
-import LeftBar from '@/components/LeftBar.vue'
-import RightBar from '@/components/RightBar.vue'
 import BookmarksView from '@/components/BookmarksView'
+import Confirm from '@/components/ui/Confirm'
+import LeftBar from '@/components/LeftBar.vue'
+import MobileFooter from '@/components/MobileFooter'
+import MobileHeader from '@/components/MobileHeader'
+import Popups from '@/components/ui/Popups'
+import Prompt from '@/components/ui/Prompt'
+import RightBar from '@/components/RightBar.vue'
+import Welcome from '@/components/Welcome'
 
 export default ({
   name: 'App',
   components: {
     Alert,
-    Popups,
+    BookmarksView,
     Confirm,
-    Prompt,
     LeftBar,
-    RightBar,
-    MobileHeader,
     MobileFooter,
-    BookmarksView
+    MobileHeader,
+    Popups,
+    Prompt,
+    RightBar,
+    Welcome,
   },
   watch: {
     '$route'(next) {
@@ -38,7 +40,7 @@ export default ({
   },
   data() {
     return {
-      showHero: !localStorage.getItem('lastVisited')
+      showWelcome: !localStorage.getItem('lastVisited')
     }
   },
   async created() {
@@ -51,17 +53,18 @@ export default ({
   <div>
 
     <mobile-header class="is-hidden-tablet"/>
-    <section v-if="showHero" class="hero">
-      <div class="hero-body">
-        <div class="container">
-          <h1 class="title is-uppercase">A Thousand Worlds</h1>
-          <h2 class="subtitle"><span class="is-uppercase">Colorful Reads X Colorful People</span><br/>
-          Picture books curated by BIPOC leaders in the industry</h2>
-        </div>
-      </div>
-    </section>
 
-    <div class="columns m-0">
+    <div v-if="showWelcome">
+      <Welcome :style="{ position: 'fixed' }" />
+      <!-- statically positioned duplicatte in order to force page content down by dynamic height of welcome message -->
+      <Welcome :style="{ position: 'static', visibility: 'hidden' }" />
+    </div>
+
+    <div class="columns m-0" :style="{
+      backgroundColor: 'white',
+      position: 'relative',
+      zIndex: 20,
+    }">
       <section class="leftbar column is-narrow is-hidden-mobile px-20 py-30">
         <left-bar/>
       </section>
@@ -161,15 +164,4 @@ body {
     border-left: solid 1px $atw-base;
   }
 }
-
-.hero {
-  z-index: 10;
-  background: $atw-base;
-  position: relative;
-  text-align: center;
-  .title,.subtitle {
-    color: #fff;
-  }
-}
-
 </style>
