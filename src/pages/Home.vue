@@ -4,23 +4,34 @@ import BooksView from '../components/BooksView.vue'
 
 export default {
   name: 'HomePage',
-  components: { BooksFilter, BooksView },
+  components: {
+    BooksFilter,
+    BooksView,
+  },
+  data() {
+    return {
+      lastVisited: localStorage.getItem('lastVisited')
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    // mark the user's visit once they navigate to any other page
+    // works with showHero in App.vue
+    if (!this.lastVisited) {
+      this.lastVisited = new Date()
+      localStorage.setItem('lastVisited', this.lastVisited)
+    }
+    next()
+  }
 }
 
 </script>
 
 <template>
-  <div>
 
-    <books-view></books-view>
+  <BooksView />
 
-    <teleport to="#books-filter-menu">
-      <books-filter></books-filter>
-    </teleport>
+  <teleport to="#books-filter-menu">
+    <BooksFilter />
+  </teleport>
 
-  </div>
 </template>
-
-<style>
-
-</style>

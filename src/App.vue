@@ -36,17 +36,14 @@ export default ({
       }
     }
   },
-  computed: {
-    showHero() {
-      return !!localStorage.getItem('1stVisit')
+  data() {
+    return {
+      showHero: !localStorage.getItem('lastVisited')
     }
   },
   async created() {
     await this.$store.dispatch('load')
   },
-  beforeRouteLeave(from, to) {
-    localStorage.setItem('1stVist', new Date())
-  }
 })
 </script>
 
