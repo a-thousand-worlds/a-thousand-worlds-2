@@ -25,6 +25,14 @@ export default ({
     RightBar,
     Welcome,
   },
+  async created() {
+    await this.$store.dispatch('load')
+  },
+  computed: {
+    showWelcome() {
+      return !this.$store.state.ui.lastVisited
+    }
+  },
   watch: {
     '$route'(next) {
       this.showMobileFilter = next.name === 'Home' || next.name === 'Bundles'
@@ -37,14 +45,6 @@ export default ({
         this.$router.push(nap)
       }
     }
-  },
-  data() {
-    return {
-      showWelcome: !localStorage.getItem('lastVisited')
-    }
-  },
-  async created() {
-    await this.$store.dispatch('load')
   },
 })
 </script>
@@ -60,11 +60,7 @@ export default ({
       <Welcome :style="{ position: 'static', visibility: 'hidden' }" />
     </div>
 
-    <div class="columns m-0" :style="{
-      backgroundColor: 'white',
-      position: 'relative',
-      zIndex: 20,
-    }">
+    <div class="site columns m-0">
       <section class="leftbar column is-narrow is-hidden-mobile px-20 py-30">
         <left-bar/>
       </section>
@@ -78,10 +74,14 @@ export default ({
       <section v-if="$store.state.ui.bookmarksOpen" class="bookmarks column">
         <bookmarks-view/>
       </section>
-      <section class="rightbar column is-hidden-mobile">
-        <right-bar/>
-      </section>
+
     </div>
+
+    <section class="rightbar is-hidden-mobile">
+      <!-- Hide bookmarks when welcome message is shown not only for UX but also because we cannot accomplish the correct layering with z-indexes due to circularity: rightbar > main > welcome > rightbar. -->
+      <right-bar :hideBookmarks="showWelcome" />
+    </section>
+
     <mobile-footer class="is-hidden-tablet"/>
   </div>
 </template>
@@ -111,11 +111,10 @@ body {
   width: $leftbar-width;
   //overflow-y: scroll;
   top: 0;
-  z-index: 1;
+  z-index: 20;
 }
 
 .rightbar {
-  background-color: white;
   border-left: solid 1px $atw-base;
   position: fixed;
   height: 100%;
@@ -124,7 +123,7 @@ body {
   padding: 10px;
   padding-top: 30px;
   width: $rightbar-width;
-  z-index: 1;
+  z-index: 20;
 }
 
 .bookmarks {
@@ -139,10 +138,15 @@ body {
   }
 }
 
+.site {
+  background: $background;
+  position: relative;
+  z-index: 20;
+}
+
 .main {
   padding-top: 30px;
   margin-right: $rightbar-width;
-  z-index: 1;
 
   &.with-bookmarks {
     border-right: solid 1px $atw-base;

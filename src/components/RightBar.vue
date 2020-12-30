@@ -9,6 +9,7 @@ export default {
     CoverViewIcon,
     ListViewIcon,
   },
+  props: ['hideBookmarks'],
   methods: {
     toggleViewMode(mode) {
       this.$store.commit('ui/setViewMode', mode)
@@ -44,27 +45,30 @@ export default {
 <template>
   <aside class="is-flex is-flex-direction-column is-justify-content-space-between has-text-centered" style="height: 100%;">
 
-      <ul class="menu-list">
+    <!-- div must remain when hiding for justify-content: space-between -->
+    <div>
+      <ul v-if="!hideBookmarks" class="menu-list">
         <li><a :href="null" class="bookmark-toggler" @click.prevent="toggleBookmarks()">
           <BookmarkIcon class="fill-secondary" />
           <span v-if="$iam('authorized')" class="badge">{{bookmarksCount}}</span>
         </a></li>
       </ul>
+    </div>
 
-      <ul v-if="showViewOptions" class="menu-list">
-        <li>
-          <a :class="{ active: $store.state.ui.viewMode === 'covers' }" @click.prevent="toggleViewMode('covers')" href="#">
-            <CoverViewIcon />
-            <span class="icon-label">Cover</span>
-          </a>
-        </li>
-        <li class='my-30'>
-          <a :class="{ active: $store.state.ui.viewMode === 'list' }" @click.prevent="toggleViewMode('list')" href="#">
-            <ListViewIcon />
-            <span class="icon-label">List</span>
-          </a>
-        </li>
-      </ul>
+    <ul v-if="showViewOptions" class="menu-list">
+      <li>
+        <a :class="{ active: $store.state.ui.viewMode === 'covers' }" @click.prevent="toggleViewMode('covers')" href="#">
+          <CoverViewIcon />
+          <span class="icon-label">Cover</span>
+        </a>
+      </li>
+      <li class='my-30'>
+        <a :class="{ active: $store.state.ui.viewMode === 'list' }" @click.prevent="toggleViewMode('list')" href="#">
+          <ListViewIcon />
+          <span class="icon-label">List</span>
+        </a>
+      </li>
+    </ul>
 
   </aside>
 </template>

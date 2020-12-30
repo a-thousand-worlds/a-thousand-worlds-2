@@ -16,9 +16,8 @@ export default {
   beforeRouteLeave(to, from, next) {
     // mark the user's visit once they navigate to any other page
     // used to show the one-time welcome messagein App.vue
-    if (!this.lastVisited) {
-      this.lastVisited = new Date()
-      localStorage.setItem('lastVisited', this.lastVisited)
+    if (!this.$store.state.ui.lastVisited) {
+      this.$store.commit('ui/setLastVisited', new Date())
     }
     next()
   }

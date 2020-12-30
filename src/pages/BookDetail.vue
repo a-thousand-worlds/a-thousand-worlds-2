@@ -150,7 +150,7 @@ export default {
   bottom: 0;
   color: $primary-invert;
   background-color: $primary;
-  width: calc(100% - #{$leftbar-width} - #{$rightbar-width} + 0.75rem);
+  width: calc(100% - #{$leftbar-width} - #{$rightbar-width});
   padding: 10px 20px;
   white-space: nowrap;
   overflow: auto;

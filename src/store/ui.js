@@ -5,20 +5,26 @@ const module = {
     bookmarksOpen: false,
     viewMode: 'covers',
     dlgConfirm: null,
-    popups: []
+    popups: [],
+    // updated in Home component beforeRouteLeave
+    lastVisited: localStorage.getItem('lastVisited'),
   }),
   mutations: {
-    setBusy: (state, next) => {
-      state.busy = next
+    setBusy: (state, value) => {
+      state.busy = value
     },
-    setBookmarksOpen: (state, next) => {
-      state.bookmarksOpen = next
+    setBookmarksOpen: (state, value) => {
+      state.bookmarksOpen = value
     },
-    setViewMode: (state, next) => {
-      state.viewMode = next
+    setLastVisited: (state, value) => {
+      state.lastVisited = value
+      localStorage.setItem('lastVisited', value)
     },
-    pushPopup(state, data) {
-      state.popups = [...state.popups, data]
+    setViewMode: (state, value) => {
+      state.viewMode = value
+    },
+    pushPopup(state, value) {
+      state.popups = [...state.popups, value]
     },
     shiftPopup(state) {
       state.popups = state.popups.slice(1)
@@ -27,15 +33,15 @@ const module = {
       state.dlgConfirm.resolve(result)
       state.dlgConfirm = null
     },
-    doConfirm(state, data) {
-      state.dlgConfirm = data
+    doConfirm(state, value) {
+      state.dlgConfirm = value
     },
     prompt(state, result) {
       state.dlgPrompt.resolve(result)
       state.dlgPrompt = null
     },
-    doPrompt(state, data) {
-      state.dlgPrompt = data
+    doPrompt(state, value) {
+      state.dlgPrompt = value
     }
   },
   actions: {
