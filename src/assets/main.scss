@@ -63,7 +63,7 @@ hr {
   margin-bottom: 10px;
 }
 
-button:not([disabled]) {
+button:not([disabled]:not(.button-unstyled)) {
   cursor: pointer;
 }
 
@@ -156,4 +156,14 @@ a.is-secondary{ color: $secondary }
   font-size: 0.75rem;
   padding: 0 0.5rem;
   height: auto;
+}
+
+/* Unstyled button for text that needs to sit next to a button and have the same size and padding. is-flat does not remove all styles. */
+.button-unstyled, .button-unstyled.is-primary {
+  cursor: text;
+  background-color: transparent;
+  border-color: transparent !important;
+  &:hover {
+    background-color: transparent;
+  }
 }

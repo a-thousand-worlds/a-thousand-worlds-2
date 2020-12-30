@@ -177,11 +177,4 @@ export default {
   }
 }
 
-/* Unstyled button for text that needs to sit next to a button and have the same size and padding. */
-.button-unstyled {
-  cursor: default;
-  background-color: transparent;
-  border-color: transparent !important;
-}
-
 </style>
