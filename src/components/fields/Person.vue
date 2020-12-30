@@ -51,6 +51,7 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+@import '@/assets/main.scss';
 
 .search-wrap {
   position: relative;
@@ -61,7 +62,7 @@ export default {
     overflow-y: scroll;
     left: 0;
     top: 0;
-    z-index: 5;
+    z-index: $zField;
     background: #fff;
     border: 1px solid;
 

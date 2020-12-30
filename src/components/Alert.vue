@@ -36,7 +36,7 @@ export default {
 
 .alert {
   position: fixed;
-  z-index: 999;
+  z-index: $zAlert;
   top: 0;
   width: calc(100% - #{$leftbar-width} - #{$rightbar-width} + 0.75rem);
   font-size: 22px;

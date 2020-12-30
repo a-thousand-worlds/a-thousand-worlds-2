@@ -27,7 +27,7 @@ export default {
   left: 50%;
   width: 200px;
   margin-left: -100px;
-  z-index: 100;
+  z-index: $zPopup;
 }
 
 </style>

@@ -24,7 +24,6 @@ export default {
 .welcome {
   width: 100%;
   top: 0;
-  z-index: 20;
   background: $atw-base;
   text-align: center;
 

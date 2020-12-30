@@ -116,7 +116,6 @@ export default {
   left: 0;
   width: 100%;
   height: auto;
-  z-index: 1;
   background: #fff;
   padding: 10px 10px 110px 10px;
 
@@ -138,7 +137,6 @@ export default {
   bottom: 0;
   border-top: solid 1px $atw-base;
   background-color: white;
-  z-index: 1;
   font-size: 10px;
   font-weight: bold;
 

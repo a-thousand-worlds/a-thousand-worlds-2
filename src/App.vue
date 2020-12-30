@@ -111,7 +111,6 @@ body {
   width: $leftbar-width;
   //overflow-y: scroll;
   top: 0;
-  z-index: 20;
 }
 
 .rightbar {
@@ -123,7 +122,6 @@ body {
   padding: 10px;
   padding-top: 30px;
   width: $rightbar-width;
-  z-index: 20;
 }
 
 .bookmarks {
@@ -141,7 +139,6 @@ body {
 .site {
   background: $background;
   position: relative;
-  z-index: 20;
 }
 
 .main {

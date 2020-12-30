@@ -48,3 +48,9 @@ $leftbar-width: 183px;
 $rightbar-width: 70px;
 $mobile-header-height: 14px;
 $mobile-footer-height: 94px;
+
+// manage all z-indexes in one place
+$zAlert: 1000;
+$zPopup: 100;
+$zMobileHeader: 10;
+$zField: 10;

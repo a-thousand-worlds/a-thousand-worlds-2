@@ -51,7 +51,7 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 5;
+  z-index: $zMobileHeader;
   padding: 12px 20px 8px; // compensate for font baseline being 2px too height
 
   .title {
@@ -68,7 +68,7 @@ export default {
   width: 100%;
   height: 100%;
   background: #fff;
-  z-index: 4;
+  z-index: $zMobileHeader;
   // opacity: 0.8;
 }
 
@@ -80,7 +80,7 @@ export default {
   background-color: #fff;
   width: 100%;
   height: 40px;
-  z-index: 4;
+  z-index: $zMobileHeader;
   // opacity: 0.8;
 }
 
