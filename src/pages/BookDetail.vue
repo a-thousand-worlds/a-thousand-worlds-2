@@ -1,28 +1,29 @@
 <script>
-import Clipboard from 'clipboard'
-import LazyImage from '@/components/LazyImage'
 import AuthorWidget from '@/components/AuthorWidget'
-import CreatorsWidget from '@/components/CreatorsWidget'
-import BookmarkButton from '@/components/BookmarkButton'
+import BookDetailFooter from '@/components/BookDetailFooter'
 import BookDetailRoute from '@/components/BookDetailRoute'
+import BookmarkButton from '@/components/BookmarkButton'
 import BooksFilter from '@/components/BooksFilter'
+import Clipboard from 'clipboard'
+import CreatorsWidget from '@/components/CreatorsWidget'
+import LazyImage from '@/components/LazyImage'
 import NotFound from '@/pages/NotFound'
 
 export default {
   name: 'BookDetail',
   components: {
     AuthorWidget,
-    CreatorsWidget,
-    BookmarkButton,
+    BookDetailFooter,
     BookDetailRoute,
+    BookmarkButton,
     BooksFilter,
+    CreatorsWidget,
     LazyImage,
     NotFound,
   },
   data() {
     return {
       isbn: this.$router.currentRoute._value.params.isbn,
-      pageUrl: window.location.href,
     }
   },
   computed: {
@@ -51,7 +52,6 @@ export default {
   watch: {
     '$route'() {
       this.isbn = this.$router.currentRoute._value.params.isbn
-      this.pageUrl = window.location.href
     }
   },
 }
@@ -119,20 +119,7 @@ export default {
 
   </div>
 
-  <div v-if="book" class="content-footer">
-    <div class="content-footer-inner">
-      <div class="from-widescreen mr-30">
-        <input type="text" class="input from-fullhd" style="width: 16rem;" :value="pageUrl" readonly />
-        <button id="copy-link" class="button is-rounded is-secondary mx-10" :data-clipboard-text="pageUrl">Copy <span class="is-hidden-fullhd mx-1"> Page </span> Link</button>
-      </div>
-      <div>
-        <button class="button button-unstyled is-primary pl-0">FIND BOOK AT</button>
-        <button class="button is-rounded is-secondary mx-1">LOCAL LIBRARY</button>
-        <button class="button is-rounded is-secondary mx-1">LINK</button>
-        <a :href="`http://www.indiebound.org/book/${book.isbn}?aff=athousandworlds`" target="_blank"><button class="button is-rounded is-secondary ml-1 mr-20">INDIEBOUND</button></a>
-      </div>
-    </div>
-  </div>
+  <BookDetailFooter :book="book" />
 
 </template>
 
@@ -164,41 +151,6 @@ export default {
 
   @include from($tablet) {
     text-align: right;
-  }
-}
-
-.content-footer {
-  position: fixed;
-  bottom: 0;
-  color: $primary-invert;
-  background-color: $primary;
-  width: calc(100% - #{$leftbar-width} - #{$rightbar-width});
-  white-space: nowrap;
-  overflow: auto;
-
-  @include until($tablet) {
-    left: 0;
-    width: 100%;
-    padding-bottom: $mobile-footer-height;
-  }
-
-  .button, input {
-    border: solid 1px #666;
-  }
-}
-
-.content-footer-inner {
-  display: flex;
-  justify-content: flex-start;
-  margin: 10px 20px;
-
-  // use custom breakpoint between tablet and desktop to preserve centering when there is room
-  @include from(900px) {
-    margin: 20px 60px;
-    justify-content: center;
-  }
-  @include from($widescreen) {
-    justify-content: space-between;
   }
 }
 
