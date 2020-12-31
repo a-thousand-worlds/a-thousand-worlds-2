@@ -36,11 +36,12 @@ $spacing-values: map.merge($spacing-values, (
 @import "bulma/sass/helpers/spacing.sass";
 
 // Bulma has is-hidden-* classes that hide elements after a breakpoint, but does not seem to have classes that hide elements up to a breakpoint
+// https://bulma.io/documentation/helpers/visibility-helpers/
 $devices: (
-  tablet: $tablet,
-  desktop: $desktop,
-  widescreen: $widescreen,
-  fullhd: $fullhd,
+  tablet: $tablet,          // 768px
+  desktop: $desktop,        // 1024px
+  widescreen: $widescreen,  // 1216px
+  fullhd: $fullhd,          // 1408px
 );
 
 @each $key,$value in $devices {
