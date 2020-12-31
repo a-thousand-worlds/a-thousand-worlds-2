@@ -3,11 +3,11 @@ import SubmissionWidget from '@/components/SubmissionWidget'
 import Toggle from '@/components/Toggle'
 
 export default {
-  props: [],
   components: {
     SubmissionWidget,
     Toggle,
   },
+  props: [],
   computed: {
     acceptedSubmissions() {
       return this.submissionsByStatus('approve')
@@ -38,8 +38,8 @@ export default {
     <div v-if="pendingSubmissions.length" class="my-20">
       <h2>{{ $can('review') ? 'Your ' : '' }}Pending Submissions</h2>
       <div class="columns is-multiline">
-        <div class="column is-6-tablet is-4-desktop is-3-widescreen" v-for="(sid, i) of pendingSubmissions" :key="i">
-          <SubmissionWidget :sid="sid"/>
+        <div v-for="(sid, i) of pendingSubmissions" :key="i" class="column is-6-tablet is-4-desktop is-3-widescreen">
+          <SubmissionWidget :sid="sid" />
         </div>
       </div>
     </div>
@@ -47,8 +47,8 @@ export default {
     <div v-if="acceptedSubmissions.length" class="my-20">
       <h2>{{ $can('review') ? 'Your ' : '' }}Accepted Submissions</h2>
       <div class="columns is-multiline">
-        <div class="column is-6-tablet is-4-desktop is-3-widescreen" v-for="(sid, i) of acceptedSubmissions" :key="i">
-          <SubmissionWidget :sid="sid"/>
+        <div v-for="(sid, i) of acceptedSubmissions" :key="i" class="column is-6-tablet is-4-desktop is-3-widescreen">
+          <SubmissionWidget :sid="sid" />
         </div>
       </div>
     </div>
@@ -58,8 +58,8 @@ export default {
         <template #label>Not Approved</template>
         <template #content>
           <div class="columns is-multiline">
-            <div class="column is-6-tablet is-4-desktop is-3-widescreen" v-for="(sid, i) of rejectedSubmissions" :key="i">
-              <SubmissionWidget :sid="sid"/>
+            <div v-for="(sid, i) of rejectedSubmissions" :key="i" class="column is-6-tablet is-4-desktop is-3-widescreen">
+              <SubmissionWidget :sid="sid" />
             </div>
           </div>
         </template>

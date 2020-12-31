@@ -19,13 +19,13 @@ export default {
 </script>
 
 <template>
-  <a @click.prevent="toggle" style="user-select: none;">
+  <a style="user-select: none;" @click.prevent="toggle">
     <span class="icon is-small mb-10" style="position: relative; top: 1px;">
-      <i class="fas mr-1" :class="'fa-angle-' + (isOpen ? 'down' : 'right')" aria-hidden="true" style="color: black;"></i>
+      <i class="fas mr-1" :class="'fa-angle-' + (isOpen ? 'down' : 'right')" aria-hidden="true" style="color: black;" />
     </span>
     <slot name="label">label</slot>
   </a>
-  <slot name="content" v-if="isOpen">content</slot>
+  <slot v-if="isOpen" name="content">content</slot>
 </template>
 
 <style scoped lang="scss">

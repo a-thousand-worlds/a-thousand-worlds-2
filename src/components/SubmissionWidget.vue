@@ -2,10 +2,10 @@
 import StaticBookCover from '@/components/StaticBookCover'
 
 export default {
-  props: ['sid'],
   components: {
     StaticBookCover,
   },
+  props: ['sid'],
   computed: {
     sub() {
       return this.$store.state.bookSubmissions.data[this.sid]
@@ -25,10 +25,10 @@ export default {
   </div>
   <div v-else-if="sub?.type === 'bundle'">
     <h4>
-      <i class="fas fa-cubes"></i> Bundle
+      <i class="fas fa-cubes" /> Bundle
     </h4>
-    <div>Name: {{sub.name}}</div>
-    <div>Books: {{sub.books.length}}</div>
+    <div>Name: {{ sub.name }}</div>
+    <div>Books: {{ sub.books.length }}</div>
   </div>
 
 </template>

@@ -3,12 +3,20 @@
 import AuthorWidget from '@/components/AuthorWidget'
 
 export default {
+  components: {
+    'author-widget': AuthorWidget
+  },
   props: ['inputClass', 'inputId', 'modelValue', 'disabled', 'searchable'],
   emits: ['update:modelValue', 'bookSelected'],
   data() {
     return {
       title: this.modelValue || '',
       searches: []
+    }
+  },
+  watch: {
+    modelValue(next, prev) {
+      this.title = next
     }
   },
   methods: {
@@ -29,39 +37,31 @@ export default {
       this.hideSearch()
       this.title = b.title
       this.$emit('update:modelValue', this.title)
-      this.$emit('book-selected', b)
+      this.$emit('bookSelected', b)
     }
-  },
-  watch: {
-    modelValue(next, prev) {
-      this.title = next
-    }
-  },
-  components: {
-    'author-widget': AuthorWidget
   }
 }
 </script>
 
 <template>
 
-<div class="control">
-  <input :disabled="disabled" :id="inputId" type="text" class="input" :class="inputClass" @input="doSearch($event)" v-model="title">
-  <div v-click-outside="hideSearch" v-if="searches.length" class="search-wrap">
-    <div class="search-results">
-      <div @click.prevent="fillBook(res)" class="media p-2" v-for="res of searches" :key="res.id">
-        <div class="media-left">
-          <img :src="res.cover">
-        </div>
-        <div class="media-right">
-          <b>{{res.title}}</b><br>
-          <small>{{res.isbn}}</small><br>
-          <author-widget :name="res.authors[0]"></author-widget>
+  <div class="control">
+    <input :id="inputId" v-model="title" :disabled="disabled" type="text" class="input" :class="inputClass" @input="doSearch($event)">
+    <div v-if="searches.length" v-click-outside="hideSearch" class="search-wrap">
+      <div class="search-results">
+        <div v-for="res of searches" :key="res.id" class="media p-2" @click.prevent="fillBook(res)">
+          <div class="media-left">
+            <img :src="res.cover">
+          </div>
+          <div class="media-right">
+            <b>{{ res.title }}</b><br>
+            <small>{{ res.isbn }}</small><br>
+            <author-widget :name="res.authors[0]" />
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
 </template>
 

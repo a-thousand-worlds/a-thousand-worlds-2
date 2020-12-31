@@ -9,7 +9,7 @@ export default {
 <template>
   <div class="popup message" :class="'is-'+popup.type">
     <div class="message-body">
-      {{popup.text}}
+      {{ popup.text }}
     </div>
   </div>
 </template>

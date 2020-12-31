@@ -2,7 +2,6 @@
 import dayjs from 'dayjs'
 export default {
   name: 'InvitationTable',
-  emits: ['cancel', 'resend'],
   props: {
     invites: Array,
     fields: {
@@ -12,16 +11,17 @@ export default {
       // ['created', 'used', 'cancelled', 'email', 'firstName', 'lastName', 'role', 'resend', 'cancel'],
     }
   },
+  emits: ['cancel', 'resend'],
+  data() {
+    return {
+      resendDisabled: {},
+    }
+  },
   computed: {
     dateHeader() {
       return this.fields.includes('cancelled') ? 'Cancelled'
         : this.fields.includes('used') ? 'Accepted'
         : 'Invited'
-    }
-  },
-  data() {
-    return {
-      resendDisabled: {},
     }
   },
   methods: {
@@ -56,7 +56,7 @@ export default {
       <th>First</th>
       <th>Last</th>
       <th>Role</th>
-      <th></th>
+      <th />
     </thead>
     <tbody>
       <tr v-for="invite of invites" :key="invite.code">
@@ -66,11 +66,11 @@ export default {
         <td v-if="fields.includes('email')">{{ invite.lastName }}</td>
         <td class="is-capitalized">{{ invite.role }}</td>
         <td>
-          <button v-if="fields.includes('resend')" @click="resend(invite)" class="is-flat" title="Resend invitation" :disabled="resendDisabled[invite.code]">
-            <i class="fas fa-paper-plane"></i>
+          <button v-if="fields.includes('resend')" class="is-flat" title="Resend invitation" :disabled="resendDisabled[invite.code]" @click="resend(invite)">
+            <i class="fas fa-paper-plane" />
           </button>
-          <button v-if="fields.includes('cancel')" @click="cancel(invite)" class="is-flat" title="Cancel invitation">
-            <i class="fas fa-times"></i>
+          <button v-if="fields.includes('cancel')" class="is-flat" title="Cancel invitation" @click="cancel(invite)">
+            <i class="fas fa-times" />
           </button>
           <!-- <button v-if="fields.includes('profile')" class="is-flat" title="View profile">
             <i class="fas fa-user"></i>

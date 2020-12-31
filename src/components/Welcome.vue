@@ -12,8 +12,8 @@ export default {
   <div class="welcome">
     <div class="px-20 my-50">
       <h1 class="title is-uppercase mb-30" style="font-weight: 500;">A Thousand Worlds</h1>
-      <h2 class="subtitle">COLORFUL READS x COLORFUL PEOPLE<br/>
-      Picture books curated by BIPOC leaders in the industry</h2>
+      <h2 class="subtitle">COLORFUL READS x COLORFUL PEOPLE<br>
+        Picture books curated by BIPOC leaders in the industry</h2>
     </div>
   </div>
 </template>

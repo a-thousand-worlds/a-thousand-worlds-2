@@ -10,6 +10,21 @@ export default {
     ListViewIcon,
   },
   props: ['hideBookmarks'],
+  data() {
+    return {
+      showViewOptions: true
+    }
+  },
+  computed: {
+    bookmarksCount() {
+      return Object.keys(this.$store.state.user.user?.profile.bookmarks || {}).length
+    }
+  },
+  watch: {
+    '$route'(next) {
+      this.showViewOptions = next.name === 'Home' || next.name === 'Bundles'
+    }
+  },
   methods: {
     toggleViewMode(mode) {
       this.$store.commit('ui/setViewMode', mode)
@@ -23,21 +38,6 @@ export default {
       const state = this.$store.state.ui.bookmarksOpen
       this.$store.commit('ui/setBookmarksOpen', !state)
     }
-  },
-  computed: {
-    bookmarksCount() {
-      return Object.keys(this.$store.state.user.user?.profile.bookmarks || {}).length
-    }
-  },
-  data() {
-    return {
-      showViewOptions: true
-    }
-  },
-  watch: {
-    '$route'(next) {
-      this.showViewOptions = next.name === 'Home' || next.name === 'Bundles'
-    }
   }
 }
 </script>
@@ -50,20 +50,20 @@ export default {
       <ul v-if="!hideBookmarks" class="menu-list">
         <li><a :href="null" class="bookmark-toggler" @click.prevent="toggleBookmarks()">
           <BookmarkIcon class="fill-secondary" />
-          <span v-if="$iam('authorized')" class="badge">{{bookmarksCount}}</span>
+          <span v-if="$iam('authorized')" class="badge">{{ bookmarksCount }}</span>
         </a></li>
       </ul>
     </div>
 
     <ul v-if="showViewOptions" class="menu-list">
       <li>
-        <a :class="{ active: $store.state.ui.viewMode === 'covers' }" @click.prevent="toggleViewMode('covers')" href="#">
+        <a :class="{ active: $store.state.ui.viewMode === 'covers' }" href="#" @click.prevent="toggleViewMode('covers')">
           <CoverViewIcon />
           <span class="icon-label">Cover</span>
         </a>
       </li>
-      <li class='my-30'>
-        <a :class="{ active: $store.state.ui.viewMode === 'list' }" @click.prevent="toggleViewMode('list')" href="#">
+      <li class="my-30">
+        <a :class="{ active: $store.state.ui.viewMode === 'list' }" href="#" @click.prevent="toggleViewMode('list')">
           <ListViewIcon />
           <span class="icon-label">List</span>
         </a>

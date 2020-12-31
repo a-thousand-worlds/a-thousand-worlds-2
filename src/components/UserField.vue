@@ -10,20 +10,6 @@ export default {
       id: this.userID || ''
     }
   },
-  created() {
-    /*
-    const b = this.$store.state.booksList[this.id]
-    if (b) {
-      this.book = b
-      this.id = b.id
-    }
-    else {
-      this.book = null
-      this.id = ''
-    }
-    this.$emit('changed', this.id)
-    */
-  },
   watch: {
     /*
     bookID(next, prev) {
@@ -39,6 +25,20 @@ export default {
       this.$emit('changed', next)
     }
     */
+  },
+  created() {
+    /*
+    const b = this.$store.state.booksList[this.id]
+    if (b) {
+      this.book = b
+      this.id = b.id
+    }
+    else {
+      this.book = null
+      this.id = ''
+    }
+    this.$emit('changed', this.id)
+    */
   }
 }
 
@@ -46,18 +46,18 @@ export default {
 
 <template>
 
-<div class="field is-grouped">
-  <div class="control">
-    <input type="text" class="input" v-model="search">
+  <div class="field is-grouped">
+    <div class="control">
+      <input v-model="search" type="text" class="input">
+    </div>
+    <div class="control">
+      <button v-if="!user" class="button is-static">
+        Search user by email or userID
+      </button>
+      <button v-if="user" class="button is-static">
+        {{ user.email }}
+      </button>
+    </div>
   </div>
-  <div class="control">
-    <button v-if="!user" class="button is-static">
-      Search user by email or userID
-    </button>
-    <button v-if="user" class="button is-static">
-      {{user.email}}
-    </button>
-  </div>
-</div>
 
 </template>

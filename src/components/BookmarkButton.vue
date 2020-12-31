@@ -2,14 +2,14 @@
 import BookmarkIcon from '../assets/icons/bookmark.svg'
 
 export default {
+  components: {
+    BookmarkIcon,
+  },
   props: ['book'],
   computed: {
     isMarked() {
       return this.$store.state.user.user?.profile?.bookmarks?.[this.book.id]
     }
-  },
-  components: {
-    BookmarkIcon,
   },
   methods: {
     toggleBookmark() {

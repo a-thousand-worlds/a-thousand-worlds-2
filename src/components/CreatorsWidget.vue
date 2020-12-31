@@ -14,6 +14,11 @@ export default {
       return this.people.filter(info => info.role === 'both' || info.role === 'illustrator')
     }
   },
+  watch: {
+    '$store.state.creators.data'(next) {
+      this.recalculate()
+    }
+  },
   created() {
     this.recalculate()
   },
@@ -21,11 +26,6 @@ export default {
     recalculate() {
       this.people = Object.keys(this.creators || {})
         .map(creatorId => ({ person: this.$store.state.creators.data[creatorId] || null, role: this.creators[creatorId] }))
-    }
-  },
-  watch: {
-    '$store.state.creators.data'(next) {
-      this.recalculate()
     }
   },
 }
@@ -36,17 +36,17 @@ export default {
     <div class="person-block">
       <span class="comma mr-2">by</span>
       <span v-for="(person, i) of authors" :key="i">
-        <router-link class="name" v-if="person.person && linked" :to="{name: 'PersonDetail', params: {id: person.person.id}}" >{{person.person.name}}</router-link>
-        <span class="name" v-if="person.person && !linked">{{person.person?.name}}</span>
-        <span class="comma mr-2" v-if="authors?.length > 1 && i !== authors?.length - 1">,</span>
+        <router-link v-if="person.person && linked" class="name" :to="{name: 'PersonDetail', params: {id: person.person.id}}">{{ person.person.name }}</router-link>
+        <span v-if="person.person && !linked" class="name">{{ person.person?.name }}</span>
+        <span v-if="authors?.length > 1 && i !== authors?.length - 1" class="comma mr-2">,</span>
       </span>
     </div>
-    <div class="person-block" v-if="illustrators.length">
+    <div v-if="illustrators.length" class="person-block">
       <span class="comma mr-2">illustrated by</span>
       <span v-for="(person, i) of authors" :key="i">
-        <router-link class="name" v-if="person.person && linked" :to="{name: 'PersonDetail', params: {id: person.person.id}}" >{{person.person.name}}</router-link>
-        <span class="name" v-if="person.person && !linked">{{person.person.name}}</span>
-        <span class="comma mr-2" v-if="authors.length > 1 && i !== authors?.length - 1">,</span>
+        <router-link v-if="person.person && linked" class="name" :to="{name: 'PersonDetail', params: {id: person.person.id}}">{{ person.person.name }}</router-link>
+        <span v-if="person.person && !linked" class="name">{{ person.person.name }}</span>
+        <span v-if="authors.length > 1 && i !== authors?.length - 1" class="comma mr-2">,</span>
       </span>
     </div>
   </div>

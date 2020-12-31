@@ -18,6 +18,11 @@ export default {
       mode: 'view'
     }
   },
+  watch: {
+    modelValue(next, prev) {
+      this.isbn = next
+    }
+  },
   methods: {
     searchGlobal() {
       this.loading = true
@@ -92,52 +97,47 @@ export default {
       this.mode = 'view'
     }
   },
-  watch: {
-    modelValue(next, prev) {
-      this.isbn = next
-    }
-  },
 }
 </script>
 
 <template>
 
-<div class="control">
-  <div class="field is-grouped">
-    <div class="control">
-      <button @click="searchGlobal()" :disabled="disabled || loading || !isbn.length" :class="{'is-loading': loading}" class="is-flat">
-        <i class="fas fa-search"></i>
-      </button>
-    </div>
-    <div class="control w-50">
-      <div class="w-50 pointer" :class="{disabled:disabled}" v-if="mode === 'view'" @click="onDivClick()">{{isbn}}</div>
-      <input
-        v-if="mode === 'edit'"
-        @blur="onInputBlur"
-        @keyup.enter="onEnter"
-        @keyup.escape="onEsc"
-        @input="doSearch"
-        ref="input"
-        type="text"
-        class="input"
-        v-model="isbn">
-      <div v-click-outside="onClickOutside" v-if="searches.length" class="search-wrap">
-        <div class="search-results">
-          <div @click.prevent="fillBook(res, si)" class="media p-2" v-for="res of searches" :key="res.id">
-            <div class="media-left">
-              <img :src="res.cover">
-            </div>
-            <div class="media-right">
-              <b>{{res.title}}</b><br>
-              <small>{{res.isbn}}</small><br>
-              <AuthorWidget :nolink="true" :name="res.authors[0]"></AuthorWidget>
+  <div class="control">
+    <div class="field is-grouped">
+      <div class="control">
+        <button :disabled="disabled || loading || !isbn.length" :class="{'is-loading': loading}" class="is-flat" @click="searchGlobal()">
+          <i class="fas fa-search" />
+        </button>
+      </div>
+      <div class="control w-50">
+        <div v-if="mode === 'view'" class="w-50 pointer" :class="{disabled:disabled}" @click="onDivClick()">{{ isbn }}</div>
+        <input
+          v-if="mode === 'edit'"
+          ref="input"
+          v-model="isbn"
+          type="text"
+          class="input"
+          @blur="onInputBlur"
+          @keyup.enter="onEnter"
+          @keyup.escape="onEsc"
+          @input="doSearch">
+        <div v-if="searches.length" v-click-outside="onClickOutside" class="search-wrap">
+          <div class="search-results">
+            <div v-for="res of searches" :key="res.id" class="media p-2" @click.prevent="fillBook(res, si)">
+              <div class="media-left">
+                <img :src="res.cover">
+              </div>
+              <div class="media-right">
+                <b>{{ res.title }}</b><br>
+                <small>{{ res.isbn }}</small><br>
+                <AuthorWidget :nolink="true" :name="res.authors[0]" />
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
 </template>
 

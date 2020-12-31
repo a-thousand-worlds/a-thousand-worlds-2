@@ -23,18 +23,6 @@ export default {
       people: []
     }
   },
-  created() {
-    this.reloadSub()
-  },
-  watch: {
-    selected(next) {
-      this.$emit('mark-me', { ...this.sub, mark: next })
-    },
-    modelValue(next) {
-      this.sub = next
-      this.reloadSub()
-    }
-  },
   computed: {
     ckConfig() {
       return {
@@ -57,6 +45,18 @@ export default {
       if (!this.sub.otherTag) return tags
       return [...tags, { tag: this.sub.otherTag }]
     }
+  },
+  watch: {
+    selected(next) {
+      this.$emit('mark-me', { ...this.sub, mark: next })
+    },
+    modelValue(next) {
+      this.sub = next
+      this.reloadSub()
+    }
+  },
+  created() {
+    this.reloadSub()
   },
   methods: {
     async reloadSub() {
@@ -176,60 +176,60 @@ Continue and create book?`
 </script>
 
 <template>
-<div class="container">
-  <div class="columns">
-    <!--
+  <div class="container">
+    <div class="columns">
+      <!--
     <div class="column is-1">
       <input :disabled="busy" type="checkbox" v-model="selected"/>
     </div>
     -->
 
-    <!-- cover -->
-    <div class="column is-2 is-offset-1">
-      <div class="bg-secondary cover-wrapper" :style="{'padding-top': coverRatio +'%', 'background-image': 'url('+coverUrl+')'}">
-        <div v-if="busy" class="upload-icon loading">
-          <i class="fas fa-spinner fa-pulse fa-fw"></i>
+      <!-- cover -->
+      <div class="column is-2 is-offset-1">
+        <div class="bg-secondary cover-wrapper" :style="{'padding-top': coverRatio +'%', 'background-image': 'url('+coverUrl+')'}">
+          <div v-if="busy" class="upload-icon loading">
+            <i class="fas fa-spinner fa-pulse fa-fw" />
+          </div>
+          <label v-if="!busy" class="upload-icon" for="cover-upload">
+            <i class="fas fa-file-upload fa-fw" />
+          </label>
+          <input id="cover-upload" type="file" class="cover-file-uploader" @change.prevent="fileChange($event)">
         </div>
-        <label v-if="!busy" class="upload-icon" for="cover-upload">
-          <i class="fas fa-file-upload fa-fw"></i>
-        </label>
-        <input @change.prevent="fileChange($event)" type="file" id="cover-upload" class="cover-file-uploader">
       </div>
-    </div>
 
-    <!-- title, authors, illustrators -->
-    <div class="column is-3">
+      <!-- title, authors, illustrators -->
+      <div class="column is-3">
 
-      <div style="font-weight: bold;">
-        <SimpleInput
-          :disabled="busy"
-          :placeholder="'Title'"
-          v-model="sub.title"/>
-      </div>
-      <div>
-        <MultiPersonField
-          :disabled="busy"
-          :role="'author'"
-          :placeholder="'author(s)'"
-          :search-db="false"
-          pre-text="by"
-          v-model="sub.authors"/>
-      </div>
-      <div>
-        <MultiPersonField
-        :disabled="busy"
-        :role="'illustrator'"
-        :placeholder="'illustrator(s)'"
-        :search-db="false"
-          pre-text="illustrated by"
-        v-model="sub.illustrators"/>
-      </div>
-      <div>
-        <SimpleInput
-          :disabled="busy"
-          :placeholder="'Year'"
-          v-model="sub.year"/>
-      </div>
+        <div style="font-weight: bold;">
+          <SimpleInput
+            v-model="sub.title"
+            :disabled="busy"
+            :placeholder="'Title'" />
+        </div>
+        <div>
+          <MultiPersonField
+            v-model="sub.authors"
+            :disabled="busy"
+            :role="'author'"
+            :placeholder="'author(s)'"
+            :search-db="false"
+            pre-text="by" />
+        </div>
+        <div>
+          <MultiPersonField
+            v-model="sub.illustrators"
+            :disabled="busy"
+            :role="'illustrator'"
+            :placeholder="'illustrator(s)'"
+            :search-db="false"
+            pre-text="illustrated by" />
+        </div>
+        <div>
+          <SimpleInput
+            v-model="sub.year"
+            :disabled="busy"
+            :placeholder="'Year'" />
+        </div>
       <!--
       <div>
         <SimpleInput
@@ -244,27 +244,27 @@ Continue and create book?`
           v-model="sub.publisher"/>
       </div>
       -->
-    </div>
-
-    <div class="column is-5" style="margin-top: -20px;">
-      <!-- summary -->
-      <div v-if="sub && sub.summary">
-        <ckeditor :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" v-model="sub.summary" style="padding: 0;" />
       </div>
-      <!-- tags -->
-      <div class="tags">
-        <div v-for="(tag, tagi) of tags" :key="tagi" class="button is-primary is-rounded is-mini mr-1 mb-1" style="cursor: default;">{{tag.tag}}</div>
-      </div>
-    </div>
 
-    <!-- delete -->
-    <div class="column is-1 has-text-right">
-      <button :class="{disabled:busy}" :disabled="busy" @click="reject()" class="is-flat is-uppercase is-underlined">
-        <i class="fas fa-times" style="font-size: 20px;"></i>
-      </button>
+      <div class="column is-5" style="margin-top: -20px;">
+        <!-- summary -->
+        <div v-if="sub && sub.summary">
+          <ckeditor v-model="sub.summary" :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" style="padding: 0;" />
+        </div>
+        <!-- tags -->
+        <div class="tags">
+          <div v-for="(tag, tagi) of tags" :key="tagi" class="button is-primary is-rounded is-mini mr-1 mb-1" style="cursor: default;">{{ tag.tag }}</div>
+        </div>
+      </div>
+
+      <!-- delete -->
+      <div class="column is-1 has-text-right">
+        <button :class="{disabled:busy}" :disabled="busy" class="is-flat is-uppercase is-underlined" @click="reject()">
+          <i class="fas fa-times" style="font-size: 20px;" />
+        </button>
+      </div>
     </div>
   </div>
-</div>
 
 </template>
 

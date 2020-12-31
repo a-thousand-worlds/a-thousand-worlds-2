@@ -1,7 +1,7 @@
 <script>
 
 export default {
-  props: ['modelValue', 'disabled', 'pre-text', 'searchDb', 'role', 'placeholder'],
+  props: ['modelValue', 'disabled', 'preText', 'searchDb', 'role', 'placeholder'],
   emits: ['update:modelValue', 'person-selected', 'person-removed'],
   data() {
     return {
@@ -19,6 +19,11 @@ export default {
       return !this.people
         .map(name => this.$store.getters['creators/list']().reduce((acc, p) => p.name.toLowerCase() === name.toLowerCase() ? true : acc, false))
         .reduce((acc, exists) => acc && exists, true)
+    }
+  },
+  watch: {
+    modelValue(next, prev) {
+      this.names = next
     }
   },
   created() {
@@ -81,55 +86,50 @@ export default {
       }
       this.mode = 'view'
     }
-  },
-  watch: {
-    modelValue(next, prev) {
-      this.names = next
-    }
   }
 }
 </script>
 
 <template>
 
-<div class="control">
-  <div class="field is-grouped">
-    <div class="control is-flex is-flex-wrap-wrap w-100">
-      <div class="mr-1" style="white-space: nowrap;">{{ preText }}</div>
-      <div
-        :class="{disabled:disabled}"
-        class="w-50 pointer placeholder"
-        v-if="mode === 'view' && !names?.length && placeholder?.length"
-        @click="onDivClick()">{{placeholder}}</div>
-      <div
-        :class="{disabled:disabled}"
-        class="w-50 pointer"
-        :title="placeholder"
-        v-if="mode === 'view' && names?.length"
-        @click="onDivClick()">{{names}}</div>
-      <input
-        v-if="mode === 'edit'"
-        @blur="onInputBlur"
-        @keyup.enter="onEnter"
-        @keyup.escape="onEsc"
-        @input="doSearch"
-        ref="input"
-        type="text"
-        class="input w-50"
-        v-model="names">
-      <div v-click-outside="onClickOutside" v-if="searches.length" class="search-wrap">
-        <div class="search-results">
-          <div @click.prevent="fillPerson(res)" class="media p-2" v-for="res of searches" :key="res.id">
-            <b>{{res.name}}</b><br>
+  <div class="control">
+    <div class="field is-grouped">
+      <div class="control is-flex is-flex-wrap-wrap w-100">
+        <div class="mr-1" style="white-space: nowrap;">{{ preText }}</div>
+        <div
+          v-if="mode === 'view' && !names?.length && placeholder?.length"
+          :class="{disabled:disabled}"
+          class="w-50 pointer placeholder"
+          @click="onDivClick()">{{ placeholder }}</div>
+        <div
+          v-if="mode === 'view' && names?.length"
+          :class="{disabled:disabled}"
+          class="w-50 pointer"
+          :title="placeholder"
+          @click="onDivClick()">{{ names }}</div>
+        <input
+          v-if="mode === 'edit'"
+          ref="input"
+          v-model="names"
+          type="text"
+          class="input w-50"
+          @blur="onInputBlur"
+          @keyup.enter="onEnter"
+          @keyup.escape="onEsc"
+          @input="doSearch">
+        <div v-if="searches.length" v-click-outside="onClickOutside" class="search-wrap">
+          <div class="search-results">
+            <div v-for="res of searches" :key="res.id" class="media p-2" @click.prevent="fillPerson(res)">
+              <b>{{ res.name }}</b><br>
+            </div>
           </div>
         </div>
       </div>
-    </div>
     <!-- <div v-if="mode === 'view' && hasNewPeople" class="control">
       <i :class="{disabled:disabled}" class="fas fa-exclamation-triangle fa-danger" title="There is a not existing in database person. On book approve they will be automatically approved and created without biography"></i>
     </div> -->
+    </div>
   </div>
-</div>
 
 </template>
 

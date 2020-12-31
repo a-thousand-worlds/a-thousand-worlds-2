@@ -13,11 +13,6 @@ export default {
       default: 'multiline'
     }
   },
-  computed: {
-    loaded() {
-      return this.$store.state.content.loaded
-    },
-  },
   data() {
     const slotDefault = this.$slots.default?.()[0].children || ''
     return {
@@ -27,6 +22,11 @@ export default {
       },
       html: this.$store.getters['content/get'](this.name) ?? slotDefault,
     }
+  },
+  computed: {
+    loaded() {
+      return this.$store.state.content.loaded
+    },
   },
   watch: {
 
@@ -51,8 +51,8 @@ export default {
 </script>
 
 <template>
-  <input v-if="format === 'oneline' || format === 'inline'" type="text" :class="format === 'oneline' ? 'input' : format" v-model="html" :disabled="!$can('editContent') || !loaded" />
-  <ckeditor v-else :editor="editor" v-model="html" :config="editorConfig" :disabled="!$can('editContent') || !loaded" />
+  <input v-if="format === 'oneline' || format === 'inline'" v-model="html" type="text" :class="format === 'oneline' ? 'input' : format" :disabled="!$can('editContent') || !loaded">
+  <ckeditor v-else v-model="html" :editor="editor" :config="editorConfig" :disabled="!$can('editContent') || !loaded" />
 </template>
 
 <style scoped lang="scss">

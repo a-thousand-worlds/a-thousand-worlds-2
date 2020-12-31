@@ -13,14 +13,21 @@ export default {
       pageUrl: window.location.href,
     }
   },
-  created() {
-    const id = this.$router.currentRoute._value.params.id
-    this.author = this.$store.state.creators.data[id]
-    /*
-    if (this.author && this.author.photo && this.author.photo.length) {
-      this.$store.dispatch('loadImage', this.author.photo)
+  computed: {
+    isAuthor() {
+      return this.author ? this.author.role === 'author' : true
+    },
+    books() {
+      return this.author ? this.$store.getters['books/list']().filter(book =>
+        (book.authors || []).includes(this.author.name) ||
+        (book.illustrators || []).includes(this.author.name) ||
+        Object.keys(book.creators || {}).includes(this.author.id)
+      ) : []
+    },
+    bgImage() {
+      return this.author.photo
     }
-    */
+
   },
   watch: {
     '$route'(next) {
@@ -50,21 +57,14 @@ export default {
       */
     }
   },
-  computed: {
-    isAuthor() {
-      return this.author ? this.author.role === 'author' : true
-    },
-    books() {
-      return this.author ? this.$store.getters['books/list']().filter(book =>
-        (book.authors || []).includes(this.author.name) ||
-        (book.illustrators || []).includes(this.author.name) ||
-        Object.keys(book.creators || {}).includes(this.author.id)
-      ) : []
-    },
-    bgImage() {
-      return this.author.photo
+  created() {
+    const id = this.$router.currentRoute._value.params.id
+    this.author = this.$store.state.creators.data[id]
+    /*
+    if (this.author && this.author.photo && this.author.photo.length) {
+      this.$store.dispatch('loadImage', this.author.photo)
     }
-
+    */
   }
 }
 
@@ -77,15 +77,15 @@ export default {
     <div class="is-flex is-flex-direction-row is-flex-wrap-wrap">
       <div class="column-author" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
         <div class="cover-wrapper">
-          <div v-if="author.photo && author.photo.length" :style="{backgroundImage: 'url('+bgImage+')'}" class="cover-photo bg-secondary"/>
+          <div v-if="author.photo && author.photo.length" :style="{backgroundImage: 'url('+bgImage+')'}" class="cover-photo bg-secondary" />
         </div>
 
         <div class="title-container divider-bottom">
           <div class="name ml-2">{{ isAuthor ? 'Author' : 'Illustrator' }}</div>
-          <h1 class="title mt-5">{{author.name}}</h1>
+          <h1 class="title mt-5">{{ author.name }}</h1>
         </div>
 
-        <p class="person-bio">{{author.bio}}</p>
+        <p class="person-bio">{{ author.bio }}</p>
 
       </div>
 

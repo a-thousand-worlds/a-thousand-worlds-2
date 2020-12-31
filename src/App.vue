@@ -25,9 +25,6 @@ export default ({
     RightBar,
     Welcome,
   },
-  async created() {
-    await this.$store.dispatch('load')
-  },
   computed: {
     showWelcome() {
       return !this.$store.state.ui.lastVisited
@@ -46,13 +43,16 @@ export default ({
       }
     }
   },
+  async created() {
+    await this.$store.dispatch('load')
+  },
 })
 </script>
 
 <template>
   <div>
 
-    <MobileHeader class="is-hidden-tablet"/>
+    <MobileHeader class="is-hidden-tablet" />
 
     <div v-if="showWelcome">
       <Welcome :style="{ position: 'fixed' }" />
@@ -62,17 +62,17 @@ export default ({
 
     <div class="site columns m-0">
       <section class="leftbar column is-narrow is-hidden-mobile px-20 py-30">
-        <LeftBar/>
+        <LeftBar />
       </section>
       <section class="main column px-0 pb-20" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
         <Popups />
         <Confirm />
         <Prompt />
         <Alert />
-        <router-view/>
+        <router-view />
       </section>
       <section v-if="$store.state.ui.bookmarksOpen" class="bookmarks column">
-        <BookmarksView/>
+        <BookmarksView />
       </section>
 
     </div>
@@ -82,7 +82,7 @@ export default ({
       <RightBar :hideBookmarks="showWelcome" />
     </section>
 
-    <MobileFooter class="is-hidden-tablet"/>
+    <MobileFooter class="is-hidden-tablet" />
   </div>
 </template>
 

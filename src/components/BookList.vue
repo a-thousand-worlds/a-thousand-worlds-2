@@ -6,16 +6,13 @@ import BookmarkButton from '@/components/BookmarkButton'
 import BookDetailRoute from '@/components/BookDetailRoute'
 
 export default {
-  props: ['book'],
   components: {
     AuthorWidget,
     CreatorsWidget,
     BookmarkButton,
     BookDetailRoute,
   },
-  created() {
-    // this.$store.dispatch('loadImage', this.book.cover)
-  },
+  props: ['book'],
   computed: {
     coverRatio() {
       if (this.updatedCover) return this.book.cover.height / this.book.cover.width * 100
@@ -31,6 +28,9 @@ export default {
     updatedCover() {
       return this.book.cover?.url?.startsWith('http')
     }
+  },
+  created() {
+    // this.$store.dispatch('loadImage', this.book.cover)
   }
 }
 </script>
@@ -39,7 +39,7 @@ export default {
   <div class="columns">
     <div class="column is-one-third is-one-quarter-desktop is-offset-one-quarter-desktop p-0 mb-20">
       <BookDetailRoute :book="book" class="cover-data">
-        <div class="img-cover bg-secondary" :style="{width: '100%', paddingTop: coverRatio+'%', backgroundImage: 'url('+bgImage+')', backgroundSize: 'contain'}"></div>
+        <div class="img-cover bg-secondary" :style="{width: '100%', paddingTop: coverRatio+'%', backgroundImage: 'url('+bgImage+')', backgroundSize: 'contain'}" />
       </BookDetailRoute>
     </div>
     <div class="column is-two-thirds is-one-quarter-desktop is-align-content-center p-0">
@@ -50,7 +50,7 @@ export default {
           <div class="is-flex is-justify-content-space-between mb-20">
             <div>
               <BookDetailRoute :book="book" class="cover-data">
-                <h3 class="mb-10" style="color: black; margin-right: 15px;">{{book.title}}</h3>
+                <h3 class="mb-10" style="color: black; margin-right: 15px;">{{ book.title }}</h3>
               </BookDetailRoute>
               <div class="authors">
                 <AuthorWidget v-for="person of book.authors" :key="person" :name="person" />

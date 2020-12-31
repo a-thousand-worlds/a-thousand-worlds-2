@@ -16,12 +16,12 @@ export default {
 </script>
 
 <template>
-<div>
-  <div class="container" v-if="mark.type === 'book'">
-    <BookList :book="$store.state.books.data[mark.id]"/>
+  <div>
+    <div v-if="mark.type === 'book'" class="container">
+      <BookList :book="$store.state.books.data[mark.id]" />
+    </div>
+    <div v-if="mark.type === 'bundle'">
+      {{ mark.type }}: {{ mark.id }}
+    </div>
   </div>
-  <div v-if="mark.type === 'bundle'">
-    {{mark.type}}: {{mark.id}}
-  </div>
-</div>
 </template>

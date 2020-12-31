@@ -5,13 +5,13 @@ import BookmarkButton from '@/components/BookmarkButton'
 import BookDetailRoute from '@/components/BookDetailRoute'
 
 export default {
-  props: ['book'],
   components: {
     AuthorWidget,
     CreatorsWidget,
     BookmarkButton,
     BookDetailRoute,
   },
+  props: ['book'],
   computed: {
     coverRatio() {
       if (this.updatedCover) return this.book.cover?.height / this.book.cover?.width * 100
@@ -35,12 +35,12 @@ export default {
 <template>
   <BookDetailRoute :book="book">
     <div :style="{width: '100%', paddingTop: coverRatio+'%', backgroundImage: 'url('+bgImage+')', backgroundSize: 'contain'}" class="book-cover-wrapper bg-secondary">
-      <div class="cover-shadow"></div>
+      <div class="cover-shadow" />
       <div class="cover-data">
-        <div class="title">{{book.title}}</div>
+        <div class="title">{{ book.title }}</div>
         <div class="authors">
           <AuthorWidget v-for="person of book.authors" :key="person" :name="person" />
-          <CreatorsWidget v-if="book.creators" :creators="book.creators" :linked="true"/>
+          <CreatorsWidget v-if="book.creators" :creators="book.creators" :linked="true" />
         </div>
         <div class="bmb">
           <BookmarkButton :book="book" />
@@ -49,15 +49,15 @@ export default {
     </div>
     <div class="is-hidden-tablet">
 
-        <div class="divider-bottom is-flex is-justify-content-space-between">
-          <div>
-            <h1 class="title">{{book.title}}</h1>
-            <div v-for="person of book.authors" :key="person" class="mb-2">
-              <AuthorWidget :name="person" />
-            </div>
+      <div class="divider-bottom is-flex is-justify-content-space-between">
+        <div>
+          <h1 class="title">{{ book.title }}</h1>
+          <div v-for="person of book.authors" :key="person" class="mb-2">
+            <AuthorWidget :name="person" />
           </div>
-          <div style="padding-top: 0px;"><BookmarkButton :book="book" /></div>
         </div>
+        <div style="padding-top: 0px;"><BookmarkButton :book="book" /></div>
+      </div>
 
     </div>
   </BookDetailRoute>

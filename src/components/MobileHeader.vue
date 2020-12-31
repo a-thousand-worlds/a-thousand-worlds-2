@@ -24,13 +24,13 @@ export default {
 <template>
   <!-- Add top margin equal to the height of the fixed position header. -->
   <div class="mt-40">
-    <div class="back"/>
+    <div class="back" />
 
     <section class="header is-flex is-justify-content-space-between is-align-items-center">
       <div class="title is-uppercase is-primary-text">
         <router-link :to="{ name: 'Home' }" class="is-primary">A Thousand Worlds</router-link>
       </div>
-      <button @click="isOpen = !isOpen" class="menu-button">
+      <button class="menu-button" @click="isOpen = !isOpen">
         <HamburgerIcon />
       </button>
     </section>

@@ -21,6 +21,6 @@ export default {
 
 <template>
   <router-link :to="route">
-    <slot></slot>
+    <slot />
   </router-link>
 </template>

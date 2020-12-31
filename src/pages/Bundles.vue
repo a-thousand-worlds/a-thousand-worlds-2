@@ -8,7 +8,7 @@ export default {
 
 <template>
 
-<h1 class="title">Bundles</h1>
+  <h1 class="title">Bundles</h1>
 
 </template>
 

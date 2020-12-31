@@ -17,6 +17,11 @@ export default {
       }
     }
   },
+  watch: {
+    modelValue(next, prev) {
+      this.person = next
+    }
+  },
   created() {
     console.log(this.ckeditor)
   },
@@ -79,50 +84,45 @@ export default {
       }
       this.mode = 'view'
     }
-  },
-  watch: {
-    modelValue(next, prev) {
-      this.person = next
-    }
   }
 }
 </script>
 
 <template>
 
-<div class="control">
-  <div class="field is-grouped">
-    <div class="control">
-      <button @click.prevent="toggleRole()" class="is-flat">
-        <i v-if="person.role === 'author'" class="fas fa-pencil-alt"></i>
-        <i v-if="person.role === 'illustrator'" class="fas fa-palette"></i>
-      </button>
-    </div>
-    <div class="control w-50">
-      <div class="w-50 pointer" v-if="mode === 'view'" @click="onDivClick()">{{person.name}}</div>
-      <input
-        v-if="mode === 'edit'"
-        @blur="onInputBlur"
-        @keyup.enter="onEnter"
-        @keyup.escape="onEsc"
-        @input="doSearch"
-        ref="input"
-        type="text"
-        class="input"
-        v-model="person.name">
-      <div v-click-outside="onClickOutside" v-if="searches.length" class="search-wrap">
-        <div class="search-results">
-          <div @click.prevent="fillPerson(res)" class="media p-2" v-for="res of searches" :key="res.id">
-            <b>{{res.name}}</b><br>
+  <div class="control">
+    <div class="field is-grouped">
+      <div class="control">
+        <button class="is-flat" @click.prevent="toggleRole()">
+          <i v-if="person.role === 'author'" class="fas fa-pencil-alt" />
+          <i v-if="person.role === 'illustrator'" class="fas fa-palette" />
+        </button>
+      </div>
+      <div class="control w-50">
+        <div v-if="mode === 'view'" class="w-50 pointer" @click="onDivClick()">{{ person.name }}</div>
+        <input
+          v-if="mode === 'edit'"
+          ref="input"
+          v-model="person.name"
+          type="text"
+          class="input"
+          @blur="onInputBlur"
+          @keyup.enter="onEnter"
+          @keyup.escape="onEsc"
+          @input="doSearch">
+        <div v-if="searches.length" v-click-outside="onClickOutside" class="search-wrap">
+          <div class="search-results">
+            <div v-for="res of searches" :key="res.id" class="media p-2" @click.prevent="fillPerson(res)">
+              <b>{{ res.name }}</b><br>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div v-if="mode === 'view' && person.name.length && !person.id" class="control">
-      <i class="fas fa-exclamation-triangle fa-danger" title="Person not exists in database and will be automatically approved and created without biography"></i>
+      <div v-if="mode === 'view' && person.name.length && !person.id" class="control">
+        <i class="fas fa-exclamation-triangle fa-danger" title="Person not exists in database and will be automatically approved and created without biography" />
+      </div>
     </div>
   </div>
-</div>
 
 </template>
 

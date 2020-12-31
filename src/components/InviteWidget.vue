@@ -154,19 +154,19 @@ export default {
 </script>
 
 <template>
-  <div @click.prevent="setInviteDropdown(false)" >
+  <div @click.prevent="setInviteDropdown(false)">
 
     <p v-if="format !== 'compact'" class="mb-10">Enter a list of names and emails (one per line)</p>
 
     <div v-if="format !== 'compact'" class="field">
       <div class="control">
-        <textarea class="textarea" :class="{ 'is-danger': hasError('emailInput')}" v-model="emailInput" :placeholder="'Sarah Lopez - sarah@test.com\nDillon Avery - dillon@test.com\nMattie Smith - mattie@test.com\n...'" />
+        <textarea v-model="emailInput" class="textarea" :class="{ 'is-danger': hasError('emailInput')}" :placeholder="'Sarah Lopez - sarah@test.com\nDillon Avery - dillon@test.com\nMattie Smith - mattie@test.com\n...'" />
       </div>
     </div>
 
     <div class="field is-grouped is-flex">
       <div v-if="format === 'compact'" class="control is-flex-grow-1">
-        <textarea class="textarea" :class="{ 'is-danger': hasError('emailInput')}" v-model="emailInput" placeholder="Sarah Lopez - sarah@test.com" style="min-height: 0; padding-top: 0.5rem; padding-bottom: 0.5rem;" />
+        <textarea v-model="emailInput" class="textarea" :class="{ 'is-danger': hasError('emailInput')}" placeholder="Sarah Lopez - sarah@test.com" style="min-height: 0; padding-top: 0.5rem; padding-bottom: 0.5rem;" />
       </div>
 
       <div v-if="$allowedInviteeRoles().length > 1" class="control">
@@ -175,13 +175,13 @@ export default {
             <button class="button" aria-haspopup="true" aria-controls="dropdown-menu" @click.prevent.stop="toggleInviteDropdown">
               <span>{{ role || 'CHOOSE ROLE' }}</span>
               <span class="icon is-small">
-                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                <i class="fas fa-angle-down" aria-hidden="true" />
               </span>
             </button>
           </div>
-          <div class="dropdown-menu" :class="{ 'is-danger': hasError('role') }" id="dropdown-menu" role="menu">
+          <div id="dropdown-menu" class="dropdown-menu" :class="{ 'is-danger': hasError('role') }" role="menu">
             <div class="dropdown-content">
-              <a class="dropdown-item is-capitalized" :class="{ 'is-active': role === userRole }" v-for="userRole in $allowedInviteeRoles()" :key="userRole" @click.prevent="setInviteRole(userRole)">
+              <a v-for="userRole in $allowedInviteeRoles()" :key="userRole" class="dropdown-item is-capitalized" :class="{ 'is-active': role === userRole }" @click.prevent="setInviteRole(userRole)">
                 {{ userRole }}
               </a>
             </div>
@@ -190,7 +190,7 @@ export default {
       </div>
 
       <div class="control">
-        <button class="button is-primary" @click.prevent="send" :disabled="disableSend">Invite</button>
+        <button class="button is-primary" :disabled="disableSend" @click.prevent="send">Invite</button>
       </div>
     </div>
 

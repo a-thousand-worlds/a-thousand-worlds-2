@@ -3,6 +3,11 @@
 
 export default {
   props: ['person'],
+  computed: {
+    bgImage() {
+      return this.person.photo
+    }
+  },
   /*
   components: {
     AuthorWidget,
@@ -12,22 +17,16 @@ export default {
     if (this.person.photo && this.person.photo.length) {
       // this.$store.dispatch('loadImage', this.person.photo)
     }
-  },
-  computed: {
-    bgImage() {
-      return this.person.photo
-    }
   }
 }
 
 </script>
 
 <template>
-<router-link :to="{name:'PersonDetail', params: {id: person.id}}">
-  <div :style="{backgroundImage: 'url('+bgImage+')'}" class="photo-wrapper bg-secondary">
-  </div>
-  <router-link :to="{name: 'PersonDetail', params: {id: person.id}}" class="is-uppercase">{{person.name}}</router-link>
-</router-link>
+  <router-link :to="{name:'PersonDetail', params: {id: person.id}}">
+    <div :style="{backgroundImage: 'url('+bgImage+')'}" class="photo-wrapper bg-secondary" />
+    <router-link :to="{name: 'PersonDetail', params: {id: person.id}}" class="is-uppercase">{{ person.name }}</router-link>
+  </router-link>
 
 </template>
 

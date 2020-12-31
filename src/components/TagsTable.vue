@@ -16,13 +16,18 @@ export default {
       newTag: {},
     }
   },
-  created() {
-    this.resetNewTag()
-  },
   computed: {
     tags() {
       return this.$store.getters[`tags/${this.type}/listSorted`]()
     }
+  },
+  watch: {
+    type(next) {
+      this.resetNewTag()
+    }
+  },
+  created() {
+    this.resetNewTag()
   },
   methods: {
     async addTag() {
@@ -54,11 +59,6 @@ export default {
       this.$store.commit('ui/setBusy', false)
     }
   },
-  watch: {
-    type(next) {
-      this.resetNewTag()
-    }
-  },
 }
 
 </script>
@@ -70,7 +70,7 @@ export default {
       <tr>
         <th style="width: 100%;">Tag</th>
         <th class="has-text-right" style="white-space: nowrap;">Sort Order</th>
-        <th class="has-text-centered" title="Show this tag in the book filters" style="white-space: nowrap;">Show <i class="far fa-question-circle"></i></th>
+        <th class="has-text-centered" title="Show this tag in the book filters" style="white-space: nowrap;">Show <i class="far fa-question-circle" /></th>
         <th>Edit/Delete</th>
       </tr>
     </thead>
@@ -81,8 +81,8 @@ export default {
         <td>
           <div class="field">
             <div class="control">
-              <span v-if="edits[tag.id]"><input type="text" class="input" v-model="edits[tag.id].tag"/></span>
-              <span v-else>{{tag.tag}}</span>
+              <span v-if="edits[tag.id]"><input v-model="edits[tag.id].tag" type="text" class="input"></span>
+              <span v-else>{{ tag.tag }}</span>
             </div>
           </div>
         </td>
@@ -90,38 +90,38 @@ export default {
         <!-- sort order -->
         <td class="has-text-right">
           <span v-if="!edits[tag.id]">
-            <span class="ml-2">{{tag.sortOrder}}</span>
+            <span class="ml-2">{{ tag.sortOrder }}</span>
           </span>
           <span v-if="edits[tag.id]">
-            <input type="text" class="input" v-model="edits[tag.id].sortOrder"/>
+            <input v-model="edits[tag.id].sortOrder" type="text" class="input">
           </span>
         </td>
 
         <!-- show in book filters -->
         <td class="has-text-centered">
           <span v-if="!edits[tag.id]">
-            <i v-if="tag.showOnFront" class="fas fa-check has-text-primary"></i>
-            <i v-else class="fas fa-minus has-text-secondary"></i>
+            <i v-if="tag.showOnFront" class="fas fa-check has-text-primary" />
+            <i v-else class="fas fa-minus has-text-secondary" />
           </span>
-          <span v-if="edits[tag.id]"><input type="checkbox" class="checkbox" v-model="edits[tag.id].showOnFront"/></span>
+          <span v-if="edits[tag.id]"><input v-model="edits[tag.id].showOnFront" type="checkbox" class="checkbox"></span>
         </td>
 
         <!-- edit/delete -->
         <td class="actions">
           <div v-if="!edits[tag.id]" class="field is-grouped is-justify-content-flex-end">
-            <p class="control"><button @click.prevent="toggleEditTag(tag.id, tag)" :disabled="$uiBusy" class="button is-flat">
-              <i class="fas fa-pencil-alt"></i>
-            </button>
-            <button @click.prevent="remove(tag.id)" :disabled="$uiBusy" class="button is-flat">
-              <i class="fas fa-times"></i>
-            </button></p>
+            <p class="control"><button :disabled="$uiBusy" class="button is-flat" @click.prevent="toggleEditTag(tag.id, tag)">
+                                 <i class="fas fa-pencil-alt" />
+                               </button>
+              <button :disabled="$uiBusy" class="button is-flat" @click.prevent="remove(tag.id)">
+                <i class="fas fa-times" />
+              </button></p>
           </div>
           <div v-if="edits[tag.id]" class="field is-grouped is-justify-content-flex-end">
-            <p class="control"><button @click.prevent="toggleEditTag(tag.id, null)" :disabled="$uiBusy" class="button is-rounded">
+            <p class="control"><button :disabled="$uiBusy" class="button is-rounded" @click.prevent="toggleEditTag(tag.id, null)">
               <span>Cancel</span>
             </button></p>
-            <p class="control"><button @click.prevent="updateTag(tag.id)" :disabled="$uiBusy" class="button is-rounded is-primary">
-              <i class="fas fa-check mr-2"></i>
+            <p class="control"><button :disabled="$uiBusy" class="button is-rounded is-primary" @click.prevent="updateTag(tag.id)">
+              <i class="fas fa-check mr-2" />
               <span>Save</span>
             </button></p>
           </div>
@@ -137,24 +137,23 @@ export default {
         <a class="button is-static">Add Tag</a>
       </p>
       <p class="control w-100">
-        <input type="text" :disabled="$uiBusy" class="input" placeholder="Enter tag" v-model="newTag.tag"/>
+        <input v-model="newTag.tag" type="text" :disabled="$uiBusy" class="input" placeholder="Enter tag">
       </p>
       <p class="control">
         <a class="button is-static">Sort Order</a>
       </p>
       <p class="control">
-        <input :disabled="$uiBusy" type="number" class="input" placeholder="Sort order" v-model="newTag.sortOrder"/>
+        <input v-model="newTag.sortOrder" :disabled="$uiBusy" type="number" class="input" placeholder="Sort order">
       </p>
       <p class="control">
         <a class="button" @click.prevent="newTag.showOnFront = !newTag.showOnFront">
-          Show <input :disabled="$uiBusy" type="checkbox" class="checkbox ml-2" v-model="newTag.showOnFront"/>
+          Show <input v-model="newTag.showOnFront" :disabled="$uiBusy" type="checkbox" class="checkbox ml-2">
         </a>
       </p>
-      <p class="control">
-      </p>
+      <p class="control" />
       <p class="control">
         <button :disabled="$uiBusy" type="submit" class="button is-primary">
-          <i class="fas fa-plus mr-2"></i>
+          <i class="fas fa-plus mr-2" />
           <span>Add</span>
         </button>
       </p>

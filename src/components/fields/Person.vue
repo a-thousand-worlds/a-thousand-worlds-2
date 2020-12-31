@@ -9,6 +9,11 @@ export default {
       searches: [],
     }
   },
+  watch: {
+    modelValue(next, prev) {
+      this.name = next
+    }
+  },
   methods: {
     doSearch(e) {
       const search = e.target.value.toLowerCase()
@@ -24,12 +29,7 @@ export default {
       this.hideSearch()
       this.name = p.name
       this.$emit('update:modelValue', this.name)
-      this.$emit('person-selected', p)
-    }
-  },
-  watch: {
-    modelValue(next, prev) {
-      this.name = next
+      this.$emit('personSelected', p)
     }
   }
 }
@@ -37,16 +37,16 @@ export default {
 
 <template>
 
-<div class="control">
-  <input :disabled="disabled" type="text" class="input" v-model="name" @input="doSearch($event)">
-  <div v-click-outside="hideSearch" v-if="searches.length" class="search-wrap">
-    <div class="search-results">
-      <div @click.prevent="fillPerson(res)" class="media p-2" v-for="res of searches" :key="res.id">
-        <b>{{res.name}}</b><br>
+  <div class="control">
+    <input v-model="name" :disabled="disabled" type="text" class="input" @input="doSearch($event)">
+    <div v-if="searches.length" v-click-outside="hideSearch" class="search-wrap">
+      <div class="search-results">
+        <div v-for="res of searches" :key="res.id" class="media p-2" @click.prevent="fillPerson(res)">
+          <b>{{ res.name }}</b><br>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
 </template>
 

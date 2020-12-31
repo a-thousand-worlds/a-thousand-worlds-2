@@ -17,18 +17,18 @@ export default {
       isFront: true
     }
   },
-  created() {
-    this.isFront = this.$route.name === 'Home'
+  computed: {
+    bookmarksCount() {
+      return Object.keys(this.$store.state.user.user?.profile.bookmarks || {}).length
+    }
   },
   watch: {
     '$route'(next) {
       this.isFront = next.name === 'Home'
     }
   },
-  computed: {
-    bookmarksCount() {
-      return Object.keys(this.$store.state.user.user?.profile.bookmarks || {}).length
-    }
+  created() {
+    this.isFront = this.$route.name === 'Home'
   },
   methods: {
     toggleFilter(fid) {
@@ -57,53 +57,53 @@ export default {
 </script>
 
 <template>
-<div>
-  <section v-if="showFilters" v-click-outside="clickOutsideFilters" class="mobile-filters">
-    <ul class="haas-text-centered">
-      <li v-for="filter in $store.state.sortedTags" :key="filter.id" @click="toggleFilter(filter.tag)">
-        <button v-if="filter.showOnFront" :class="{toggled:filterOn(filter.tag)}" class="p-1 filter">{{filter.tag}}</button>
-      </li>
-    </ul>
-    <button class="button is-rounded is-small mt-10" @click.prevent="resetFilters">Reset Filter</button>
-  </section>
+  <div>
+    <section v-if="showFilters" v-click-outside="clickOutsideFilters" class="mobile-filters">
+      <ul class="haas-text-centered">
+        <li v-for="filter in $store.state.sortedTags" :key="filter.id" @click="toggleFilter(filter.tag)">
+          <button v-if="filter.showOnFront" :class="{toggled:filterOn(filter.tag)}" class="p-1 filter">{{ filter.tag }}</button>
+        </li>
+      </ul>
+      <button class="button is-rounded is-small mt-10" @click.prevent="resetFilters">Reset Filter</button>
+    </section>
 
-  <section class="mobile-bottom-nav is-flex is-justify-content-center has-text-centered is-uppercase">
-    <ul class="menu-list">
+    <section class="mobile-bottom-nav is-flex is-justify-content-center has-text-centered is-uppercase">
+      <ul class="menu-list">
 
-      <li v-if="isFront && !$store.state.ui.bookmarksOpen" >
-        <a :class="null" @click.stop="showFilters=!showFilters" href="#">
-          <FilterIcon/>
-          <div class="icon-label mt-2">Filter</div>
-        </a>
-      </li>
+        <li v-if="isFront && !$store.state.ui.bookmarksOpen">
+          <a :class="null" href="#" @click.stop="showFilters=!showFilters">
+            <FilterIcon />
+            <div class="icon-label mt-2">Filter</div>
+          </a>
+        </li>
 
-      <li>
-        <router-link :to="{ name: 'Home' }">
-          <BooksIcon/>
-          <div class="icon-label mt-2">Books</div>
-        </router-link>
-      </li>
+        <li>
+          <router-link :to="{ name: 'Home' }">
+            <BooksIcon />
+            <div class="icon-label mt-2">Books</div>
+          </router-link>
+        </li>
 
-      <li>
-        <router-link :to="{ name: 'Bundles' }">
-          <BundlesIcon/>
-          <div class="icon-label mt-2">Bundles</div>
-        </router-link>
-      </li>
+        <li>
+          <router-link :to="{ name: 'Bundles' }">
+            <BundlesIcon />
+            <div class="icon-label mt-2">Bundles</div>
+          </router-link>
+        </li>
 
-      <li>
-        <a class="bookmark-toggler" @click.prevent="toggleBookmarks()" href="#">
-          <BookmarkIcon class="fill-secondary" />
-          <div class="icon-label mt-2">Saved Items</div>
-          <span v-if="$iam('authorized')" class="badge">{{bookmarksCount}}</span>
-        </a>
-      </li>
+        <li>
+          <a class="bookmark-toggler" href="#" @click.prevent="toggleBookmarks()">
+            <BookmarkIcon class="fill-secondary" />
+            <div class="icon-label mt-2">Saved Items</div>
+            <span v-if="$iam('authorized')" class="badge">{{ bookmarksCount }}</span>
+          </a>
+        </li>
 
-    </ul>
+      </ul>
 
-  </section>
+    </section>
 
-</div>
+  </div>
 </template>
 
 <style lang="scss" scoped>

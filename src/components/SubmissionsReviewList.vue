@@ -13,14 +13,14 @@ export default {
       submitters: {}
     }
   },
-  created() {
-    this.loadGroups()
-  },
   computed: {
     bookSubmissions() {
       return this.$store.getters['bookSubmissions/list']()
         .filter(sub => sub && !sub.approved && !sub.approvedBy && !sub.approvedAt)
     }
+  },
+  created() {
+    this.loadGroups()
   },
   methods: {
     async approveAll() {
@@ -108,29 +108,29 @@ export default {
   <div>
 
     <div v-if="bookSubmissions.length" class="is-flex is-justify-content-flex-end">
-      <div><button class="button is-rounded" @click="approveAll">Approve all ({{bookSubmissions.length}})</button></div>
+      <div><button class="button is-rounded" @click="approveAll">Approve all ({{ bookSubmissions.length }})</button></div>
     </div>
 
     <div v-if="loading" class="my-50">
-      <img src="@/assets/icons/loading.gif" />
+      <img src="@/assets/icons/loading.gif">
     </div>
 
     <p v-if="!subsGroups.length" style="font-size: 20px;">No Submissions to review</p>
 
     <div v-else>
-      <div class="sub-group py-20" v-for="(group, gid) of subsGroups" :key="gid">
+      <div v-for="(group, gid) of subsGroups" :key="gid" class="sub-group py-20">
         <div>
           <button
             :disabled="loading"
-            @click="approveGroup(group)"
-            class="level-item is-flat is-underlined is-uppercase">Approve</button>
+            class="level-item is-flat is-underlined is-uppercase"
+            @click="approveGroup(group)">Approve</button>
         </div>
         <div v-for="(sub, i) of group.books" :key="i">
           <ApprovalBookWidget
+            v-model="subsGroups[gid].books[i]"
             @mark-me="markBookSubmission($event, gid, i)"
             @reject-me="rejectBookSubmission($event, gid, i)"
-            @submitter-loaded="submitterLoaded($event)"
-            v-model="subsGroups[gid].books[i]"/>
+            @submitter-loaded="submitterLoaded($event)" />
         </div>
         <div class="has-text-right mt-20">
           {{ submitters[group.by] }}

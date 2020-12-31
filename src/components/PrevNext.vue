@@ -2,13 +2,13 @@
 import BookDetailRoute from '@/components/BookDetailRoute'
 
 export default {
+  components: {
+    BookDetailRoute,
+  },
   props: {
     book: {
       required: true
     },
-  },
-  components: {
-    BookDetailRoute,
   },
   computed: {
     nextBook() {

@@ -9,6 +9,16 @@ export default {
       mode: 'view'
     }
   },
+  computed: {
+    hasValue() {
+      return (typeof this.value === 'string' && this.value.length) || (typeof this.value === 'number' && this.value)
+    }
+  },
+  watch: {
+    modelValue(next, prev) {
+      this.value = next
+    }
+  },
   methods: {
     updateValue(e) {
       this.$emit('update:modelValue', this.value)
@@ -35,49 +45,39 @@ export default {
     onEsc() {
       this.mode = 'view'
     }
-  },
-  watch: {
-    modelValue(next, prev) {
-      this.value = next
-    }
-  },
-  computed: {
-    hasValue() {
-      return (typeof this.value === 'string' && this.value.length) || (typeof this.value === 'number' && this.value)
-    }
   }
 }
 </script>
 
 <template>
 
-<div class="control">
-  <div class="field">
-    <div class="control w-50">
-      <div
-        v-if="mode === 'view' && !hasValue && placeholder?.length"
-        :class="{disabled:disabled}"
-        class="w-50 pointer placeholder"
-        @click="onDivClick()">{{placeholder}}</div>
-      <div
-        v-if="mode === 'view' && hasValue"
-        :class="{disabled:disabled}"
-        :title="placeholder"
-        class="w-50 pointer"
-        @click="onDivClick()">{{value}}</div>
-      <input
-        v-if="mode === 'edit'"
-        @blur="onInputBlur"
-        @keyup.enter="onEnter"
-        @keyup.escape="onEsc"
-        @input="updateVal"
-        ref="input"
-        type="text"
-        class="input"
-        v-model="value">
+  <div class="control">
+    <div class="field">
+      <div class="control w-50">
+        <div
+          v-if="mode === 'view' && !hasValue && placeholder?.length"
+          :class="{disabled:disabled}"
+          class="w-50 pointer placeholder"
+          @click="onDivClick()">{{ placeholder }}</div>
+        <div
+          v-if="mode === 'view' && hasValue"
+          :class="{disabled:disabled}"
+          :title="placeholder"
+          class="w-50 pointer"
+          @click="onDivClick()">{{ value }}</div>
+        <input
+          v-if="mode === 'edit'"
+          ref="input"
+          v-model="value"
+          type="text"
+          class="input"
+          @blur="onInputBlur"
+          @keyup.enter="onEnter"
+          @keyup.escape="onEsc"
+          @input="updateVal">
+      </div>
     </div>
   </div>
-</div>
 
 </template>
 

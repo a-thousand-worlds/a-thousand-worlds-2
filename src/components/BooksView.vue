@@ -26,7 +26,7 @@ export default {
     </div>
 
     <div :class="{masonry:$store.state.ui.viewMode==='covers', 'with-bookmarks': $store.state.ui.bookmarksOpen}">
-      <div class="masonry-item" v-for="book of $store.getters['books/filtered']" :key="book.id">
+      <div v-for="book of $store.getters['books/filtered']" :key="book.id" class="masonry-item">
         <BookCover v-if="$store.state.ui.viewMode === 'covers'" :book="book" />
         <BookList v-if="$store.state.ui.viewMode === 'list'" :book="book" />
       </div>

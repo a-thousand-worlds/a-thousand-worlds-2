@@ -21,6 +21,25 @@ export default {
       }
     }
   },
+  computed: {
+    photoUrl() {
+      if (!this.person.photo || !this.person.photo.length) {
+        return null
+      }
+      return this.person.photo
+    },
+    photoSizeD() {
+      if (!this.photoSize) {
+        return null
+      }
+      let sz = Math.floor(this.photoSize * 100 / 1024) / 100 // kb
+      if (sz < 1024) {
+        return sz + 'kb'
+      }
+      sz = Math.floor(sz * 100 / 1024) / 100 // mb
+      return sz + 'mb'
+    }
+  },
   created() {
     if (this.$router.currentRoute._value.name === 'PersonManagerUpdateForm') {
       const p = this.$store.state.peopleIndex[this.$router.currentRoute._value.params.uid] || null
@@ -63,86 +82,67 @@ export default {
         this.$router.push({ name: 'PeopleManager' })
       })
     }
-  },
-  computed: {
-    photoUrl() {
-      if (!this.person.photo || !this.person.photo.length) {
-        return null
-      }
-      return this.person.photo
-    },
-    photoSizeD() {
-      if (!this.photoSize) {
-        return null
-      }
-      let sz = Math.floor(this.photoSize * 100 / 1024) / 100 // kb
-      if (sz < 1024) {
-        return sz + 'kb'
-      }
-      sz = Math.floor(sz * 100 / 1024) / 100 // mb
-      return sz + 'mb'
-    }
   }
 }
 </script>
 
 <template>
-<h1 v-if="mode==='new'" class="title page-title">Add Person</h1>
-<h1 v-if="mode!=='new'" class="title page-title">Update Person</h1>
+  <h1 v-if="mode==='new'" class="title page-title">Add Person</h1>
+  <h1 v-if="mode!=='new'" class="title page-title">Update Person</h1>
 
-<section class="section">
-  <form @submit.prevent="save()">
-    <div class="columns">
-      <div class="column is-one-third">
-        <div id="photo-wrapper">
-          <img v-if="photoUrl" :src="photoUrl">
-        </div>
-        <small v-if="photoSizeD">{{photoSizeD}}</small>
-        <input type="file" class="file" @change.prevent="fileChange($event)"/>
-      </div>
-      <div class="column is-two-thirds">
-
-        <div class="field">
-          <label class="label">Name</label>
-          <div class="control">
-            <input type="text" class="input" v-model="person.name">
+  <section class="section">
+    <form @submit.prevent="save()">
+      <div class="columns">
+        <div class="column is-one-third">
+          <div id="photo-wrapper">
+            <img v-if="photoUrl" :src="photoUrl">
           </div>
+          <small v-if="photoSizeD">{{ photoSizeD }}</small>
+          <input type="file" class="file" @change.prevent="fileChange($event)">
         </div>
+        <div class="column is-two-thirds">
 
-        <div class="field">
-          <label class="label">E-mail</label>
-          <div class="control">
-            <input type="email" class="input" v-model="person.email">
-          </div>
-        </div>
-
-        <div class="field">
-          <label class="label">Role</label>
-          <div class="control">
-            <div class="select">
-              <select v-model="person.role">
-                <option value="author">Author</option>
-                <option value="illustrator">Illustrator</option>
-              </select>
+          <div class="field">
+            <label class="label">Name</label>
+            <div class="control">
+              <input v-model="person.name" type="text" class="input">
             </div>
           </div>
-        </div>
 
-        <div class="field">
-          <label class="label">Biography</label>
-          <div class="control">
-            <textarea class="textarea" v-model="person.bio"></textarea>
+          <div class="field">
+            <label class="label">E-mail</label>
+            <div class="control">
+              <input v-model="person.email" type="email" class="input">
+            </div>
           </div>
-        </div>
 
+          <div class="field">
+            <label class="label">Role</label>
+            <div class="control">
+              <div class="select">
+                <select v-model="person.role">
+                  <option value="author">Author</option>
+                  <option value="illustrator">Illustrator</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Biography</label>
+            <div class="control">
+              <textarea v-model="person.bio" class="textarea" />
+            </div>
+          </div>
+
+        </div>
       </div>
-    </div>
-    <div class="">
-      <input type="submit" class="button is-primary" value="Save">
-      <router-link class="button is-secondary ml-3" :to="{name: 'PeopleManager'}">Cancel</router-link>
-    </div>
-  </form>
-</section>
+      <div class="">
+        <input type="submit" class="button is-primary" value="Save">
+        <router-link class="button is-secondary ml-3" :to="{name: 'PeopleManager'}">Cancel</router-link>
+      </div>
+    </form>
+  </section>
 
 </template>
 

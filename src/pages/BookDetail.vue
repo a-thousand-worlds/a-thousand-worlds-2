@@ -33,13 +33,13 @@ export default {
         : null
     },
   },
-  mounted() {
-    new Clipboard('#copy-link') // eslint-disable-line no-new
-  },
   watch: {
     '$route'() {
       this.isbn = this.$router.currentRoute._value.params.isbn
     }
+  },
+  mounted() {
+    new Clipboard('#copy-link') // eslint-disable-line no-new
   },
 }
 
@@ -72,20 +72,20 @@ export default {
       <div class="column" style="max-width: 720px;">
 
         <div v-if="!$store.state.books.loaded" class="my-50">
-          <img src="@/assets/icons/loading.gif" />
+          <img src="@/assets/icons/loading.gif">
         </div>
         <div v-else-if="book">
           <div class="title-container divider-bottom is-flex is-justify-content-space-between">
-            <h1 class="title">{{book.title}}</h1>
+            <h1 class="title">{{ book.title }}</h1>
             <div style="padding-top: 0px;"><BookmarkButton :book="book" /></div>
           </div>
 
           <div class="authors divider-bottom">
-            <AuthorWidget class="mb-2" v-for="person of book.authors" :key="person" :name="person" />
-            <CreatorsWidget class="mb-2" v-if="book.creators" :creators="book.creators" :linked="true" />
+            <AuthorWidget v-for="person of book.authors" :key="person" class="mb-2" :name="person" />
+            <CreatorsWidget v-if="book.creators" class="mb-2" :creators="book.creators" :linked="true" />
           </div>
 
-          <p style="font-size: 22px;">{{book.summary}}</p>
+          <p style="font-size: 22px;">{{ book.summary }}</p>
 
         </div>
         <div v-else>

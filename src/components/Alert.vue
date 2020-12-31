@@ -25,7 +25,7 @@ export default {
       'is-error': type === 'error',
       'is-secondary': !type,
     }">
-      <button class="delete" @click.prevent="close"></button>
+      <button class="delete" @click.prevent="close" />
       <p>{{ text }}</p>
     </div>
   </div>
