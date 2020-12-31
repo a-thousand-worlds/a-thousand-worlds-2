@@ -66,24 +66,28 @@ export default {
 
   <div class="book-detail">
 
+    <div class="columns mb-5">
+
+      <div class="column is-narrow">
+        <router-link :to="{ name: 'Home' }" class="is-uppercase is-primary">&lt; Back to Books</router-link>
+      </div>
+
+      <div class="column prev-next">
+        <BookDetailRoute v-if="prevBook" :book="prevBook" class="is-uppercase is-primary mr-6" style="white-space: nowrap;">&lt; Previous Book</BookDetailRoute>
+        <!-- separating character needed otherwise the two links do not wrap -->
+        <span style="visibility: hidden;"> | </span>
+        <BookDetailRoute v-if="nextBook" :book="nextBook" class="is-uppercase is-primary" style="white-space: nowrap;">Next Book &gt;</BookDetailRoute>
+      </div>
+    </div>
+
     <div class="columns">
       <div class="column mr-1 is-two-fifths" style="max-width: 720px">
-        <div class="mb-5">
-          <router-link :to="{ name: 'Home' }" class="is-uppercase is-primary">&lt; Back to Books</router-link>
-        </div>
         <div v-if="book" class="book-cover-wrapper">
           <lazy-image class="cover" :src="book.cover" />
         </div>
       </div>
 
       <div class="column" style="max-width: 720px;">
-
-        <div class="is-flex is-justify-content-flex-end">
-          <div class="mb-5">
-            <BookDetailRoute v-if="prevBook" :book="prevBook" class="is-uppercase is-primary mx-6">&lt; Previous Book</BookDetailRoute>
-            <BookDetailRoute v-if="nextBook" :book="nextBook" class="is-uppercase is-primary">Next Book &gt;</BookDetailRoute>
-          </div>
-        </div>
 
         <div v-if="!$store.state.books.loaded" class="my-50">
           <img src="@/assets/icons/loading.gif" />
@@ -152,6 +156,15 @@ export default {
 
 .authors {
   font-size: 14px;
+}
+
+.prev-next {
+
+  text-align: center;
+
+  @include from($tablet) {
+    text-align: right;
+  }
 }
 
 .content-footer {
