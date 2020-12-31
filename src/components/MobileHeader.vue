@@ -35,12 +35,21 @@ export default {
       </button>
     </section>
 
-    <section v-if="isOpen" class="submenu p-2 has-text-centered is-align-self-stretch is-flex-direction-column is-justify-content-space-between">
+    <section v-if="isOpen" class="submenu p-2 pt-20 has-text-centered is-align-self-stretch is-flex-direction-column is-justify-content-space-between">
       <MainMenu />
     </section>
   </div>
 </template>
 
+<!-- unscoped styles -->
+<style lang="scss">
+// hide filters
+.submenu #books-filter-menu {
+  display: none;
+}
+</style>
+
+<!-- scoped styles -->
 <style lang="scss" scoped>
 @import '@/assets/vars.scss';
 
@@ -62,7 +71,7 @@ export default {
 }
 
 .submenu {
-  margin-top: 20px;
+  margin-top: 1px; // do not overlap header border
   position: fixed;
   left: 0;
   width: 100%;
