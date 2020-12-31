@@ -1,7 +1,11 @@
 <script>
 
 export default {
-  props: ['book'],
+  props: {
+    book: {
+      required: true
+    },
+  },
   data() {
     return {
       pageUrl: window.location.href,

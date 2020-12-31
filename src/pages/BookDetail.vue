@@ -1,25 +1,25 @@
 <script>
 import AuthorWidget from '@/components/AuthorWidget'
 import BookDetailFooter from '@/components/BookDetailFooter'
-import BookDetailRoute from '@/components/BookDetailRoute'
 import BookmarkButton from '@/components/BookmarkButton'
 import BooksFilter from '@/components/BooksFilter'
 import Clipboard from 'clipboard'
 import CreatorsWidget from '@/components/CreatorsWidget'
 import LazyImage from '@/components/LazyImage'
 import NotFound from '@/pages/NotFound'
+import PrevNext from '@/components/PrevNext'
 
 export default {
   name: 'BookDetail',
   components: {
     AuthorWidget,
     BookDetailFooter,
-    BookDetailRoute,
     BookmarkButton,
     BooksFilter,
     CreatorsWidget,
     LazyImage,
     NotFound,
+    PrevNext,
   },
   data() {
     return {
@@ -32,19 +32,6 @@ export default {
         ? Object.values(this.$store.state.books.data).find(book => book.isbn === this.isbn)
         : null
     },
-    id() {
-      return this.book?.id
-    },
-    nextBook() {
-      const list = this.$store.getters['books/filtered']
-      const pos = list.map(x => x.id).indexOf(this.id)
-      return list[pos + 1]
-    },
-    prevBook() {
-      const list = this.$store.getters['books/filtered']
-      const pos = list.map(x => x.id).indexOf(this.id)
-      return list[pos - 1]
-    }
   },
   mounted() {
     new Clipboard('#copy-link') // eslint-disable-line no-new
@@ -72,12 +59,7 @@ export default {
         <router-link :to="{ name: 'Home' }" class="is-uppercase is-primary">&lt; Back to Books</router-link>
       </div>
 
-      <div class="column prev-next">
-        <BookDetailRoute v-if="prevBook" :book="prevBook" class="is-uppercase is-primary mr-6" style="white-space: nowrap;">&lt; Previous Book</BookDetailRoute>
-        <!-- separating character needed otherwise the two links do not wrap -->
-        <span style="visibility: hidden;"> | </span>
-        <BookDetailRoute v-if="nextBook" :book="nextBook" class="is-uppercase is-primary" style="white-space: nowrap;">Next Book &gt;</BookDetailRoute>
-      </div>
+      <PrevNext v-if="book" :book="book" class="column" />
     </div>
 
     <div class="columns">
@@ -119,7 +101,7 @@ export default {
 
   </div>
 
-  <BookDetailFooter :book="book" />
+  <BookDetailFooter v-if="book" :book="book" />
 
 </template>
 
@@ -128,9 +110,7 @@ export default {
 @import '@/assets/vars.scss';
 
 .book-detail {
-
   margin: 0 20px;
-
   @include from($desktop) {
     margin: 0 60px;
   }
@@ -143,15 +123,6 @@ export default {
 
 .authors {
   font-size: 14px;
-}
-
-.prev-next {
-
-  text-align: center;
-
-  @include from($tablet) {
-    text-align: right;
-  }
 }
 
 </style>
