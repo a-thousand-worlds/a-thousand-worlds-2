@@ -64,7 +64,7 @@ export default {
     <books-filter></books-filter>
   </teleport>
 
-  <div class="mx-5">
+  <div class="book-detail">
 
     <div class="columns">
       <div class="column mr-1 is-two-fifths" style="max-width: 720px">
@@ -135,6 +135,15 @@ export default {
 <style lang="scss" scoped>
 @import "bulma/sass/utilities/_all.sass";
 @import '@/assets/vars.scss';
+
+.book-detail {
+
+  margin: 0 20px;
+
+  @include from($desktop) {
+    margin: 0 60px;
+  }
+}
 
 .title {
   line-height: 1;
