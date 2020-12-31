@@ -107,8 +107,7 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-@import "bulma/sass/utilities/_all.sass";
-@import '@/assets/vars.scss';
+@import '@/assets/main.scss';
 
 .book-detail {
   margin: 0 20px;

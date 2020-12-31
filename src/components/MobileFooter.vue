@@ -67,8 +67,8 @@ export default {
       <button class="button is-rounded is-small mt-10" @click.prevent="resetFilters">Reset Filter</button>
     </section>
 
-    <section class="mobile-bottom-nav is-flex is-justify-content-center has-text-centered is-uppercase">
-      <ul class="menu-list">
+    <section class="mobile-bottom-nav has-text-centered is-uppercase">
+      <ul class="menu-list my-10">
 
         <li v-if="isFront && !$store.state.ui.bookmarksOpen">
           <a :class="null" href="#" @click.stop="showFilters=!showFilters">
@@ -107,7 +107,7 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/vars.scss';
+@import '@/assets/main.scss';
 
 .mobile-filters {
   border-top: 1px solid $atw-base;
@@ -132,13 +132,14 @@ export default {
 
 .mobile-bottom-nav {
   width: 100%;
-  padding: 10px 20px;
   position: fixed;
   bottom: 0;
   border-top: solid 1px $atw-base;
   background-color: white;
   font-size: 10px;
   font-weight: bold;
+  white-space: nowrap;
+  overflow: auto;
 
   .title {
     font-size: 20px;
@@ -146,9 +147,16 @@ export default {
   }
 
   .menu-list {
+
+    // margin: auto better than justify-content: center here
+    // https://stackoverflow.com/a/34455253/480608
+    margin: auto;
+
     li {
       display: inline-block;
-      min-width: 100px;
+      width: 24%;
+      min-width: 60px;
+      max-width: 100px;
     }
   }
 }

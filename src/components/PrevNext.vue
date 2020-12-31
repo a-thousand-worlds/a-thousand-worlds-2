@@ -27,10 +27,10 @@ export default {
 </script>
 
 <template>
-  <div class="prev-next">
+  <div class="prev-next pb-0 mb-10">
     <span v-if="prevBook" style="white-space: nowrap;">
-      <BookDetailRoute :book="prevBook" class="is-hidden-tablet button is-rounded is-primary is-uppercase mr-6">&lt; Previous Book</BookDetailRoute>
-      <BookDetailRoute :book="prevBook" class="is-hidden-mobile is-uppercase is-primary mr-6">&lt; Previous Book</BookDetailRoute>
+      <BookDetailRoute :book="prevBook" class="is-hidden-tablet button is-rounded is-primary is-uppercase mr-6 mb-10">&lt; Previous Book</BookDetailRoute>
+      <BookDetailRoute :book="prevBook" class="is-hidden-mobile is-uppercase is-primary mr-6 mb-10">&lt; Previous Book</BookDetailRoute>
     </span>
 
     <!-- separating character needed otherwise the two links do not wrap -->

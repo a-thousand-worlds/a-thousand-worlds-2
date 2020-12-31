@@ -27,7 +27,7 @@ export default {
         <input type="text" class="input from-fullhd" style="width: 16rem;" :value="pageUrl" readonly>
         <button id="copy-link" class="button is-rounded is-secondary mx-10" :data-clipboard-text="pageUrl">Copy <span class="is-hidden-fullhd mx-1"> Page </span> Link</button>
       </div>
-      <div>
+      <div class="link-container">
         <button class="button button-unstyled is-primary pl-0">FIND BOOK AT</button>
         <button class="button is-rounded is-secondary mx-1">LOCAL LIBRARY</button>
         <button class="button is-rounded is-secondary mx-1">LINK</button>
@@ -72,6 +72,16 @@ export default {
   }
   @include from($widescreen) {
     justify-content: space-between;
+  }
+}
+
+.link-container {
+  width: 100%;
+  text-align: center;
+
+  // when the page link component is shown, align text right
+  @include from($widescreen) {
+    text-align: right;
   }
 }
 
