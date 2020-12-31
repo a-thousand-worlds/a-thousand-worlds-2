@@ -60,8 +60,11 @@ hr {
 
 // override bulma title
 .title, .title:not(:last-child) {
-  font-size: 50px;
+  font-size: 30px;
   margin-bottom: 10px;
+  @include from($tablet) {
+    font-size: 50px;
+  }
 }
 
 button:not([disabled]:not(.button-unstyled)) {

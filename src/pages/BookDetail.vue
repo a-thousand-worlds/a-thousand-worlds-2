@@ -86,7 +86,7 @@ export default {
             <CreatorsWidget v-if="book.creators" class="mb-2" :creators="book.creators" :linked="true" />
           </div>
 
-          <p style="font-size: 22px;">{{ book.summary }}</p>
+          <p class="summary">{{ book.summary }}</p>
 
         </div>
         <div v-else>
@@ -130,6 +130,13 @@ export default {
 
 .authors {
   font-size: 14px;
+}
+
+.summary {
+  font-size: 18px;
+  @include from($tablet) {
+    font-size: 22px;
+  }
 }
 
 </style>
