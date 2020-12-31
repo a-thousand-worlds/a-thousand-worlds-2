@@ -3,7 +3,7 @@ import BookList from '@/components/BookList'
 
 export default {
   components: {
-    BookList
+    BookList,
   },
   props: ['mark'],
   data() {
@@ -18,7 +18,7 @@ export default {
 <template>
 <div>
   <div class="container" v-if="mark.type === 'book'">
-    <book-list :book="$store.state.books.data[mark.id]"/>
+    <BookList :book="$store.state.books.data[mark.id]"/>
   </div>
   <div v-if="mark.type === 'bundle'">
     {{mark.type}}: {{mark.id}}

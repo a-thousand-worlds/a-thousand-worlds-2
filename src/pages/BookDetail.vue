@@ -48,7 +48,7 @@ export default {
 <template>
 
   <teleport to="#books-filter-menu">
-    <books-filter></books-filter>
+    <BooksFilter />
   </teleport>
 
   <div class="book-detail">
@@ -65,7 +65,7 @@ export default {
     <div class="columns">
       <div class="column mr-1 is-two-fifths" style="max-width: 720px">
         <div v-if="book" class="book-cover-wrapper">
-          <lazy-image class="cover" :src="book.cover" />
+          <LazyImage class="cover" :src="book.cover" />
         </div>
       </div>
 
@@ -77,12 +77,12 @@ export default {
         <div v-else-if="book">
           <div class="title-container divider-bottom is-flex is-justify-content-space-between">
             <h1 class="title">{{book.title}}</h1>
-            <div style="padding-top: 0px;"><bookmark-button :book="book" /></div>
+            <div style="padding-top: 0px;"><BookmarkButton :book="book" /></div>
           </div>
 
           <div class="authors divider-bottom">
-            <author-widget class="mb-2" v-for="person of book.authors" :key="person" :name="person"></author-widget>
-            <creators-widget class="mb-2" v-if="book.creators" :creators="book.creators" :linked="true"/>
+            <AuthorWidget class="mb-2" v-for="person of book.authors" :key="person" :name="person" />
+            <CreatorsWidget class="mb-2" v-if="book.creators" :creators="book.creators" :linked="true" />
           </div>
 
           <p style="font-size: 22px;">{{book.summary}}</p>

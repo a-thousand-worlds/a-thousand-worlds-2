@@ -52,7 +52,7 @@ export default ({
 <template>
   <div>
 
-    <mobile-header class="is-hidden-tablet"/>
+    <MobileHeader class="is-hidden-tablet"/>
 
     <div v-if="showWelcome">
       <Welcome :style="{ position: 'fixed' }" />
@@ -62,7 +62,7 @@ export default ({
 
     <div class="site columns m-0">
       <section class="leftbar column is-narrow is-hidden-mobile px-20 py-30">
-        <left-bar/>
+        <LeftBar/>
       </section>
       <section class="main column px-0 pb-20" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
         <Popups />
@@ -72,17 +72,17 @@ export default ({
         <router-view/>
       </section>
       <section v-if="$store.state.ui.bookmarksOpen" class="bookmarks column">
-        <bookmarks-view/>
+        <BookmarksView/>
       </section>
 
     </div>
 
     <section class="rightbar is-hidden-mobile">
       <!-- Hide bookmarks when welcome message is shown not only for UX but also because we cannot accomplish the correct layering with z-indexes due to circularity: rightbar > main > welcome > rightbar. -->
-      <right-bar :hideBookmarks="showWelcome" />
+      <RightBar :hideBookmarks="showWelcome" />
     </section>
 
-    <mobile-footer class="is-hidden-tablet"/>
+    <MobileFooter class="is-hidden-tablet"/>
   </div>
 </template>
 

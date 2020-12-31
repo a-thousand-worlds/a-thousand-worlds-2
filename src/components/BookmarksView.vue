@@ -22,7 +22,7 @@ export default {
 <template>
   <div class="bookmarks-view">
     <p v-if="!bookmarks.length">You don't have any bookmarks yet.</p>
-    <bookmark-widget v-for="(mark, i) of bookmarks" :key="i" :mark="mark" class="bookmark-widget" />
+    <BookmarkWidget v-for="(mark, i) of bookmarks" :key="i" :mark="mark" class="bookmark-widget" />
     <div v-if="bookmarks.length" class="container has-text-right">
       <a class="unmark-all m-5" :href="null" @click.prevent="unmarkAll()">Unsave All</a>
     </div>

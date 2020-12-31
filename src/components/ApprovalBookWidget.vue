@@ -8,7 +8,7 @@ import SimpleInput from '@/components/fields/SimpleInput'
 export default {
   components: {
     MultiPersonField,
-    SimpleInput
+    SimpleInput,
   },
   props: ['modelValue', 'checked'],
   emits: ['update:modelValue', 'mark-me', 'reject-me', 'approve-me', 'submitter-loaded'],
@@ -207,7 +207,7 @@ Continue and create book?`
           v-model="sub.title"/>
       </div>
       <div>
-        <multi-person-field
+        <MultiPersonField
           :disabled="busy"
           :role="'author'"
           :placeholder="'author(s)'"
@@ -216,7 +216,7 @@ Continue and create book?`
           v-model="sub.authors"/>
       </div>
       <div>
-        <multi-person-field
+        <MultiPersonField
         :disabled="busy"
         :role="'illustrator'"
         :placeholder="'illustrator(s)'"

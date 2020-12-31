@@ -130,7 +130,7 @@ export default {
             <div class="media-right">
               <b>{{res.title}}</b><br>
               <small>{{res.isbn}}</small><br>
-              <author-widget :nolink="true" :name="res.authors[0]"></author-widget>
+              <AuthorWidget :nolink="true" :name="res.authors[0]"></AuthorWidget>
             </div>
           </div>
         </div>

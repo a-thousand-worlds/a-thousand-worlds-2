@@ -83,7 +83,10 @@
     "plugins": [
       "jest-dom",
       "testing-library"
-    ]
+    ],
+    "rules": {
+      "vue/component-name-in-template-casing": [2, "PascalCase"]
+    }
   },
   "browserslist": [
     "> 1%",

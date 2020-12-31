@@ -126,7 +126,7 @@ export default {
             class="level-item is-flat is-underlined is-uppercase">Approve</button>
         </div>
         <div v-for="(sub, i) of group.books" :key="i">
-          <approval-book-widget
+          <ApprovalBookWidget
             @mark-me="markBookSubmission($event, gid, i)"
             @reject-me="rejectBookSubmission($event, gid, i)"
             @submitter-loaded="submitterLoaded($event)"

@@ -4,7 +4,7 @@ import Popup from '@/components/ui/Popup'
 
 export default {
   components: {
-    Popup
+    Popup,
   }
 }
 
@@ -13,7 +13,7 @@ export default {
 <template>
   <div class="popups-area">
     <div v-for="(pp, i) of $store.state.ui.popups" :key="i">
-      <popup class="mb-2" :popup="pp"/>
+      <Popup class="mb-2" :popup="pp"/>
     </div>
   </div>
 </template>

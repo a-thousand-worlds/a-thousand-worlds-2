@@ -53,12 +53,12 @@ export default {
                 <h3 class="mb-10" style="color: black; margin-right: 15px;">{{book.title}}</h3>
               </BookDetailRoute>
               <div class="authors">
-                <author-widget v-for="person of book.authors" :key="person" :name="person"></author-widget>
-                <creators-widget v-if="book.creators" :creators="book.creators" :linked="true"/>
+                <AuthorWidget v-for="person of book.authors" :key="person" :name="person" />
+                <CreatorsWidget v-if="book.creators" :creators="book.creators" :linked="true" />
               </div>
             </div>
 
-            <bookmark-button :book="book"></bookmark-button>
+            <BookmarkButton :book="book" />
 
           </div>
         </div>

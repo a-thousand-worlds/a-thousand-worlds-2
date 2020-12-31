@@ -4,8 +4,8 @@ import BookList from '@/components/BookList'
 
 export default {
   components: {
-    'book-cover': BookCover,
-    'book-list': BookList
+    BookCover,
+    BookList,
   },
   methods: {
     logBooks() {
@@ -27,8 +27,8 @@ export default {
 
     <div :class="{masonry:$store.state.ui.viewMode==='covers', 'with-bookmarks': $store.state.ui.bookmarksOpen}">
       <div class="masonry-item" v-for="book of $store.getters['books/filtered']" :key="book.id">
-        <book-cover v-if="$store.state.ui.viewMode === 'covers'" :book="book"></book-cover>
-        <book-list v-if="$store.state.ui.viewMode === 'list'" :book="book"></book-list>
+        <BookCover v-if="$store.state.ui.viewMode === 'covers'" :book="book" />
+        <BookList v-if="$store.state.ui.viewMode === 'list'" :book="book" />
       </div>
     </div>
 
