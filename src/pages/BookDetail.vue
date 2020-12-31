@@ -63,13 +63,14 @@ export default {
     </div>
 
     <div class="columns">
-      <div class="column mr-1 is-two-fifths" style="max-width: 720px">
-        <div v-if="book" class="book-cover-wrapper">
+
+      <div class="column mr-0 is-two-fifths">
+        <div v-if="book" class="book-cover-wrapper has-text-centered">
           <LazyImage class="cover" :src="book.cover" />
         </div>
       </div>
 
-      <div class="column" style="max-width: 720px;">
+      <div class="column">
 
         <div v-if="!$store.state.books.loaded" class="my-50">
           <img src="@/assets/icons/loading.gif">
@@ -111,8 +112,15 @@ export default {
 
 .book-detail {
   margin: 0 20px;
+  max-width: $widescreen;
   @include from($desktop) {
     margin: 0 60px;
+  }
+}
+
+.book-cover-wrapper {
+  @include from($desktop) {
+    margin-right: 20px;
   }
 }
 
