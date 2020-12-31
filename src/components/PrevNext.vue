@@ -28,10 +28,18 @@ export default {
 
 <template>
   <div class="prev-next">
-    <BookDetailRoute v-if="prevBook" :book="prevBook" class="is-uppercase is-primary mr-6" style="white-space: nowrap;">&lt; Previous Book</BookDetailRoute>
+    <span v-if="prevBook" style="white-space: nowrap;">
+      <BookDetailRoute :book="prevBook" class="is-hidden-tablet button is-rounded is-primary is-uppercase mr-6">&lt; Previous Book</BookDetailRoute>
+      <BookDetailRoute :book="prevBook" class="is-hidden-mobile is-uppercase is-primary mr-6">&lt; Previous Book</BookDetailRoute>
+    </span>
+
     <!-- separating character needed otherwise the two links do not wrap -->
-    <span style="visibility: hidden;"> | </span>
-    <BookDetailRoute v-if="nextBook" :book="nextBook" class="is-uppercase is-primary" style="white-space: nowrap;">Next Book &gt;</BookDetailRoute>
+    <span v-if="nextBook" style="visibility: hidden;"> | </span>
+
+    <span v-if="nextBook" style="white-space: nowrap;">
+      <BookDetailRoute v-if="nextBook" :book="nextBook" class="is-hidden-tablet button is-rounded is-primary is-uppercase">Next Book &gt;</BookDetailRoute>
+      <BookDetailRoute v-if="nextBook" :book="nextBook" class="is-hidden-mobile is-primary is-uppercase">Next Book &gt;</BookDetailRoute>
+    </span>
   </div>
 </template>
 
