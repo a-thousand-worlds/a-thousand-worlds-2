@@ -9,20 +9,11 @@ const module = {
     bundles: bundleTags,
     people: peopleTags,
   },
-  state: {
-    loaded: false,
-  },
-  mutations: {
-    setLoaded(state) {
-      state.loaded = true
-    }
-  },
   actions: {
     async subscribe({ dispatch, commit }) {
-      await dispatch('books/subscribe')
-      await dispatch('bundles/subscribe')
-      await dispatch('people/subscribe')
-      commit('setLoaded')
+      dispatch('books/subscribe')
+      dispatch('bundles/subscribe')
+      dispatch('people/subscribe')
     }
   },
 }
