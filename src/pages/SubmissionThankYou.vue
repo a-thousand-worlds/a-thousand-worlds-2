@@ -8,7 +8,7 @@ export default {
   },
   computed: {
     type() {
-      return this.$router.currentRoute._value.params.type
+      return this.$route.params.type
     }
   },
 }

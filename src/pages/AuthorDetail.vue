@@ -9,11 +9,16 @@ export default {
   },
   data() {
     return {
-      author: null,
       pageUrl: window.location.href,
     }
   },
   computed: {
+    id() {
+      return this.$route.params.id
+    },
+    author() {
+      return this.$store.state.creators.data[this.id]
+    },
     isAuthor() {
       return this.author ? this.author.role === 'author' : true
     },
@@ -30,18 +35,8 @@ export default {
 
   },
   watch: {
-    '$route'(next) {
-      const id = this.$router.currentRoute._value.params.id
-      this.author = this.$store.state.creators.data[id]
-      /*
-      if (this.author && this.author.photo && this.author.photo.length) {
-        this.$store.dispatch('loadImage', this.author.photo)
-      }
-      */
-    },
     '$store.state.creators.data'(next, prev) {
-      const id = this.$router.currentRoute._value.params.id
-      if (next && Object.keys(next).length && !next[id]) {
+      if (next && Object.keys(next).length && !next[this.id]) {
         // author not found! drop to 404
         // timeout to make router finish any his current work, if doing any
         setTimeout(() => {
@@ -49,23 +44,8 @@ export default {
           this.$router.push('/404')
         }, 0)
       }
-      this.author = this.$store.state.creators.data[id]
-      /*
-      if (this.author && this.author.photo && this.author.photo.length) {
-        this.$store.dispatch('loadImage', this.author.photo)
-      }
-      */
     }
   },
-  created() {
-    const id = this.$router.currentRoute._value.params.id
-    this.author = this.$store.state.creators.data[id]
-    /*
-    if (this.author && this.author.photo && this.author.photo.length) {
-      this.$store.dispatch('loadImage', this.author.photo)
-    }
-    */
-  }
 }
 
 </script>

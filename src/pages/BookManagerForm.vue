@@ -40,13 +40,13 @@ export default {
   watch: {
     '$store.state.books.data'(next) {
       if (this.$router.currentRoute._value.name === 'BookManagerUpdateForm') {
-        this.loadBookID(this.$router.currentRoute._value.params.bid)
+        this.loadBookID(this.$route.params.bid)
       }
     }
   },
   created() {
     if (this.$router.currentRoute._value.name === 'BookManagerUpdateForm') {
-      this.loadBookID(this.$router.currentRoute._value.params.bid)
+      this.loadBookID(this.$route.params.bid)
     }
   },
   methods: {

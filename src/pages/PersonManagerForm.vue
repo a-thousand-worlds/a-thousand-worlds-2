@@ -42,7 +42,7 @@ export default {
   },
   created() {
     if (this.$router.currentRoute._value.name === 'PersonManagerUpdateForm') {
-      const p = this.$store.state.peopleIndex[this.$router.currentRoute._value.params.uid] || null
+      const p = this.$store.state.peopleIndex[this.$route.params.uid] || null
       if (p) {
         this.person = p
         this.mode = 'update'

@@ -35,7 +35,7 @@ export default {
   },
   created() {
     if (this.$router.currentRoute._value.name === 'BundleManagerUpdateForm') {
-      const b = this.$store.state.bundlesIndex[this.$router.currentRoute._value.params.uid] || null
+      const b = this.$store.state.bundlesIndex[this.$route.params.uid] || null
       if (b) {
         this.bundle = b
         this.mode = 'update'

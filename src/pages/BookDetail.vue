@@ -21,22 +21,15 @@ export default {
     NotFound,
     PrevNext,
   },
-  data() {
-    return {
-      isbn: this.$router.currentRoute._value.params.isbn,
-    }
-  },
   computed: {
     book() {
       return this.$store.state.books.loaded
         ? Object.values(this.$store.state.books.data).find(book => book.isbn === this.isbn)
         : null
     },
-  },
-  watch: {
-    '$route'() {
-      this.isbn = this.$router.currentRoute._value.params.isbn
-    }
+    isbn() {
+      return this.$route.params.isbn
+    },
   },
   mounted() {
     new Clipboard('#copy-link') // eslint-disable-line no-new
