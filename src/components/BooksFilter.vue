@@ -1,5 +1,10 @@
 <script>
 export default {
+  computed: {
+    tags() {
+      return this.$store.getters['tags/books/listSorted']()
+    },
+  },
   methods: {
     toggleFilter(fid) {
       this.$store.commit('books/toggleFilter', fid)
@@ -11,15 +16,15 @@ export default {
     },
     filterOn(fid) {
       return this.$store.state.books.filters.includes(fid)
-    }
+    },
   }
 }
 </script>
 
 <template>
-  <aside class="menu mb-5">
+  <aside v-if="tags.length" class="menu mb-5">
     <ul class="menu-list submenu">
-      <li v-for="filter in $store.getters['tags/books/listSorted']()" :key="filter.id" @click="toggleFilter(filter.tag)">
+      <li v-for="filter in tags" :key="filter.id" @click="toggleFilter(filter.tag)">
         <button v-if="filter.showOnFront" :class="{toggled:filterOn(filter.tag)}" class="pb-2" style="padding-left: 2px;">{{ filter.tag }}<span v-if="filterOn(filter.tag)" class="remove-tag">{{ '—' }}</span></button>
       </li>
     </ul>
