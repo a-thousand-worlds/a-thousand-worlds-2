@@ -63,6 +63,9 @@ hr {
   font-size: 30px;
   margin-bottom: 10px;
   @include from($tablet) {
+    font-size: 40px;
+  }
+  @include from($widescreen) {
     font-size: 50px;
   }
 }

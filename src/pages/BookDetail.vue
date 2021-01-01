@@ -127,7 +127,7 @@ export default {
 
 .summary {
   font-size: 18px;
-  @include from($tablet) {
+  @include from($widescreen) {
     font-size: 22px;
   }
 }
