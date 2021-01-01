@@ -44,7 +44,7 @@ export default ({
     }
   },
   async created() {
-    await this.$store.dispatch('load')
+    this.$store.dispatch('subscribe')
   },
 })
 </script>

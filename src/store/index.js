@@ -34,8 +34,7 @@ const store = createStore({
     },
   },
   actions: {
-    // start
-    async load({ state, dispatch, commit }) {
+    async subscribe({ state, dispatch, commit }) {
       dispatch('books/subscribe')
       dispatch('bookSubmissions/subscribe')
       dispatch('content/subscribe')
