@@ -86,12 +86,9 @@ export default {
       })
     },
     save() {
-      /**/
       this.$store.dispatch('saveBook', { book: this.book, roles: this.authorsRoles }).then(() => {
-        // eslint-disable-next-line fp/no-mutating-methods
         this.$router.push({ name: 'BooksManager' })
       })
-      /**/
     },
     reloadCover() {
       this.searching = true

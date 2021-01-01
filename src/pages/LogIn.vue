@@ -71,11 +71,9 @@ export default {
     '$store.state.user.user'(next, prev) {
       if (!prev && !!next) {
         if (this.$can('viewDashboard')) {
-          // eslint-disable-next-line fp/no-mutating-methods
           this.$router.push({ name: 'Dashboard' })
         }
         else {
-          // eslint-disable-next-line fp/no-mutating-methods
           this.$router.push({ name: 'Home' })
         }
       }
@@ -163,7 +161,6 @@ export default {
         password: this.password
       })
         .then(() => {
-          // eslint-disable-next-line fp/no-mutating-methods
           this.$router.push({ name: 'Dashboard' })
         })
       )
@@ -181,7 +178,6 @@ export default {
         ...this.signupData,
       })
         .then(() => {
-          // eslint-disable-next-line fp/no-mutating-methods
           this.$router.push({ name: 'Dashboard' })
         })
       )
@@ -235,7 +231,6 @@ export default {
       this.active = active
       this.error = null
 
-      // eslint-disable-next-line fp/no-mutating-methods
       this.$router.push({
         name: active === 'signup' ? 'Signup'
         : active === 'login' ? 'LogIn'

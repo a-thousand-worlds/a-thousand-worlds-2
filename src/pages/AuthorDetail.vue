@@ -40,7 +40,6 @@ export default {
         // author not found! drop to 404
         // timeout to make router finish any his current work, if doing any
         setTimeout(() => {
-          // eslint-disable-next-line fp/no-mutating-methods
           this.$router.push('/404')
         }, 0)
       }

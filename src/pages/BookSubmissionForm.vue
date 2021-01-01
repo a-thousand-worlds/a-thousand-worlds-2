@@ -87,7 +87,6 @@ export default {
       this.$store.commit('ui/setBusy', true)
       await this.$store.dispatch('bookSubmissions/submit', this.submissions)
       this.$store.commit('ui/setBusy', false)
-      // eslint-disable-next-line fp/no-mutating-methods
       this.$router.push({ name: 'SubmissionThankYou', params: { type: 'book' } })
     },
     async saveDraft() {

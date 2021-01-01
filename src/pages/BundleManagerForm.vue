@@ -45,7 +45,6 @@ export default {
   methods: {
     save() {
       this.$store.dispatch('saveBundle', this.bundle).then(() => {
-        // eslint-disable-next-line fp/no-mutating-methods
         this.$router.push({ name: 'BundlesManager' })
       })
     },

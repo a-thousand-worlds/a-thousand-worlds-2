@@ -56,7 +56,7 @@
     "eslint": "^7.15.0",
     "eslint-config-raine": "^0.1.2",
     "eslint-config-standard": "^16.0.2",
-    "eslint-plugin-fp": "^2.3.0",
+    "eslint-plugin-fp": "git+https://github.com/raineorshine/eslint-plugin-fp.git#allowedObjects",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest-dom": "^3.6.4",
     "eslint-plugin-jsdoc": "^30.7.8",

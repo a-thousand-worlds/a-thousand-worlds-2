@@ -45,7 +45,6 @@ export default {
       }
       this.$store.dispatch('saveBundleSubmissionsDraft', data)
         .then(() => {
-          // eslint-disable-next-line fp/no-mutating-methods
           this.$router.push({ name: 'Dashboard' })
         })
     },
@@ -57,7 +56,6 @@ export default {
       }
       this.$store.dispatch('submitBundleSubmission', data)
         .then(() => {
-          // eslint-disable-next-line fp/no-mutating-methods
           this.$router.push({ name: 'Dashboard' })
         })
     },

@@ -11,8 +11,6 @@ export default {
   methods: {
     logout() {
       firebase.auth().signOut()
-
-      // eslint-disable-next-line fp/no-mutating-methods
       this.$router.push({ name: 'LogIn' })
     }
   },

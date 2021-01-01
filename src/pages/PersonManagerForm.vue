@@ -78,7 +78,6 @@ export default {
     },
     save() {
       this.$store.dispatch('savePerson', this.person).then(() => {
-        // eslint-disable-next-line fp/no-mutating-methods
         this.$router.push({ name: 'PeopleManager' })
       })
     }

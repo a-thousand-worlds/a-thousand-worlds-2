@@ -14,7 +14,6 @@ export default {
   methods: {
     toggleBookmark() {
       if (!this.$iam('authorized')) {
-        // eslint-disable-next-line fp/no-mutating-methods
         this.$router.push({ name: 'LogIn' })
       }
       else {

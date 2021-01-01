@@ -8,7 +8,6 @@ export default {
   methods: {
     toggleFilter(fid) {
       this.$store.commit('books/toggleFilter', fid)
-      // eslint-disable-next-line  fp/no-mutating-methods
       this.$router.push({ name: 'Home' })
     },
     resetFilters() {
