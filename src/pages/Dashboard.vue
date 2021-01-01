@@ -46,7 +46,7 @@ export default {
         <h2>Please fill our your profile for the People Directory</h2>
         <div class="field is-grouped">
           <div class="control my-20">
-            <router-link class="button is-primary" :to="{name:'PeopleSubmissionForm'}">People</router-link>
+            <router-link class="button is-primary" :to="{name:'PeopleSubmissionForm'}">Create Profile</router-link>
           </div>
         </div>
       </section>
