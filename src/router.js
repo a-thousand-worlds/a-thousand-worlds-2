@@ -65,7 +65,7 @@ const routes = [
       access: 'authorized'
     }
   }, {
-    path: '/suggest/thankyou',
+    path: '/suggest/:type/thankyou',
     name: 'SubmissionThankYou',
     component: () => import(/* webpackChunkName: "contributor" */ './pages/SubmissionThankYou.vue'),
     meta: {
