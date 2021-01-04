@@ -1,12 +1,10 @@
 <script>
 import Content from '@/components/Content'
-import InviteWidget from '@/components/InviteWidget'
 
 export default {
   name: 'EmailTemplates',
   components: {
     Content,
-    InviteWidget,
   },
 }
 
@@ -22,10 +20,6 @@ export default {
       </div>
 
       <h1 class="divider-bottom">Email Templates</h1>
-
-      <div class="mt-20 mb-50">
-        <InviteWidget ref="invite" class="my-20" />
-      </div>
 
       <h2 class="divider-bottom">Templates</h2>
       <div class="bg-secondary p-20">
@@ -50,7 +44,7 @@ export default {
         <h3 class="is-capitalized my-10">{{ role }}</h3>
         <div class="my-20">
           <p class="my-10" style="font-weight: bold;">Subject: </p>
-          <Content :name="`email/invite/${role}/subject`" format="oneline" />
+          <Content :name="`email/invite/${role}/subject`" />
         </div>
         <div class="my-20">
           <p class="my-10" style="font-weight: bold;">Message:</p>

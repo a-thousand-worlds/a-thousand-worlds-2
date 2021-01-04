@@ -2,13 +2,11 @@
 import parseRecipient from '@/util/parseRecipient'
 
 export default {
-  props: {
-    format: String,
-  },
   data() {
     return {
       disableSend: null,
       dropdownActive: false,
+      expanded: false,
       emailInput: '',
       error: null,
       message: null,
@@ -156,18 +154,31 @@ export default {
 <template>
   <div @click.prevent="setInviteDropdown(false)">
 
-    <p v-if="format !== 'compact'" class="mb-10">Enter a list of names and emails (one per line)</p>
+    <p v-if="expanded" class="mb-10">Enter a list of names and emails (one per line)</p>
 
-    <div v-if="format !== 'compact'" class="field">
+    <div class="field">
       <div class="control">
-        <textarea v-model="emailInput" class="textarea" :class="{ 'is-danger': hasError('emailInput')}" :placeholder="'Sarah Lopez - sarah@test.com\nDillon Avery - dillon@test.com\nMattie Smith - mattie@test.com\n...'" />
+        <div class="is-flex is-align-items-flex-end">
+          <textarea
+            v-model="emailInput"
+            class="textarea"
+            :class="{ 'is-danger': hasError('emailInput')}"
+            :placeholder="!expanded ? 'Sarah Lopez - sarah@test.com' : 'Sarah Lopez - sarah@test.com\nDillon Avery - dillon@test.com\nMattie Smith - mattie@test.com\n...'"
+            :style="!expanded ? 'min-height: 0; padding-top: 0.5rem; padding-bottom: 0.5rem;' : ''"
+          />
+          <div class="ml-2">
+            <a @click.prevent="expanded = !expanded" title="Invite multiple">
+              <i :class="`fas fa-angle-double-${expanded ? 'up' : 'down'}`"></i>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="field is-grouped is-flex">
-      <div v-if="format === 'compact'" class="control is-flex-grow-1">
+      <!-- <div v-if="!expanded" class="control is-flex-grow-1">
         <textarea v-model="emailInput" class="textarea" :class="{ 'is-danger': hasError('emailInput')}" placeholder="Sarah Lopez - sarah@test.com" style="min-height: 0; padding-top: 0.5rem; padding-bottom: 0.5rem;" />
-      </div>
+      </div> -->
 
       <div v-if="$allowedInviteeRoles().length > 1" class="control">
         <div :class="{ dropdown: true, 'is-active': dropdownActive }">
