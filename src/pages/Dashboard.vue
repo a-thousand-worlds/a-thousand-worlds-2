@@ -67,7 +67,7 @@ export default {
         <h2>Invite Users</h2>
         <InviteWidget ref="invite" format="compact" />
         <ul class="my-20">
-          <li v-if="$can('editEmailTemplates')"><router-link :to="{ name: 'Invite' }">Edit email templates</router-link></li>
+          <li v-if="$can('editEmailTemplates')"><router-link :to="{ name: 'EmailTemplates' }">Edit email templates</router-link></li>
           <li v-if="$can('manageInvites')"><router-link :to="{ name: 'InvitationManager' }">View invitations</router-link></li>
         </ul>
       </section>

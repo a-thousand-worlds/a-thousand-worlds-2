@@ -163,9 +163,9 @@ const routes = [
       access: 'owner'
     }
   }, {
-    path: '/advisor/invite',
-    name: 'Invite',
-    component: () => import(/* webpackChunkName: "advisor" */ './pages/Invite.vue'),
+    path: '/advisor/email-templates',
+    name: 'EmailTemplates',
+    component: () => import(/* webpackChunkName: "advisor" */ './pages/EmailTemplates.vue'),
     meta: {
       access: ['advisor', 'owner']
     }

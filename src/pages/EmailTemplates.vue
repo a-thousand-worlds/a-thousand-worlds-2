@@ -3,7 +3,7 @@ import Content from '@/components/Content'
 import InviteWidget from '@/components/InviteWidget'
 
 export default {
-  name: 'Invite',
+  name: 'EmailTemplates',
   components: {
     Content,
     InviteWidget,
@@ -21,7 +21,7 @@ export default {
         <router-link :to="{ name: 'Dashboard' }" class="is-uppercase is-primary">&lt; Back to Dashboard</router-link>
       </div>
 
-      <h1 class="divider-bottom">Invitation Email Templates</h1>
+      <h1 class="divider-bottom">Email Templates</h1>
 
       <div class="mt-20 mb-50">
         <InviteWidget ref="invite" class="my-20" />
