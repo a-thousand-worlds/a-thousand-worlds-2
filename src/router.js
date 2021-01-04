@@ -100,84 +100,84 @@ const routes = [
       access: 'owner'
     }
   }, {
-    path: '/advisor/people',
+    path: '/admin/people',
     name: 'PeopleManager',
     component: () => import(/* webpackChunkName: "advisor" */ './pages/PeopleManagerList.vue'),
     meta: {
       access: 'owner'
     }
   }, {
-    path: '/advisor/people/add',
+    path: '/admin/people/add',
     name: 'PeopleManagerAddForm',
     component: () => import(/* webpackChunkName: "advisor" */ './pages/PersonManagerForm.vue'),
     meta: {
       access: 'owner'
     }
   }, {
-    path: '/advisor/people/update/:uid',
+    path: '/admin/people/update/:uid',
     name: 'PersonManagerUpdateForm',
     component: () => import(/* webpackChunkName: "advisor" */ './pages/PersonManagerForm.vue'),
     meta: {
       access: 'owner'
     }
   }, {
-    path: '/advisor/books',
+    path: '/admin/books',
     name: 'BooksManager',
     component: () => import(/* webpackChunkName: "advisor" */ './pages/BooksManagerList.vue'),
     meta: {
       access: 'owner'
     }
   }, {
-    path: '/advisor/books/update/:bid',
+    path: '/admin/books/update/:bid',
     name: 'BookManagerUpdateForm',
     component: () => import(/* webpackChunkName: "advisor" */ './pages/BookManagerForm.vue'),
     meta: {
       access: 'owner'
     }
   }, {
-    path: '/advisor/books/add',
+    path: '/admin/books/add',
     name: 'BookManagerAddForm',
     component: () => import(/* webpackChunkName: "advisor" */ './pages/BookManagerForm.vue'),
     meta: {
       access: 'owner'
     }
   }, {
-    path: '/advisor/bundles',
+    path: '/admin/bundles',
     name: 'BundlesManager',
     component: () => import(/* webpackChunkName: "advisor" */ './pages/BundleManagerList.vue'),
     meta: {
       access: 'owner'
     }
   }, {
-    path: '/advisor/bundles/update/:bid',
+    path: '/admin/bundles/update/:bid',
     name: 'BundleManagerUpdateForm',
     component: () => import(/* webpackChunkName: "advisor" */ './pages/BundleManagerForm.vue'),
     meta: {
       access: 'owner'
     }
   }, {
-    path: '/advisor/bundles/add',
+    path: '/admin/bundles/add',
     name: 'BundleManagerNewForm',
     component: () => import(/* webpackChunkName: "advisor" */ './pages/BundleManagerForm.vue'),
     meta: {
       access: 'owner'
     }
   }, {
-    path: '/advisor/email-templates',
+    path: '/admin/email-templates',
     name: 'EmailTemplates',
     component: () => import(/* webpackChunkName: "advisor" */ './pages/EmailTemplates.vue'),
     meta: {
       access: ['advisor', 'owner']
     }
   }, {
-    path: '/advisor/invitation-manager',
+    path: '/admin/invitation-manager',
     name: 'InvitationManager',
     component: () => import(/* webpackChunkName: "advisor" */ './pages/InvitationManager.vue'),
     meta: {
       access: ['advisor', 'owner']
     }
   }, {
-    path: '/advisor/review/:type',
+    path: '/admin/review/:type',
     name: 'ReviewSubmissions',
     component: () => import(/* webpackChunkName: "advisor" */ './pages/ReviewSubmissions.vue'),
     meta: {
