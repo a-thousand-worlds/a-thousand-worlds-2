@@ -36,7 +36,26 @@ export default {
         : []
     },
   },
+  mounted() {
+    // update the expanded state on mouseup rather than on resize (MutationObserver) since the height will oscillate when resizing until the user releases the mouse
+    document.addEventListener('mouseup', this.updateExpanded)
+  },
+  unmounted() {
+    document.removeEventListener('mouseup', this.updateExpanded)
+  },
   methods: {
+
+    // resize the textarea to fit its content
+    autosize(e) {
+      const multiline = e.target.value.includes('\n')
+      if (multiline) {
+        e.target.style.height = 'auto'
+        e.target.style.height = e.target.scrollHeight + 'px'
+      }
+      else {
+        e.target.style.removeProperty('height')
+      }
+    },
 
     /** Shows or clears an error for the given service response. */
     handleResponse(response) {
@@ -101,8 +120,27 @@ export default {
       this.dropdownActive = value
     },
 
+    /** Toggles the expanded state and sets an initial height while expanded. */
+    toggleExpanded() {
+      const style = getComputedStyle(this.$refs.textarea)
+      const height = parseFloat(style.height)
+      this.$refs.textarea.style.height = this.expanded && height ? '' : '8em'
+      this.expanded = !this.expanded
+    },
+
     toggleInviteDropdown() {
       this.dropdownActive = !this.dropdownActive
+    },
+
+    // update the expanded state based on the textarea's current height
+    // used after a manual resize
+    updateExpanded() {
+      if (!this.$refs.textarea) return
+      const style = getComputedStyle(this.$refs.textarea)
+      const fontSize = parseFloat(style.fontSize)
+      const height = parseFloat(style.height)
+      // adjust the threshold so that it's easier to collapse when expanded
+      this.expanded = height > fontSize * (this.expanded ? 6 : 4)
     },
 
     /** Checks all fields for errors and updates this.error. */
@@ -160,14 +198,17 @@ export default {
       <div class="control">
         <div class="is-flex is-align-items-flex-end">
           <textarea
+            ref="textarea"
             v-model="emailInput"
             class="textarea"
             :class="{ 'is-danger': hasError('emailInput')}"
-            :placeholder="!expanded ? 'Sarah Lopez - sarah@test.com' : 'Sarah Lopez - sarah@test.com\nDillon Avery - dillon@test.com\nMattie Smith - mattie@test.com\n...'"
-            :style="!expanded ? 'min-height: 0; padding-top: 0.5rem; padding-bottom: 0.5rem;' : ''"
+            :placeholder="'Sarah Lopez - sarah@test.com\nDillon Avery - dillon@test.com\nMattie Smith - mattie@test.com\n...'"
+            style="line-height: 1.6; min-height: 2.5rem;"
+            :style="!expanded ? 'padding-top: 0.5rem; padding-bottom: 0.5rem;' : ''"
+            @input="autosize"
           />
           <div class="ml-2">
-            <a @click.prevent="expanded = !expanded" title="Invite multiple">
+            <a @click.prevent="toggleExpanded" title="Invite multiple" class="pt-2 pr-2">
               <i :class="`fas fa-angle-double-${expanded ? 'up' : 'down'}`"></i>
             </a>
           </div>
