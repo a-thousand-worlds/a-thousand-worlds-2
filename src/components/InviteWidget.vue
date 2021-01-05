@@ -208,8 +208,8 @@ export default {
             @input="autosize"
           />
           <div class="ml-2">
-            <a @click.prevent="toggleExpanded" title="Invite multiple" class="pt-2 pr-2">
-              <i :class="`fas fa-angle-double-${expanded ? 'up' : 'down'}`"></i>
+            <a title="Invite multiple" class="pt-2 pr-2" @click.prevent="toggleExpanded">
+              <i :class="`fas fa-angle-double-${expanded ? 'up' : 'down'}`" />
             </a>
           </div>
         </div>
