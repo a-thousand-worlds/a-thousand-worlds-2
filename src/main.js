@@ -4,7 +4,7 @@ import App from '@/App.vue'
 import router from '@/router'
 import store from '@/store'
 import directives from '@/directives'
-import mixins from '@/mixins'
+import mixins from '@/mixins/global'
 
 require('@/assets/main.scss')
 
