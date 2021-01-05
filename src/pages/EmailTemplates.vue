@@ -1,10 +1,10 @@
 <script>
-import Content from '@/components/Content'
+import EmailTemplatesEditor from '@/components/EmailTemplates/Editor'
 
 export default {
   name: 'EmailTemplates',
   components: {
-    Content,
+    EmailTemplatesEditor,
   },
 }
 
@@ -40,29 +40,11 @@ export default {
 
       </div>
 
-      <div v-for="role of $allowedInviteeRoles()" :key="role" class="my-30">
-        <h3 class="is-capitalized my-10">{{ role }}</h3>
-        <div class="my-20">
-          <p class="my-10" style="font-weight: bold;">Subject: </p>
-          <Content :name="`email/invite/${role}/subject`" />
-        </div>
-        <div class="my-20">
-          <p class="my-10" style="font-weight: bold;">Message:</p>
-          <Content :name="`email/invite/${role}/body`" class="editor" />
-        </div>
-      </div>
+      <section class="section px-0">
+        <EmailTemplatesEditor />
+      </section>
 
     </div>
   </div>
 
 </template>
-
-<style scoped lang="scss">
-
-.editor {
-  border-radius: 5px;
-  border: solid 1px #ddd;
-  min-height: 10rem;
-}
-
-</style>
