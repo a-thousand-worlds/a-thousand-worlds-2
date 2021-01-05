@@ -14,13 +14,12 @@ export default {
     }
   },
   data() {
-    const slotDefault = this.$slots.default?.()[0].children || ''
     return {
       editor: BalloonEditor,
       editorConfig: {
         placeholder: this.placeholder,
       },
-      html: this.$store.getters['content/get'](this.name) ?? slotDefault,
+      html: this.getContent(),
     }
   },
   computed: {
@@ -28,7 +27,18 @@ export default {
       return this.$store.state.content.loaded
     },
   },
+  methods: {
+    getContent() {
+      const slotDefault = this.$slots.default?.()[0].children || ''
+      return this.$store.getters['content/get'](this.name) ?? slotDefault
+    },
+  },
   watch: {
+
+    // manual watch to update html since getter cannot be watched
+    name() {
+      this.html = this.getContent()
+    },
 
     // only triggers when entire content property is changed, not single key
     // fires multiple times for some reason
