@@ -13,6 +13,7 @@ export default {
       default: 'multiline'
     }
   },
+  emits: ['input'],
   data() {
     return {
       editor: BalloonEditor,
@@ -53,6 +54,7 @@ export default {
       if (this.$can('editContent')) {
         this.$store.dispatch('content/save', { path: this.name, value: this.html })
       }
+      this.$emit('input', this.html)
     }, 500)
 
   },
