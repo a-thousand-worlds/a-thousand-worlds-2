@@ -6,11 +6,19 @@ import { v4 as uid } from 'uuid'
 import BookTitleField from '@/components/fields/BookTitle'
 import { findBookByKeyword, metadataByISBN } from '@/utils'
 import isValidISBN from '@/util/isValidISBN'
+import validator from '@/mixins/validator'
 
 export default {
   components: {
     'book-title-field': BookTitleField,
   },
+  mixins: [
+    validator(function() {
+      return this.submissions
+        .flatMap(this.validateSubmission)
+        .filter(x => x)
+    })
+  ],
   data() {
     return {
       ckConfig: {
@@ -18,7 +26,6 @@ export default {
       },
       confirms: [],
       // editor: BalloonEditor,
-      errors: [],
       loadingBook: [],
       submissions: [],
       titleId: uid(),
@@ -53,10 +60,6 @@ export default {
       return typeof cover === 'string'
         ? cover
         : cover?.base64?.url || ''
-    },
-
-    hasError(name) {
-      return this.errors.some(error => error.name === name)
     },
 
     async setConfirmed(si, state) {
@@ -200,15 +203,6 @@ export default {
         sub.confirmed === null ? { name: 'confirm', message: 'Confirm book' } : null,
         Object.keys(sub.tags).length === 0 ? { name: 'tags', message: 'Tags are required' } : null,
       ].filter(x => x)
-    },
-
-    validate() {
-
-      this.errors = this.submissions
-        .flatMap(this.validateSubmission)
-        .filter(x => x)
-
-      return this.errors.length === 0
     },
 
     revalidate: _.throttle(function() {
