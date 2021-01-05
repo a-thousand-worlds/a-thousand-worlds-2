@@ -1,12 +1,14 @@
 <script>
 import EmailTemplatesEditor from '@/components/EmailTemplates/Editor'
 import EmailTemplatesHelp from '@/components/EmailTemplates/Help'
+import Toggle from '@/components/Toggle'
 
 export default {
   name: 'EmailTemplates',
   components: {
     EmailTemplatesEditor,
     EmailTemplatesHelp,
+    Toggle
   },
 }
 
@@ -23,7 +25,10 @@ export default {
 
       <h1 class="divider-bottom">Email Templates</h1>
 
-      <EmailTemplatesHelp />
+      <Toggle>
+        <template #label>Help</template>
+        <template #content><EmailTemplatesHelp /></template>
+      </Toggle>
 
       <section class="section px-0">
         <EmailTemplatesEditor />
