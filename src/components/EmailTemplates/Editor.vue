@@ -1,10 +1,19 @@
 <script>
 import Content from '@/components/Content'
+import validator from '@/mixins/validator'
 
 export default {
   components: {
     Content,
   },
+  mixins: [
+    validator(function() {
+      return [
+        ...this.validateEmailTemplate(this.$refs.subject?.html, 'subject'),
+        ...this.validateEmailTemplate(this.$refs.body?.html, 'body'),
+      ]
+    })
+  ],
   data() {
 
     // organize content into groups
@@ -16,7 +25,7 @@ export default {
       },
       {
         title: 'Submission',
-        items: ['approved'],
+        items: ['book', 'bundle', 'people'],
         path: 'email/submissions',
       }
     ]
@@ -30,6 +39,42 @@ export default {
       groups,
     }
   },
+  computed: {
+    subjectErrors() {
+      return this.errors.filter(error => error.name === 'subject')
+    },
+    bodyErrors() {
+      return this.errors.filter(error => error.name === 'body')
+    },
+  },
+  watch: {
+    active() {
+      this.validate(this.$refs.subject)
+      this.validate(this.$refs.body)
+    }
+  },
+  mounted() {
+    this.validate()
+  },
+  methods: {
+    validateEmailTemplate(html, name) {
+      if (html == null) return []
+      const templateVariables = html.match(/\w+_\w+/g)
+
+      const isValidTemplateVariable = variable =>
+        ['FIRST_NAME', 'LAST_NAME', 'FULL_NAME', 'SIGNUP_LINK'].includes(variable)
+
+      return (templateVariables || [])
+        .map(variable => !isValidTemplateVariable(variable)
+          ? {
+            name,
+            message: `${variable} is not a valid template variable.`
+          }
+          : null
+        )
+        .filter(x => x)
+    }
+  }
 }
 
 </script>
@@ -43,7 +88,7 @@ export default {
           <p class="menu-label">{{ group.title }}s</p>
           <ul class="menu-list">
             <li v-for="item of group.items" :key="item" class="is-capitalized">
-              <a @click.prevent="active = { group, item }" :class="{ 'is-active': item === active.item }">{{ item }}</a>
+              <a :class="{ 'is-active': item === active.item }" @click.prevent="active = { group, item }">{{ item }}</a>
             </li>
           </ul>
         </div>
@@ -55,12 +100,31 @@ export default {
       <div class="ml-20">
         <h3 class="is-capitalized mb-10">{{ active.group.title }}: {{ active.item }}</h3>
         <div class="mb-20">
-          <p class="mb-10" style="font-weight: bold;">Subject: </p>
-          <Content :name="`${active.group.path}/${active.item}/subject`" format="oneline" />
+          <p class="mb-10" :class="{ 'has-text-danger': hasError('subject') }" style="font-weight: bold;">Subject: </p>
+          <Content
+            ref="subject"
+            :name="`${active.group.path}/${active.item}/subject`"
+            :class="{ 'is-danger': hasError('subject') }"
+            format="oneline"
+            @change="validate"
+          />
+          <div v-if="subjectErrors.length" class="field">
+            <p v-for="(error, i) of subjectErrors" :key="i" class="error my-10">{{ error.message }}</p>
+          </div>
         </div>
         <div class="mb-20">
-          <p class="mb-10" style="font-weight: bold;">Message:</p>
-          <Content :name="`${active.group.path}/${active.item}/body`" class="editor" />
+          <p class="mb-10" :class="{ 'has-text-danger': hasError('body') }" style="font-weight: bold;">Message:</p>
+          <div :class="{ 'content-container-error': hasError('body') }">
+            <Content
+              ref="body"
+              :name="`${active.group.path}/${active.item}/body`"
+              class="editor"
+              @change="validate"
+            />
+          </div>
+          <div v-if="bodyErrors.length" class="field">
+            <p v-for="(error, i) of bodyErrors" :key="i" class="error my-10">{{ error.message }}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -75,6 +139,19 @@ export default {
   border-radius: 5px !important;
   border: solid 1px #ddd;
   min-height: 10rem;
+}
+
+// cannot add is-danger directly to Content element since dynamic classes interfere with CKEditor classes
+.content-container-error {
+  .editor {
+    border-color: $danger !important;
+    &:focus,
+    &.is-focused,
+    &:active,
+    &.is-active {
+      box-shadow: $input-focus-box-shadow-size bulmaRgba($danger, 0.25);
+    }
+  }
 }
 
 </style>

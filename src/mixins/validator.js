@@ -14,16 +14,16 @@ const validator = getErrors => ({
       return this.errors.some(error => error.name === name)
     },
 
-    validate(name) {
-      this.errors = getErrors.bind(this)()
+    validate(...args) {
+      this.errors = getErrors.bind(this)(...args)
       return this.errors.length === 0
     },
 
-    revalidate: _.throttle(() => {
+    revalidate: _.debounce(function(...args) {
       if (this.errors.length > 0) {
-        this.validate()
+        this.validate(...args)
       }
-    }, 500),
+    }, 500, { leading: true }),
 
   }
 })

@@ -13,7 +13,7 @@ export default {
       default: 'multiline'
     }
   },
-  emits: ['input'],
+  emits: ['data', 'change'],
   data() {
     return {
       editor: BalloonEditor,
@@ -28,15 +28,17 @@ export default {
       return this.$store.state.content.loaded
     },
   },
-  methods: {
-    getContent() {
-      const slotDefault = this.$slots.default?.()[0].children || ''
-      return this.$store.getters['content/get'](this.name) ?? slotDefault
-    },
-  },
   watch: {
 
-    // manual watch to update html since getter cannot be watched
+    html() {
+      this.save()
+      this.$emit('change', {
+        html: this.html,
+        name: this.name,
+      })
+    },
+
+    // manual watch name prop to update html since getter cannot be watched
     name() {
       this.html = this.getContent()
     },
@@ -47,14 +49,24 @@ export default {
       const nextValue = get(next, this.name)
       if (nextValue) {
         this.html = nextValue
+        this.$emit('data', {
+          data: nextValue,
+          name: this.name,
+        })
       }
     },
 
-    html: _.debounce(function() {
+  },
+  methods: {
+    getContent() {
+      const slotDefault = this.$slots.default?.()[0].children || ''
+      return this.$store.getters['content/get'](this.name) ?? slotDefault
+    },
+
+    save: _.debounce(function() {
       if (this.$can('editContent')) {
         this.$store.dispatch('content/save', { path: this.name, value: this.html })
       }
-      this.$emit('input', this.html)
     }, 500)
 
   },
