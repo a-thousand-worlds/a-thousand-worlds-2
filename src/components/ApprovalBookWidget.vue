@@ -273,7 +273,6 @@ Continue and create book?`
 .container {
   padding-top: 2rem;
   margin-top: 2rem;
-  // border-top: 1px solid $atw-base;
 }
 
 h3.title {

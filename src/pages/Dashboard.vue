@@ -112,9 +112,10 @@ h2.title {
 }
 
 .bordered-top {
+  @include primary(border-top-color);
   padding-top: 2rem;
   margin-top: 2rem;
-  border-top: 1px solid $atw-base;
+  border-top: 1px solid;
 }
 
 a.button {

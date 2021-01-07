@@ -4,13 +4,15 @@ import ISBN from 'isbn3'
 import { v4 as uid } from 'uuid'
 // import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import BookTitleField from '@/components/fields/BookTitle'
+import Loader from '@/components/Loader'
 import { findBookByKeyword, metadataByISBN } from '@/utils'
 import isValidISBN from '@/util/isValidISBN'
 import validator from '@/mixins/validator'
 
 export default {
   components: {
-    'book-title-field': BookTitleField,
+    BookTitleField,
+    Loader,
   },
   mixins: [
     validator(function() {
@@ -228,7 +230,7 @@ export default {
 
             <div class="field">
               <label class="label" :class="{ 'has-text-danger': hasError('title') }" :for="titleId">Title</label>
-              <book-title-field v-model="sub.title" :disabled="$uiBusy || (books[si]?.id)" :inputClass="{ 'is-danger': hasError('title') }" :inputId="titleId" :searchable="false" @book-selected="fillBook($event, si)" @input="metadataInputsChanged(si)" />
+              <BookTitleField v-model="sub.title" :disabled="$uiBusy || (books[si]?.id)" :inputClass="{ 'is-danger': hasError('title') }" :inputId="titleId" :searchable="false" @book-selected="fillBook($event, si)" @input="metadataInputsChanged(si)" />
             </div>
 
             <div class="field">
@@ -250,7 +252,7 @@ export default {
 
                 <!-- cover/loading -->
                 <div class="column is-narrow">
-                  <img v-if="loadingBook[si]" role="loading" src="@/assets/icons/loading.gif">
+                  <Loader v-if="loadingBook[si]" role="loading" />
                   <div v-else class="bg-secondary">
                     <img :src="coverImage(si) || sub.confirmed === false" role="thumbnail" alt="thumbnail" style="display: block; min-width: 120px; min-height: 150px; max-width: 265px;" :style="sub.confirmed === false && !books[si] ? { visibility: 'hidden' } : null">
                   </div>

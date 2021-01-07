@@ -25,6 +25,12 @@ export default ({
     RightBar,
     Welcome,
   },
+  data() {
+    const hour = Math.floor(Date.now() / 1000 / 60 / 60)
+    return {
+      theme: `theme${hour % 4 + 1}`
+    }
+  },
   computed: {
     showWelcome() {
       return !this.$store.state.ui.lastVisited
@@ -49,7 +55,7 @@ export default ({
 </script>
 
 <template>
-  <div>
+  <div :class="theme">
 
     <MobileHeader class="is-hidden-tablet" />
 
@@ -113,7 +119,8 @@ body {
 }
 
 .rightbar {
-  border-left: solid 1px $atw-base;
+  @include primary(border-left-color);
+  border-left: solid 1px;
   position: fixed;
   height: 100%;
   right: 0;
@@ -145,7 +152,8 @@ body {
   margin-right: $rightbar-width;
 
   &.with-bookmarks {
-    border-right: solid 1px $atw-base;
+    @include primary(border-right-color);
+    border-right: solid 1px;
     margin-right: 0.75rem;
   }
 
@@ -161,7 +169,8 @@ body {
   }
 
   @include from($tablet) {
-    border-left: solid 1px $atw-base;
+    @include primary(border-left-color);
+    border-left: solid 1px;
   }
 }
 </style>

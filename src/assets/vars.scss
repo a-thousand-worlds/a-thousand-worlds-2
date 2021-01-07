@@ -1,48 +1,15 @@
-// Import a Google Font
 @import url('https://fonts.googleapis.com/css2?family=Sen:wght@400;700&display=swap');
-
-// Set your brand colors
-//$purple: #8A4D76;
-//$pink: #FA7C91;
-//$brown: #757763;
-//$beige-light: #D0D1CD;
-//$beige-lighter: #EFF0EB;
-
-// Update Bulma's global variables
 $family-sans-serif: Sen, sans-serif;
-//$grey-dark: $brown;
-//$grey-light: $beige-light;
-//$primary: $purple;
-//$link: $pink;
-//$widescreen-enabled: false;
-//$fullhd-enabled: false;
 
-// Update some of Bulma's component variables
-//$body-background-color: $beige-lighter;
-//$control-border-width: 2px;
-//$input-border-color: transparent;
-//$input-shadow: none;
+$primary1: #dc633a;
+$primary2: #bc9c2d;
+$primary3: #5c997a;
+$primary4: #0439D8;
 
-// ATW variables
-$atw-base: #0135e1;
-$atw-spin: #f0e;
-
-
-$primary: $atw-base;
-$secondary: #dee6ff;
 $background: white;
 $notification-background-color: hsl(0, 0%, 96%);
 $lightgrey: #eee;
 $grey: #c4c4c4;
-//$link: $blue;
-//$info: $cyan;
-//$success: $green;
-//$warning: $yellow;
-//$danger: $red;
-//$dark: $grey-darker;
-//$text: $grey-dark;
-//$link: $blue; // the links use the primary color
-//$family-primary: $family-sans-serif
 
 $leftbar-width: 183px;
 $rightbar-width: 70px;

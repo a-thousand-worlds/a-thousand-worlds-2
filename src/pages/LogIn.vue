@@ -1,8 +1,12 @@
 <script>
 import _ from 'lodash'
+import Loader from '@/components/Loader'
 
 export default {
   name: 'LogInPage',
+  components: {
+    Loader,
+  },
   data() {
     return {
       // the active tab (login or signup)
@@ -288,7 +292,7 @@ export default {
 
     <div v-if="(code && !invite) || (invite?.used)" class="is-flex is-justify-content-center mt-20">
       <div v-if="!$store.state.invites.loaded" class="my-50 has-text-centered">
-        <img src="@/assets/icons/loading.gif">
+        <Loader />
       </div>
       <div v-else class="my-50 has-text-centered">
         <h2>{{ invite?.used ? 'This invitation code has already been used.' : 'Invalid invitation code' }}</h2>

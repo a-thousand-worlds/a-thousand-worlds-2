@@ -33,7 +33,7 @@ export default {
 
 <style scoped lang="scss">
 @import "bulma/sass/utilities/_all.sass";
-@import '@/assets/vars.scss';
+@import '@/assets/main.scss';
 
 a {
   text-transform: uppercase;
@@ -48,7 +48,6 @@ a {
   margin-top: -10px;
   margin-bottom: 0.5rem;
   word-break: break-word;
-  //background: linear-gradient(to bottom, $atw-base, $atw-spin);
 
   button {
     cursor: pointer;
@@ -63,7 +62,7 @@ a {
     }
 
     &.toggled {
-      color: $primary;
+      @include primary(color);
       border: 0;
     }
   }
@@ -74,7 +73,7 @@ a {
 }
 
 .remove-tag {
-  background-color: $primary;
+  @include primary(background-color);
   color: $primary-invert;
   display: inline-block;
   border-radius: 99px;

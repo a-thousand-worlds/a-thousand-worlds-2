@@ -41,10 +41,10 @@ export default {
 @import '@/assets/main.scss';
 
 .content-footer {
+  @include primary(background-color);
   position: fixed;
   bottom: 0;
   color: $primary-invert;
-  background-color: $primary;
   width: calc(100% - #{$leftbar-width} - #{$rightbar-width});
   white-space: nowrap;
   overflow: auto;

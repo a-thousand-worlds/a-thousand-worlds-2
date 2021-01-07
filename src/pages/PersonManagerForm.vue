@@ -146,7 +146,7 @@ export default {
 </template>
 
 <style scoped lang="scss">
-@import '@/assets/vars.scss';
+@import '@/assets/main.scss';
 
 #iff-isbn {
   width: 0px !important;
@@ -154,10 +154,11 @@ export default {
 }
 
 #photo-wrapper {
+  @include primary(border-color);
   width: 300px;
   height: 300px;
   background: #ccc;
-  border: 2px solid $atw-base;
+  border: 2px solid;
   border-radius: 50%;
   overflow: hidden;
   text-align: center;

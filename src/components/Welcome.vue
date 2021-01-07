@@ -22,9 +22,9 @@ export default {
 @import '@/assets/main.scss';
 
 .welcome {
+  @include primary(background-color);
   width: 100%;
   top: 0;
-  background: $atw-base;
   text-align: center;
 
   .title, .subtitle {

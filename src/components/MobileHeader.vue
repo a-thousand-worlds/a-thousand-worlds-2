@@ -51,11 +51,12 @@ export default {
 
 <!-- scoped styles -->
 <style lang="scss" scoped>
-@import '@/assets/vars.scss';
+@import '@/assets/main.scss';
 
 .header {
+  @include primary(border-bottom-color);
   background-color: white;
-  border-bottom: 1px solid $atw-base;
+  border-bottom: 1px solid;
   position: fixed;
   top: 0;
   left: 0;

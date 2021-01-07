@@ -39,9 +39,10 @@ a {
 }
 /**/
 .photo-wrapper {
+  @include primary(border-color);
   width: 100%;
   padding-top: 100%;
-  border: 1px solid $atw-base;
+  border: 1px solid;
   border-radius: 50%;
   background-size: cover;
 }

@@ -6,3 +6,15 @@
   text-align: center;
   margin-bottom: 1.5rem !important;
 }
+
+// set the primary color based on a rotating theme (ancestor selector)
+@mixin primary($property) {
+  .theme1 & { #{$property}: $primary1; }
+  .theme2 & { #{$property}: $primary2; }
+  .theme3 & { #{$property}: $primary3; }
+}
+@mixin secondary($property) {
+  .theme1 & { #{$property}: lighten($primary1, 50%); }
+  .theme2 & { #{$property}: lighten($primary2, 50%); }
+  .theme3 & { #{$property}: lighten($primary3, 50%); }
+}

@@ -6,6 +6,7 @@ import BooksFilter from '@/components/BooksFilter'
 import Clipboard from 'clipboard'
 import CreatorsWidget from '@/components/CreatorsWidget'
 import LazyImage from '@/components/LazyImage'
+import Loader from '@/components/Loader'
 import NotFound from '@/pages/NotFound'
 import PrevNext from '@/components/PrevNext'
 
@@ -18,6 +19,7 @@ export default {
     BooksFilter,
     CreatorsWidget,
     LazyImage,
+    Loader,
     NotFound,
     PrevNext,
   },
@@ -66,7 +68,7 @@ export default {
       <div class="column">
 
         <div v-if="!$store.state.books.loaded" class="my-50">
-          <img src="@/assets/icons/loading.gif">
+          <Loader />
         </div>
         <div v-else-if="book">
           <div class="title-container divider-bottom is-flex is-justify-content-space-between">

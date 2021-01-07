@@ -1,10 +1,12 @@
 <script>
 import dayjs from 'dayjs'
 import ApprovalBookWidget from '@/components/ApprovalBookWidget'
+import Loader from '@/components/Loader'
 
 export default {
   components: {
-    ApprovalBookWidget
+    ApprovalBookWidget,
+    Loader,
   },
   data() {
     return {
@@ -112,7 +114,7 @@ export default {
     </div>
 
     <div v-if="loading" class="my-50">
-      <img src="@/assets/icons/loading.gif">
+      <Loader />
     </div>
 
     <p v-if="!subsGroups.length" style="font-size: 20px;">No Submissions to review</p>
@@ -145,9 +147,10 @@ export default {
 <style scoped lang="scss">
 @import '@/assets/main.scss';
 .sub-group {
+  @include primary(border-bottom-color);
   padding-top: 2rem;
   margin-top: 2rem;
-  border-bottom: 1px solid $atw-base;
+  border-bottom: 1px solid;
 }
 .sub-group:last-child {
   border: none;

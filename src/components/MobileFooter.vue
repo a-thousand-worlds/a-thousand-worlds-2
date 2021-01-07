@@ -109,7 +109,8 @@ export default {
 @import '@/assets/main.scss';
 
 .mobile-filters {
-  border-top: 1px solid $atw-base;
+  @include primary(border-top-color);
+  border-top: 1px solid;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -130,10 +131,11 @@ export default {
 }
 
 .mobile-bottom-nav {
+  @include primary(border-top-color);
   width: 100%;
   position: fixed;
   bottom: 0;
-  border-top: solid 1px $atw-base;
+  border-top: solid 1px;
   background-color: white;
   font-size: 10px;
   font-weight: bold;

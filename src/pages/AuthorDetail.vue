@@ -129,9 +129,10 @@ export default {
 }
 
 .cover-photo {
+  @include primary(border-color);
   padding-top: 100%;
   width: 100%;
-  border: 1px solid $atw-base;
+  border: 1px solid;
   border-radius: 50%;
   background-size: cover;
 }
