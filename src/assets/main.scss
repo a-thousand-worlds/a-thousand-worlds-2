@@ -150,30 +150,42 @@ button.is-selected {
   border-bottom: solid 1px;
 }
 
-// use "#app" to increase specificity above bulma default
-a, a.is-primary, .is-primary-text { @include primary(color); }
-a.is-secondary, .is-secondary-text, { @include secondary(color); }
-.bg-primary, button.is-primary { @include primary(background-color); }
-.bg-secondary, button.is-secondary{ @include secondary(background-color); }
 .fill-primary { @include primary(fill); }
 .fill-secondary { @include secondary(fill); }
 .stroke-primary { @include primary(stroke); }
 .stroke-secondary { @include secondary(stroke); }
+
+a, a.is-primary, .is-primary-text { @include primary(color); }
+a.is-secondary, .is-secondary-text, { @include secondary(color); }
+.bg-primary, .button.is-primary {
+  @include primary(background-color);
+  color: $primary-invert !important; // override a.is-primary since primary mixin increases specificity
+}
+.bg-secondary, .button.is-secondary{ @include secondary(background-color); }
 a.button.is-primary.is-outlined {
   @include primary(border-color);
   @include primary(color);
 }
+a.button.is-primary:focus,
+a.button.is-primary:hover,
+a.button.is-primary.is-outlined:focus,
+a.button.is-primary.is-outlined:hover,
 .button.is-primary:focus,
 .button.is-primary:hover,
 .button.is-primary.is-outlined:focus,
 .button.is-primary.is-outlined:hover {
   @include primary(background-color);
-  color: $primary-invert !important;
+  color: $primary-invert !important; // override a.is-primary since primary mixin increases specificity
 }
+a.button.is-secondary.is-outlined,
 .button.is-secondary.is-outlined {
   @include secondary(border-color);
   @include secondary(color);
 }
+a.button.is-secondary:focus,
+a.button.is-secondary:hover,
+a.button.is-secondary.is-outlined:focus,
+a.button.is-secondary.is-outlined:hover,
 .button.is-secondary:focus,
 .button.is-secondary:hover,
 .button.is-secondary.is-outlined:focus,
