@@ -12,9 +12,11 @@
   .theme1 & { #{$property}: $primary1; }
   .theme2 & { #{$property}: $primary2; }
   .theme3 & { #{$property}: $primary3; }
+  .theme4 & { #{$property}: $primary4; }
 }
 @mixin secondary($property) {
-  .theme1 & { #{$property}: lighten($primary1, 50%); }
-  .theme2 & { #{$property}: lighten($primary2, 50%); }
-  .theme3 & { #{$property}: lighten($primary3, 50%); }
+  .theme1 & { #{$property}: $secondary1; }
+  .theme2 & { #{$property}: $secondary2; }
+  .theme3 & { #{$property}: $secondary3; }
+  .theme4 & { #{$property}: $secondary4; }
 }

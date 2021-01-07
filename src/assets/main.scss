@@ -179,7 +179,7 @@ a.button.is-primary.is-outlined {
 .button.is-secondary.is-outlined:focus,
 .button.is-secondary.is-outlined:hover {
   @include secondary(background-color);
-  color: $primary-invert !important;
+  @include primary(color);
 }
 
 // event smaller than is-small. Useful for tags.

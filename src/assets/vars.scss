@@ -1,10 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Sen:wght@400;700&display=swap');
 $family-sans-serif: Sen, sans-serif;
 
-$primary1: #dc633a;
-$primary2: #bc9c2d;
-$primary3: #5c997a;
-$primary4: #0439D8;
+$primary1: rgb(220, 99, 58); // #dc633a;
+$primary2: rgb(188, 156, 45); // #bc9c2d;
+$primary3: rgb(92, 153, 122); // #5c997a;
+$primary4: rgb(4, 57, 216); // #0439D8;
+
+$secondary1: lighten($primary1, 35%);
+$secondary2: lighten($primary2, 40%);
+$secondary3: lighten($primary3, 30%);
+$secondary4: lighten($primary4, 50%);
 
 $background: white;
 $notification-background-color: hsl(0, 0%, 96%);
