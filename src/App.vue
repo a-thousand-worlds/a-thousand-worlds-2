@@ -113,7 +113,7 @@ body {
   height: 100%;
   min-height: 100vh;
   left: 0;
-  width: $leftbar-width;
+  width: $leftbar-width !important;
   //overflow-y: scroll;
   top: 0;
 }

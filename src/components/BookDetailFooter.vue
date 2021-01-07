@@ -29,7 +29,7 @@ export default {
       </div>
       <div class="link-container">
         <button class="button button-unstyled is-primary pl-0">FIND BOOK AT</button>
-        <button class="button is-rounded is-secondary mx-1">LOCAL LIBRARY</button>
+        <button class="button is-rounded is-secondary mx-1 test">LOCAL LIBRARY</button>
         <button class="button is-rounded is-secondary mx-1">LINK</button>
         <a :href="`http://www.indiebound.org/book/${book.isbn}?aff=athousandworlds`" target="_blank"><button class="button is-rounded is-secondary ml-1 mr-20">INDIEBOUND</button></a>
       </div>
