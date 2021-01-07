@@ -157,7 +157,7 @@ button.is-selected {
 
 a, a.is-primary, .is-primary-text { @include primary(color); }
 a.is-secondary, .is-secondary-text, { @include secondary(color); }
-.bg-primary, .button.is-primary {
+.bg-primary, .button.is-primary:not(.is-outlined) {
   @include primary(background-color);
   color: $primary-invert !important; // override a.is-primary since primary mixin increases specificity
 }
@@ -165,6 +165,7 @@ a.is-secondary, .is-secondary-text, { @include secondary(color); }
 a.button.is-primary.is-outlined {
   @include primary(border-color);
   @include primary(color);
+  background-color: transparent;
 }
 a.button.is-primary:focus,
 a.button.is-primary:hover,
