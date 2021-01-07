@@ -39,7 +39,7 @@ a {
   text-transform: uppercase;
 }
 
-.submenu {
+.menu-list.submenu {
   font-size: 10px;
   border-left: 0;
   padding: 0;
