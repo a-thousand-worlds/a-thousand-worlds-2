@@ -203,7 +203,7 @@ export default {
             class="textarea"
             :class="{ 'is-danger': hasError('emailInput')}"
             :placeholder="'Sarah Lopez - sarah@test.com\nDillon Avery - dillon@test.com\nMattie Smith - mattie@test.com\n...'"
-            style="line-height: 1.6; min-height: 2.5rem;"
+            style="line-height: 1.6; min-height: 2.5rem; min-width: 100px; max-width: 700px;"
             :style="!expanded ? 'padding-top: 0.5rem; padding-bottom: 0.5rem;' : ''"
             @input="autosize"
           />
