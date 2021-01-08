@@ -68,8 +68,3 @@ export default {
 
   </div>
 </template>
-
-<style scoped lang="scss">
-@import '@/assets/main.scss';
-
-</style>

@@ -51,7 +51,8 @@ export default {
 
 <!-- scoped styles -->
 <style lang="scss" scoped>
-@import '@/assets/main.scss';
+@import '@/assets/style/mixins.scss';
+@import '@/assets/style/vars.scss';
 
 .header {
   @include primary(border-bottom-color);

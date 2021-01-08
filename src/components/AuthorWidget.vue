@@ -33,7 +33,7 @@ export default {
 </template>
 
 <style scoped lang="scss">
-@import '@/assets/main.scss';
+@import "bulma/sass/utilities/_all.sass";
 
 .widget {
   // font-size: 10px;

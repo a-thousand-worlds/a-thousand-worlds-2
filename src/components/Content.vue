@@ -80,7 +80,6 @@ export default {
 </template>
 
 <style scoped lang="scss">
-@import '@/assets/main.scss';
 
 .inline {
   border: none;

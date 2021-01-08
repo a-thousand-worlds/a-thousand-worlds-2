@@ -19,7 +19,9 @@ export default {
 </template>
 
 <style scoped lang="scss">
-@import '@/assets/main.scss';
+@import "bulma/sass/utilities/_all.sass";
+@import '@/assets/style/mixins.scss';
+@import '@/assets/style/vars.scss';
 
 .welcome {
   @include primary(background-color);

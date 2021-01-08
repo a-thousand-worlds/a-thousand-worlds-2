@@ -66,7 +66,7 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/main.scss';
+@import '@/assets/style/vars.scss';
 
 .search-wrap {
   position: relative;

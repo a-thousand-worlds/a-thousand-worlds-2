@@ -87,7 +87,8 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/main.scss';
+@import "bulma/sass/utilities/_all.sass";
+@import '@/assets/style/mixins.scss';
 
 .page {
   width: 100%;

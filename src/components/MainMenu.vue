@@ -48,7 +48,6 @@ export default {
 </template>
 
 <style scoped lang="scss">
-@import '@/assets/vars.scss';
 
 .menu-list a {
   font-size: 18px;

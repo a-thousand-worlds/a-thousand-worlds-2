@@ -64,7 +64,7 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/vars.scss';
+@import '@/assets/style/vars.scss';
 
 .book-cover-wrapper {
   position: relative;

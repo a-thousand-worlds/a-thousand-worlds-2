@@ -371,7 +371,8 @@ export default {
 </template>
 
 <style scoped lang="scss">
-@import '@/assets/main.scss';
+@import "bulma/sass/utilities/_all.sass";
+@import '@/assets/style/vars.scss';
 
 .text-14 .label {
   font-size: 14px;

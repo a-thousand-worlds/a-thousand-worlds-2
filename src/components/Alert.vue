@@ -32,7 +32,9 @@ export default {
 </template>
 
 <style scoped lang="scss">
-@import '@/assets/main.scss';
+@import "bulma/sass/utilities/_all.sass";
+@import "bulma/sass/elements/box.sass";
+@import '@/assets/style/vars.scss';
 
 .alert {
   position: fixed;

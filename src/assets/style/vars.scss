@@ -1,0 +1,29 @@
+@use "sass:color";
+
+$family-sans-serif: Sen, sans-serif;
+
+$primary1: #ff4b00; // red (ladybug)
+$primary2: #bc9c2d; // gold (darkgold)
+$primary3: #009d75; // green (frog)
+$primary4: #002dea; // blue (peacock)
+
+$secondary1: color.change($primary1, $lightness: 94%);
+$secondary2: color.change($primary2, $lightness: 94%);
+$secondary3: color.change($primary3, $lightness: 94%);
+$secondary4: color.change($primary4, $lightness: 94%);
+
+$background: white;
+$notification-background-color: hsl(0, 0%, 96%);
+$lightgrey: #eee;
+$grey: #c4c4c4;
+
+$leftbar-width: 200px;
+$rightbar-width: 70px;
+$mobile-header-height: 14px;
+$mobile-footer-height: 94px;
+
+// manage all z-indexes in one place
+$zAlert: 1000;
+$zPopup: 100;
+$zMobileHeader: 10;
+$zField: 10;

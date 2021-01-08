@@ -30,7 +30,7 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/main.scss';
+@import "bulma/sass/utilities/_all.sass";
 
 a.unmark-all {
   color: #333;

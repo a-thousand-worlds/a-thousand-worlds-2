@@ -37,7 +37,7 @@ export default {
 
 <style lang="scss" scoped>
 @import "bulma/sass/utilities/_all.sass";
-@import '@/assets/vars.scss';
+@import '@/assets/style/vars.scss';
 
 .masonry {
   column-count: 1;

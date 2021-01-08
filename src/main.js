@@ -6,7 +6,7 @@ import store from '@/store'
 import directives from '@/directives'
 import mixins from '@/mixins/global'
 
-require('@/assets/main.scss')
+require('@/assets/style/main.scss')
 
 router.beforeEach((to, from, next) => {
   if (!to.meta || !to.meta.access) {

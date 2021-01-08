@@ -1,11 +1,4 @@
-.w-100 {
-  width: 100%;
-}
-
-.page-title {
-  text-align: center;
-  margin-bottom: 1.5rem !important;
-}
+@import '@/assets/style/vars.scss';
 
 // set the primary color based on a rotating theme (ancestor selector)
 @mixin primary($property) {

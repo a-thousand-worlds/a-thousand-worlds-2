@@ -20,7 +20,7 @@ export default {
 </template>
 
 <style scoped lang="scss">
-@import '@/assets/main.scss';
+@import "bulma/sass/utilities/_all.sass";
 
 .person-block {
   width: 100%;
