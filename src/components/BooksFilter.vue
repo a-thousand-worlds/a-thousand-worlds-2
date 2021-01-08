@@ -32,8 +32,9 @@ export default {
 </template>
 
 <style scoped lang="scss">
-@import "bulma/sass/utilities/_all.sass";
-@import '@/assets/main.scss';
+@import "bulma/sass/utilities/derived-variables.sass";
+@import '@/assets/mixins.scss';
+@import '@/assets/vars.scss';
 
 a {
   text-transform: uppercase;

@@ -146,7 +146,8 @@ export default {
 </template>
 
 <style scoped lang="scss">
-@import '@/assets/main.scss';
+@import '@/assets/mixins.scss';
+@import '@/assets/vars.scss';
 
 #iff-isbn {
   width: 0px !important;

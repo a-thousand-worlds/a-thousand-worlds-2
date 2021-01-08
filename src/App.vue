@@ -107,7 +107,9 @@ body {
 </style>
 
 <style lang="scss" scoped>
-@import '@/assets/main.scss';
+@import "bulma/sass/utilities/mixins.sass";
+@import '@/assets/vars.scss';
+@import '@/assets/mixins.scss';
 
 .leftbar {
   height: 100%;

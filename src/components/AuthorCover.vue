@@ -31,7 +31,8 @@ export default {
 </template>
 
 <style scoped lang="scss">
-@import '@/assets/main.scss';
+@import '@/assets/vars.scss';
+@import '@/assets/mixins.scss';
 
 a {
   color: #000;

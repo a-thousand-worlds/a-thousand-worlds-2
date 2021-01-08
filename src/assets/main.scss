@@ -1,18 +1,24 @@
 @charset "utf-8";
 @use "sass:map";
 
+@import url('https://fonts.googleapis.com/css2?family=Sen:wght@400;700&display=swap');
+
+@import "bulma/sass/base/_all.sass";
+@import "bulma/sass/helpers/_all.sass";
+@import "bulma/sass/utilities/controls.sass";
+@import "bulma/sass/utilities/extends.sass";
+@import "bulma/sass/utilities/mixins.sass";
+@import "bulma/sass/components/menu.sass";
+@import "bulma/sass/elements/button.sass";
+@import "bulma/sass/form/shared.sass";
+@import "bulma/sass/form/input-textarea.sass";
+@import "bulma/sass/form/tools.sass";
+@import "bulma/sass/form/select.sass";
+@import "bulma/sass/grid/columns.sass";
+@import "bulma/sass/layout/section.sass";
+
 @import "./mixins.scss";
 @import "./vars.scss";
-
-// Import only what you need from Bulma
-@import "bulma/sass/utilities/_all.sass";
-@import "bulma/sass/base/_all.sass";
-@import "bulma/sass/elements/_all.sass";
-@import "bulma/sass/form/_all.sass";
-@import "bulma/sass/components/_all.sass";
-@import "bulma/sass/grid/_all.sass";
-@import "bulma/sass/helpers/_all.sass";
-@import "bulma/sass/layout/_all.sass";
 
 // extend bulma spacing
 // https://github.com/jgthms/bulma/blob/master/sass/helpers/spacing.sass
@@ -107,6 +113,15 @@ button.is-selected {
   &:hover, &:active, &:focus {
     color: $primary-invert;
   }
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.page-title {
+  text-align: center;
+  margin-bottom: 1.5rem !important;
 }
 
 .is-underlined {

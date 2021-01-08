@@ -45,3 +45,10 @@ export default {
   </div>
 
 </template>
+
+<style lang="scss">
+@import "bulma/sass/utilities/controls.sass";
+@import "bulma/sass/utilities/extends.sass";
+@import "bulma/sass/components/tabs.sass";
+@import "bulma/sass/elements/table.sass";
+</style>

@@ -82,7 +82,9 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/main.scss';
+@import "bulma/sass/utilities/mixins.sass";
+@import '@/assets/mixins.scss';
+@import '@/assets/vars.scss';
 
 .directory-nav-link {
   color: black;

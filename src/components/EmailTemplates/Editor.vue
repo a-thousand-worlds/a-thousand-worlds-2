@@ -133,7 +133,11 @@ export default {
 </template>
 
 <style scoped lang="scss">
-@import '@/assets/main.scss';
+@import '@/assets/vars.scss';
+@import "bulma/sass/utilities/derived-variables.sass";
+@import "bulma/sass/utilities/controls.sass";
+@import "bulma/sass/utilities/extends.sass";
+@import "bulma/sass/form/shared.sass";
 
 .editor {
   border-radius: 5px !important;

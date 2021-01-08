@@ -19,7 +19,7 @@ export default {
 </template>
 
 <style scoped lang="scss">
-@import '@/assets/main.scss';
+@import '@/assets/vars.scss';
 
 .popups-area {
   position: fixed;
