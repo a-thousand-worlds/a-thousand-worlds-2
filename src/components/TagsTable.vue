@@ -143,7 +143,7 @@ export default {
         <a class="button is-static">Sort Order</a>
       </p>
       <p class="control">
-        <input v-model="newTag.sortOrder" :disabled="$uiBusy" type="number" class="input" placeholder="Sort order">
+        <input v-model="newTag.sortOrder" :disabled="$uiBusy" type="number" class="input" placeholder="1" style="min-width: 60px">
       </p>
       <p class="control">
         <a class="button" @click.prevent="newTag.showOnFront = !newTag.showOnFront">
