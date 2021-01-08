@@ -1,0 +1,5 @@
+@import '@/assets/mixins.scss';
+
+.menu-list a.is-active {
+  @include primary(background-color);
+}
