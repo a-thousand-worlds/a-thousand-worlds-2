@@ -372,7 +372,7 @@ export default {
 
 <style scoped lang="scss">
 @import "bulma/sass/utilities/mixins.sass";
-@import '@/assets/vars.scss';
+@import '@/assets/style/vars.scss';
 
 .text-14 .label {
   font-size: 14px;

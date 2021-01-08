@@ -73,7 +73,7 @@ export default {
 </template>
 
 <style scoped lang="scss">
-@import '@/assets/vars.scss';
+@import '@/assets/style/vars.scss';
 
 .bookmark-toggler {
   position: relative;

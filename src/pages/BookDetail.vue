@@ -102,7 +102,7 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/vars.scss';
+@import '@/assets/style/vars.scss';
 @import "bulma/sass/utilities/mixins.sass";
 
 .book-detail {

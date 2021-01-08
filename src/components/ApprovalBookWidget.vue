@@ -269,7 +269,7 @@ Continue and create book?`
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/vars.scss';
+@import '@/assets/style/vars.scss';
 .container {
   padding-top: 2rem;
   margin-top: 2rem;

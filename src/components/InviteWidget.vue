@@ -262,6 +262,6 @@ export default {
 
 <style scoped lang="scss">
 @import "bulma/sass/components/dropdown.sass";
-@import '@/assets/vars.scss';
+@import '@/assets/style/vars.scss';
 
 </style>

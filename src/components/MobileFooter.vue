@@ -106,8 +106,8 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-@import '@/assets/mixins.scss';
-@import '@/assets/vars.scss';
+@import '@/assets/style/mixins.scss';
+@import '@/assets/style/vars.scss';
 
 .mobile-filters {
   @include primary(border-top-color);

@@ -137,8 +137,8 @@ export default {
 @import "bulma/sass/utilities/controls.sass";
 @import "bulma/sass/utilities/extends.sass";
 @import "bulma/sass/form/shared.sass";
-@import '@/assets/vars.scss';
-@import '@/assets/menu.scss';
+@import '@/assets/style/vars.scss';
+@import '@/assets/style/menu.scss';
 
 .editor {
   border-radius: 5px !important;

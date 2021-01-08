@@ -52,5 +52,5 @@ export default {
 @import "bulma/sass/elements/table.sass";
 @import "bulma/sass/form/shared.sass";
 @import "bulma/sass/form/checkbox-radio.sass";
-@import '@/assets/tabs.scss';
+@import '@/assets/style/tabs.scss';
 </style>

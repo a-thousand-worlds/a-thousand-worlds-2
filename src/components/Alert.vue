@@ -36,7 +36,7 @@ export default {
 @import "bulma/sass/utilities/controls.sass";
 @import "bulma/sass/utilities/extends.sass";
 @import "bulma/sass/elements/box.sass";
-@import '@/assets/vars.scss';
+@import '@/assets/style/vars.scss';
 
 .alert {
   position: fixed;

@@ -33,8 +33,8 @@ export default {
 
 <style scoped lang="scss">
 @import "bulma/sass/utilities/derived-variables.sass";
-@import '@/assets/mixins.scss';
-@import '@/assets/vars.scss';
+@import '@/assets/style/mixins.scss';
+@import '@/assets/style/vars.scss';
 
 a {
   text-transform: uppercase;

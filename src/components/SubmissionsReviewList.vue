@@ -145,8 +145,8 @@ export default {
 </template>
 
 <style scoped lang="scss">
-@import '@/assets/mixins.scss';
-@import '@/assets/vars.scss';
+@import '@/assets/style/mixins.scss';
+@import '@/assets/style/vars.scss';
 .sub-group {
   @include primary(border-bottom-color);
   padding-top: 2rem;
