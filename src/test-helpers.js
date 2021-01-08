@@ -1,6 +1,6 @@
 import { render as vueRender } from '@testing-library/vue'
 import store from '@/store'
-import mixins from '@/mixins'
+import mixins from '@/mixins/global'
 import directives from '@/directives'
 
 /** Renders a component with global directives, mixins, and store for tests. */
