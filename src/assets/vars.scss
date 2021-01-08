@@ -1,14 +1,16 @@
+@use "sass:color";
+
 $family-sans-serif: Sen, sans-serif;
 
-$primary1: rgb(220, 99, 58); // #dc633a; (red)
-$primary2: rgb(188, 156, 45); // #bc9c2d; (gold)
-$primary3: rgb(92, 153, 122); // #5c997a; (green)
-$primary4: rgb(4, 57, 216); // #0439D8; (blue)
+$primary1: #ff4b00; // red (ladybug)
+$primary2: #bc9c2d; // gold (darkgold)
+$primary3: #009d75; // green (frog)
+$primary4: #002dea; // blue (peacock)
 
-$secondary1: lighten($primary1, 35%);
-$secondary2: lighten($primary2, 40%);
-$secondary3: lighten($primary3, 30%);
-$secondary4: lighten($primary4, 50%);
+$secondary1: color.change($primary1, $lightness: 94%);
+$secondary2: color.change($primary2, $lightness: 94%);
+$secondary3: color.change($primary3, $lightness: 94%);
+$secondary4: color.change($primary4, $lightness: 94%);
 
 $background: white;
 $notification-background-color: hsl(0, 0%, 96%);
