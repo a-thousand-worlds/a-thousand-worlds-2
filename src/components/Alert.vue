@@ -32,9 +32,7 @@ export default {
 </template>
 
 <style scoped lang="scss">
-@import "bulma/sass/utilities/mixins.sass";
-@import "bulma/sass/utilities/controls.sass";
-@import "bulma/sass/utilities/extends.sass";
+@import "bulma/sass/utilities/_all.sass";
 @import "bulma/sass/elements/box.sass";
 @import '@/assets/style/vars.scss';
 

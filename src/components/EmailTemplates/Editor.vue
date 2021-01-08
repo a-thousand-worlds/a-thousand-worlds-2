@@ -133,9 +133,7 @@ export default {
 </template>
 
 <style scoped lang="scss">
-@import "bulma/sass/utilities/derived-variables.sass";
-@import "bulma/sass/utilities/controls.sass";
-@import "bulma/sass/utilities/extends.sass";
+@import "bulma/sass/utilities/_all.sass";
 @import "bulma/sass/form/shared.sass";
 @import '@/assets/style/vars.scss';
 @import '@/assets/style/menu.scss';

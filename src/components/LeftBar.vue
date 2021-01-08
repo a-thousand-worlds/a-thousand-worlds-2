@@ -21,8 +21,3 @@ export default {
 
   </aside>
 </template>
-
-<style scoped lang="scss">
-@import '@/assets/style/vars.scss';
-
-</style>

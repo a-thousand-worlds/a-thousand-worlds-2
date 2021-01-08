@@ -162,7 +162,7 @@ export default {
 
 </template>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 th:last-child {
   text-align: right;
 }

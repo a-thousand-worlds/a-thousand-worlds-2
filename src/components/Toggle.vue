@@ -27,8 +27,3 @@ export default {
   </a>
   <slot v-if="isOpen" name="content">content</slot>
 </template>
-
-<style scoped lang="scss">
-@import '@/assets/style/vars.scss';
-
-</style>

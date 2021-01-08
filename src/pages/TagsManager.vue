@@ -47,8 +47,7 @@ export default {
 </template>
 
 <style lang="scss">
-@import "bulma/sass/utilities/controls.sass";
-@import "bulma/sass/utilities/extends.sass";
+@import "bulma/sass/utilities/_all.sass";
 @import "bulma/sass/elements/table.sass";
 @import "bulma/sass/form/shared.sass";
 @import "bulma/sass/form/checkbox-radio.sass";

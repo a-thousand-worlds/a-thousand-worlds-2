@@ -36,7 +36,7 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-@import "bulma/sass/utilities/mixins.sass";
+@import "bulma/sass/utilities/_all.sass";
 @import '@/assets/style/vars.scss';
 
 .masonry {

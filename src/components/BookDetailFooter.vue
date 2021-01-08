@@ -38,9 +38,9 @@ export default {
 </template>
 
 <style scoped lang="scss">
+@import "bulma/sass/utilities/_all.sass";
 @import '@/assets/style/mixins.scss';
 @import '@/assets/style/vars.scss';
-@import "bulma/sass/utilities/mixins.sass";
 
 .content-footer {
   @include primary(background-color);
