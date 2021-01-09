@@ -13,35 +13,51 @@ export default {
   },
   data() {
     return {
-      showFilters: false,
       isFront: true
     }
   },
   computed: {
     bookmarksCount() {
       return Object.keys(this.$store.state.user.user?.profile.bookmarks || {}).length
-    }
+    },
+    tags() {
+      return this.$store.getters['tags/books/listSorted']()
+        .filter(tag => tag.showOnFront)
+    },
   },
   watch: {
     '$route'(next) {
       this.isFront = next.name === 'Home'
-    }
+    },
   },
   created() {
     this.isFront = this.$route.name === 'Home'
   },
   methods: {
-    toggleFilter(fid) {
-      this.$store.commit('toggleFilter', fid)
+    isFiltered(tag) {
+      return this.$store.state.books.filters.includes(tag)
     },
     resetFilters() {
-      this.$store.commit('resetFilters')
+      this.$store.commit('books/resetFilters')
     },
-    filterOn(fid) {
-      return this.$store.state.filters.includes(fid)
+    setFilters(e) {
+      const options = [...e.target.options]
+      // const reset = options.find(option => option.value === '_reset' && option.selected)
+      // if (reset) {
+      //   options.forEach(option => {
+      //     option.selected = false
+      //   })
+      //   this.$store.commit('books/setFilters', [])
+      //   e.target.blur()
+      // }
+      const selected = options
+        // ignore reset option
+        .filter(option => option.selected && option.value !== '_reset')
+        .map(option => option.value)
+      this.$store.commit('books/setFilters', selected)
     },
-    clickOutsideFilters(e) {
-      this.showFilters = false
+    toggleFilter(fid) {
+      this.$store.commit('books/toggleFilter', fid)
     },
     toggleBookmarks() {
       if (!this.$iam('authorized')) {
@@ -57,23 +73,19 @@ export default {
 
 <template>
   <div>
-    <section v-if="showFilters" v-click-outside="clickOutsideFilters" class="mobile-filters">
-      <ul class="haas-text-centered">
-        <li v-for="filter in $store.state.sortedTags" :key="filter.id" @click="toggleFilter(filter.tag)">
-          <button v-if="filter.showOnFront" :class="{toggled:filterOn(filter.tag)}" class="p-1 filter">{{ filter.tag }}</button>
-        </li>
-      </ul>
-      <button class="button is-rounded is-small mt-10" @click.prevent="resetFilters">Reset Filter</button>
-    </section>
+    <!-- <button class="button is-rounded is-small mt-10" @click.prevent="resetFilters">Reset Filter</button> -->
 
     <section class="mobile-bottom-nav has-text-centered is-uppercase">
       <ul class="menu-list my-10">
 
-        <li v-if="isFront && !$store.state.ui.bookmarksOpen">
-          <a :class="null" href="#" @click.stop="showFilters=!showFilters">
-            <FilterIcon />
-            <div class="icon-label mt-2">Filter</div>
-          </a>
+        <li v-if="isFront && !$store.state.ui.bookmarksOpen" style="position: relative; overflow: hidden;">
+          <select @change="setFilters" multiple style="position: absolute; background-color: tomato; overflow: hidden; left: 0: top: 0; overflow: hidden; width: 100%; height: 100%; font-size: 20px; cursor: pointer; opacity: 0;">
+            <!-- <option @click="resetFilters" value="_reset">Reset Filter</option> -->
+            <optgroup disabled hidden />
+            <option v-for="tag in tags" :key="tag.id" :selected="isFiltered(tag.tag)" :value="tag.tag">{{ tag.tag }}</option>
+          </select>
+          <FilterIcon />
+          <div class="icon-label mt-2">Filter</div>
         </li>
 
         <li>

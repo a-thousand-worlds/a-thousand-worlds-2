@@ -25,6 +25,9 @@ const module = mergeOne(collection('books', 'cover'), {
       else {
         state.filters = state.filters.filter(x => x !== filter)
       }
+    },
+    setFilters(state, filters) {
+      state.filters = filters
     }
   },
   getters: {
