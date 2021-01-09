@@ -15,6 +15,9 @@ export default {
     bookmarksCount() {
       return Object.keys(this.$store.state.user.user?.profile.bookmarks || {}).length
     },
+    filters() {
+      return this.$store.state.books.filters
+    },
     isHome() {
       return this.$route.name === 'Home'
     },
@@ -25,7 +28,7 @@ export default {
   },
   methods: {
     isFiltered(tag) {
-      return this.$store.state.books.filters.includes(tag)
+      return this.filters.includes(tag)
     },
     resetFilters() {
       this.$store.commit('books/resetFilters')
@@ -68,14 +71,15 @@ export default {
     <section class="mobile-bottom-nav has-text-centered is-uppercase">
       <ul class="menu-list my-10">
 
-        <li v-if="isHome && !$store.state.ui.bookmarksOpen" style="position: relative; overflow: hidden;">
-          <select @change="setFilters" multiple style="position: absolute; background-color: tomato; overflow: hidden; left: 0: top: 0; overflow: hidden; width: 100%; height: 100%; font-size: 20px; cursor: pointer; opacity: 0;">
+        <li v-if="isHome && !$store.state.ui.bookmarksOpen" style="position: relative;">
+          <select @change="setFilters" multiple style="position: absolute; background-color: tomato; overflow: hidden; left: 0: top: 0; overflow: hidden; min-width: 60px; max-width: 100px; width: 70px; height: 100%; font-size: 20px; cursor: pointer; opacity: 0;">
             <!-- <option @click="resetFilters" value="_reset">Reset Filter</option> -->
             <optgroup disabled hidden />
             <option v-for="tag in tags" :key="tag.id" :selected="isFiltered(tag.tag)" :value="tag.tag">{{ tag.tag }}</option>
           </select>
           <FilterIcon />
           <div class="icon-label mt-2">Filter</div>
+          <span v-if="filters.length > 0" class="badge">{{ filters.length }}</span>
         </li>
 
         <li>
@@ -167,20 +171,20 @@ export default {
 
 .bookmark-toggler {
   position: relative;
+}
 
-  .badge {
-    position: absolute;
-    top: -5px;
-    right: 26px;
-    background: #000;
-    color: #fff;
-    font-size: 11px;
-    font-weight: 800;
-    width: 20px;
-    height: 20px;
-    line-height: 20px;
-    border-radius: 10px;
-  }
+.badge {
+  position: absolute;
+  top: -5px;
+  right: 25px;
+  background: #000;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 10px;
 }
 
 </style>
