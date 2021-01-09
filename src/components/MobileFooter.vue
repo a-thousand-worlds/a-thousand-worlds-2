@@ -166,6 +166,10 @@ export default {
       min-width: 60px;
       max-width: 100px;
     }
+
+    a:hover, a:active, a:focus {
+      background-color: transparent;
+    }
   }
 }
 
