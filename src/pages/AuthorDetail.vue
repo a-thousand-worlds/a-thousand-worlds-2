@@ -1,11 +1,9 @@
 <script>
-// import LazyImage from '@/components/LazyImage'
-import BookList from '@/components/BookList'
+import BookListView from '@/components/BookListView'
 
 export default {
   components: {
-    // LazyImage,
-    BookList,
+    BookListView,
   },
   data() {
     return {
@@ -69,7 +67,7 @@ export default {
       </div>
 
       <div class="column-books" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
-        <BookList v-for="book of books" :key="book.id" :book="book" />
+        <BookListView v-for="book of books" :key="book.id" :book="book" />
       </div>
 
     </div>

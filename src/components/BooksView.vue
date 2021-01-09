@@ -1,11 +1,11 @@
 <script>
-import BookCover from '@/components/BookCover'
-import BookList from '@/components/BookList'
+import BookCoverView from '@/components/BookCoverView'
+import BookListView from '@/components/BookListView'
 
 export default {
   components: {
-    BookCover,
-    BookList,
+    BookCoverView,
+    BookListView,
   },
   methods: {
     logBooks() {
@@ -27,8 +27,8 @@ export default {
 
     <div :class="{masonry:$store.state.ui.viewMode==='covers', 'with-bookmarks': $store.state.ui.bookmarksOpen}">
       <div v-for="book of $store.getters['books/filtered']" :key="book.id" class="masonry-item">
-        <BookCover v-if="$store.state.ui.viewMode === 'covers'" :book="book" />
-        <BookList v-if="$store.state.ui.viewMode === 'list'" :book="book" />
+        <BookCoverView v-if="$store.state.ui.viewMode === 'covers'" :book="book" />
+        <BookListView v-if="$store.state.ui.viewMode === 'list'" :book="book" />
       </div>
     </div>
 

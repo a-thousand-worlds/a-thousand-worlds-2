@@ -1,9 +1,9 @@
 <script>
-import BookList from '@/components/BookList'
+import BookListView from '@/components/BookListView'
 
 export default {
   components: {
-    BookList,
+    BookListView,
   },
   props: ['mark'],
   data() {
@@ -18,7 +18,7 @@ export default {
 <template>
   <div>
     <div v-if="mark.type === 'book'" class="container">
-      <BookList :book="$store.state.books.data[mark.id]" />
+      <BookListView :book="$store.state.books.data[mark.id]" />
     </div>
     <div v-if="mark.type === 'bundle'">
       {{ mark.type }}: {{ mark.id }}
