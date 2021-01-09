@@ -14,7 +14,7 @@ export default {
   methods: {
     toggleBookmark() {
       if (!this.$iam('authorized')) {
-        this.$router.push({ name: 'LogIn' })
+        this.$router.push({ name: 'Signup' })
       }
       else {
         // optimistic client-side toggle
