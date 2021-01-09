@@ -39,8 +39,8 @@ export default {
       <div class="cover-data">
         <div class="title">{{ book.title }}</div>
         <div class="authors">
-          <AuthorWidget v-for="person of book.authors" :key="person" :name="person" />
-          <CreatorsWidget v-if="book.creators" :creators="book.creators" :linked="true" />
+          <AuthorWidget v-for="person of book.authors" :key="person" :name="person" :nolink="true" />
+          <CreatorsWidget v-if="book.creators" :creators="book.creators" :linked="true" :nolink="true" />
         </div>
         <div class="bmb">
           <BookmarkButton :book="book" />
