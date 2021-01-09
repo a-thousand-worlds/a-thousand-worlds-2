@@ -12,19 +12,17 @@ export default {
     }
   },
   methods: {
-    toggleBookmark() {
+    async toggleBookmark() {
       if (!this.$iam('authorized')) {
         this.$router.push({ name: 'Signup' })
       }
       else {
-        // optimistic client-side toggle
         this.$store.commit('ui/setBusy', true)
-        this.$store.dispatch('user/toggleBookmark', {
+        await this.$store.dispatch('user/toggleBookmark', {
           id: this.book.id,
           type: 'book'
-        }).then(() => {
-          this.$store.commit('ui/setBusy', false)
         })
+        this.$store.commit('ui/setBusy', false)
       }
     }
   }
