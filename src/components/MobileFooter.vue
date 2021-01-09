@@ -11,27 +11,17 @@ export default {
     BooksIcon,
     FilterIcon,
   },
-  data() {
-    return {
-      isFront: true
-    }
-  },
   computed: {
     bookmarksCount() {
       return Object.keys(this.$store.state.user.user?.profile.bookmarks || {}).length
+    },
+    isHome() {
+      return this.$route.name === 'Home'
     },
     tags() {
       return this.$store.getters['tags/books/listSorted']()
         .filter(tag => tag.showOnFront)
     },
-  },
-  watch: {
-    '$route'(next) {
-      this.isFront = next.name === 'Home'
-    },
-  },
-  created() {
-    this.isFront = this.$route.name === 'Home'
   },
   methods: {
     isFiltered(tag) {
@@ -78,7 +68,7 @@ export default {
     <section class="mobile-bottom-nav has-text-centered is-uppercase">
       <ul class="menu-list my-10">
 
-        <li v-if="isFront && !$store.state.ui.bookmarksOpen" style="position: relative; overflow: hidden;">
+        <li v-if="isHome && !$store.state.ui.bookmarksOpen" style="position: relative; overflow: hidden;">
           <select @change="setFilters" multiple style="position: absolute; background-color: tomato; overflow: hidden; left: 0: top: 0; overflow: hidden; width: 100%; height: 100%; font-size: 20px; cursor: pointer; opacity: 0;">
             <!-- <option @click="resetFilters" value="_reset">Reset Filter</option> -->
             <optgroup disabled hidden />
