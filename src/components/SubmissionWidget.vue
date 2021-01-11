@@ -1,10 +1,10 @@
 <script>
 import StaticBookCover from '@/components/StaticBookCover'
-import BookDetailRoute from '@/components/BookDetailRoute'
+import BookDetailLink from '@/components/BookDetailLink'
 
 export default {
   components: {
-    BookDetailRoute,
+    BookDetailLink,
     StaticBookCover,
   },
   props: ['sid'],
@@ -27,9 +27,9 @@ export default {
     <div class="button is-static is-loading">loading</div>
   </div>
   <div v-else-if="sub?.type === 'book'">
-    <BookDetailRoute v-if="book" :book="book">
+    <BookDetailLink v-if="book" :book="book">
       <StaticBookCover :book="sub" />
-    </BookDetailRoute>
+    </BookDetailLink>
     <StaticBookCover v-else :book="sub" />
   </div>
   <div v-else-if="sub?.type === 'bundle'">

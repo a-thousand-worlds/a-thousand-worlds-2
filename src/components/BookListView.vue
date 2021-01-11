@@ -3,14 +3,14 @@
 import AuthorWidget from '@/components/AuthorWidget'
 import CreatorsWidget from '@/components/CreatorsWidget'
 import BookmarkButton from '@/components/BookmarkButton'
-import BookDetailRoute from '@/components/BookDetailRoute'
+import BookDetailLink from '@/components/BookDetailLink'
 
 export default {
   components: {
     AuthorWidget,
     CreatorsWidget,
     BookmarkButton,
-    BookDetailRoute,
+    BookDetailLink,
   },
   props: ['book'],
   computed: {
@@ -38,9 +38,9 @@ export default {
 <template>
   <div class="columns">
     <div class="column is-one-third is-one-quarter-desktop is-offset-one-quarter-desktop p-0 mb-20">
-      <BookDetailRoute :book="book" class="cover-data">
+      <BookDetailLink :book="book" class="cover-data">
         <div class="img-cover bg-secondary" :style="{width: '100%', paddingTop: coverRatio+'%', backgroundImage: 'url('+bgImage+')', backgroundSize: 'contain'}" />
-      </BookDetailRoute>
+      </BookDetailLink>
     </div>
     <div class="column is-two-thirds is-one-quarter-desktop is-align-content-center p-0">
       <div class="columns is-mobile is-vcentered m-0" style="line-height: 1.25;">
@@ -49,9 +49,9 @@ export default {
 
           <div class="is-flex is-justify-content-space-between mb-20">
             <div>
-              <BookDetailRoute :book="book" class="cover-data">
+              <BookDetailLink :book="book" class="cover-data">
                 <h3 class="mb-10" style="color: black; margin-right: 15px;">{{ book.title }}</h3>
-              </BookDetailRoute>
+              </BookDetailLink>
               <div class="authors">
                 <AuthorWidget v-for="person of book.authors" :key="person" :name="person" />
                 <CreatorsWidget v-if="book.creators" :creators="book.creators" :linked="true" />
