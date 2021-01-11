@@ -2,7 +2,6 @@
 import _ from 'lodash'
 import ISBN from 'isbn3'
 import { v4 as uid } from 'uuid'
-// import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import BookTitleField from '@/components/fields/BookTitle'
 import Loader from '@/components/Loader'
 import { findBookByKeyword, metadataByISBN } from '@/utils'
@@ -27,7 +26,7 @@ export default {
         toolbar: []
       },
       confirms: [],
-      // editor: BalloonEditor,
+      draftSaved: null,
       loadingBook: [],
       submissions: [],
       titleId: uid(),
@@ -44,17 +43,13 @@ export default {
     },
   },
   created() {
-    if (Array.isArray(this.$store.state.user.user?.profile.draftBooks) && this.$store.state.user.user?.profile.draftBooks.length) {
-      this.submissions = this.$store.state.user.user?.profile.draftBooks.map(book => {
-        if (!book.tags) {
-          book.tags = {}
-        }
-        return book
-      })
-    }
-    else {
-      this.submissions = [this.newSubmissionObject()]
-    }
+    const draftBooks = this.$store.state.user.user?.profile.draftBooks
+    this.submissions = draftBooks?.length
+      ? draftBooks.map(book => ({
+        ...book,
+        tags: book.tags || {}
+      }))
+      : [this.newSubmissionObject()]
   },
   methods: {
     coverImage(si) {
@@ -94,11 +89,18 @@ export default {
       this.$store.commit('ui/setBusy', false)
       this.$router.push({ name: 'SubmissionThankYou', params: { type: 'book' } })
     },
-    async saveDraft() {
-      this.$store.commit('ui/setBusy', true)
-      await this.$store.dispatch('user/saveBookSubmissionsDraft', this.submissions)
-      this.$store.commit('ui/setBusy', false)
+    clearDraft() {
+      this.$store.dispatch('user/saveBookSubmissionsDraft', [])
+      clearTimeout(this.draftSaved)
+      this.draftSaved = null
     },
+    saveDraft: _.debounce(function() {
+      clearTimeout(this.draftSaved)
+      this.$store.dispatch('user/saveBookSubmissionsDraft', this.submissions)
+      this.draftSaved = setTimeout(() => {
+        this.draftSaved = null
+      }, 3000)
+    }, 500),
     newSubmissionObject() {
       return {
         attempts: 0,
@@ -124,6 +126,10 @@ export default {
     },
     clearSubmission(si) {
       this.submissions[si] = this.newSubmissionObject()
+    },
+    clearAllSubmissions(si) {
+      this.submissions = [this.newSubmissionObject()]
+      this.clearDraft()
     },
 
     metadataInputsChanged(si) {
@@ -158,6 +164,9 @@ export default {
         this.submissions[si].thumbnail = ''
         this.setConfirmed(si, false)
       }
+
+      this.saveDraft()
+
     }, 500),
 
     // populate empty and suggested fields with metadata
@@ -208,6 +217,7 @@ export default {
     },
 
     revalidate: _.throttle(function() {
+      this.saveDraft()
       if (this.errors.length > 0) {
         this.validate()
       }
@@ -357,8 +367,9 @@ export default {
         <hr>
 
         <div class="field is-grouped">
-          <button :class="{'is-loading':$uiBusy}" class="button is-rounded is-fullwidth mr-20" @click.prevent="saveDraft()">Save as draft</button>
-          <button :class="{'is-loading': $uiBusy}" class="button is-rounded is-primary is-fullwidth" @click.prevent="submitForReview()">Submit for review</button>
+          <button :class="{'is-loading': $uiBusy}" class="button is-rounded is-primary mr-20" @click.prevent="submitForReview()">Submit for review</button>
+          <button class="button is-rounded" @click.prevent="clearAllSubmissions">Reset All</button>
+          <button v-if="draftSaved" class="button is-flat" @click.prevent="saveDraft" style="cursor: text;">Draft Saved</button>
         </div>
 
         <div v-if="errors.length" class="field">
