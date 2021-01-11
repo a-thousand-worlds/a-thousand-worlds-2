@@ -51,6 +51,7 @@ a {
   word-break: break-word;
 
   button {
+    position: relative;
     cursor: pointer;
     width: 100%;
     border: 0;
@@ -80,10 +81,10 @@ a {
   border-radius: 99px;
   width: 15px;
   height: 15px;
-  margin: 0 -15px -10px 10px;
+  margin-left: 5px;
   text-align: center;
-  position: relative;
-  top: -2px;
+  position: absolute;
+  top: 0;
 }
 
 </style>
