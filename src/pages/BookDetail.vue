@@ -9,6 +9,7 @@ import LazyImage from '@/components/LazyImage'
 import Loader from '@/components/Loader'
 import NotFound from '@/pages/NotFound'
 import PrevNext from '@/components/PrevNext'
+import Tag from '@/components/Tag'
 
 export default {
   name: 'BookDetail',
@@ -22,6 +23,7 @@ export default {
     Loader,
     NotFound,
     PrevNext,
+    Tag,
   },
   computed: {
     book() {
@@ -60,8 +62,13 @@ export default {
     <div class="columns">
 
       <div class="column mr-0 is-two-fifths">
-        <div v-if="book" class="book-cover-wrapper has-text-centered">
-          <LazyImage class="cover" :src="book.cover" />
+        <div v-if="book">
+          <div class="book-cover-wrappertext-centered mb-20">
+            <LazyImage class="cover" :src="book.cover" />
+          </div>
+          <div class="tags">
+            <Tag v-for="tag of book.tags" :key="tag" :tag="tag" />
+          </div>
         </div>
       </div>
 
