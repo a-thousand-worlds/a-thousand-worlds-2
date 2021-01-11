@@ -131,7 +131,11 @@ const module = {
               u.roles.authorized = true
             }
             store.commit('setUser', u)
-            // store.dispatch('user/saveProfile', u.profile)
+          })
+          const profileRef = firebase.database().ref(`users/${u.uid}/profile`)
+          profileRef.on('value', snap => {
+            const profile = { ...defaultProfile, ...snap.val() }
+            store.commit('setProfile', profile)
           })
         }
         else {

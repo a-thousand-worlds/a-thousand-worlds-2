@@ -2,7 +2,7 @@ const bookcovers = require('bookcovers')
 const axios = require('axios').default
 const sharp = require('sharp')
 
-async function loadImage(url) {
+async function loadImage(url, scaleToMaxWidth = 0) {
   let res = null
   try {
     res = await axios.get(url, {
@@ -17,8 +17,12 @@ async function loadImage(url) {
     return null
   }
   // use sharp to convert webp to png (Jimp does not support webp)
-  const sharpImage = await sharp(res.data).toFormat('png')
-  const meta = await sharpImage.metadata()
+  let sharpImage = await sharp(res.data).toFormat('png')
+  let meta = await sharpImage.metadata()
+  if (scaleToMaxWidth && meta.width > scaleToMaxWidth) {
+    sharpImage = await sharpImage.scale(scaleToMaxWidth)
+    meta = await sharpImage.metadata()
+  }
   const buffer = await sharpImage.toBuffer()
 
   return {
@@ -30,7 +34,7 @@ async function loadImage(url) {
   }
 }
 
-async function coverImageByISBN(isbn) {
+async function coverImageByISBN(isbn, scaleToMaxWidth = 0) {
 
   console.log('Searching covers')
   // only search Amazon, as Google and OpenLibrary images are too small
@@ -54,7 +58,7 @@ async function coverImageByISBN(isbn) {
   }
 
   console.log(`Fetching book cover: ${url}`)
-  return loadImage(url)
+  return loadImage(url, scaleToMaxWidth)
 }
 
 module.exports = coverImageByISBN

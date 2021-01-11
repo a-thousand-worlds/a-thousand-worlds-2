@@ -4,7 +4,9 @@ export default {
   name: 'BooksManagerListPage',
   methods: {
     delBook(id) {
-      this.$store.dispatch('delBook', id).then(() => {
+      this.$store.commit('ui/setBusy', true)
+      this.$store.dispatch('books/remove', id).then(() => {
+        this.$store.commit('ui/setBusy', false)
       })
     }
   }

@@ -89,7 +89,7 @@ const module = mergeOne(managedCollection('submits/books'), {
 
       // eslint-disable-next-line  fp/no-loops
       for (const sub of list) {
-
+        console.log('approve books', sub)
         // create tags if required
         if (sub.otherTag?.length) {
           const tagId = v4()
