@@ -6,11 +6,14 @@ export default {
   props: ['book'],
   computed: {
     route() {
+      const slug = slugify(this.book.title.replace(/['’]|%\d\d/g, ''))
       return {
         name: 'BookDetail',
         params: {
           isbn: this.book.isbn,
-          slug: slugify(this.book.title.replace(/'/g, ''))
+          slug: slug
+            ? slug + '-'
+            : ''
         }
       }
     }

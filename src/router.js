@@ -19,7 +19,7 @@ const routes = [
     // e.g. http://localhost:8080/book/my-mommy-medicine-9781250140913
     // slug: my-mommy-medicine
     // isbn: 9781250140913
-    path: '/book/:slug(.+)?-:isbn',
+    path: '/book/:slug(.*?)?:isbn',
     name: 'BookDetail',
     component: () => import(/* webpackChunkName: "guest" */ './pages/BookDetail.vue')
   }, {
