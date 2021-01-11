@@ -28,13 +28,13 @@ const collectionModule = name => ({
       return state.data
     },
     /**
-     * Find an entry in the collection by a given key.
+     * Find a value in the collection by a given key.
      *
      * @param path   The path to match. Supports "/" or "." delimited path expressions.
      * @param value  The value to match. Accepts a predicate that takes the deep value returned by the key expression.
      */
     findBy: state => (path, value) => {
-      return Object.entries(state.data).find(
+      const entry = Object.entries(state.data).find(
         ([entryKey, entryValue]) => {
           const deepValue = get(entryValue, path)
           return typeof value === 'function'
@@ -42,6 +42,7 @@ const collectionModule = name => ({
             : deepValue === value
         }
       )
+      return entry ? entry[1] : null
     },
     list: state => () => state.loaded
       ? Object.values(state.data)
