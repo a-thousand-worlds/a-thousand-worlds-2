@@ -7,7 +7,7 @@ export default {
   },
   computed: {
     bookSubmissions() {
-      return this.$store.getters['bookSubmissions/list']()
+      return this.$store.getters['submissions/books/list']()
         .filter(sub => sub && !sub.approved && !sub.approvedBy && !sub.approvedAt)
     },
     submissionsGroups() {
@@ -31,7 +31,7 @@ export default {
   methods: {
     async approveAll() {
       this.$store.commit('ui/setBusy', true)
-      await this.$store.dispatch('bookSubmissions/approve', this.bookSubmissions)
+      await this.$store.dispatch('submissions/books/approve', this.bookSubmissions)
       this.$store.commit('ui/setBusy', false)
     }
   }

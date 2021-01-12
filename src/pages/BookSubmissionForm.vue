@@ -85,7 +85,7 @@ export default {
       if (!this.validate()) return
 
       this.$store.commit('ui/setBusy', true)
-      await this.$store.dispatch('bookSubmissions/submit', this.submissions)
+      await this.$store.dispatch('submissions/books/submit', this.submissions)
       this.$store.commit('ui/setBusy', false)
       this.$router.push({ name: 'SubmissionThankYou', params: { type: 'book' } })
     },

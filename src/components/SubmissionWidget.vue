@@ -14,7 +14,7 @@ export default {
         .find(book => book.isbn === this.sub.isbn)
     },
     sub() {
-      return this.$store.state.bookSubmissions.data[this.sid]
+      return this.$store.state.submissions.books.data[this.sid]
     },
   },
 }
@@ -23,7 +23,7 @@ export default {
 
 <template>
 
-  <div v-if="!$store.state.bookSubmissions.loaded">
+  <div v-if="!$store.state.submissions.books.loaded">
     <div class="button is-static is-loading">loading</div>
   </div>
   <div v-else-if="sub?.type === 'book'">

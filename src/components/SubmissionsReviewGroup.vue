@@ -11,7 +11,7 @@ export default {
     submitter: ''
   }),
   created () {
-    this.$store.dispatch('bookSubmissions/loadContributorProfile', this.group.by)
+    this.$store.dispatch('submissions/books/loadContributorProfile', this.group.by)
       .then(profile => {
         this.submitter = profile.name || `${profile.firstName} ${profile.lastName}`
       })
@@ -19,7 +19,7 @@ export default {
   methods: {
     async approveGroup() {
       this.$store.commit('ui/setBusy', true)
-      await this.$store.dispatch('bookSubmissions/approve', this.group.books)
+      await this.$store.dispatch('submissions/books/approve', this.group.books)
       this.$store.commit('ui/setBusy', false)
     },
   }

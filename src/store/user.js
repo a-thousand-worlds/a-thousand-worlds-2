@@ -83,6 +83,14 @@ const module = {
       // ctx.commit('ui/setBusy', false)
     },
 
+    async saveBookSubmissionsDraft(ctx, draft) {
+      // ctx.commit('ui/setBusy', true)
+      const profile = ctx.state.user.profile
+      profile.draftBooks = draft
+      await ctx.dispatch('saveProfile', profile)
+      // ctx.commit('ui/setBusy', false)
+    },
+
     async saveBundleSubmissionsDraft(ctx, draft) {
       // ctx.commit('ui/setBusy', true)
       const profile = ctx.state.user.profile
@@ -91,12 +99,10 @@ const module = {
       // ctx.commit('ui/setBusy', false)
     },
 
-    async saveBookSubmissionsDraft(ctx, draft) {
-      // ctx.commit('ui/setBusy', true)
+    async savePersonSubmissionDraft(ctx, draft) {
       const profile = ctx.state.user.profile
-      profile.draftBooks = draft
+      profile.draftPerson = draft
       await ctx.dispatch('saveProfile', profile)
-      // ctx.commit('ui/setBusy', false)
     },
 
     subscribe: store => {

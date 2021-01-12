@@ -59,12 +59,12 @@ export default {
   methods: {
     async reject() {
       await this.$store.commit('ui/setBusy', true)
-      await this.$store.dispatch('bookSubmissions/reject', this.sub)
+      await this.$store.dispatch('submissions/books/reject', this.sub)
       await this.$store.commit('ui/setBusy', false)
       this.$store.dispatch('ui/popup', 'Book rejected')
     },
     save: _.debounce(async function() {
-      await this.$store.dispatch('bookSubmissions/save', {
+      await this.$store.dispatch('submissions/books/save', {
         path: this.sub.id,
         value: { ...this.sub }
       })

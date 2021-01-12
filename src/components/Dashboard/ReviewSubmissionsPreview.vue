@@ -7,19 +7,19 @@ export default {
   },
   computed: {
     bookSubmissions() {
-      const subs = this.$store.state.bookSubmissions?.data || {}
+      const subs = this.$store.state.submissions.books?.data || {}
       return Object.keys(subs)
         .filter(sid => !subs[sid]?.approvedAt)
         .map(sid => subs[sid])
     },
     bundleSubmissions() {
-      const subs = this.$store.state.bundleSubmissions?.data || {}
+      const subs = this.$store.state.submissions.bundles?.data || {}
       return Object.keys(subs)
         .filter(sid => !subs[sid].approvedAt)
         .map(sid => subs[sid])
     },
     peopleSubmissions() {
-      return this.$store.state.peopleSubmissions?.data || {}
+      return this.$store.state.submissions.people?.data || {}
     }
   }
 
