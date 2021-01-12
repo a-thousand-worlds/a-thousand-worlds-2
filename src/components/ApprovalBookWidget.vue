@@ -34,12 +34,15 @@ export default {
       return this.sub.cover?.height / this.sub.cover?.width * 100 || 100
     },
     coverUrl() {
-      const ret = this.sub.cover?.url || this.sub.cover?.base64
-        ? this.sub.cover.base64.startsWith('data:image')
-          ? this.sub.cover.base64
-          : `data:image/png;base64,${this.sub.cover.base64}`
-        : this.sub.thumbnail || ''
-      return ret
+      return this.sub.thumbnail.startsWith('http')
+        ? this.sub.thumbnail
+        : this.sub.cover.url.startsWith('http')
+          ? this.sub.cover.url
+          : this.sub.cover.base64
+            ? this.sub.cover.base64.startsWith('data:image')
+              ? this.sub.cover.base64
+              : `data:image/png;base64,${this.sub.cover.base64}`
+            : ''
     },
     tags() {
       const tags = this.$store.getters['tags/books/listSorted']()

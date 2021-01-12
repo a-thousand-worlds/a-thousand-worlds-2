@@ -20,7 +20,7 @@ async function loadImage(url, scaleToMaxWidth = 0) {
   let sharpImage = await sharp(res.data).toFormat('png')
   let meta = await sharpImage.metadata()
   if (scaleToMaxWidth && meta.width > scaleToMaxWidth) {
-    sharpImage = await sharpImage.scale(scaleToMaxWidth)
+    sharpImage = await sharpImage.resize(scaleToMaxWidth)
     meta = await sharpImage.metadata()
   }
   const buffer = await sharpImage.toBuffer()
@@ -38,7 +38,8 @@ async function coverImageByISBN(isbn, scaleToMaxWidth = 0) {
 
   console.log('Searching covers')
   // only search Amazon, as Google and OpenLibrary images are too small
-  const covers = await bookcovers.withIsbn(isbn, { type: 'amazon' })
+  // --no-sandbox argument is required as puppeteer is running as root on firebase function
+  const covers = await bookcovers.withIsbn(isbn, { type: 'amazon', amazon: { args: ['--no-sandbox'] } })
 
   console.log('Retrieved covers', covers)
   let url = null
