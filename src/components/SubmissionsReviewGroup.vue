@@ -43,7 +43,7 @@ export default {
         <ApprovalBookWidget :submission="sub" />
       </div>
       <div class="has-text-right mt-20">
-        {{ $dateFormat(group.at) }} by {{ submitter }}
+        {{ submitter }}
       </div>
     </div>
 
