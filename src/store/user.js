@@ -62,6 +62,15 @@ const module = {
       ctx.commit('setProfile', profile)
     },
 
+    async updateProfile(ctx, values) {
+      const ref = firebase.database().ref(`users/${ctx.state.user.uid}/profile`)
+      await ref.update(values)
+      ctx.commit('setProfile', {
+        ...ctx.user.profile,
+        ...values,
+      })
+    },
+
     async toggleBookmark(ctx, mark) {
       const profile = ctx.state.user.profile
       if (profile.bookmarks[mark.id]) {

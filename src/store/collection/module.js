@@ -82,7 +82,14 @@ const collectionModule = name => ({
       if (!path) throw new Error('path required')
       const ref = firebase.database().ref(`${name}/${path}`)
       await ref.remove()
-    }
+    },
+    /** Updates a record in the collection in Firebase. */
+    async update(state, { path, values }) {
+      if (!path) throw new Error('path required')
+      if (values === undefined) throw new Error('values may not be undefined')
+      const ref = firebase.database().ref(`${name}/${path}`)
+      await ref.update(values)
+    },
   },
 })
 

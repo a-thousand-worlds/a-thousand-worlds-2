@@ -72,7 +72,6 @@ const module = mergeOne(managedCollection('submits/books'), {
 
     /** Reject submission */
     reject: async (context, sub) => {
-      // const ref = await firebase.database().ref(`submits/${sub.type}s/${sub.id}`)
       const now = dayjs()
       sub.approvedBy = context.rootState.user.user.uid
       sub.approvedAt = now.format()

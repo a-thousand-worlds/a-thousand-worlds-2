@@ -335,7 +335,7 @@ export default {
             <div v-if="!books[si] || (books[si] && !books[si].id)" class="field">
               <label class="label" :class="{ 'has-text-danger': hasError('tags') }">How would you categorize this book? Select all that apply</label>
               <div class="text-14 tablet-columns-2">
-                <div v-for="tag of $store.getters['tags/books/listSorted']()" :key="tag.id" class="control is-flex">
+                <div v-for="tag of $store.getters['tags/books/listSorted']()" :key="tag.id" class="control is-flex" style="column-break-inside: avoid;">
                   <input :id="tag.id+'-'+si" v-model="sub.tags[tag.id]" :name="tag.id" type="checkbox" class="checkbox mr-3 mb-3 mt-1" @input="revalidate">
                   <label class="label mb-1" :for="tag.id+'-'+si">
                     {{ tag.tag }}

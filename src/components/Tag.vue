@@ -3,16 +3,16 @@
 export default {
   // TODO: Pass tag id as prop not tag name
   props: ['nolink', 'tag'],
-  methods: {
-    toFilter() {
-      this.$store.commit('books/setFilters', [this.tagObject.tag])
-      this.$router.push({ name: 'Home' })
-    },
-  },
   computed: {
     tagObject() {
       const tagObject = this.$store.getters['tags/books/findBy']('tag', this.tag)
       return tagObject
+    },
+  },
+  methods: {
+    toFilter() {
+      this.$store.commit('books/setFilters', [this.tagObject.tag])
+      this.$router.push({ name: 'Home' })
     },
   }
 }
