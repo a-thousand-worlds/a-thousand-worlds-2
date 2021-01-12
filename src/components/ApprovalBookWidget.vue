@@ -1,4 +1,5 @@
 <script>
+import _ from 'lodash'
 import Jimp from 'jimp'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 
@@ -10,15 +11,14 @@ export default {
     MultiPersonField,
     SimpleInput,
   },
-  props: ['modelValue', 'checked'],
-  emits: ['update:modelValue', 'mark-me', 'reject-me', 'approve-me', 'submitter-loaded'],
+  props: ['submission', 'modelValue', 'checked'],
   data() {
     return {
       busy: false,
-      sub: this.modelValue || {},
+      sub: this.submission || {},
       editor: BalloonEditor,
-      selected: this.checked || false,
-      submitter: {},
+      // selected: this.checked || false,
+      // submitter: {},
       cover: null,
       people: []
     }
@@ -26,18 +26,20 @@ export default {
   computed: {
     ckConfig() {
       return {
-        toolbar: []
+        toolbar: [],
+        placeholder: 'No summary'
       }
     },
     coverRatio() {
-      return this.sub?.cover?.height / this.sub?.cover?.width * 100
+      return this.sub.cover?.height / this.sub.cover?.width * 100 || 100
     },
     coverUrl() {
-      return this.sub?.cover?.url || this.sub?.cover?.base64
-        ? this.sub?.cover?.base64.startsWith('data:image')
-          ? this.sub?.cover?.base64
-          : `data:image/png;base64,${this.sub?.cover?.base64}`
+      const ret = this.sub.cover?.url || this.sub.cover?.base64
+        ? this.sub.cover.base64.startsWith('data:image')
+          ? this.sub.cover.base64
+          : `data:image/png;base64,${this.sub.cover.base64}`
         : this.sub.thumbnail || ''
+      return ret
     },
     tags() {
       const tags = this.$store.getters['tags/books/listSorted']()
@@ -47,108 +49,23 @@ export default {
     }
   },
   watch: {
-    selected(next) {
-      this.$emit('mark-me', { ...this.sub, mark: next })
-    },
-    modelValue(next) {
+    submission(next) {
       this.sub = next
-      this.reloadSub()
     }
   },
-  created() {
-    this.reloadSub()
-  },
   methods: {
-    async reloadSub() {
-      const user = await this.$store.dispatch('bookSubmissions/loadContributorProfile', this.sub.createdBy)
-      user.uid = this.sub.createdBy
-      this.submitter = user
-      this.sub.submitter = user
-      this.$emit('submitter-loaded', user)
-      if (!this.sub.summary) {
-        this.sub.summary = 'No summary'
-      }
-      if (!this.sub.cover) {
-        this.sub.cover = {
-          url: '',
-          base64: '',
-          loaded: false,
-          width: 1,
-          height: 1
-        }
-      }
-    },
-    approve() {
-      let warnings = []
-      if (!this.sub.title
-          || !this.sub.title.length
-          || !this.sub.authors
-          || !this.sub.authors.length) {
-        alert('Book can\'t be created without title and author')
-        return
-      }
-      let total = 0
-      let isbn = 0
-      if (!this.sub.isbn || !this.sub.isbn.length) {
-        warnings = [...warnings, 'ISBN is not defined']
-        total++
-      }
-      if (!this.sub.cover || !this.sub?.cover?.base64 || !this.sub?.cover?.base64.length) {
-        warnings = [...warnings, 'no book cover - upload manually or search by isbn?']
-        total++
-        isbn++
-      }
-      if (!this.sub.summary || !this.sub.summary.length || this.sub.summary === 'No summary') {
-        warnings = [...warnings, 'no book summary - add manually or search by isbn?']
-        total++
-        isbn++
-      }
-      if (!Object.keys(this.sub.tags) || (this.sub.tags.other && !this.sub.otherTag.length)) {
-        warnings = [...warnings, 'book is not categorized - you can add tags manually']
-        total++
-      }
-      const isbnable = total === isbn ? 'All warnigns can be resolved by isbn search' : ''
-      if (warnings.length) {
-        const warn = `Warnings:
-  ${warnings.join('\r\t')}
-${isbnable}
-Continue and create book?`
-        if (confirm(warn)) {
-          this.$emit('approve-me', this.sub)
-        }
-      }
-      else {
-        this.$emit('approve-me', this.sub)
-      }
-    },
     async reject() {
-      this.$emit('reject-me', this.sub)
+      await this.$store.commit('ui/setBusy', true)
+      await this.$store.dispatch('bookSubmissions/reject', this.sub)
+      await this.$store.commit('ui/setBusy', false)
+      this.$store.dispatch('ui/popup', 'Book rejected')
     },
-    save() {
-      console.log('save back', this.sub)
-    },
-    isbnSearchState(state) {
-      this.busy = state
-    },
-    isbnSearchResult(book) {
-      console.log('isbn result', book)
-      if (!book) {
-        return
-      }
-      const src = book.google || book.openlib
-      this.sub.summary = src.summary || 'No summary'
-      this.sub.year = parseInt(src.publishedDate) || 0
-      this.sub.publisher = src.publisher
-      this.sub.goodread = book.grid || '0'
-      this.sub.cover = {
-        height: book.coverHeight,
-        width: book.coverWidth,
-      }
-    },
-    addAuthor() {
-      // eslint-disable-next-line fp/no-mutating-methods
-      this.people.push({ name: '', role: 'author' })
-    },
+    save: _.debounce(async function() {
+      await this.$store.dispatch('bookSubmissions/save', {
+        path: this.sub.id,
+        value: { ...this.sub }
+      })
+    }, 500),
     fileChange(e) {
       const file = e.target.files[0]
       const reader = new FileReader()
@@ -163,6 +80,7 @@ Continue and create book?`
               height: img.bitmap.width,
               width: img.bitmap.height,
             }
+            this.save()
           }
         })
       }
@@ -203,12 +121,14 @@ Continue and create book?`
         <div style="font-weight: bold;">
           <SimpleInput
             v-model="sub.title"
+            @update:modelValue="save()"
             :disabled="busy"
             :placeholder="'Title'" />
         </div>
         <div>
           <MultiPersonField
             v-model="sub.authors"
+            @update:modelValue="save()"
             :disabled="busy"
             :role="'author'"
             :placeholder="'author(s)'"
@@ -218,6 +138,7 @@ Continue and create book?`
         <div>
           <MultiPersonField
             v-model="sub.illustrators"
+            @update:modelValue="save()"
             :disabled="busy"
             :role="'illustrator'"
             :placeholder="'illustrator(s)'"
@@ -227,6 +148,7 @@ Continue and create book?`
         <div>
           <SimpleInput
             v-model="sub.year"
+            @update:modelValue="save()"
             :disabled="busy"
             :placeholder="'Year'" />
         </div>
@@ -235,12 +157,14 @@ Continue and create book?`
         <SimpleInput
           :disabled="busy"
           :placeholder="'ISBN'"
+            @update:modelValue="save()"
           v-model="sub.isbn"/>
       </div>
       <div>
         <SimpleInput
           :disabled="busy"
           :placeholder="'Publisher'"
+            @update:modelValue="save()"
           v-model="sub.publisher"/>
       </div>
       -->
@@ -248,8 +172,8 @@ Continue and create book?`
 
       <div class="column is-5" style="margin-top: -20px;">
         <!-- summary -->
-        <div v-if="sub && sub.summary">
-          <ckeditor v-model="sub.summary" :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" style="padding: 0;" />
+        <div>
+          <ckeditor @update:modelValue="save()" v-model="sub.summary" :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" style="padding: 0;" />
         </div>
         <!-- tags -->
         <div class="tags">
@@ -257,7 +181,7 @@ Continue and create book?`
         </div>
       </div>
 
-      <!-- delete -->
+      <!-- reject -->
       <div class="column is-1 has-text-right">
         <button :class="{disabled:busy}" :disabled="busy" class="is-flat is-uppercase is-underlined" @click="reject()">
           <i class="fas fa-times" style="font-size: 20px;" />

@@ -69,6 +69,7 @@ const module = mergeOne(managedCollection('submits/books'), {
       await context.dispatch('user/saveProfile', profile, { root: true })
       /**/
     },
+
     /** Reject submission */
     reject: async (context, sub) => {
       // const ref = await firebase.database().ref(`submits/${sub.type}s/${sub.id}`)
@@ -79,17 +80,16 @@ const module = mergeOne(managedCollection('submits/books'), {
       context.commit('setOne', { path: sub.id, value: sub })
       // const profile = context.rootState.user.user.profile
       const profile = await context.dispatch('loadContributorProfile', sub.createdBy)
-      console.log('rejector', profile)
       profile.submissions[sub.id] = 'reject'
 
       await context.dispatch('saveContributorProfile', { uid: sub.createdBy, profile })
     },
+
     /** Approves submissions group */
     approve: async (context, list) => {
 
       // eslint-disable-next-line  fp/no-loops
       for (const sub of list) {
-        console.log('approve books', sub)
         // create tags if required
         if (sub.otherTag?.length) {
           const tagId = v4()
@@ -137,6 +137,7 @@ const module = mergeOne(managedCollection('submits/books'), {
           goodread: sub.goodread || '',
           id: bookId,
           isbn: sub.isbn,
+          cover: sub.cover?.base64 ? sub.cover : null,
           publisher: sub.publisher,
           submissionId: sub.id,
           summary: sub.summary,
@@ -158,6 +159,7 @@ const module = mergeOne(managedCollection('submits/books'), {
       }
 
     },
+
     /** Delete submission from Firebase */
     delete: async (context, sid) => {
       const sub = context.state.data[sid]
@@ -171,6 +173,7 @@ const module = mergeOne(managedCollection('submits/books'), {
       await context.dispatch('saveContributorProfile', { uid: sub.createdBy, profile })
       await context.dispatch('remove', sid)
     }
+
   }
 })
 

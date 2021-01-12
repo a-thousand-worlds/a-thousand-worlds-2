@@ -81,7 +81,8 @@ export default {
             <CreatorsWidget v-if="book.creators" class="mb-2" :creators="book.creators" :linked="true" />
           </div>
 
-          <p class="summary">{{ book.summary }}</p>
+          <!-- summary/description is edited with ckeditor and may contain html -->
+          <p class="summary" :innerHTML="book.summary || book.description" />
 
         </div>
         <div v-else>

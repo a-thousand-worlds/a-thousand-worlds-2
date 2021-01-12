@@ -36,7 +36,8 @@ export default {
 </script>
 
 <template>
-  <div class="columns">
+  <!-- doing v-if check because this component used for bookmarks bar also, and it may happen, that bookmarked (by some user) book may be removed from database (by admin), so book to display will be undefined -->
+  <div v-if="book" class="columns">
     <div class="column is-one-third is-one-quarter-desktop is-offset-one-quarter-desktop p-0 mb-20">
       <BookDetailRoute :book="book" class="cover-data">
         <div class="img-cover bg-secondary" :style="{width: '100%', paddingTop: coverRatio+'%', backgroundImage: 'url('+bgImage+')', backgroundSize: 'contain'}" />
@@ -53,8 +54,8 @@ export default {
                 <h3 class="mb-10" style="color: black; margin-right: 15px;">{{ book.title }}</h3>
               </BookDetailRoute>
               <div class="authors">
-                <AuthorWidget v-for="person of book.authors" :key="person" :name="person" />
-                <CreatorsWidget v-if="book.creators" :creators="book.creators" :linked="true" />
+                <AuthorWidget v-for="person of book?.authors" :key="person" :name="person" />
+                <CreatorsWidget v-if="book?.creators" :creators="book.creators" :linked="true" />
               </div>
             </div>
 
