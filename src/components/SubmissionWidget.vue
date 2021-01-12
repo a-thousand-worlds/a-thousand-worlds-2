@@ -1,12 +1,18 @@
 <script>
 import StaticBookCover from '@/components/StaticBookCover'
+import BookDetailLink from '@/components/BookDetailLink'
 
 export default {
   components: {
+    BookDetailLink,
     StaticBookCover,
   },
   props: ['sid'],
   computed: {
+    book() {
+      return Object.values(this.$store.state.books.data)
+        .find(book => book.isbn === this.sub.isbn)
+    },
     sub() {
       return this.$store.state.bookSubmissions.data[this.sid]
     },
@@ -21,7 +27,10 @@ export default {
     <div class="button is-static is-loading">loading</div>
   </div>
   <div v-else-if="sub?.type === 'book'">
-    <StaticBookCover :book="sub" />
+    <BookDetailLink v-if="book" :book="book">
+      <StaticBookCover :book="sub" />
+    </BookDetailLink>
+    <StaticBookCover v-else :book="sub" />
   </div>
   <div v-else-if="sub?.type === 'bundle'">
     <h4>

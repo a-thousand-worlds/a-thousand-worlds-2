@@ -2,14 +2,14 @@
 import AuthorWidget from '@/components/AuthorWidget'
 import CreatorsWidget from '@/components/CreatorsWidget'
 import BookmarkButton from '@/components/BookmarkButton'
-import BookDetailRoute from '@/components/BookDetailRoute'
+import BookDetailLink from '@/components/BookDetailLink'
 
 export default {
   components: {
     AuthorWidget,
     CreatorsWidget,
     BookmarkButton,
-    BookDetailRoute,
+    BookDetailLink,
   },
   props: ['book'],
   computed: {
@@ -33,7 +33,7 @@ export default {
 </script>
 
 <template>
-  <BookDetailRoute :book="book">
+  <BookDetailLink :book="book">
     <div :style="{width: '100%', paddingTop: coverRatio+'%', backgroundImage: 'url('+bgImage+')', backgroundSize: 'contain'}" class="book-cover-wrapper bg-secondary">
       <div class="cover-shadow" />
       <div class="cover-data">
@@ -60,7 +60,7 @@ export default {
       </div>
 
     </div>
-  </BookDetailRoute>
+  </BookDetailLink>
 </template>
 
 <style lang="scss" scoped>

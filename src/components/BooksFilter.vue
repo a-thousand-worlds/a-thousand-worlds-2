@@ -1,6 +1,9 @@
 <script>
 export default {
   computed: {
+    filters() {
+      return Object.values(this.$store.state.books.filters)
+    },
     tags() {
       return this.$store.getters['tags/books/listSorted']()
     },
@@ -27,7 +30,7 @@ export default {
         <button v-if="filter.showOnFront" :class="{toggled:filterOn(filter.tag)}" class="pb-2" style="padding-left: 2px;">{{ filter.tag }}<span v-if="filterOn(filter.tag)" class="remove-tag">{{ '—' }}</span></button>
       </li>
     </ul>
-    <button class="button is-rounded is-primary" @click.prevent="resetFilters">Reset Filter</button>
+    <button v-if="filters.length > 0" class="button is-rounded is-primary" @click.prevent="resetFilters">Reset Filter</button>
   </aside>
 </template>
 
@@ -51,6 +54,7 @@ a {
   word-break: break-word;
 
   button {
+    position: relative;
     cursor: pointer;
     width: 100%;
     border: 0;
@@ -80,10 +84,10 @@ a {
   border-radius: 99px;
   width: 15px;
   height: 15px;
-  margin: 0 -15px -10px 10px;
+  margin-left: 5px;
   text-align: center;
-  position: relative;
-  top: -2px;
+  position: absolute;
+  top: 0;
 }
 
 </style>

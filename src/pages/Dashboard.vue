@@ -1,12 +1,12 @@
 <script>
-import DashboardReviewSubmissionsPreview from '@/components/DashboardReviewSubmissionsPreview'
-import DashboardYourSubmissions from '@/components/DashboardYourSubmissions'
+import ReviewSubmissionsPreview from '@/components/Dashboard/ReviewSubmissionsPreview'
+import YourSubmissions from '@/components/Dashboard/YourSubmissions'
 import InviteWidget from '@/components/InviteWidget'
 
 export default {
   components: {
-    DashboardReviewSubmissionsPreview,
-    DashboardYourSubmissions,
+    ReviewSubmissionsPreview,
+    YourSubmissions,
     InviteWidget,
   },
   data() {
@@ -73,12 +73,12 @@ export default {
       </section>
 
       <section v-if="$can('submit') && hasSubmissions" class="section my-30 py-0">
-        <DashboardYourSubmissions />
+        <YourSubmissions />
       </section>
 
       <section v-if="$can('review')" class="section my-30 py-0">
         <h2>Review Submissions</h2>
-        <DashboardReviewSubmissionsPreview />
+        <ReviewSubmissionsPreview />
       </section>
 
     </div>

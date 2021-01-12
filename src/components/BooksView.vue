@@ -7,6 +7,14 @@ export default {
     BookCoverView,
     BookListView,
   },
+  computed: {
+    books() {
+      return this.$store.getters['books/filtered']
+    },
+    filters() {
+      return Object.values(this.$store.state.books.filters)
+    },
+  },
   methods: {
     logBooks() {
       console.log(this.$store.state)
@@ -20,13 +28,14 @@ export default {
 
 <template>
   <div class="mx-20">
-    <div v-if="$store.state.filter?.length && $store.getters['books/filtered']?.length === 0">
-      <p class="mb-20">No books matching books. </p>
-      <p><a @click.prevent="resetFilter">Reset Filter</a></p>
+
+    <div v-if="filters.length && books.length === 0" class="my-50 has-text-centered">
+      <h2 class="mb-20">No matching books</h2>
+      <p><a @click.prevent="resetFilter" class="button is-rounded is-primary">Reset Filter</a></p>
     </div>
 
-    <div :class="{masonry:$store.state.ui.viewMode==='covers', 'with-bookmarks': $store.state.ui.bookmarksOpen}">
-      <div v-for="book of $store.getters['books/filtered']" :key="book.id" class="masonry-item">
+    <div :class="{ masonry: $store.state.ui.viewMode === 'covers', 'with-bookmarks': $store.state.ui.bookmarksOpen }">
+      <div v-for="book of books" :key="book.id" class="masonry-item">
         <BookCoverView v-if="$store.state.ui.viewMode === 'covers'" :book="book" />
         <BookListView v-if="$store.state.ui.viewMode === 'list'" :book="book" />
       </div>
