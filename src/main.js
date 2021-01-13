@@ -13,15 +13,26 @@ router.beforeEach((to, from, next) => {
     next()
     return
   }
-  if (!store.state.user.user || !store.state.user.user.roles) {
-    store.commit('setNAP', to.path)
-    next('/loading')
-    return
-  }
   let access = to.meta.access
   if (!Array.isArray(access)) access = [access]
-  if (access.reduce((acc, x) => store.state.user.user.roles[x] || acc, false)) next()
-  else next('/404')
+  if (!store.state.user.user || !store.state.user.user.roles) {
+    store.commit('ui/setPageLoading', true)
+    store.dispatch('user/next')
+      .then(user => {
+        store.commit('ui/setPageLoading', false)
+        if (access.reduce((acc, x) => store.state.user.user.roles[x] || acc, false)) next()
+        else next('/404')
+      })
+      .catch(err => {
+        store.commit('ui/setPageLoading', false)
+        console.log('user/next error', err)
+        next('/404')
+      })
+  }
+  else {
+    if (access.reduce((acc, x) => store.state.user.user.roles[x] || acc, false)) next()
+    else next('/404')
+  }
 })
 
 router.afterEach((to, from) => {

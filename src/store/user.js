@@ -4,11 +4,19 @@ import firebase from '@/firebase'
 const module = {
   namespaced: true,
   state: () => ({
-    user: null
+    user: null,
+    nextPromise: null
   }),
   mutations: {
+    setNextPromise(state, accept) {
+      state.nextPromise = accept
+    },
     setUser: (state, user) => {
       state.user = user
+      if (state.nextPromise) {
+        state.nextPromise(state.user)
+        state.nextPromise = null
+      }
     },
     setProfile: (ctx, p) => {
       if (ctx.user) ctx.user.profile = p
@@ -18,6 +26,13 @@ const module = {
     }
   },
   actions: {
+
+    // next subscription used by router on access validation
+    next(ctx) {
+      return new Promise((resolve, reject) => {
+        ctx.commit('setNextPromise', resolve)
+      })
+    },
 
     login(ctx, data) {
       return firebase.auth().signInWithEmailAndPassword(data.email, data.password)

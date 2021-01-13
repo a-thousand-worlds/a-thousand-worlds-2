@@ -2,6 +2,7 @@ const module = {
   namespaced: true,
   state: () => ({
     busy: false,
+    pageLoading: false,
     bookmarksOpen: false,
     viewMode: 'covers',
     dlgConfirm: null,
@@ -12,6 +13,9 @@ const module = {
   mutations: {
     setBusy: (state, value) => {
       state.busy = value
+    },
+    setPageLoading: (state, value) => {
+      state.pageLoading = value
     },
     setBookmarksOpen: (state, value) => {
       state.bookmarksOpen = value

@@ -10,6 +10,7 @@ import Popups from '@/components/ui/Popups'
 import Prompt from '@/components/ui/Prompt'
 import RightBar from '@/components/RightBar.vue'
 import Welcome from '@/components/Welcome'
+import Loader from '@/components/Loader'
 
 export default ({
   name: 'App',
@@ -24,6 +25,7 @@ export default ({
     Prompt,
     RightBar,
     Welcome,
+    Loader,
   },
   data() {
     const hour = Math.floor(Date.now() / 1000 / 60 / 60)
@@ -74,6 +76,9 @@ export default ({
         <Confirm />
         <Prompt />
         <Alert />
+        <div v-if="$store.state.ui.pageLoading" class="has-text-centered">
+          <Loader />
+        </div>
         <router-view />
       </section>
       <section v-if="$store.state.ui.bookmarksOpen" class="bookmarks column">

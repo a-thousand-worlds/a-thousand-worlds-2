@@ -46,10 +46,6 @@ const routes = [
     path: '/signup',
     name: 'Signup',
     component: () => import(/* webpackChunkName: "guest" */ './pages/LogIn.vue')
-  }, {
-    path: '/loading',
-    name: 'Loader',
-    component: () => import(/* webpackChunkName: "guest" */ './pages/Loader.vue')
   }, { // User authorized paged
     path: '/dashboard',
     name: 'Dashboard',
