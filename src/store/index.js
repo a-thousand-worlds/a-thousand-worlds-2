@@ -25,13 +25,7 @@ const store = createStore({
     users,
   },
   state: {
-    noAccessPath: '',
     auth: false,
-  },
-  mutations: {
-    setNAP(state, p) {
-      state.noAccessPath = p
-    },
   },
   actions: {
     async subscribe({ state, dispatch, commit }) {
