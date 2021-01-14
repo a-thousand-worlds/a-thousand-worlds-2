@@ -52,7 +52,7 @@ export default {
       </section>
 
       <section v-if="$can('submit')" class="section bordered-top">
-        <h2>Suggest a book or bundle for A Thousand Worlds</h2>
+        <h2>Suggest a book or bundle</h2>
         <div class="field is-grouped">
           <div class="control">
             <router-link class="button is-outlined is-primary" :to="{name:'BookSuggest'}">Book</router-link>
