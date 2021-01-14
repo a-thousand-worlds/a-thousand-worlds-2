@@ -48,8 +48,10 @@ export default {
 </template>
 
 <style scoped lang="scss">
+@import '@/assets/style/mixins.scss';
 
 .menu-list a {
+  color: black;
   font-size: 18px;
   font-weight: bold;
   text-transform: uppercase;
@@ -57,6 +59,7 @@ export default {
 
   &:hover {
     background: none;
+    @include primary(color)
   }
 }
 
