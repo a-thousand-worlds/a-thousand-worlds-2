@@ -17,14 +17,25 @@ export default {
     }
   },
   computed: {
-    submissionsList() {
-      return Object.keys(this.$store.state.user.user.profile.submissions || {})
+    bookSubmissions() {
+      return this.$store.getters['submissions/books/list']()
     },
-    hasSubmissions() {
-      return !!this.submissionsList.length
+    hasPendingPersonSubmission() {
+      return this.userSubmissions[this.peopleSubmission]
+    },
+    person() {
+      return null
+    },
+    userSubmissions() {
+      return this.$store.state.user.user.profile.submissions || {}
     },
     username() {
       return this.$store.state.user.user?.profile.name || this.$store.state.user.user?.profile.email
+    },
+    peopleSubmission() {
+      const peopleSubmissions = this.$store.state.submissions.people.data
+      return Object.keys(this.userSubmissions)
+        .find(sid => peopleSubmissions[sid]?.type === 'people')
     },
   },
 }
@@ -43,10 +54,15 @@ export default {
       </div>
 
       <section v-if="$iam('creator')" class="section bordered-top">
-        <h2>Please fill our your profile for the People Directory</h2>
-        <div class="field is-grouped">
-          <div class="control my-20">
-            <router-link class="button is-primary" :to="{name:'PeopleSubmissionForm'}">Create Profile</router-link>
+        <div v-if="hasPendingPersonSubmission">
+          <h2>Thank you! A Thousand Worlds will review your profile and reach out if we have questions or once it's been approved.</h2>
+        </div>
+        <div v-else-if="!person">
+          <h2>Please fill our your profile for the People Directory</h2>
+          <div class="field is-grouped">
+            <div class="control my-20">
+              <router-link class="button is-primary" :to="{name:'PeopleSubmissionForm'}">Create Profile</router-link>
+            </div>
           </div>
         </div>
       </section>
@@ -72,7 +88,7 @@ export default {
         </ul>
       </section>
 
-      <section v-if="$can('submit') && hasSubmissions" class="section my-30 py-0">
+      <section v-if="$can('submit') && bookSubmissions.length" class="section my-30 py-0">
         <YourSubmissions />
       </section>
 
