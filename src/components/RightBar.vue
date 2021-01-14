@@ -102,6 +102,10 @@ export default {
     font-weight: bold;
   }
 
+  &:hover {
+    background-color: transparent;
+  }
+
   &.active {
     pointer-events: none;
     cursor: default;
