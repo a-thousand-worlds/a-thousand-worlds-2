@@ -136,12 +136,16 @@ export default {
 @import "bulma/sass/utilities/_all.sass";
 @import "bulma/sass/form/shared.sass";
 @import '@/assets/style/vars.scss';
-@import '@/assets/style/menu.scss';
+@import '@/assets/style/mixins.scss';
 
 .editor {
   border-radius: 5px !important;
   border: solid 1px #ddd;
   min-height: 10rem;
+}
+
+.menu-list a.is-active {
+  @include primary(background-color);
 }
 
 // cannot add is-danger directly to Content element since dynamic classes interfere with CKEditor classes
