@@ -63,9 +63,9 @@ const routes = [
   }, {
     path: '/suggest/:type/thankyou',
     name: 'SubmissionThankYou',
-    component: () => import(/* webpackChunkName: "contributor" */ './pages/SubmissionThankYou.vue'),
+    component: () => import(/* webpackChunkName: "user" */ './pages/SubmissionThankYou.vue'),
     meta: {
-      access: ['contributor', 'advisor', 'owner']
+      access: ['contributor', 'creator', 'advisor', 'owner']
     }
   }, {
     path: '/suggest/book',
