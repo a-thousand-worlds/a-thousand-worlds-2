@@ -14,8 +14,8 @@ const collectionModule = name => ({
       state.data = data
       state.loaded = true
     },
-    setOne(state, { path, data }) {
-      set(state.data, path, data)
+    setOne(state, { path, value }) {
+      set(state.data, path, value)
     }
   },
   getters: {
@@ -60,7 +60,7 @@ const collectionModule = name => ({
     async loadOne(state, path) {
       const value = await firebaseGet(`${name}/${path}`)
       const valueNotNull = value || {}
-      state.commit('setOne', { path, data: valueNotNull })
+      state.commit('setOne', { path, value: valueNotNull })
       return valueNotNull
     },
     /** Saves a record to the collection in Firebase. */

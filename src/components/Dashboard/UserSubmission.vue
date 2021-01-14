@@ -13,8 +13,11 @@ export default {
       return Object.values(this.$store.state.books.data)
         .find(book => book.isbn === this.sub.isbn)
     },
-    sub() {
+    bookSub() {
       return this.$store.state.submissions.books.data[this.sid]
+    },
+    userSub() {
+      return this.$store.state.user.user.profile.submissions[this.sid]
     },
   },
 }
@@ -26,18 +29,18 @@ export default {
   <div v-if="!$store.state.submissions.books.loaded">
     <div class="button is-static is-loading">loading</div>
   </div>
-  <div v-else-if="sub?.type === 'book'">
+  <div v-else-if="bookSub?.type === 'book'">
     <BookDetailLink v-if="book" :book="book">
-      <StaticBookCover :book="sub" />
+      <StaticBookCover :book="bookSub" />
     </BookDetailLink>
-    <StaticBookCover v-else :book="sub" />
+    <StaticBookCover v-else :book="bookSub" />
   </div>
-  <div v-else-if="sub?.type === 'bundle'">
+  <div v-else-if="bookSub?.type === 'bundle'">
     <h4>
       <i class="fas fa-cubes" /> Bundle
     </h4>
-    <div>Name: {{ sub.name }}</div>
-    <div>Books: {{ sub.books.length }}</div>
+    <div>Name: {{ bookSub.name }}</div>
+    <div>Books: {{ bookSub.books.length }}</div>
   </div>
 
 </template>

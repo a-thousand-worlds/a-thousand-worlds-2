@@ -60,9 +60,11 @@ const module = mergeOne(managedCollection('submits/books'), {
           type: 'book',
           year: sub.year || '',
         }
-        await context.dispatch('save', { path: sid, value: subData })
-        profile.submissions[sid] = 'review'
+        // set state before saving to Firebase, otherwise value gets set to undefined
         context.commit('setOne', { path: sid, value: subData })
+        context.dispatch('save', { path: sid, value: subData })
+        profile.submissions[sid] = 'review'
+        console.log('subData', subData)
         // eslint-disable-next-line  fp/no-mutating-methods
         ids.push(sid)
       }

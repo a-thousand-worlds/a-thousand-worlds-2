@@ -1,32 +1,33 @@
 <script>
-import SubmissionWidget from '@/components/SubmissionWidget'
 import Toggle from '@/components/Toggle'
+import UserBookSubmission from '@/components/UserBookSubmission'
 
 export default {
   components: {
-    SubmissionWidget,
     Toggle,
+    UserBookSubmission,
   },
   props: [],
   computed: {
     acceptedSubmissions() {
-      return this.submissionsByStatus('approve')
+      return this.filterByValue(this.userSubmissions, 'approve')
     },
     pendingSubmissions() {
-      return this.submissionsByStatus('review')
+      return this.filterByValue(this.userSubmissions, 'review')
     },
     rejectedSubmissions() {
-      return this.submissionsByStatus('reject')
+      return this.filterByValue(this.userSubmissions, 'reject')
     },
     userSubmissions() {
       return this.$store.state.user.user.profile.submissions || {}
     },
   },
   methods: {
-    submissionsByStatus(status) {
-      return Object.entries(this.userSubmissions)
-        .filter(([sid, value]) => value === status)
-        .map(([sid, value]) => sid)
+    /** Filters a collection by a value and returns ids. */
+    filterByValue(collection, value) {
+      return Object.entries(collection)
+        .filter(([sid, v]) => v === value)
+        .map(([sid, v]) => sid)
     },
   }
 }
@@ -38,8 +39,8 @@ export default {
     <div v-if="pendingSubmissions.length" class="my-20">
       <h2>{{ $can('review') ? 'Your ' : '' }}Pending Submissions</h2>
       <div class="columns is-multiline">
-        <div v-for="(sid, i) of pendingSubmissions" :key="i" class="column is-6-tablet is-4-desktop is-3-widescreen">
-          <SubmissionWidget :sid="sid" />
+        <div v-for="sid of pendingSubmissions" :key="sid" class="column is-6-tablet is-4-desktop is-3-widescreen">
+          <UserBookSubmission :sid="sid" />
         </div>
       </div>
     </div>
@@ -47,8 +48,8 @@ export default {
     <div v-if="acceptedSubmissions.length" class="my-20">
       <h2>{{ $can('review') ? 'Your ' : '' }}Accepted Submissions</h2>
       <div class="columns is-multiline">
-        <div v-for="(sid, i) of acceptedSubmissions" :key="i" class="column is-6-tablet is-4-desktop is-3-widescreen">
-          <SubmissionWidget :sid="sid" />
+        <div v-for="sid of acceptedSubmissions" :key="sid" class="column is-6-tablet is-4-desktop is-3-widescreen">
+          <UserBookSubmission :sid="sid" />
         </div>
       </div>
     </div>
@@ -58,8 +59,8 @@ export default {
         <template #label>Not Approved</template>
         <template #content>
           <div class="columns is-multiline">
-            <div v-for="(sid, i) of rejectedSubmissions" :key="i" class="column is-6-tablet is-4-desktop is-3-widescreen">
-              <SubmissionWidget :sid="sid" />
+            <div v-for="sid of rejectedSubmissions" :key="sid" class="column is-6-tablet is-4-desktop is-3-widescreen">
+              <UserBookSubmission :sid="sid" />
             </div>
           </div>
         </template>
