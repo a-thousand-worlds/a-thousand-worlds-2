@@ -150,7 +150,10 @@ export default {
 
       this.loadingBook[si] = true
       const search = `${title} by ${authors} ${illustrators}`
-      const result = await findBookByKeyword(search)
+      const result = await findBookByKeyword(search).catch(e => {
+        console.error(e)
+        return null
+      })
       this.submissions[si].attempts = 1
       this.loadingBook[si] = false
       const { isbn, thumbnail } = result || {}
@@ -195,7 +198,10 @@ export default {
 
       this.loadingBook[si] = true
       const search = `${this.submissions[si].isbn}`
-      const result = await findBookByKeyword(search)
+      const result = await findBookByKeyword(search).catch(e => {
+        console.error(e)
+        return null
+      })
       this.loadingBook[si] = false
       const { isbn, thumbnail } = result || {}
       if (isbn) {
