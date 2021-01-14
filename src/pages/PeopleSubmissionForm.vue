@@ -162,7 +162,7 @@ export default {
 
           <!-- bonus -->
           <div class="field">
-            <label class="label"><b>Links to bonus material relevant to you:</b> (optional)</label>
+            <label class="label"><b>Links to bonus material relevant to you</b> (optional)</label>
             <input type="text" class="input" v-model="submission.bonus">
           </div>
 
