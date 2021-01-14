@@ -1,8 +1,12 @@
 <script>
 import _ from 'lodash'
 import validator from '@/mixins/validator'
+import Toggle from '@/components/Toggle'
 
 export default {
+  components: {
+    Toggle,
+  },
   mixins: [
     validator(function() {
       return [
@@ -15,12 +19,10 @@ export default {
     return {
       draftSaved: null,
       genderOptions: [
-        'Gender Non-Conforming',
-        'Non-Binary',
-        'Woman',
-        'Man',
         'Trans Woman',
         'Trans Man',
+        'Non-Binary',
+        'Gender Non-Conforming',
         'Genderqueer',
         'Genderfluid',
         'Agender',
@@ -141,6 +143,36 @@ export default {
                 Author/Illustrator
               </label>
             </div>
+          </div>
+
+          <!-- gender -->
+          <div class="field">
+            <label class="label" :class="{ 'has-text-danger': hasError('gender') }" style="font-weight: bold; text-transform: uppercase;">Gender</label>
+
+            <!-- basic genders (M/W) -->
+            <div class="sublabel">
+              <div class="control is-flex">
+                <input type="radio" name="gender" id="gender-woman" value="Woman" class="checkbox mb-3 mt-1">
+                <label class="label pl-2 pb-1" for="gender-woman" style="cursor: pointer;">Woman</label>
+              </div>
+              <div class="control is-flex">
+                <input type="radio" name="gender" id="gender-man" value="Man" class="checkbox mb-3 mt-1">
+                <label class="label pl-2 pb-1" for="gender-man" style="cursor: pointer;">Man</label>
+              </div>
+            </div>
+
+            <!-- more genders -->
+            <Toggle>
+              <template #label>More</template>
+              <template #content>
+                <div class="sublabel tablet-columns-2 m-10">
+                  <div v-for="(gender, i) of genderOptions" :key="gender" class="control is-flex" style="column-break-inside: avoid;">
+                    <input type="radio" name="gender" :id="`gender${i}`" :value="submission.gender" class="checkbox mb-3 mt-1">
+                    <label class="label pl-2 pb-1" :for="`gender${i}`" style="cursor: pointer;">{{ gender }}</label>
+                  </div>
+                </div>
+              </template>
+            </Toggle>
           </div>
 
           <!-- identity -->
