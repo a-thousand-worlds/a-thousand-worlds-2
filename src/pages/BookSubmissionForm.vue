@@ -194,10 +194,13 @@ export default {
     }, 500),
 
     async searchManualIsbn(si) {
-      if (!isValidISBN(this.submissions[si].isbn)) return
+
+      const sub = this.submissions[si]
+
+      if (!isValidISBN(sub.isbn)) return
 
       this.loadingBook[si] = true
-      const search = `${this.submissions[si].isbn}`
+      const search = `${sub.isbn}`
       const result = await findBookByKeyword(search).catch(e => {
         console.error(e)
         return null
@@ -205,12 +208,17 @@ export default {
       this.loadingBook[si] = false
       const { isbn, thumbnail } = result || {}
       if (isbn) {
-        this.submissions[si].isbn = isbn
-        this.submissions[si].thumbnail = thumbnail
-        this.submissions[si].attempts++
+        sub.isbn = isbn
+        sub.thumbnail = thumbnail
+        sub.attempts = 2
+        this.setConfirmed(si, null)
         this.updateMetadata(si)
       }
-      this.setConfirmed(si, null)
+      else {
+        sub.isbnLastFound = sub.isbn
+        sub.attempts = 999
+        this.setConfirmed(si, true)
+      }
     },
 
     validateSubmission(sub) {
@@ -263,14 +271,14 @@ export default {
               </div>
             </div>
 
-            <div v-if="loadingBook[si] || books[si] || coverImage(si) || sub.confirmed === false" class="field">
+            <div v-if="loadingBook[si] || books[si] || coverImage(si) || sub.confirmed != null" class="field">
               <div class="columns">
 
                 <!-- cover/loading -->
                 <div class="column is-narrow">
                   <Loader v-if="loadingBook[si]" role="loading" />
                   <div v-else class="bg-secondary">
-                    <img :src="coverImage(si) || sub.confirmed === false" role="thumbnail" alt="thumbnail" style="display: block; min-width: 120px; min-height: 150px; max-width: 265px;" :style="sub.confirmed === false && !books[si] ? { visibility: 'hidden' } : null">
+                    <img :src="coverImage(si) || sub.confirmed === false" role="thumbnail" alt="thumbnail" style="display: block; min-width: 120px; min-height: 150px; max-width: 265px;" :style="(sub.confirmed === false || (sub.confirmed === true && !coverImage(si))) && !books[si] ? { visibility: 'hidden' } : null">
                   </div>
                 </div>
                 <div class="column is-flex is-align-items-center">
@@ -284,7 +292,7 @@ export default {
                   </div>
 
                   <!-- Is this your book? -->
-                  <div v-else-if="!loadingBook[si] && (coverImage(si) || sub.confirmed === false)" class="column field">
+                  <div v-else-if="!loadingBook[si] && (coverImage(si) || sub.confirmed != null)" class="column field">
                     <div v-if="sub.confirmed === null" class="control mb-20">
                       <label class="label" :class="{ 'has-text-danger': hasError('tags') }">Is this your book?</label>
                       <div class="field" :class="{ 'is-grouped': sub.attempts === 1 }">
