@@ -7,19 +7,20 @@ export default {
   },
   computed: {
     bookSubmissions() {
-      const subs = this.$store.state.submissions.books?.data || {}
-      return Object.keys(subs)
-        .filter(sid => !subs[sid]?.approvedAt)
-        .map(sid => subs[sid])
+      return this.getPending(this.$store.state.submissions.books?.data)
     },
     bundleSubmissions() {
-      const subs = this.$store.state.submissions.bundles?.data || {}
-      return Object.keys(subs)
-        .filter(sid => !subs[sid].approvedAt)
-        .map(sid => subs[sid])
+      return this.getPending(this.$store.state.submissions.bundles?.data)
     },
     peopleSubmissions() {
-      return this.$store.state.submissions.people?.data || {}
+      return this.getPending(this.$store.state.submissions.people?.data)
+    }
+  },
+  methods: {
+    /** Gets the values of all records that do not have an approvedAt timestamp. */
+    getPending(data) {
+      return Object.values(data || {})
+        .filter(sub => !sub.approvedAt)
     }
   }
 
