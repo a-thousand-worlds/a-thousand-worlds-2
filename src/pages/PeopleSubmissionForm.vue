@@ -139,7 +139,7 @@ export default {
             </div>
             <div class="control">
               <label style="cursor: pointer;">
-                <input type="radio" name="title" v-model="submission.title" value="Author/Illustrattor">
+                <input type="radio" name="title" v-model="submission.title" value="Author/Illustrator">
                 Author/Illustrator
               </label>
             </div>
@@ -151,12 +151,13 @@ export default {
 
             <!-- basic genders (M/W) -->
             <div class="sublabel">
+
               <div class="control is-flex">
-                <input type="radio" name="gender" id="gender-woman" value="Woman" class="checkbox mb-3 mt-1">
+                <input type="radio" name="gender" id="gender-woman" v-model="submission.gender" value="Woman" class="checkbox mb-3 mt-1">
                 <label class="label pl-2 pb-1" for="gender-woman" style="cursor: pointer;">Woman</label>
               </div>
               <div class="control is-flex">
-                <input type="radio" name="gender" id="gender-man" value="Man" class="checkbox mb-3 mt-1">
+                <input type="radio" name="gender" id="gender-man" v-model="submission.gender" value="Man" class="checkbox mb-3 mt-1">
                 <label class="label pl-2 pb-1" for="gender-man" style="cursor: pointer;">Man</label>
               </div>
             </div>
@@ -167,7 +168,7 @@ export default {
               <template #content>
                 <div class="sublabel tablet-columns-2 m-10">
                   <div v-for="(gender, i) of genderOptions" :key="gender" class="control is-flex" style="column-break-inside: avoid;">
-                    <input type="radio" name="gender" :id="`gender${i}`" :value="submission.gender" class="checkbox mb-3 mt-1">
+                    <input type="radio" name="gender" :id="`gender${i}`" v-model="submission.gender" :value="gender" class="checkbox mb-3 mt-1">
                     <label class="label pl-2 pb-1" :for="`gender${i}`" style="cursor: pointer;">{{ gender }}</label>
                   </div>
                 </div>
