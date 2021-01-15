@@ -1,6 +1,7 @@
 <script>
 import _ from 'lodash'
 import Loader from '@/components/Loader'
+import Engagements from '@/store/userEngagements'
 
 export default {
   name: 'LogInPage',
@@ -11,26 +12,18 @@ export default {
     return {
       // the active tab (login or signup)
       active: this.getActiveFromUrl(),
-      email: this.$store.state.user?.profile?.email || '',
-      name: this.$store.state.user?.profile?.name || '',
+      email: this.$store.state.user.user?.profile?.email || '',
+      name: this.$store.state.user.user?.profile?.name || '',
       // all options for enagement checkboxes
-      engagementCategories: [
-        { id: 0, text: 'CATEGORY' },
-        { id: 1, text: 'CATEGORY' },
-        { id: 2, text: 'CATEGORY' },
-        { id: 3, text: 'CATEGORY' },
-        { id: 4, text: 'CATEGORY' },
-        { id: 5, text: 'CATEGORY' },
-        { id: 6, text: 'CATEGORY' },
-        { id: 7, text: 'CATEGORY' },
-      ],
+      engagementCategories: Engagements,
       disableAfterSave: false,
       disableResetPassword: false,
       error: null,
       loading: false,
       password: '',
-      signupData: {
+      affiliations: this.$store.state.user.user?.profile?.affiliations || {
         organization: '',
+        organizationLink: '',
         otherEngagementCategory: '',
         selectedEngagementCategories: {},
       },
@@ -56,6 +49,9 @@ export default {
         : this.active === 'login' ? 'Log In'
         : this.active === 'profile' ? 'Profile'
         : null
+    },
+    showOrgLink() {
+      return (this.active === 'signup' || this.active === 'profile') && (this.invite?.role === 'contributor' || this.$can('submit'))
     }
   },
 
@@ -179,7 +175,7 @@ export default {
         email: this.email,
         name: this.name,
         password: this.password,
-        ...this.signupData,
+        affiliations: this.affiliations,
       })
         .then(() => {
           this.$router.push({ name: 'Dashboard' })
@@ -213,7 +209,7 @@ export default {
         await this.handleResponse(this.$store.dispatch('user/saveProfile', {
           name: this.name,
           email: this.email,
-          ...this.signupData,
+          affiliations: this.affiliations,
         })
           .then(() => {
             if (!this.error) {
@@ -337,23 +333,28 @@ export default {
             <label class="label is-uppercase">How do you engage with books?</label>
             <div style="column-count: 2;">
               <div v-for="category of engagementCategories" :key="category.id" class="control columns-2">
-                <input :id="category.id" v-model="signupData.selectedEngagementCategories[category.id]" :disabled="loading" :name="category.id" type="checkbox" class="checkbox mr-3 mb-3">
-                <label class="label is-inline" style="word-wrap: nobreak;" :for="category.id">
+                <input :id="category.id" v-model="affiliations.selectedEngagementCategories[category.id]" :disabled="loading" :name="category.id" type="checkbox" class="checkbox mr-3 mb-3">
+                <label class="label is-inline is-uppercase" style="word-wrap: nobreak;" :for="category.id">
                   {{ category.text }}
                 </label>
               </div>
               <div>
-                <input v-model="signupData.selectedEngagementCategories.other" :disabled="loading" type="checkbox" class="checkbox mr-3 mb-3">
+                <input v-model="affiliations.selectedEngagementCategories.other" :disabled="loading" type="checkbox" class="checkbox mr-3 mb-3">
                 <label class="label is-inline mr-2">OTHER</label>
-                <input v-model="signupData.otherEngagementCategory" :disabled="loading" class="input" style="max-width: 200px;" type="text">
+                <input v-model="affiliations.otherEngagementCategory" :disabled="loading" class="input" style="max-width: 200px;" type="text">
               </div>
             </div>
 
           </div>
 
-          <div v-if="active === 'signup' || active === 'profile'" class="field divider-30">
+          <div v-if="active === 'signup' || active === 'profile'" class="field" :class="{ 'divider-30': !showOrgLink }">
             <label class="label is-uppercase">Are you affiliated with any organization(s)?</label>
-            <input v-model="signupData.organization" :disabled="loading" class="input" type="text">
+            <input v-model="affiliations.organization" :disabled="loading" class="input" type="text">
+          </div>
+
+          <div v-if="showOrgLink" class="field divider-30">
+            <label class="label is-uppercase">Link to organization if exists:</label>
+            <input v-model="affiliations.organizationLink" :disabled="loading" class="input" type="text">
           </div>
 
           <div class="field my-4">

@@ -5,6 +5,7 @@ const metadataByISBN = require('./metadataByISBN')
 const searchISBN = require('./searchISBN')
 const watchBookSubmissions = require('./watchBookSubmissions')
 const watchBooks = require('./watchBooks')
+const watchUsers = require('./watchUsers')
 
 exports.coverImageByISBN = functions
   .https.onRequest(coverImageByISBN())
@@ -24,3 +25,5 @@ exports.searchISBN = functions
 
 exports.watchBookSubmissions = watchBookSubmissions
 exports.watchBooks = watchBooks
+
+exports.watchUsers = watchUsers

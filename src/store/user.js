@@ -1,6 +1,33 @@
 /** Vuex module for authentication and current user */
 import firebase from '@/firebase'
 
+function defaultProfile(user, profile = {}) {
+  const def = {
+    email: user.email,
+    name: '',
+    bundles: [],
+    bookmarks: {},
+    submissions: {},
+    draftBooks: [],
+    draftBundles: []
+  }
+  return { ...def, ...profile }
+}
+
+function auth2user(db) {
+  const user = {}
+  user.displayName = db.displayName
+  user.email = db.email
+  user.emailVerified = db.emailVerified
+  user.photoURL = db.photoURL
+  user.isAnonymous = db.isAnonymous
+  user.uid = db.uid
+  user.providerData = db.providerData
+  user.profile = defaultProfile(user)
+  user.roles = {}
+  return user
+}
+
 const module = {
   namespaced: true,
   state: () => ({
@@ -38,30 +65,17 @@ const module = {
       return firebase.auth().signInWithEmailAndPassword(data.email, data.password)
     },
 
-    async signup({ commit, dispatch, rootState }, { code, email, name, organization, otherEngagementCategory, password }) {
+    async signup({ commit, dispatch, rootState }, { code, email, name, affiliations, password }) {
       const { user } = await firebase.auth().createUserWithEmailAndPassword(email, password)
-      await commit('setUser', { uid: user.uid }, { root: true })
 
-      // add role from signup code
-      const invite = rootState.invites.data[code]
-      const roles = invite ? {
-        roles: {
-          [invite.role]: true
-        }
-      } : null
-
+      commit('setUser', auth2user(user))
       // save profile to user record
       await dispatch('saveProfile', {
         email,
         code,
         name,
-        organization,
-        otherEngagementCategory,
-        ...roles,
+        affiliations
       })
-
-      // mark signup code as used
-      await firebase.database().ref(`invites/${code}/used`).set(true)
 
       return user
     },
@@ -134,29 +148,12 @@ const module = {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
           // User is signed in.
-          const u = {}
-          u.displayName = user.displayName
-          u.email = user.email
-          u.emailVerified = user.emailVerified
-          u.photoURL = user.photoURL
-          u.isAnonymous = user.isAnonymous
-          u.uid = user.uid
-          u.providerData = user.providerData
-          const defaultProfile = {
-            email: u.email,
-            name: '',
-            bundles: [],
-            bookmarks: {},
-            submissions: {},
-            draftBooks: [],
-            draftBundles: []
-          }
-          u.profile = defaultProfile
-          u.roles = {}
+          const u = auth2user(user)
           const userRef = firebase.database().ref(`users/${u.uid}`)
           userRef.on('value', snap => {
-            u.profile = { ...defaultProfile, ...snap.val()?.profile }
-            u.roles = snap.val()?.roles || {}
+            const val = snap.val() || { profile: {}, roles: {} }
+            u.profile = defaultProfile(u, val.profile)
+            u.roles = val.roles || {}
             if (!u.roles.authorized) {
               u.roles.authorized = true
             }
@@ -164,7 +161,7 @@ const module = {
           })
           const profileRef = firebase.database().ref(`users/${u.uid}/profile`)
           profileRef.on('value', snap => {
-            const profile = { ...defaultProfile, ...snap.val() }
+            const profile = defaultProfile(u, snap.val())
             store.commit('setProfile', profile)
           })
         }

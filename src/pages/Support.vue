@@ -63,7 +63,7 @@ export default {
           <span class="ml-2">$10/month</span>
         </li>
         <li @click="toggleSubscription(15)">
-          <HeartIcon :class="{ 'fill-primary': check15 }"  />
+          <HeartIcon :class="{ 'fill-primary': check15 }" />
           <span class="ml-2">$15/month</span>
         </li>
       </ul>
