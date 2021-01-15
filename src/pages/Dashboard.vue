@@ -55,7 +55,7 @@ export default {
 
       <section v-if="$iam('creator')" class="section bordered-top">
         <div v-if="hasPendingPersonSubmission">
-          <h2>Thank you! A Thousand Worlds will review your profile and reach out if we have questions or once it's been approved.</h2>
+          <p style="font-size: 30px;">Thank you! A Thousand Worlds will review your profile and reach out if we have questions or once it's been approved.</p>
         </div>
         <div v-else-if="!person">
           <h2>Please fill our your profile for the People Directory</h2>
