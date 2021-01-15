@@ -5,7 +5,13 @@ export default {
   components: {
     Group,
   },
-  props: ['type'],
+  props: {
+    type: {
+      type: String,
+      required: true,
+      validator: value => ['books', 'bundles', 'people'].indexOf(value) !== -1,
+    }
+  },
   computed: {
     submissions() {
       return this.$store.getters[`submissions/${this.type}/list`]()

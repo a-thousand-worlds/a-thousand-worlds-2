@@ -1,11 +1,22 @@
 <script>
-import BookApproval from '@/components/ReviewSubmissions/BookApproval'
+import BookApproval from './BookApproval'
+import Person from './Person'
 
 export default {
   components: {
     BookApproval,
+    Person,
   },
-  props: ['group', 'type'],
+  props: {
+    group: {
+      required: true,
+    },
+    type: {
+      type: String,
+      required: true,
+      validator: value => ['books', 'bundles', 'people'].indexOf(value) !== -1,
+    }
+  },
   computed: {
     submitter() {
       const profile = this.$store.state.user.user.profile
@@ -36,7 +47,8 @@ export default {
           @click="approveGroup()">Approve</button>
       </div>
       <div v-for="(sub, i) of group[type]" :key="i">
-        <BookApproval :submission="sub" />
+        <BookApproval v-if="type === 'books'" :submission="sub" />
+        <Person v-if="type === 'people'" :submission="sub" />
       </div>
       <div class="has-text-right mt-20">
         {{ submitter }}
