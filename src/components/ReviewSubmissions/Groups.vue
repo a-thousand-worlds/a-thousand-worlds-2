@@ -1,37 +1,39 @@
 <script>
-import BookGroup from '@/components/ReviewSubmissions/Books/Group'
+import Group from '@/components/ReviewSubmissions/Group'
 
 export default {
   components: {
-    BookGroup,
+    Group,
   },
+  props: ['type'],
   computed: {
-    bookSubmissions() {
-      return this.$store.getters['submissions/books/list']()
+    submissions() {
+      return this.$store.getters[`submissions/${this.type}/list`]()
         .filter(sub => sub && !sub.approved && !sub.approvedBy && !sub.approvedAt)
     },
     submissionsGroups() {
-      const groups = this.bookSubmissions
+      const groups = this.submissions
         .reduce((acc, sub) => {
           if (!acc[sub.group]) acc[sub.group] = {}
           acc[sub.group][sub.id] = sub
           return acc
         }, {})
       return Object.keys(groups).map(gid => {
-        const ret = {
+        const subs = Object.keys(groups[gid])
+          .reduce((acc, sid) => [...acc, groups[gid][sid]], [])
+        return {
           id: gid,
-          books: Object.keys(groups[gid]).reduce((acc, sid) => [...acc, groups[gid][sid]], [])
+          at: subs[0].createdAt,
+          by: subs[0].createdBy,
+          [this.type]: subs
         }
-        ret.at = ret.books[0].createdAt
-        ret.by = ret.books[0].createdBy
-        return ret
       })
     }
   },
   methods: {
     async approveAll() {
       this.$store.commit('ui/setBusy', true)
-      await this.$store.dispatch('submissions/books/approve', this.bookSubmissions)
+      await this.$store.dispatch(`submissions/${this.type}/approve`, this.submissions)
       this.$store.commit('ui/setBusy', false)
     }
   }
@@ -43,14 +45,14 @@ export default {
   <div>
 
     <div v-if="submissionsGroups.length" class="is-flex is-justify-content-flex-end">
-      <div><button :disabled="$uiBusy" class="button is-rounded" @click="approveAll">Approve all ({{ bookSubmissions.length }})</button></div>
+      <div><button :disabled="$uiBusy" class="button is-rounded" @click="approveAll">Approve all ({{ submissions.length }})</button></div>
     </div>
 
     <p v-if="!submissionsGroups.length" style="font-size: 20px;">No Submissions to review</p>
 
     <div v-else>
       <div v-for="(group, gid) of submissionsGroups" :key="gid" class="sub-group py-20">
-        <BookGroup :group="group" />
+        <Group :group="group" :type="type" />
       </div>
     </div>
 

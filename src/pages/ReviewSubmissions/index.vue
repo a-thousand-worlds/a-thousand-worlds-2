@@ -1,10 +1,10 @@
 <script>
-import ReviewBooks from '@/components/ReviewSubmissions/Books'
+import Groups from '@/components/ReviewSubmissions/Groups'
 
 export default {
   name: 'ReviewSubmissions',
   components: {
-    ReviewBooks,
+    Groups,
   },
   computed: {
     label() {
@@ -31,7 +31,7 @@ export default {
       </div>
 
       <h1 class="divider-bottom is-capitalized">Review {{ label }} Submissions</h1>
-      <ReviewBooks />
+      <Groups :type="type" />
     </div>
   </div>
 
