@@ -1,10 +1,10 @@
 <script>
-import BookApproval from './BookApproval'
+import Book from './Book'
 import Person from './Person'
 
 export default {
   components: {
-    BookApproval,
+    Book,
     Person,
   },
   props: {
@@ -47,7 +47,7 @@ export default {
           @click="approveGroup()">Approve</button>
       </div>
       <div v-for="(sub, i) of group[type]" :key="i">
-        <BookApproval v-if="type === 'books'" :submission="sub" />
+        <Book v-if="type === 'books'" :submission="sub" />
         <Person v-if="type === 'people'" :submission="sub" />
       </div>
       <div class="has-text-right mt-20">
