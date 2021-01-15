@@ -30,7 +30,7 @@ const module = mergeOne(managedCollection('submits/people'), {
         draftPerson: null,
         submissions: {
           ...profile.submissions,
-          [id]: 'review',
+          [id]: 'pending',
         }
       }
       await context.dispatch('user/saveProfile', profileNew, { root: true })
@@ -43,6 +43,7 @@ const module = mergeOne(managedCollection('submits/people'), {
       await context.dispatch('update', {
         path: sub.id,
         values: {
+          approved: true,
           approvedBy: context.rootState.user.user.uid,
           approvedAt: dayjs().format(),
         },
@@ -59,12 +60,14 @@ const module = mergeOne(managedCollection('submits/people'), {
 
     /** Rejects a submission. */
     reject(context, sub) {
-      return context.dispatch('updateSubmissionStatus', { sub, status: 'reject' })
+      return context.dispatch('updateSubmissionStatus', { sub, status: 'rejected' })
     },
 
     /** Approves submissions group */
-    approve: (context, sub) => {
-      return context.dispatch('updateSubmissionStatus', { sub, status: 'reject' })
+    approve: (context, subs) => {
+      return subs.map(sub =>
+        context.dispatch('updateSubmissionStatus', { sub, status: 'approved' })
+      )
     },
 
   }

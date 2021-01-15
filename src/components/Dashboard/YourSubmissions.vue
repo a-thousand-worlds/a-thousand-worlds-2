@@ -10,13 +10,13 @@ export default {
   props: [],
   computed: {
     acceptedSubmissions() {
-      return this.filterByValue(this.userSubmissions, 'approve')
+      return this.filterByValue(this.userSubmissions, 'approved')
     },
     pendingSubmissions() {
-      return this.filterByValue(this.userSubmissions, 'review')
+      return this.filterByValue(this.userSubmissions, 'pending')
     },
     rejectedSubmissions() {
-      return this.filterByValue(this.userSubmissions, 'reject')
+      return this.filterByValue(this.userSubmissions, 'rejected')
     },
     userSubmissions() {
       return this.$store.state.user.user.profile.submissions || {}

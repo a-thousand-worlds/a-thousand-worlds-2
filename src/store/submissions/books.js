@@ -49,7 +49,7 @@ const module = mergeOne(managedCollection('submits/books'), {
         // set state before saving to Firebase, otherwise value gets set to undefined
         context.commit('setOne', { path: sid, value: subData })
         context.dispatch('save', { path: sid, value: subData })
-        profile.submissions[sid] = 'review'
+        profile.submissions[sid] = 'pending'
         // eslint-disable-next-line  fp/no-mutating-methods
         ids.push(sid)
       }
@@ -67,7 +67,7 @@ const module = mergeOne(managedCollection('submits/books'), {
 
       await context.dispatch('user/save', {
         path: `profile/submissions/${sub.id}`,
-        value: 'reject',
+        value: 'rejected',
       }, { root: true })
     },
 
@@ -117,7 +117,9 @@ const module = mergeOne(managedCollection('submits/books'), {
         // save book
         const bookId = v4()
         await context.dispatch('books/save', { path: bookId, value: {
+          approved: true,
           approvedBy: context.rootState.user.user.uid,
+          approvedAt: dayjs().format(),
           createdBy: sub.createdBy,
           creators: creators,
           goodread: sub.goodread || '',
@@ -136,7 +138,7 @@ const module = mergeOne(managedCollection('submits/books'), {
         // update user profile
         await context.dispatch('user/save', {
           path: `profile/submissions/${sub.id}`,
-          value: 'approve',
+          value: 'approved',
         }, { root: true })
 
         // upgdate submission
@@ -145,6 +147,7 @@ const module = mergeOne(managedCollection('submits/books'), {
           value: {
             ...sub,
             approved: true,
+            approvedAt: dayjs().format(),
             approvedBy: context.rootState.user.user.uid,
           },
         })
