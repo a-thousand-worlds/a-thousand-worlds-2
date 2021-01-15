@@ -1,10 +1,12 @@
 <script>
+import CreatorProfilePreview from '@/components/Dashboard/CreatorProfilePreview'
 import ReviewSubmissionsPreview from '@/components/Dashboard/ReviewSubmissionsPreview'
 import YourSubmissions from '@/components/Dashboard/YourSubmissions'
 import InviteWidget from '@/components/InviteWidget'
 
 export default {
   components: {
+    CreatorProfilePreview,
     ReviewSubmissionsPreview,
     YourSubmissions,
     InviteWidget,
@@ -20,22 +22,8 @@ export default {
     bookSubmissions() {
       return this.$store.getters['submissions/books/list']()
     },
-    personSubmission() {
-      return this.userSubmissions[this.peopleSubmission]
-    },
-    person() {
-      return this.personSubmission === 'approved' ? 'TODO' : null
-    },
-    userSubmissions() {
-      return this.$store.state.user.user.profile.submissions || {}
-    },
     username() {
       return this.$store.state.user.user?.profile.name || this.$store.state.user.user?.profile.email
-    },
-    peopleSubmission() {
-      const peopleSubmissions = this.$store.state.submissions.people.data
-      return Object.keys(this.userSubmissions)
-        .find(sid => peopleSubmissions[sid]?.type === 'people')
     },
   },
 }
@@ -54,20 +42,7 @@ export default {
       </div>
 
       <section v-if="$iam('creator')" class="section bordered-top">
-        <div v-if="personSubmission === 'pending'">
-          <p style="font-size: 30px;">Thank you! A Thousand Worlds will review your profile and reach out if we have questions or once it's been approved.</p>
-        </div>
-        <div v-else-if="person">
-          Person
-        </div>
-        <div v-else>
-          <h2>Please fill our your profile for the People Directory</h2>
-          <div class="field is-grouped">
-            <div class="control my-20">
-              <router-link class="button is-primary" :to="{name:'PeopleSubmissionForm'}">Create Profile</router-link>
-            </div>
-          </div>
-        </div>
+        <CreatorProfilePreview />
       </section>
 
       <section v-if="$can('submit')" class="section bordered-top">
