@@ -20,11 +20,11 @@ export default {
     bookSubmissions() {
       return this.$store.getters['submissions/books/list']()
     },
-    hasPendingPersonSubmission() {
+    personSubmission() {
       return this.userSubmissions[this.peopleSubmission]
     },
     person() {
-      return null
+      return this.personSubmission === 'approved' ? 'TODO' : null
     },
     userSubmissions() {
       return this.$store.state.user.user.profile.submissions || {}
@@ -54,10 +54,13 @@ export default {
       </div>
 
       <section v-if="$iam('creator')" class="section bordered-top">
-        <div v-if="hasPendingPersonSubmission">
+        <div v-if="personSubmission === 'pending'">
           <p style="font-size: 30px;">Thank you! A Thousand Worlds will review your profile and reach out if we have questions or once it's been approved.</p>
         </div>
-        <div v-else-if="!person">
+        <div v-else-if="person">
+          Person
+        </div>
+        <div v-else>
           <h2>Please fill our your profile for the People Directory</h2>
           <div class="field is-grouped">
             <div class="control my-20">

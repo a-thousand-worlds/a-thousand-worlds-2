@@ -20,7 +20,7 @@ export default {
     /** Gets the values of all records that do not have an approvedAt timestamp. */
     getPending(data) {
       return Object.values(data || {})
-        .filter(sub => !sub.approvedAt)
+        .filter(sub => !sub?.approvedAt)
     }
   }
 

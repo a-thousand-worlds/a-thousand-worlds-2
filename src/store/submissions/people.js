@@ -52,8 +52,8 @@ const module = mergeOne(managedCollection('submits/people'), {
       context.commit('setOne', { path: sub.id, value: sub })
 
       // update user profile submission
-      await context.dispatch('user/save', {
-        path: `profile/submissions/${sub.id}`,
+      await context.dispatch('users/save', {
+        path: `${sub.createdBy}/profile/submissions/${sub.id}`,
         value: status
       }, { root: true })
     },
