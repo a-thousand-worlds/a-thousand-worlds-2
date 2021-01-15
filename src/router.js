@@ -20,6 +20,8 @@ const routes = [
     // slug: my-mommy-medicine
     // isbn: 9781250140913
     path: '/book/:slug(.+)?-:isbn',
+    // slug is expected to be omitted, but is included in the pattern to stifle a vue-router warning
+    alias: '/book/:slug?/:isbn(.*)',
     name: 'BookDetail',
     component: () => import(/* webpackChunkName: "guest" */ './pages/BookDetail.vue')
   }, {
