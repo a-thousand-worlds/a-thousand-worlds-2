@@ -2,6 +2,8 @@
 import _ from 'lodash'
 import validator from '@/mixins/validator'
 import Toggle from '@/components/Toggle'
+import genderOptions from '@/store/genderOptions'
+import identityOptions from '@/store/identityOptions'
 
 export default {
   components: {
@@ -18,29 +20,8 @@ export default {
   data() {
     return {
       draftSaved: null,
-      genderOptions: [
-        'Trans Woman',
-        'Trans Man',
-        'Non-Binary',
-        'Gender Non-Conforming',
-        'Genderqueer',
-        'Genderfluid',
-        'Agender',
-        'Queer',
-      ],
-      identityOptions: [
-        'Black',
-        'Indigenous',
-        'Latin X',
-        'Asian',
-        'Native Hawaiian/Pacific Islander',
-        'Arab, Middle Eastern, North African',
-        'Biracial/Multiracial',
-        'LGBTQIA+',
-        'Neurodiverse',
-        'Physical diverse',
-        'Sensory diverse',
-      ],
+      genderOptions,
+      identityOptions,
       submission: this.newSubmission(),
     }
   },
@@ -97,9 +78,15 @@ export default {
       if (!this.validate()) return
 
       this.$store.commit('ui/setBusy', true)
-      await this.$store.dispatch('submissions/people/submit', this.submission)
-      this.$store.commit('ui/setBusy', false)
-      this.$router.push({ name: 'SubmissionThankYou', params: { type: 'people' } })
+      try {
+        await this.$store.dispatch('submissions/people/submit', this.submission)
+        this.$router.push({ name: 'SubmissionThankYou', params: { type: 'people' } })
+      }
+      catch (e) {
+        console.error(e)
+        this.errors = [{ name: 'submit', message: e.message }]
+        this.$store.commit('ui/setBusy', false)
+      }
     },
 
   },
@@ -167,9 +154,9 @@ export default {
               <template #label>More</template>
               <template #content>
                 <div class="sublabel tablet-columns-2 m-10">
-                  <div v-for="(gender, i) of genderOptions" :key="gender" class="control is-flex" style="column-break-inside: avoid;">
-                    <input type="radio" name="gender" :id="`gender${i}`" v-model="submission.gender" :value="gender" class="checkbox mb-3 mt-1">
-                    <label class="label pl-2 pb-1" :for="`gender${i}`" style="cursor: pointer;">{{ gender }}</label>
+                  <div v-for="(gender, key) of genderOptions" :key="key" class="control is-flex" style="column-break-inside: avoid;">
+                    <input type="radio" name="gender" :id="`gender-${key}`" v-model="submission.gender" :value="key" class="checkbox mb-3 mt-1">
+                    <label class="label pl-2 pb-1" :for="`gender-${key}`" style="cursor: pointer;">{{ gender }}</label>
                   </div>
                 </div>
               </template>
@@ -180,9 +167,9 @@ export default {
           <div class="field">
             <label class="label" :class="{ 'has-text-danger': hasError('identities') }" style="font-weight: bold; text-transform: uppercase;">Identity</label>
             <div class="sublabel tablet-columns-2">
-              <div v-for="(identity, i) of identityOptions" :key="identity" class="control is-flex" style="column-break-inside: avoid;">
-                <input v-model="submission.identities[identity]" :id="`identity${i}`" type="checkbox" class="checkbox mb-3 mt-1" @input="revalidate">
-                <label class="label pl-2 pb-1" :for="`identity${i}`" style="cursor: pointer;">{{ identity }}</label>
+              <div v-for="(identity, key) of identityOptions" :key="key" class="control is-flex" style="column-break-inside: avoid;">
+                <input v-model="submission.identities[key]" :id="`identity-${key}`" type="checkbox" class="checkbox mb-3 mt-1" @input="revalidate">
+                <label class="label pl-2 pb-1" :for="`identity-${key}`" style="cursor: pointer;">{{ identity }}</label>
               </div>
             </div>
           </div>
@@ -227,7 +214,7 @@ export default {
         <hr>
 
         <div class="field is-grouped">
-          <button :class="{'is-loading': $uiBusy}" class="button is-rounded is-primary mr-20" @click.prevent="submitForReview()">Submit for review</button>
+          <button :class="{'is-loading': $uiBusy}" class="button is-rounded is-primary mr-20" @click.prevent="submitForReview">Submit for review</button>
           <button class="button is-rounded" @click.prevent="clear">Reset</button>
           <button v-if="draftSaved" class="button is-flat" @click.prevent="saveDraft" style="cursor: text;">Draft Saved</button>
         </div>
