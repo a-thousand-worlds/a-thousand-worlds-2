@@ -177,7 +177,7 @@ const routes = [
   }, {
     path: '/admin/review/:type',
     name: 'ReviewSubmissions',
-    component: () => import(/* webpackChunkName: "advisor" */ './pages/ReviewSubmissions.vue'),
+    component: () => import(/* webpackChunkName: "advisor" */ './pages/ReviewSubmissions'),
     meta: {
       access: ['advisor', 'owner']
     }

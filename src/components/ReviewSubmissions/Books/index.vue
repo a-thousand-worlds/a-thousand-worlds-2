@@ -1,9 +1,9 @@
 <script>
-import SubmissionsReviewGroup from '@/components/SubmissionsReviewGroup'
+import BookGroup from '@/components/ReviewSubmissions/Books/Group'
 
 export default {
   components: {
-    SubmissionsReviewGroup,
+    BookGroup,
   },
   computed: {
     bookSubmissions() {
@@ -50,7 +50,7 @@ export default {
 
     <div v-else>
       <div v-for="(group, gid) of submissionsGroups" :key="gid" class="sub-group py-20">
-        <SubmissionsReviewGroup :group="group" />
+        <BookGroup :group="group" />
       </div>
     </div>
 

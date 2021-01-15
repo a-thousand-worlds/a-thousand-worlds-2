@@ -1,10 +1,9 @@
 <script>
-// import dayjs from 'dayjs'
-import ApprovalBookWidget from '@/components/ApprovalBookWidget'
+import BookApproval from '@/components/ReviewSubmissions/Books/Approval'
 
 export default {
   components: {
-    ApprovalBookWidget,
+    BookApproval,
   },
   props: ['group'],
   data: () => ({
@@ -40,7 +39,7 @@ export default {
           @click="approveGroup()">Approve</button>
       </div>
       <div v-for="(sub, i) of group.books" :key="i">
-        <ApprovalBookWidget :submission="sub" />
+        <BookApproval :submission="sub" />
       </div>
       <div class="has-text-right mt-20">
         {{ submitter }}
