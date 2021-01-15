@@ -50,41 +50,41 @@ const collectionModule = name => ({
   },
   actions: {
     /** Loads the collection from Firebase. */
-    async load(state) {
+    async load(context) {
       const value = await firebaseGet(name)
       const valueNotNull = value || {}
-      state.commit('set', valueNotNull)
+      context.commit('set', valueNotNull)
       return valueNotNull
     },
     /** Loads single element from Firebase */
-    async loadOne(state, path) {
+    async loadOne(context, path) {
       const value = await firebaseGet(`${name}/${path}`)
       const valueNotNull = value || {}
-      state.commit('setOne', { path, value: valueNotNull })
+      context.commit('setOne', { path, value: valueNotNull })
       return valueNotNull
     },
     /** Saves a record to the collection in Firebase. */
-    async save(state, { path, value }) {
+    async save(context, { path, value }) {
       if (!path) throw new Error('path required')
       if (value === undefined) throw new Error('value may not be undefined')
       const ref = firebase.database().ref(`${name}/${path}`)
       await ref.set(value)
     },
     /** Subscribes to the collection in Firebase, syncing with this.data */
-    subscribe(state) {
+    subscribe(context) {
       const ref = firebase.database().ref(name)
       ref.on('value', snap => {
-        state.commit('set', snap.val() || {})
+        context.commit('set', snap.val() || {})
       })
     },
     /** Removes collection entry from Firebase */
-    async remove(state, path) {
+    async remove(context, path) {
       if (!path) throw new Error('path required')
       const ref = firebase.database().ref(`${name}/${path}`)
       await ref.remove()
     },
     /** Updates a record in the collection in Firebase. */
-    async update(state, { path, values }) {
+    async update(context, { path, values }) {
       if (!path) throw new Error('path required')
       if (values === undefined) throw new Error('values may not be undefined')
       const ref = firebase.database().ref(`${name}/${path}`)

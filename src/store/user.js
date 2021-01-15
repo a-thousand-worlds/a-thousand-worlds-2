@@ -1,5 +1,8 @@
 /** Vuex module for authentication and current user */
+import _ from 'lodash'
 import firebase from '@/firebase'
+import mergeOne from '@/util/mergeOne'
+import collection from '@/store/collection/module'
 
 function defaultProfile(user, profile = {}) {
   const def = {
@@ -28,8 +31,8 @@ function auth2user(db) {
   return user
 }
 
-const module = {
-  namespaced: true,
+const usersModule = collection('users')
+const module = mergeOne(usersModule, {
   state: () => ({
     user: null,
     nextPromise: null
@@ -83,6 +86,17 @@ const module = {
     // keep it here as 'user related'
     passwordReset(ctx, email) {
       return firebase.auth().sendPasswordResetEmail(email)
+    },
+
+    /** Save to the currently logged in user */
+    save(ctx, { path, value }) {
+      const userNew = { ...ctx.state.user }
+      _.set(userNew, path, value)
+      ctx.commit('setUser', userNew)
+      return usersModule.actions.save(ctx, {
+        path: `${ctx.state.user.uid}/${path}`,
+        value,
+      })
     },
 
     async saveProfile(ctx, profile) {
@@ -180,6 +194,6 @@ const module = {
     },
 
   }
-}
+})
 
 export default module

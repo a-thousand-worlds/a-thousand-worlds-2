@@ -1,4 +1,3 @@
-import { firebaseGet, firebaseSet } from '@/utils'
 import mergeOne from '@/util/mergeOne'
 import managedCollection from '@/store/collection/managed'
 import { v4 } from 'uuid'
@@ -16,19 +15,8 @@ const module = mergeOne(managedCollection('submits/books'), {
   },
   actions: {
 
-    // this method doesn't use store to keep values
-    // it used only by administrators
-    loadContributorProfile(context, uid) {
-      return firebaseGet(`users/${uid}/profile`)
-    },
-
-    saveContributorProfile(context, data) {
-      return firebaseSet(`users/${data.uid}/profile`, data.profile)
-    },
-
     /** Submit books suggestions to Firebase */
     submit: async (context, list) => {
-      /**/
       const ids = []
       const submissionGroupId = v4()
       const profile = context.rootState.user.user.profile
@@ -38,9 +26,7 @@ const module = mergeOne(managedCollection('submits/books'), {
       }
       // eslint-disable-next-line  fp/no-loops
       for (const sub of list) {
-        // eslint-disable-next-line  fp/no-mutating-methods
         const sid = v4()
-        // const ref = await firebase.database().ref(`submits/books/${sid}`)
         const subData = {
           approveComment: '',
           approved: false,
@@ -64,7 +50,6 @@ const module = mergeOne(managedCollection('submits/books'), {
         context.commit('setOne', { path: sid, value: subData })
         context.dispatch('save', { path: sid, value: subData })
         profile.submissions[sid] = 'review'
-        console.log('subData', subData)
         // eslint-disable-next-line  fp/no-mutating-methods
         ids.push(sid)
       }
@@ -79,11 +64,11 @@ const module = mergeOne(managedCollection('submits/books'), {
       sub.approvedAt = now.format()
       await context.dispatch('save', { path: sub.id, value: sub })
       context.commit('setOne', { path: sub.id, value: sub })
-      // const profile = context.rootState.user.user.profile
-      const profile = await context.dispatch('loadContributorProfile', sub.createdBy)
-      profile.submissions[sub.id] = 'reject'
 
-      await context.dispatch('saveContributorProfile', { uid: sub.createdBy, profile })
+      await context.dispatch('user/save', {
+        path: `profile/submissions/${sub.id}`,
+        value: 'reject',
+      }, { root: true })
     },
 
     /** Approves submissions group */
@@ -129,7 +114,7 @@ const module = mergeOne(managedCollection('submits/books'), {
           creators[cid] = creators[cid] ? 'both' : 'illustrator'
         }
 
-        // saving book
+        // save book
         const bookId = v4()
         await context.dispatch('books/save', { path: bookId, value: {
           approvedBy: context.rootState.user.user.uid,
@@ -148,31 +133,37 @@ const module = mergeOne(managedCollection('submits/books'), {
           year: sub.year,
         } }, { root: true })
 
-        // updating user profile
-        const profile = await context.dispatch('loadContributorProfile', sub.createdBy)
-        profile.submissions[sub.id] = 'approve'
-        await context.dispatch('saveContributorProfile', { uid: sub.createdBy, profile })
+        // update user profile
+        await context.dispatch('user/save', {
+          path: `profile/submissions/${sub.id}`,
+          value: 'approve',
+        }, { root: true })
 
-        // updating submission
-        sub.approvedBy = context.rootState.user.user.uid
-        sub.approved = true
-        await context.dispatch('save', { path: sub.id, value: sub })
+        // upgdate submission
+        await context.dispatch('save', {
+          path: sub.id,
+          value: {
+            ...sub,
+            approved: true,
+            approvedBy: context.rootState.user.user.uid,
+          },
+        })
       }
 
     },
 
-    /** Delete submission from Firebase */
+    /** Delete submission */
     delete: async (context, sid) => {
-      const sub = context.state.data[sid]
-      const profile = await context.dispatch('loadContributorProfile', sub.createdBy)
-      profile.submissions = Object.keys(profile.submissions)
-        .filter(id => id !== sid)
-        .reduce((acc, id) => {
-          acc[id] = profile.submissions[id]
-          return acc
-        }, {})
-      await context.dispatch('saveContributorProfile', { uid: sub.createdBy, profile })
+
+      // remove submission
       await context.dispatch('remove', sid)
+
+      // remove from user profile
+      await context.dispatch('user/save', {
+        path: `profile/submissions/${sid}`,
+        value: null,
+      }, { root: true })
+
     }
 
   }

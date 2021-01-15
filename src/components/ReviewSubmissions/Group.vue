@@ -6,14 +6,11 @@ export default {
     BookApproval,
   },
   props: ['group', 'type'],
-  data: () => ({
-    submitter: ''
-  }),
-  created () {
-    this.$store.dispatch(`submissions/${this.type}/loadContributorProfile`, this.group.by)
-      .then(profile => {
-        this.submitter = profile.name || `${profile.firstName} ${profile.lastName}`
-      })
+  computed: {
+    submitter() {
+      const profile = this.$store.state.user.user.profile
+      return profile.name || `${profile.firstName} ${profile.lastName}`
+    }
   },
   methods: {
     async approveGroup() {
