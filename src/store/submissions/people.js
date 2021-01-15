@@ -38,39 +38,33 @@ const module = mergeOne(managedCollection('submits/people'), {
 
     /** Update submission status */
     updateSubmissionStatus: async (context, { sub, status }) => {
-      const now = dayjs()
-      const profile = context.rootState.user.user.profile
 
-      // update submission
+      // update person submission
       await context.dispatch('update', {
         path: sub.id,
         values: {
           approvedBy: context.rootState.user.user.uid,
-          approvedAt: now.format(),
+          approvedAt: dayjs().format(),
         },
       })
+
       context.commit('setOne', { path: sub.id, value: sub })
 
-      // update user profile submissions
-      await context.dispatch('user/updateProfile/', {
-        uid: sub.createdBy,
-        values: {
-          submissions: {
-            ...profile.submissions,
-            [sub.id]: status
-          },
-        },
+      // update user profile submission
+      await context.dispatch('user/save', {
+        path: `profile/submissions/${sub.id}`,
+        value: status
       }, { root: true })
     },
 
     /** Rejects a submission. */
     reject(context, sub) {
-      return context.commit('updateApproval', { sub, status: 'reject' })
+      return context.dispatch('updateSubmissionStatus', { sub, status: 'reject' })
     },
 
     /** Approves submissions group */
     approve: (context, sub) => {
-      return context.commit('updateApproval', { sub, status: 'reject' })
+      return context.dispatch('updateSubmissionStatus', { sub, status: 'reject' })
     },
 
   }
