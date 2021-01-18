@@ -25,7 +25,7 @@ export default {
   methods: {
     recalculate() {
       this.people = Object.keys(this.creators || {})
-        .map(creatorId => ({ person: this.$store.state.creators.data[creatorId] || null, role: this.creators[creatorId] }))
+        .map(creatorId => ({ person: this.$store.state.creators.data?.[creatorId] || null, role: this.creators[creatorId] }))
     }
   },
 }

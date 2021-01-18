@@ -67,10 +67,33 @@ const module = mergeOne(managedCollection('submits/people'), {
 
     /** Approves submissions group */
     approve: (context, subs) => {
+
+      /** Get the creator id if it exists for the given user. */
+      // TODO: This would be a lot easier if the peopleId was stored in the user profile
+      const existingPersonId = async userId => {
+
+        const userSubmissions = context.dispatch('users/loadOne', `${userId}/profile/submissions`, { root: true })
+
+        const approvedSubmissionIds = Object.entries(await userSubmissions)
+          .filter(([id, status]) => status === 'approved')
+          .map(([id, status]) => id)
+
+        // const peopleSubmissions = context.dispatch('submits/people/loadAll'`)
+        // TODO: Get most recent approved submission
+        const approvedPeopleSubmissionId = approvedSubmissionIds
+          .find(sid => context.rootGetters['submissions/people/get'](sid))
+
+        if (!approvedPeopleSubmissionId) return null
+
+        const peopleSubmission = context.rootGetters['submissions/people/get'](approvedPeopleSubmissionId)
+
+        return peopleSubmission?.peopleId
+      }
+
       return subs.map(async sub => {
 
-        // TODO: Check for existing person
-        const id = uid()
+        // use existing person id if it exists
+        const id = await existingPersonId(sub.createdBy) || uid()
 
         const personNew = {
           id,

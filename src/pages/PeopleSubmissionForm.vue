@@ -154,7 +154,7 @@ export default {
             <label class="label" :class="{ 'has-text-danger': hasError('title') }" style="font-weight: bold; text-transform: uppercase;">Your Title</label>
             <div class="control">
               <label style="cursor: pointer;">
-                <input type="radio" name="title" v-model="submission.title" value="Author" checked>
+                <input type="radio" name="title" v-model="submission.title" value="Author">
                 Author
               </label>
             </div>
