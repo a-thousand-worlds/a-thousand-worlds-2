@@ -44,7 +44,7 @@ const module = mergeOne(managedCollection('submits/people'), {
       await context.dispatch('update', {
         path: sub.id,
         values: {
-          approved: true,
+          approved: status === 'approved',
           approvedBy: context.rootState.user.user.uid,
           approvedAt: dayjs().format(),
           ...peopleId ? { peopleId } : null

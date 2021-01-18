@@ -6,10 +6,13 @@ export default {
     Square,
   },
   computed: {
+    hasPendingSubmission() {
+      return Object.values(this.userSubmissions).some(status => status === 'pending')
+    },
     peopleSubmissionId() {
       const peopleSubmissions = this.$store.state.submissions.people.data || {}
       return Object.keys(this.userSubmissions)
-        .find(sid => peopleSubmissions[sid]?.type === 'people')
+        .find(sid => peopleSubmissions[sid]?.type === 'people' && peopleSubmissions[sid].approved)
     },
     person() {
       const peopleSubmissions = this.$store.state.submissions.people.data || {}
@@ -31,12 +34,12 @@ export default {
 <template>
 
   <!-- pending profile -->
-  <div v-if="userPersonSubmission === 'pending'">
+  <div v-if="hasPendingSubmission">
     <p style="font-size: 30px;">Thank you! A Thousand Worlds will review your profile and reach out if we have questions or once it's been approved.</p>
   </div>
 
   <!-- accepted profile -->
-  <div v-else-if="person">
+  <div v-if="person">
     <h2 class="mb-20">Your Public Profile</h2>
     <div class="columns">
       <div class="column is-one-third">

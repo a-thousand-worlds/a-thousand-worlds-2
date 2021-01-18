@@ -36,7 +36,7 @@ export default {
       const peopleSubmissions = this.$store.state.submissions.people.data || {}
       const userSubmissions = this.$store.state.user.user.profile.submissions || {}
       const peopleSubmissionId = Object.keys(userSubmissions)
-        .find(sid => peopleSubmissions[sid]?.type === 'people')
+        .find(sid => peopleSubmissions[sid]?.type === 'people' && peopleSubmissions[sid]?.approved)
       const peopleId = peopleSubmissions[peopleSubmissionId].peopleId
       const person = this.$store.state.creators.data[peopleId]
       return person
@@ -49,6 +49,16 @@ export default {
     }
   },
   watch: {
+    // update submission when draftPerson is first loaded
+    draftPerson(next, prev) {
+      if (next && !prev) {
+        this.submission = {
+          ...this.newSubmission(),
+          ...this.$store.state.user.user?.profile.draftPerson
+        }
+      }
+    },
+    // update submission when person is first loaded
     person(next, prev) {
       if (next && !prev) {
         this.submission = this.newSubmission()
@@ -57,7 +67,7 @@ export default {
   },
   methods: {
 
-    clear() {
+    reset() {
       this.submission = this.newSubmission()
       this.errors = []
       this.clearDraft()
@@ -85,8 +95,12 @@ export default {
       }
       const newPerson = {
         ...emptySubmission,
+        // name from private user profile
         name: this.name,
+        // copy all relevant fields from person
         ..._.pick(this.person, Object.keys(emptySubmission)),
+        // copy identities object, otherwise editing the form will update the person identities object by reference
+        identities: this.person?.identities ? { ...this.person.identities } : {}
       }
       return newPerson
     },
@@ -194,7 +208,7 @@ export default {
             <label class="label" :class="{ 'has-text-danger': hasError('identities') }" style="font-weight: bold; text-transform: uppercase;">Identity</label>
             <div class="sublabel tablet-columns-2">
               <div v-for="(identity, key) of identityOptions" :key="key" class="control is-flex" style="column-break-inside: avoid;">
-                <input v-model="submission.identities[key]" :id="`identity-${key}`" type="checkbox" class="checkbox mb-3 mt-1" @input="revalidate">
+                <input v-model="submission.identities[key]" :id="`identity-${key}`" :false-value="null" type="checkbox" class="checkbox mb-3 mt-1" @input="revalidate">
                 <label class="label pl-2 pb-1" :for="`identity-${key}`" style="cursor: pointer;">{{ identity }}</label>
               </div>
             </div>
@@ -241,7 +255,7 @@ export default {
 
         <div class="field is-grouped">
           <button :class="{'is-loading': $uiBusy}" class="button is-rounded is-primary mr-20" @click.prevent="submitForReview">Submit for review</button>
-          <button class="button is-rounded" @click.prevent="clear">Reset</button>
+          <button class="button is-rounded" @click.prevent="reset">Reset</button>
           <button v-if="draftSaved" class="button is-flat" @click.prevent="saveDraft" style="cursor: text;">Draft Saved</button>
         </div>
 
