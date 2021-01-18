@@ -42,12 +42,6 @@ export default {
       return person
     },
   },
-  created() {
-    this.submission = {
-      ...this.newSubmission(),
-      ...this.$store.state.user.user?.profile.draftPerson
-    }
-  },
   watch: {
     // update submission when draftPerson is first loaded
     draftPerson(next, prev) {
@@ -63,6 +57,12 @@ export default {
       if (next && !prev) {
         this.submission = this.newSubmission()
       }
+    }
+  },
+  created() {
+    this.submission = {
+      ...this.newSubmission(),
+      ...this.$store.state.user.user?.profile.draftPerson
     }
   },
   methods: {
