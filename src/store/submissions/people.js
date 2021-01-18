@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import mergeOne from '@/util/mergeOne'
 import managedCollection from '@/store/collection/managed'
 import { v4 as uid } from 'uuid'
@@ -20,11 +21,11 @@ const module = mergeOne(managedCollection('submits/people'), {
         type: 'people',
       }
 
-      // save submission
+      // save people submission
       context.commit('setOne', { path: id, value: submissionApprovable })
       await context.dispatch('save', { path: id, value: submissionApprovable })
 
-      // save submission id to profile
+      // save submission id to user profile
       const profileNew = {
         ...profile,
         draftPerson: null,
@@ -37,7 +38,7 @@ const module = mergeOne(managedCollection('submits/people'), {
     },
 
     /** Update submission status */
-    updateSubmissionStatus: async (context, { sub, status }) => {
+    updateSubmission: async (context, { peopleId, sub, status }) => {
 
       // update person submission
       await context.dispatch('update', {
@@ -46,6 +47,7 @@ const module = mergeOne(managedCollection('submits/people'), {
           approved: true,
           approvedBy: context.rootState.user.user.uid,
           approvedAt: dayjs().format(),
+          ...peopleId ? { peopleId } : null
         },
       })
 
@@ -60,14 +62,42 @@ const module = mergeOne(managedCollection('submits/people'), {
 
     /** Rejects a submission. */
     reject(context, sub) {
-      return context.dispatch('updateSubmissionStatus', { sub, status: 'rejected' })
+      return context.dispatch('updateSubmission', { sub, status: 'rejected' })
     },
 
     /** Approves submissions group */
     approve: (context, subs) => {
-      return subs.map(sub =>
-        context.dispatch('updateSubmissionStatus', { sub, status: 'approved' })
-      )
+      return subs.map(async sub => {
+
+        // TODO: Check for existing person
+        const id = uid()
+
+        const personNew = {
+          id,
+          ..._.pick(sub, [
+            'awards',
+            'bio',
+            'bonus',
+            'curateInterest',
+            'gender',
+            'identities',
+            'name',
+            // 'photo',
+            'pronoun',
+            'title',
+            'website',
+          ])
+        }
+
+        // update user submission and people submission
+        await context.dispatch('updateSubmission', { peopleId: id, sub, status: 'approved' })
+
+        // save user
+        await context.dispatch('creators/save', {
+          path: id,
+          value: personNew
+        }, { root: true })
+      })
     },
 
   }

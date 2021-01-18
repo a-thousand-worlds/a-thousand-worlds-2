@@ -28,9 +28,22 @@ export default {
   computed: {
     name() {
       return this.$store.state.user.user?.profile.name
-    }
+    },
+    draftPerson() {
+      return this.$store.state.user.user?.profile.draftPerson
+    },
+    person() {
+      const peopleSubmissions = this.$store.state.submissions.people.data || {}
+      const userSubmissions = this.$store.state.user.user.profile.submissions || {}
+      const peopleSubmissionId = Object.keys(userSubmissions)
+        .find(sid => peopleSubmissions[sid]?.type === 'people')
+      const peopleId = peopleSubmissions[peopleSubmissionId].peopleId
+      const person = this.$store.state.creators.data[peopleId]
+      return person
+    },
   },
   created() {
+    console.log('person', this.person)
     this.submission = {
       ...this.newSubmission(),
       ...this.$store.state.user.user?.profile.draftPerson
