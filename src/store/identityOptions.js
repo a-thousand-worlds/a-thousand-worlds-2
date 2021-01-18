@@ -1,7 +1,7 @@
 const identityOptions = {
   black: 'Black',
   indigenous: 'Indigenous',
-  latinx: 'Latin X',
+  latinx: 'Latinx',
   asian: 'Asian',
   nativeAmericanPacificIslander: 'Native Hawaiian/Pacific Islander',
   arabMiddleEasternNorthAfrican: 'Arab, Middle Eastern, North African',
