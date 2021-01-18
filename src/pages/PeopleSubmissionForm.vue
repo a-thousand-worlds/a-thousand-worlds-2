@@ -214,10 +214,10 @@ export default {
             </div>
           </div>
 
-          <!-- rewards -->
+          <!-- awards -->
           <div class="field">
             <label class="label"><b>List of awards and recognition that you would like us to highlight</b> (optional)</label>
-            <input type="text" class="input" v-model="submission.rewards">
+            <input type="text" class="input" v-model="submission.awards">
           </div>
 
           <!-- bonus -->
