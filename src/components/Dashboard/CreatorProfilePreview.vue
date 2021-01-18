@@ -1,6 +1,10 @@
 <script>
+import Square from '@/components/Square'
 
 export default {
+  components: {
+    Square,
+  },
   computed: {
     peopleSubmission() {
       const peopleSubmissions = this.$store.state.submissions.people.data
@@ -8,9 +12,9 @@ export default {
         .find(sid => peopleSubmissions[sid]?.type === 'people')
     },
     person() {
-      return this.personSubmission === 'approved' ? 'TODO' : null
+      return this.userPersonSubmission === 'approved' ? 'TODO' : null
     },
-    personSubmission() {
+    userPersonSubmission() {
       return this.userSubmissions[this.peopleSubmission]
     },
     userSubmissions() {
@@ -22,12 +26,34 @@ export default {
 </script>
 
 <template>
-  <div v-if="personSubmission === 'pending'">
+
+  <!-- pending profile -->
+  <div v-if="userPersonSubmission === 'pending'">
     <p style="font-size: 30px;">Thank you! A Thousand Worlds will review your profile and reach out if we have questions or once it's been approved.</p>
   </div>
+
+  <!-- accepted profile -->
   <div v-else-if="person">
-    TODO: Edit|View Creattor Profile
+    <h2 class="mb-20">Your Public Profile</h2>
+    <div class="columns">
+      <div class="column is-one-third">
+        <router-link :to="{ name: 'PeopleSubmissionForm' }">
+          <Square>
+            <h3>Edit</h3>
+          </Square>
+        </router-link>
+      </div>
+      <div class="column is-one-third">
+        <router-link :to="{ name: 'PersonDetail', params: { id: 'TODO' } }">
+          <Square style="border-radius: 999px;">
+            <h3>View</h3>
+          </Square>
+        </router-link>
+      </div>
+    </div>
   </div>
+
+  <!-- new profile -->
   <div v-else>
     <h2>Please fill our your profile for the People Directory</h2>
     <div class="field is-grouped">
@@ -36,4 +62,5 @@ export default {
       </div>
     </div>
   </div>
+
 </template>
