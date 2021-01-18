@@ -1,0 +1,41 @@
+<!-- A square component that expands to fit while maintaining a 1:1 aspect ratio. -->
+
+<template>
+
+  <div class="square bg-secondary is-flex is-justify-content-center is-align-items-center">
+    <slot />
+  </div>
+
+</template>
+
+<style scoped lang="scss">
+@import "bulma/sass/utilities/_all.sass";
+@import '@/assets/style/mixins.scss';
+
+.square {
+  color: black;
+  position: relative;
+  padding: 20px;
+  white-space: nowrap;
+
+  &:hover {
+    @include primary(color);
+  }
+
+  // shrink text on tablet
+  // not mobile since the container becomes big again when stacked
+  @include tablet-only {
+    h3 {
+      font-size: 20px;
+    }
+  }
+
+}
+
+.square:after {
+  content: "";
+  display: block;
+  padding-bottom: 100%;
+}
+
+</style>
