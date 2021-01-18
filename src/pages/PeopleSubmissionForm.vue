@@ -37,7 +37,7 @@ export default {
       const userSubmissions = this.$store.state.user.user.profile.submissions || {}
       const peopleSubmissionId = Object.keys(userSubmissions)
         .find(sid => peopleSubmissions[sid]?.type === 'people' && peopleSubmissions[sid]?.approved)
-      const peopleId = peopleSubmissions[peopleSubmissionId].peopleId
+      const peopleId = peopleSubmissions[peopleSubmissionId]?.peopleId
       const person = this.$store.state.creators.data[peopleId]
       return person
     },

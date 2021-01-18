@@ -84,12 +84,11 @@ export default {
         <Person v-if="type === 'people'" :submission="sub" />
       </div>
       <div class="has-text-right mt-20">
-        <span>{{ submitterName }}</span>
-        <span class="ml-2">{{ submitterRoles }}</span>
+        {{ submitterName }}{{ submitterRoles ? `, ${submitterRoles}` : '' }}
         <span v-if="submitterOrganization">
-          <span class="ml-2">at</span>
-          <a target="_blank" class="ml-2" v-if="submitterOrganizationLink" :href="submitterOrganizationLink">{{ submitterOrganization }}</a>
-          <span class="ml-2" v-else>{{ submitterOrganization }}</span>
+          <span class="ml-1">at</span>
+          <a target="_blank" class="ml-1" v-if="submitterOrganizationLink" :href="submitterOrganizationLink">{{ submitterOrganization }}</a>
+          <span class="ml-1" v-else>{{ submitterOrganization }}</span>
         </span>
       </div>
     </div>

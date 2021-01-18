@@ -6,6 +6,10 @@ export default {
     Square,
   },
   computed: {
+    hasOnlyRejected() {
+      const userSubmissions = Object.values(this.userSubmissions)
+      return userSubmissions.length > 0 && userSubmissions.every(status => status === 'rejected')
+    },
     hasPendingSubmission() {
       return Object.values(this.userSubmissions).some(status => status === 'pending')
     },
@@ -34,39 +38,44 @@ export default {
 <template>
 
   <!-- pending profile -->
-  <div v-if="hasPendingSubmission">
+  <div v-if="hasPendingSubmission" class="mb-30">
     <p style="font-size: 30px;">Thank you! A Thousand Worlds will review your profile and reach out if we have questions or once it's been approved.</p>
   </div>
 
-  <!-- accepted profile -->
-  <div v-if="person">
-    <h2 class="mb-20">Your Public Profile</h2>
-    <div class="columns">
-      <div class="column is-one-third">
-        <router-link :to="{ name: 'PeopleSubmissionForm' }">
-          <Square>
-            <h3>Edit</h3>
-          </Square>
-        </router-link>
-      </div>
-      <div class="column is-one-third">
-        <router-link :to="{ name: 'PersonDetail', params: { id: person.id } }">
-          <Square style="border-radius: 999px;">
-            <h3>View</h3>
-          </Square>
-        </router-link>
-      </div>
-    </div>
-  </div>
-
-  <!-- new profile -->
   <div v-else>
-    <h2>Please fill our your profile for the People Directory</h2>
-    <div class="field is-grouped">
-      <div class="control my-20">
-        <router-link class="button is-primary" :to="{name:'PeopleSubmissionForm'}">Create Profile</router-link>
+
+    <!-- accepted profile -->
+    <div v-if="person">
+      <h2 class="mb-20">Your Public Profile</h2>
+      <div class="columns">
+        <div class="column is-one-third">
+          <router-link :to="{ name: 'PeopleSubmissionForm' }">
+            <Square>
+              <h3>Edit</h3>
+            </Square>
+          </router-link>
+        </div>
+        <div class="column is-one-third">
+          <router-link :to="{ name: 'PersonDetail', params: { id: person.id } }">
+            <Square style="border-radius: 999px;">
+              <h3>View</h3>
+            </Square>
+          </router-link>
+        </div>
       </div>
     </div>
+
+    <!-- new profile -->
+    <div v-else>
+      <p v-if="hasOnlyRejected" class="mb-20" style="font-size: 22px">Thank you. Your profile submission was not accepted at this time. You can reach us at <a href="mailto:info@athousandworlds.org">info@athousandworlds.org</a> if you have any questions.</p>
+      <h2 v-else>Please fill our your profile for the People Directory</h2>
+      <div class="field is-grouped">
+        <div class="control my-20">
+          <router-link class="button is-primary is-rounded" :to="{name:'PeopleSubmissionForm'}">Create Profile</router-link>
+        </div>
+      </div>
+    </div>
+
   </div>
 
 </template>
