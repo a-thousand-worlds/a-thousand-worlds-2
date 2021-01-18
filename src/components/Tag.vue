@@ -2,10 +2,12 @@
 
 export default {
   // TODO: Pass tag id as prop not tag name
-  props: ['nolink', 'tag'],
+  props: ['nolink', 'tag', 'tagid'],
   computed: {
     tagObject() {
-      const tagObject = this.$store.getters['tags/books/findBy']('tag', this.tag)
+      const key = this.tag ? 'tag' : 'id'
+      const search = this.tag || this.tagid
+      const tagObject = this.$store.getters['tags/books/findBy'](key, search)
       return tagObject
     },
   },

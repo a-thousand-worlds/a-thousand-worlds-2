@@ -26,8 +26,8 @@ export default {
 <template>
   <aside v-if="tags.length" class="menu mb-5">
     <ul class="menu-list submenu">
-      <li v-for="filter in tags" :key="filter.id" @click="toggleFilter(filter.tag)">
-        <button v-if="filter.showOnFront" :class="{toggled:filterOn(filter.tag)}" class="pb-2" style="padding-left: 2px;">{{ filter.tag }}<span v-if="filterOn(filter.tag)" class="remove-tag">{{ '—' }}</span></button>
+      <li v-for="filter in tags" :key="filter.id" @click="toggleFilter(filter.id)">
+        <button v-if="filter.showOnFront" :class="{toggled:filterOn(filter.id)}" class="pb-2" style="padding-left: 2px;">{{ filter.tag }}<span v-if="filterOn(filter.id)" class="remove-tag">{{ '—' }}</span></button>
       </li>
     </ul>
     <button v-if="filters.length > 0" class="button is-rounded is-primary" @click.prevent="resetFilters">Reset Filter</button>

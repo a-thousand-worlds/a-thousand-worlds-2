@@ -34,6 +34,10 @@ export default {
     isbn() {
       return this.$route.params.isbn
     },
+    tags() {
+      return Object.keys(this.book.tags)
+        .filter(tagId => this.book.tags[tagId])
+    }
   },
   mounted() {
     new Clipboard('#copy-link') // eslint-disable-line no-new
@@ -67,7 +71,7 @@ export default {
             <LazyImage class="cover" :src="book.cover" />
           </div>
           <div class="tags">
-            <Tag v-for="tag of book.tags" :key="tag" :tag="tag" />
+            <Tag v-for="tag of tags" :key="tag" :tagid="tag" />
           </div>
         </div>
       </div>

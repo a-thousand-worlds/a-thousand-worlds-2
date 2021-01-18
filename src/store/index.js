@@ -36,6 +36,9 @@ const store = createStore({
       dispatch('submissions/subscribe')
       dispatch('tags/subscribe')
       dispatch('user/subscribe')
+      // TODO rebuild to
+      // 1. fix leaking of users profile and roles data to everyone
+      // 2. not all users table is requires - only contributors
       dispatch('users/subscribe')
     },
 
