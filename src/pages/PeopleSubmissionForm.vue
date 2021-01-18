@@ -43,10 +43,16 @@ export default {
     },
   },
   created() {
-    console.log('person', this.person)
     this.submission = {
       ...this.newSubmission(),
       ...this.$store.state.user.user?.profile.draftPerson
+    }
+  },
+  watch: {
+    person(next, prev) {
+      if (next && !prev) {
+        this.submission = this.newSubmission()
+      }
     }
   },
   methods: {
@@ -63,19 +69,26 @@ export default {
       this.draftSaved = null
     },
 
+    /** Creates a new submission object that is either blank or copied from the existing person. */
     newSubmission() {
-      return {
+      const emptySubmission = {
         awards: '',
         bio: '',
         bonus: '',
         curateInterest: '',
         gender: '',
         identities: {},
-        name: this.name,
+        name: '',
         pronoun: '',
         title: 'Author',
-        website: ''
+        website: '',
       }
+      const newPerson = {
+        ...emptySubmission,
+        name: this.name,
+        ..._.pick(this.person, Object.keys(emptySubmission)),
+      }
+      return newPerson
     },
 
     saveDraft: _.debounce(function() {
@@ -112,7 +125,7 @@ export default {
     <div class="is-flex is-justify-content-center">
       <form class="is-flex-grow-1" style="max-width: 540px;" @submit.prevent="submitForReview">
 
-        <h1 class="title page-title divider-bottom">Create a profile</h1>
+        <h1 class="title page-title divider-bottom">{{ person ? 'Edit public profile' : 'Create a profile' }}</h1>
 
         <section class="basic-information">
 
@@ -153,11 +166,11 @@ export default {
             <div class="sublabel">
 
               <div class="control is-flex">
-                <input type="radio" name="gender" id="gender-woman" v-model="submission.gender" value="Woman" class="checkbox mb-3 mt-1">
+                <input type="radio" name="gender" id="gender-woman" v-model="submission.gender" value="woman" class="checkbox mb-3 mt-1">
                 <label class="label pl-2 pb-1" for="gender-woman" style="cursor: pointer;">Woman</label>
               </div>
               <div class="control is-flex">
-                <input type="radio" name="gender" id="gender-man" v-model="submission.gender" value="Man" class="checkbox mb-3 mt-1">
+                <input type="radio" name="gender" id="gender-man" v-model="submission.gender" value="man" class="checkbox mb-3 mt-1">
                 <label class="label pl-2 pb-1" for="gender-man" style="cursor: pointer;">Man</label>
               </div>
             </div>
