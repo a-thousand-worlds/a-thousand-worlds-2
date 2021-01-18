@@ -6,16 +6,19 @@ export default {
     Square,
   },
   computed: {
-    peopleSubmission() {
-      const peopleSubmissions = this.$store.state.submissions.people.data
+    peopleSubmissionId() {
+      const peopleSubmissions = this.$store.state.submissions.people.data || {}
       return Object.keys(this.userSubmissions)
         .find(sid => peopleSubmissions[sid]?.type === 'people')
     },
     person() {
-      return this.userPersonSubmission === 'approved' ? 'TODO' : null
+      const peopleSubmissions = this.$store.state.submissions.people.data || {}
+      const peopleId = peopleSubmissions[this.peopleSubmissionId]?.peopleId
+      const person = this.$store.state.creators.data[peopleId]
+      return person
     },
     userPersonSubmission() {
-      return this.userSubmissions[this.peopleSubmission]
+      return this.userSubmissions[this.peopleSubmissionId]
     },
     userSubmissions() {
       return this.$store.state.user.user.profile.submissions || {}
@@ -44,7 +47,7 @@ export default {
         </router-link>
       </div>
       <div class="column is-one-third">
-        <router-link :to="{ name: 'PersonDetail', params: { id: 'TODO' } }">
+        <router-link :to="{ name: 'PersonDetail', params: { id: person.id } }">
           <Square style="border-radius: 999px;">
             <h3>View</h3>
           </Square>
