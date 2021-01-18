@@ -14,28 +14,28 @@ export default {
     id() {
       return this.$route.params.id
     },
-    author() {
-      return this.$store.state.creators.data[this.id]
+    person() {
+      return this.$store.state.creators.data?.[this.id]
     },
     isAuthor() {
-      return this.author ? this.author.role === 'author' : true
+      return this.person ? this.person.role === 'author' : true
     },
     books() {
-      return this.author ? this.$store.getters['books/list']().filter(book =>
-        (book.authors || []).includes(this.author.name) ||
-        (book.illustrators || []).includes(this.author.name) ||
-        Object.keys(book.creators || {}).includes(this.author.id)
+      return this.person ? this.$store.getters['books/list']().filter(book =>
+        (book.authors || []).includes(this.person.name) ||
+        (book.illustrators || []).includes(this.person.name) ||
+        Object.keys(book.creators || {}).includes(this.person.id)
       ) : []
     },
     bgImage() {
-      return this.author.photo
+      return this.person.photo
     }
 
   },
   watch: {
     '$store.state.creators.data'(next, prev) {
       if (next && Object.keys(next).length && !next[this.id]) {
-        // author not found! drop to 404
+        // person not found! drop to 404
         // timeout to make router finish any his current work, if doing any
         setTimeout(() => {
           this.$router.push('/404')
@@ -49,20 +49,20 @@ export default {
 
 <template>
 
-  <div v-if="author" class="mx-5">
+  <div v-if="person" class="mx-5">
 
     <div class="is-flex is-flex-direction-row is-flex-wrap-wrap">
-      <div class="column-author" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
+      <div class="column-person" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
         <div class="cover-wrapper">
-          <div v-if="author.photo && author.photo.length" :style="{backgroundImage: 'url('+bgImage+')'}" class="cover-photo bg-secondary" />
+          <div v-if="person.photo && person.photo.length" :style="{backgroundImage: 'url('+bgImage+')'}" class="cover-photo bg-secondary" />
         </div>
 
         <div class="title-container divider-bottom">
           <div class="name ml-2">{{ isAuthor ? 'Author' : 'Illustrator' }}</div>
-          <h1 class="title mt-5">{{ author.name }}</h1>
+          <h1 class="title mt-5">{{ person.name }}</h1>
         </div>
 
-        <p class="person-bio">{{ author.bio }}</p>
+        <p class="person-bio" :innerHTML="person.bio" />
 
       </div>
 
@@ -88,7 +88,7 @@ export default {
   color: black;
 }
 
-.column-author {
+.column-person {
   width: 100%;
   text-align: center;
 
