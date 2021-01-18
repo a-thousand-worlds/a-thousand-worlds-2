@@ -1,6 +1,7 @@
 <script>
 import Book from './Book'
 import Person from './Person'
+import UserEngagements from '@/store/userEngagements'
 
 export default {
   components: {
@@ -17,11 +18,43 @@ export default {
       validator: value => ['books', 'bundles', 'people'].indexOf(value) !== -1,
     }
   },
-  computed: {
-    submitter() {
-      const profile = this.$store.state.user.user.profile
-      return profile.name || `${profile.firstName} ${profile.lastName}`
+  data() {
+    return {
+      submitter: null,
+      submitterLoading: true
     }
+  },
+  computed: {
+    submitterName() {
+      if (this.submitterLoading) return ''
+      return this.submitter.name || `${this.submitter.firstName} ${this.submitter.lastName}`
+    },
+    submitterRoles() {
+      if (this.submitterLoading) return ''
+      return Object.keys(this.submitter.affiliations?.selectedEngagementCategories || {})
+        .map(code => {
+          if (!this.submitter.affiliations.selectedEngagementCategories[code]) return ''
+          if (code === 'other') return this.submitter.affiliations.otherEngagementCategory
+          return UserEngagements.find(el => el.id === code)?.text || ''
+        })
+        .filter(line => line && line.length)
+        .join(', ')
+    },
+    submitterOrganization() {
+      if (this.submitterLoading || !this.submitter.affiliations?.organization?.length) return null
+      return this.submitter.affiliations.organization
+    },
+    submitterOrganizationLink() {
+      if (this.submitterLoading || !this.submitter.affiliations?.organizationLink?.startsWith('http')) return null
+      return this.submitter.affiliations.organizationLink
+    }
+  },
+  created() {
+    this.$store.dispatch('users/loadOne', this.group.by)
+      .then(submitter => {
+        this.submitter = submitter.profile
+        this.submitterLoading = false
+      })
   },
   methods: {
     async approveGroup() {
@@ -51,7 +84,13 @@ export default {
         <Person v-if="type === 'people'" :submission="sub" />
       </div>
       <div class="has-text-right mt-20">
-        {{ submitter }}
+        <span>{{ submitterName }}</span>
+        <span class="ml-2">{{ submitterRoles }}</span>
+        <span v-if="submitterOrganization">
+          <span class="ml-2">at</span>
+          <a target="_blank" class="ml-2" v-if="submitterOrganizationLink" :href="submitterOrganizationLink">{{ submitterOrganization }}</a>
+          <span class="ml-2" v-else>{{ submitterOrganization }}</span>
+        </span>
       </div>
     </div>
 
