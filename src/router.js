@@ -27,7 +27,7 @@ const routes = [
   }, {
     path: '/person/:id',
     name: 'PersonDetail',
-    component: () => import(/* webpackChunkName: "guest" */ './pages/AuthorDetail.vue')
+    component: () => import(/* webpackChunkName: "guest" */ './pages/PersonDetail.vue')
   }, {
     path: '/support',
     name: 'Support',
