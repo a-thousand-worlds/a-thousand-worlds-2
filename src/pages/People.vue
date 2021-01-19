@@ -1,10 +1,10 @@
 <script>
-import AuthorCover from '@/components/AuthorCover'
+import PersonCard from '@/components/PersonCard'
 import Filter from '../components/Filter.vue'
 
 export default {
   components: {
-    AuthorCover,
+    PersonCard,
     Filter,
   },
   computed: {
@@ -25,9 +25,9 @@ export default {
     <Filter type="people" />
   </teleport>
 
-  <div class="container is-flex is-flex-direction-row is-flex-wrap-wrap p-3">
-    <div v-for="person of people" :key="person.id" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}" class="has-text-centered person-block p-3">
-      <AuthorCover :person="person" />
+  <div class="container is-flex is-flex-direction-row is-flex-wrap-wrap mx-20 mb-60">
+    <div v-for="person of people" :key="person.id" :class="{ 'with-bookmarks': $store.state.ui.bookmarksOpen }" class="has-text-centered person-block p-3">
+      <PersonCard :person="person" />
     </div>
   </div>
 
@@ -37,10 +37,13 @@ export default {
 @import "bulma/sass/utilities/_all.sass";
 
 .person-block {
-  width: 100%;
-  margin-bottom: 20px;
+  width: 50%;
+  margin: 0 25% 20px;
 
-  @include from($tablet) { width: 50%; }
+  @include from($tablet) {
+    margin-left: 0;
+    margin-right: 0;
+  }
   @include from($desktop) { width: 33%; }
   @include from($widescreen) { width: 25%; }
 

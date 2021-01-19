@@ -1,5 +1,4 @@
 <script>
-// import AuthorWidget from '@/components/AuthorWidget'
 
 export default {
   props: ['person'],
@@ -8,23 +7,13 @@ export default {
       return this.person.photo
     }
   },
-  /*
-  components: {
-    AuthorWidget,
-  },
-  */
-  created() {
-    if (this.person.photo && this.person.photo.length) {
-      // this.$store.dispatch('loadImage', this.person.photo)
-    }
-  }
 }
 
 </script>
 
 <template>
   <router-link :to="{name:'PersonDetail', params: {id: person.id}}">
-    <div :style="{backgroundImage: 'url('+bgImage+')'}" class="photo-wrapper bg-secondary" />
+    <div :style="{backgroundImage: 'url('+bgImage+')'}" class="photo-wrapper bg-secondary mb-20" />
     <router-link :to="{name: 'PersonDetail', params: {id: person.id}}" class="is-uppercase">{{ person.name }}</router-link>
   </router-link>
 
@@ -38,7 +27,7 @@ a {
   color: #000;
   font-size: 110%;
 }
-/**/
+
 .photo-wrapper {
   @include primary(border-color);
   width: 100%;
@@ -48,5 +37,4 @@ a {
   background-size: cover;
 }
 
-/**/
 </style>
