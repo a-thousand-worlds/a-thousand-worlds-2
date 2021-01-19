@@ -1,7 +1,7 @@
 import mergeOne from '@/util/mergeOne'
-import collection from '@/store/collection/managed'
-import sortable from '@/store/collection/sortable'
+import managed from '@/store/modules/managed'
+import sortable from '@/store/modules/sortable'
 
-const module = mergeOne(collection('tags/people'), sortable())
+const module = mergeOne(managed('tags/people'), sortable())
 
 export default module

@@ -1,10 +1,10 @@
 /** Imaged collection elements use `field` field for element related image, stored at Firestore */
-import collection from '@/store/collection/managed'
+import managed from '@/store/modules/managed'
 import mergeOne from '@/util/mergeOne'
 import firebase from '@/firebase'
 import Jimp from 'jimp'
 
-const module = (name, field) => mergeOne(collection(name), {
+const module = (name, field) => mergeOne(managed(name), {
   actions: {
     async saveWithImage(state, { path, value }) {
       if (!path) throw new Error('path required')

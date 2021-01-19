@@ -1,10 +1,10 @@
 import _ from 'lodash'
 import mergeOne from '@/util/mergeOne'
-import managedCollection from '@/store/collection/managed'
+import managed from '@/store/modules/managed'
 import { v4 as uid } from 'uuid'
 import dayjs from 'dayjs'
 
-const module = mergeOne(managedCollection('submits/people'), {
+const module = mergeOne(managed('submits/people'), {
   actions: {
 
     /** Submit people form to Firebase */

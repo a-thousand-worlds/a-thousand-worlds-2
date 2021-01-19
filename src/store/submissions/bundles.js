@@ -1,7 +1,5 @@
-import mergeOne from '@/util/mergeOne'
-import managedCollection from '@/store/collection/managed'
+import managed from '@/store/modules/managed'
 
-const module = mergeOne(managedCollection('submits/bundles'), {
-})
+const module = managed('submits/bundles')
 
 export default module

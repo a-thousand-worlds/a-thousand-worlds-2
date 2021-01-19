@@ -2,7 +2,7 @@
 import _ from 'lodash'
 import firebase from '@/firebase'
 import mergeOne from '@/util/mergeOne'
-import collection from '@/store/collection/module'
+import collection from '@/store/modules/collection'
 
 function defaultProfile(user, profile = {}) {
   const def = {

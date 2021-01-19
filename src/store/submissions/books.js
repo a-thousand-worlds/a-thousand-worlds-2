@@ -1,9 +1,9 @@
 import mergeOne from '@/util/mergeOne'
-import managedCollection from '@/store/collection/managed'
+import managed from '@/store/modules/managed'
 import { v4 } from 'uuid'
 import dayjs from 'dayjs'
 
-const module = mergeOne(managedCollection('submits/books'), {
+const module = mergeOne(managed('submits/books'), {
   getters: {
     filtered: state => state.loaded
       ? Object.values(state.data)

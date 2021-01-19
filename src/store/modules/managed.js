@@ -1,5 +1,5 @@
 /** Managed collection elements use `createdAt`/`createdBy`, `updatedAt`/`updatedBy`, `approvedBy`/`approvedAt` fields for elements */
-import collection from '@/store/collection/module'
+import collection from '@/store/modules/collection'
 import mergeOne from '@/util/mergeOne'
 import firebase from '@/firebase'
 import dayjs from 'dayjs'
