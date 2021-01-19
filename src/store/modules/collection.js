@@ -5,10 +5,10 @@ import { get, set } from '@/util/get-set'
 /** Wraps a Firebase collection in vuex module. */
 const collectionModule = name => ({
   namespaced: true,
-  state: () => ({
+  state: {
     data: {},
     loaded: false,
-  }),
+  },
   mutations: {
     set(state, data) {
       state.data = data
