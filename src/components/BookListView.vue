@@ -37,13 +37,13 @@ export default {
 
 <template>
   <!-- doing v-if check because this component used for bookmarks bar also, and it may happen, that bookmarked (by some user) book may be removed from database (by admin), so book to display will be undefined -->
-  <div v-if="book" class="columns">
-    <div class="column is-one-third is-one-quarter-desktop is-offset-one-quarter-desktop p-0 mb-20">
+  <div v-if="book" class="columns m-0">
+    <div class="column is-one-half p-0 mb-20">
       <BookDetailLink :book="book" class="cover-data">
         <div class="img-cover bg-secondary" :style="{width: '100%', paddingTop: coverRatio+'%', backgroundImage: 'url('+bgImage+')', backgroundSize: 'contain'}" />
       </BookDetailLink>
     </div>
-    <div class="column is-two-thirds is-one-quarter-desktop is-align-content-center p-0">
+    <div class="column is-one-half is-align-content-center p-0">
       <div class="columns is-mobile is-vcentered m-0" style="line-height: 1.25;">
 
         <div class="column p-0 pl-20 pr-10">

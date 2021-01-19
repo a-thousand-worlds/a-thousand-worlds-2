@@ -72,11 +72,11 @@ export default {
 
       <div class="is-flex is-flex-direction-row is-flex-wrap-wrap">
         <div class="column-person" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
-          <div class="cover-wrapper">
+          <div class="cover-wrapper mb-20">
             <div v-if="person.photo && person.photo.length" :style="{backgroundImage: 'url('+bgImage+')'}" class="cover-photo bg-secondary" />
           </div>
 
-          <div class="title-container divider-bottom">
+          <div class="title-container divider-30">
             <div class="name ml-2">{{ isAuthor ? 'Author' : 'Illustrator' }}</div>
             <h1 class="title mt-5">{{ person.name }}</h1>
           </div>
@@ -149,10 +149,10 @@ export default {
   max-height: 180px;
   text-align: center;
   margin: auto;
-  margin-bottom: 10px;
 
   @include from($widescreen) {
     text-align: left;
+    margin: 0;
   }
 }
 

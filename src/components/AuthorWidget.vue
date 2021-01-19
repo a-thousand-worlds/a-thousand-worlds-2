@@ -33,7 +33,7 @@ export default {
     <span v-if="!isAuthor">illustrated </span>
     <span>by </span>
     <span v-if="nolink || !person" class="name">{{ name }}</span>
-    <PersonDetailLink :person="person" class="name">{{ name }}</PersonDetailLink>
+    <PersonDetailLink v-else :person="person" class="name">{{ name }}</PersonDetailLink>
   </div>
 </template>
 

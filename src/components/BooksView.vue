@@ -35,9 +35,9 @@ export default {
     </div>
 
     <div :class="{ masonry: $store.state.ui.viewMode === 'covers', 'with-bookmarks': $store.state.ui.bookmarksOpen }">
-      <div v-for="book of books" :key="book.id" class="masonry-item">
+      <div v-for="book of books" :key="book.id" :class="{ 'masonry-item': true, ['masonry-item-' + $store.state.ui.viewMode] : true }">
         <BookCoverView v-if="$store.state.ui.viewMode === 'covers'" :book="book" />
-        <BookListView v-if="$store.state.ui.viewMode === 'list'" :book="book" />
+        <BookListView v-else :book="book" />
       </div>
     </div>
 
@@ -50,15 +50,10 @@ export default {
 
 .masonry {
   column-count: 1;
-  @include from($tablet) {
-    column-count: 2;
-  }
-  @include from($desktop) {
-    column-count: 3;
-  }
-  @include from($widescreen) {
-    column-count: 4;
-  }
+  @include from($tablet) { column-count: 2; }
+  @include from($desktop) { column-count: 3; }
+  @include from($widescreen) { column-count: 4; }
+
   &.with-bookmarks {
     display: none;
     @include from($tablet) {
@@ -75,5 +70,13 @@ export default {
 .masonry-item {
   margin-bottom: 20px;
   break-inside: avoid-column;
+
+  &.masonry-item-list {
+    @include from($desktop) {
+      margin: auto;
+      width: 50%;
+      max-width: 750px;
+    }
+  }
 }
 </style>
