@@ -29,7 +29,7 @@ export default {
 
   <BooksView />
 
-  <teleport to="#books-filter-menu">
+  <teleport to="#tags-filter-menu">
     <BooksFilter />
   </teleport>
 

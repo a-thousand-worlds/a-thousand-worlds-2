@@ -48,7 +48,7 @@ export default {
 
 <template>
 
-  <teleport to="#books-filter-menu">
+  <teleport to="#tags-filter-menu">
     <BooksFilter />
   </teleport>
 

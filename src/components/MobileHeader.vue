@@ -44,7 +44,7 @@ export default {
 <!-- unscoped styles -->
 <style lang="scss">
 // hide filters
-.submenu #books-filter-menu {
+.submenu #tags-filter-menu {
   display: none;
 }
 </style>
