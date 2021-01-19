@@ -16,15 +16,15 @@ const module = () => ({
     },
   },
   getters: {
-    filtered: state => items => {
+    filtered: state => (items, tagName = 'tags') => {
       if (!state.loaded) return []
 
       if (state.filters.length === 0) return items
 
       return items.filter(item =>
         state.filters.every(tag => {
-          const list = Array.isArray(item.tags) ? item.tags :
-            typeof item.tags === 'object' ? Object.keys(item.tags) :
+          const list = Array.isArray(item[tagName]) ? item[tagName] :
+            typeof item[tagName] === 'object' ? Object.keys(item[tagName]) :
             []
           return list.includes(tag)
         })

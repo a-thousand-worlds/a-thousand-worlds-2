@@ -2,7 +2,6 @@
 import _ from 'lodash'
 import Jimp from 'jimp'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
-import identityOptions from '@/store/identityOptions'
 import SimpleInput from '@/components/fields/SimpleInput'
 
 export default {
@@ -15,7 +14,6 @@ export default {
       busy: false,
       sub: this.submission || {},
       editor: BalloonEditor,
-      identityOptions,
       image: null,
     }
   },
@@ -42,7 +40,10 @@ export default {
     },
     identities() {
       return Object.keys(this.sub?.identities || {})
-    }
+    },
+    identityOptions() {
+      return this.$store.state.tags.people.data
+    },
   },
   watch: {
     submission(next) {
@@ -136,7 +137,7 @@ export default {
         </div>
         <!-- identities -->
         <div class="tags">
-          <div v-for="key of identities" :key="key" class="button is-primary is-rounded is-mini mr-1 mb-1" style="cursor: default;">{{ identityOptions[key] }}</div>
+          <div v-for="identity of identities" :key="identity.id" class="button is-primary is-rounded is-mini mr-1 mb-1" style="cursor: default;">{{ identityOptions[identity].tag }}</div>
         </div>
       </div>
 

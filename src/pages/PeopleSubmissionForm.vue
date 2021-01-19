@@ -3,7 +3,6 @@ import _ from 'lodash'
 import validator from '@/mixins/validator'
 import Toggle from '@/components/Toggle'
 import genderOptions from '@/store/genderOptions'
-import identityOptions from '@/store/identityOptions'
 
 export default {
   components: {
@@ -21,7 +20,6 @@ export default {
     return {
       draftSaved: null,
       genderOptions,
-      identityOptions,
       submission: this.newSubmission(),
     }
   },
@@ -31,6 +29,9 @@ export default {
     },
     draftPerson() {
       return this.$store.state.user.user?.profile.draftPerson
+    },
+    identityOptions() {
+      return this.$store.state.tags.people.data
     },
     person() {
       const peopleSubmissions = this.$store.state.submissions.people.data || {}
@@ -218,9 +219,9 @@ export default {
           <div class="field">
             <label class="label" :class="{ 'has-text-danger': hasError('identities') }" style="font-weight: bold; text-transform: uppercase;">Identity</label>
             <div class="sublabel tablet-columns-2">
-              <div v-for="(identity, key) of identityOptions" :key="key" class="control is-flex" style="column-break-inside: avoid;">
-                <input v-model="submission.identities[key]" :id="`identity-${key}`" :false-value="null" type="checkbox" class="checkbox mb-3 mt-1" @input="saveDraftAndRevalidate">
-                <label class="label pl-2 pb-1" :for="`identity-${key}`" style="cursor: pointer;">{{ identity }}</label>
+              <div v-for="identity of identityOptions" :key="identity.id" class="control is-flex" style="column-break-inside: avoid;">
+                <input v-model="submission.identities[identity.id]" :id="`identity-${identity.id}`" :false-value="null" type="checkbox" class="checkbox mb-3 mt-1" @input="saveDraftAndRevalidate">
+                <label class="label pl-2 pb-1" :for="`identity-${identity.id}`" style="cursor: pointer;">{{ identity.tag }}</label>
               </div>
             </div>
           </div>

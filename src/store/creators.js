@@ -18,7 +18,7 @@ const module = mergeOne(imaged('people', 'cover'), moduleFilterable, {
   },
   getters: {
     // override filterable getters.filtered to pass state.peopleOrdered as items
-    filtered: state => moduleFilterable.getters.filtered(state)(state.peopleOrdered)
+    filtered: state => moduleFilterable.getters.filtered(state)(state.peopleOrdered, 'identities')
   }
 })
 
