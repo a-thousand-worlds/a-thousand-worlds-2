@@ -1,5 +1,10 @@
 <script>
+import PersonDetailLink from '@/components/PersonDetailLink'
+
 export default {
+  components: {
+    PersonDetailLink,
+  },
   props: ['name', 'size', 'nolink'],
   data() {
     return {
@@ -27,8 +32,8 @@ export default {
   <div class="mb-3 is-uppercase widget" :style="{'font-size': fontSize+'%'}">
     <span v-if="!isAuthor">illustrated </span>
     <span>by </span>
-    <span v-if="nolink" class="name">{{ name }}</span>
-    <router-link v-else-if="person" :to="{name: 'PersonDetail', params: {id: person.id}}" class="name">{{ name }}</router-link>
+    <span v-if="nolink || !person" class="name">{{ name }}</span>
+    <PersonDetailLink :person="person" class="name">{{ name }}</PersonDetailLink>
   </div>
 </template>
 

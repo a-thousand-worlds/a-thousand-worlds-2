@@ -1,5 +1,5 @@
 <script>
-// import * as slugify from '@sindresorhus/slugify'
+import * as slugify from '@sindresorhus/slugify'
 
 /** A helper component to generate a PersonDetail route with the supplementary slug. */
 export default {
@@ -13,8 +13,7 @@ export default {
       return {
         name: 'PersonDetail',
         params: {
-          id: this.person.id,
-          // slug: slugify(this.book.title.replace(/'/g, ''))
+          name: slugify(this.person.name)
         }
       }
     }

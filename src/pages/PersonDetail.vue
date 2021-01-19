@@ -1,4 +1,5 @@
 <script>
+import * as slugify from '@sindresorhus/slugify'
 import BookListView from '@/components/BookListView'
 import Filter from '@/components/Filter'
 import PrevNext from '@/components/PrevNext'
@@ -15,11 +16,11 @@ export default {
     }
   },
   computed: {
-    id() {
-      return this.$route.params.id
+    name() {
+      return this.$route.params.name
     },
     person() {
-      return this.$store.state.creators.data?.[this.id]
+      return this.$store.getters['creators/findBy']('name', name => slugify(name) === this.name)
     },
     isAuthor() {
       return this.person ? this.person.role === 'author' : true
@@ -38,7 +39,7 @@ export default {
   },
   watch: {
     '$store.state.creators.data'(next, prev) {
-      if (next && Object.keys(next).length && !next[this.id]) {
+      if (next && Object.keys(next).length && !next[this.person.id]) {
         // person not found! drop to 404
         // timeout to make router finish any his current work, if doing any
         setTimeout(() => {

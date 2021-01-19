@@ -1,5 +1,10 @@
 <script>
+import PersonDetailLink from '@/components/PersonDetailLink'
+
 export default {
+  components: {
+    PersonDetailLink,
+  },
   props: ['creators', 'linked'],
   data() {
     return {
@@ -36,7 +41,7 @@ export default {
     <div class="person-block">
       <span class="comma mr-2">by</span>
       <span v-for="(person, i) of authors" :key="i">
-        <router-link v-if="person.person && linked" class="name" :to="{name: 'PersonDetail', params: {id: person.person.id}}">{{ person.person.name }}</router-link>
+        <PersonDetailLink v-if="person.person && linked" :person="person.person" class="name">{{ person.person.name }}</PersonDetailLink>
         <span v-if="person.person && !linked" class="name">{{ person.person?.name }}</span>
         <span v-if="authors?.length > 1 && i !== authors?.length - 1" class="comma mr-2">,</span>
       </span>
@@ -44,7 +49,7 @@ export default {
     <div v-if="illustrators.length" class="person-block">
       <span class="comma mr-2">illustrated by</span>
       <span v-for="(person, i) of authors" :key="i">
-        <router-link v-if="person.person && linked" class="name" :to="{name: 'PersonDetail', params: {id: person.person.id}}">{{ person.person.name }}</router-link>
+        <PersonDetailLink v-if="person.person && linked" :person="person.person" class="name">{{ person.person.name }}</PersonDetailLink>
         <span v-if="person.person && !linked" class="name">{{ person.person.name }}</span>
         <span v-if="authors.length > 1 && i !== authors?.length - 1" class="comma mr-2">,</span>
       </span>

@@ -1,6 +1,10 @@
 <script>
+import PersonDetailLink from '@/components/PersonDetailLink'
 
 export default {
+  components: {
+    PersonDetailLink,
+  },
   props: ['person'],
   computed: {
     bgImage() {
@@ -12,10 +16,10 @@ export default {
 </script>
 
 <template>
-  <router-link :to="{name:'PersonDetail', params: {id: person.id}}">
+  <PersonDetailLink :person="person">
     <div :style="{backgroundImage: 'url('+bgImage+')'}" class="photo-wrapper bg-secondary mb-20" />
-    <router-link :to="{name: 'PersonDetail', params: {id: person.id}}" class="is-uppercase">{{ person.name }}</router-link>
-  </router-link>
+    <span class="is-uppercase">{{ person.name }}</span>
+  </PersonDetailLink>
 
 </template>
 

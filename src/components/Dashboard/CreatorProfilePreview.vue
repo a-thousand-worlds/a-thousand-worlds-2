@@ -56,11 +56,11 @@ export default {
           </router-link>
         </div>
         <div class="column is-one-third">
-          <router-link :to="{ name: 'PersonDetail', params: { id: person.id } }">
+          <PersonDetailLink :person="person" class="name">
             <Square style="border-radius: 999px;">
               <h3>View</h3>
             </Square>
-          </router-link>
+          </PersonDetailLink>
         </div>
       </div>
     </div>
