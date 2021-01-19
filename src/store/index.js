@@ -2,6 +2,7 @@ import { createStore } from 'vuex'
 
 import alert from '@/store/alert'
 import books from '@/store/books'
+import bundles from '@/store/bundles'
 import content from '@/store/content'
 import creators from '@/store/creators'
 import invites from '@/store/invites'
@@ -15,6 +16,7 @@ const store = createStore({
   modules: {
     alert,
     books,
+    bundles,
     content,
     creators,
     invites,
@@ -30,6 +32,7 @@ const store = createStore({
   actions: {
     async subscribe({ state, dispatch, commit }) {
       dispatch('books/subscribe')
+      dispatch('bundles/subscribe')
       dispatch('content/subscribe')
       dispatch('creators/subscribe')
       dispatch('invites/subscribe')

@@ -21,7 +21,7 @@ export default {
 
 <template>
 
-  <teleport to="#books-filter-menu">
+  <teleport to="#people-filter-menu">
     <Filter type="people" />
   </teleport>
 
