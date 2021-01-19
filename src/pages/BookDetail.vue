@@ -35,8 +35,10 @@ export default {
       return this.$route.params.isbn
     },
     tags() {
-      return Object.keys(this.book.tags)
-        .filter(tagId => this.book.tags[tagId])
+      const bookTags = this.$store.state.tags.books.data || {}
+      return Object.keys(this.book?.tags || [])
+        .map(id => bookTags[id])
+        .filter(x => x)
     }
   },
   mounted() {
@@ -71,7 +73,7 @@ export default {
             <LazyImage class="cover" :src="book.cover" />
           </div>
           <div class="tags">
-            <Tag v-for="tag of tags" :key="tag" :tagid="tag" />
+            <Tag v-for="tag of tags" :key="tag.id" :tag="tag" />
           </div>
         </div>
       </div>

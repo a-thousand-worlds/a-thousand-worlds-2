@@ -1,19 +1,15 @@
 <script>
 
 export default {
-  // TODO: Pass tag id as prop not tag name
-  props: ['nolink', 'tag', 'tagid'],
-  computed: {
-    tagObject() {
-      const key = this.tag ? 'tag' : 'id'
-      const search = this.tag || this.tagid
-      const tagObject = this.$store.getters['tags/books/findBy'](key, search)
-      return tagObject
-    },
+  props: {
+    nolink: Boolean,
+    tag: {
+      required: true,
+    }
   },
   methods: {
-    toFilter() {
-      this.$store.commit('books/setFilters', [this.tagObject.tag])
+    goToFilter() {
+      this.$store.commit('books/setFilters', [this.tag.id])
       this.$router.push({ name: 'Home' })
     },
   }
@@ -22,8 +18,8 @@ export default {
 </script>
 
 <template>
-  <span v-if="tagObject">
-    <span v-if="nolink" style="cursor: default;">{{ tagObject.tag }}</span>
-    <a v-else @click.prevent="toFilter" class="button is-primary is-rounded is-mini mr-1 mb-1" style="display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis;">{{ tagObject.tag }}</a>
+  <span v-if="tag">
+    <span v-if="nolink" style="cursor: default;">{{ tag.tag }}</span>
+    <a v-else @click.prevent="goToFilter" class="button is-primary is-rounded is-mini mr-1 mb-1" style="display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis;">{{ tag.tag }}</a>
   </span>
 </template>
