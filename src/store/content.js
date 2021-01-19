@@ -1,4 +1,4 @@
-import collectionModule from './collection/module'
+import collectionModule from './modules/collection'
 
 const module = collectionModule('content')
 
