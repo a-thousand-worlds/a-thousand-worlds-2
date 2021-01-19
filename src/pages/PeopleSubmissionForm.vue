@@ -136,8 +136,13 @@ export default {
 <template>
 
   <div class="mx-20 mb-30">
+
     <div class="is-flex is-justify-content-center">
       <form class="is-flex-grow-1" style="max-width: 540px;" @submit.prevent="submitForReview">
+
+        <div class="mb-5">
+          <router-link :to="{ name: 'Dashboard' }" class="is-uppercase is-primary">&lt; Back to Dashboard</router-link>
+        </div>
 
         <h1 class="title page-title divider-bottom">{{ person ? 'Edit public profile' : 'Create a profile' }}</h1>
 
