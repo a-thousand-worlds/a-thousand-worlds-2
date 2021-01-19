@@ -16,14 +16,28 @@ export default {
       return Object.keys(this.$store.state.user.user?.profile.bookmarks || {}).length
     },
     filters() {
-      return this.$store.state.books.filters
+      return this.$store.state[this.storeType].filters
     },
-    isHome() {
-      return this.$route.name === 'Home'
+    hasTags() {
+      return this.$route.name === 'Home' ||
+        this.$route.name === 'People' ||
+        this.$route.name === 'Bundles'
     },
     tags() {
-      return this.$store.getters['tags/books/listSorted']()
+      return this.$store.getters[`tags/${this.filterType}/listSorted`]()
         .filter(tag => tag.showOnFront)
+    },
+    filterType() {
+      return this.$route.name === 'Home' ? 'books'
+        : this.$route.name === 'People' ? 'people'
+        : this.$route.name === 'Bundles' ? 'bundles'
+        : null
+    },
+    storeType() {
+      return this.$route.name === 'Home' ? 'books'
+        : this.$route.name === 'People' ? 'creators'
+        : this.$route.name === 'Bundles' ? 'bundles'
+        : null
     },
   },
   methods: {
@@ -31,26 +45,15 @@ export default {
       return this.filters.includes(tag)
     },
     resetFilters() {
-      this.$store.commit('books/resetFilters')
+      this.$store.commit(`${this.storeType}/resetFilters`)
     },
     setFilters(e) {
       const options = [...e.target.options]
-      // const reset = options.find(option => option.value === '_reset' && option.selected)
-      // if (reset) {
-      //   options.forEach(option => {
-      //     option.selected = false
-      //   })
-      //   this.$store.commit('books/setFilters', [])
-      //   e.target.blur()
-      // }
       const selected = options
         // ignore reset option
         .filter(option => option.selected && option.value !== '_reset')
         .map(option => option.value)
-      this.$store.commit('books/setFilters', selected)
-    },
-    toggleFilter(fid) {
-      this.$store.commit('books/toggleFilter', fid)
+      this.$store.commit(`${this.storeType}/setFilters`, selected)
     },
     toggleBookmarks() {
       if (!this.$iam('authorized')) {
@@ -71,11 +74,11 @@ export default {
     <section class="mobile-bottom-nav has-text-centered is-uppercase">
       <ul class="menu-list my-10">
 
-        <li v-if="isHome && !$store.state.ui.bookmarksOpen" style="position: relative;">
+        <li v-if="hasTags && !$store.state.ui.bookmarksOpen" style="position: relative;">
           <select @change="setFilters" multiple style="position: absolute; background-color: tomato; overflow: hidden; left: 0: top: 0; overflow: hidden; min-width: 60px; max-width: 100px; width: 70px; height: 100%; font-size: 20px; cursor: pointer; opacity: 0;">
             <!-- <option @click="resetFilters" value="_reset">Reset Filter</option> -->
             <optgroup disabled hidden />
-            <option v-for="tag in tags" :key="tag.id" :selected="isFiltered(tag.tag)" :value="tag.tag">{{ tag.tag }}</option>
+            <option v-for="tag in tags" :key="tag.id" :selected="isFiltered(tag.id)" :value="tag.id">{{ tag.tag }}</option>
           </select>
           <FilterIcon />
           <div class="icon-label mt-2">Filter</div>
