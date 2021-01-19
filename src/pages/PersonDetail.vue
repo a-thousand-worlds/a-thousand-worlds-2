@@ -3,12 +3,14 @@ import * as slugify from '@sindresorhus/slugify'
 import BookListView from '@/components/BookListView'
 import Filter from '@/components/Filter'
 import PrevNext from '@/components/PrevNext'
+import Tag from '@/components/Tag'
 
 export default {
   components: {
     BookListView,
     Filter,
     PrevNext,
+    Tag,
   },
   data() {
     return {
@@ -16,14 +18,8 @@ export default {
     }
   },
   computed: {
-    name() {
-      return this.$route.params.name
-    },
-    person() {
-      return this.$store.getters['creators/findBy']('name', name => slugify(name) === this.name)
-    },
-    isAuthor() {
-      return this.person ? this.person.role === 'author' : true
+    bgImage() {
+      return this.person.photo
     },
     books() {
       return this.person ? this.$store.getters['books/list']().filter(book =>
@@ -32,10 +28,21 @@ export default {
         Object.keys(book.creators || {}).includes(this.person.id)
       ) : []
     },
-    bgImage() {
-      return this.person.photo
+    isAuthor() {
+      return this.person ? this.person.role === 'author' : true
+    },
+    name() {
+      return this.$route.params.name
+    },
+    person() {
+      return this.$store.getters['creators/findBy']('name', name => slugify(name) === this.name)
+    },
+    tags() {
+      const peopleTags = this.$store.state.tags.people.data || {}
+      return Object.keys(this.person?.identities || [])
+        .map(id => peopleTags[id])
+        .filter(x => x)
     }
-
   },
   watch: {
     '$store.state.creators.data'(next, prev) {
@@ -77,8 +84,11 @@ export default {
           </div>
 
           <div class="title-container divider-30">
-            <div class="name ml-2">{{ isAuthor ? 'Author' : 'Illustrator' }}</div>
+            <div class="name">{{ isAuthor ? 'Author' : 'Illustrator' }}</div>
             <h1 class="title mt-5">{{ person.name }}</h1>
+            <div v-if="tags" class="tags mt-20">
+              <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="people" />
+            </div>
           </div>
 
           <p class="person-bio" :innerHTML="person.bio" />

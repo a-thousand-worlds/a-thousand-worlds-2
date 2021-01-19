@@ -6,12 +6,30 @@ export default {
     nolink: Boolean,
     tag: {
       required: true,
+    },
+    type: {
+      type: String,
+      required: true,
+      validator: value => ['books', 'bundles', 'people'].indexOf(value) !== -1,
     }
+  },
+  computed: {
+    // map the prop type to the router type
+    routerType() {
+      return this.type === 'books' ? 'Home'
+        : this.type === 'people' ? 'People'
+        : this.type === 'bundles' ? 'Bundles'
+        : null
+    },
+    // map the prop type to the store type
+    storeType() {
+      return this.type === 'people' ? 'creators' : this.type
+    },
   },
   methods: {
     goToFilter() {
-      this.$store.commit('books/setFilters', [this.tag.id])
-      this.$router.push({ name: 'Home', query: { filters: slugify(this.tag.tag) } })
+      this.$store.commit(`${this.storeType}/setFilters`, [this.tag.id])
+      this.$router.push({ name: this.routerType, query: { filters: slugify(this.tag.tag) } })
     },
   }
 }
