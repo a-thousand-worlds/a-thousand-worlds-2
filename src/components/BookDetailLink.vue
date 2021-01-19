@@ -3,7 +3,11 @@ import * as slugify from '@sindresorhus/slugify'
 
 /** A helper component to generate a BookDetail route with the supplementary slug. */
 export default {
-  props: ['book'],
+  props: {
+    book: {
+      required: true,
+    },
+  },
   computed: {
     route() {
       return {

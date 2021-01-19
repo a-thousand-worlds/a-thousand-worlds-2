@@ -1,9 +1,13 @@
 <script>
 import BookListView from '@/components/BookListView'
+import Filter from '@/components/Filter'
+import PrevNext from '@/components/PrevNext'
 
 export default {
   components: {
     BookListView,
+    Filter,
+    PrevNext,
   },
   data() {
     return {
@@ -49,29 +53,44 @@ export default {
 
 <template>
 
+  <teleport to="#people-filter-menu">
+    <Filter type="people" />
+  </teleport>
+
   <div v-if="person" class="mx-5">
 
-    <div class="is-flex is-flex-direction-row is-flex-wrap-wrap">
-      <div class="column-person" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
-        <div class="cover-wrapper">
-          <div v-if="person.photo && person.photo.length" :style="{backgroundImage: 'url('+bgImage+')'}" class="cover-photo bg-secondary" />
+    <div class="wide-page">
+      <div class="columns mb-5">
+
+        <div class="column is-narrow">
+          <router-link :to="{ name: 'People' }" class="is-uppercase is-primary">&lt; Back to People</router-link>
         </div>
 
-        <div class="title-container divider-bottom">
-          <div class="name ml-2">{{ isAuthor ? 'Author' : 'Illustrator' }}</div>
-          <h1 class="title mt-5">{{ person.name }}</h1>
-        </div>
-
-        <p class="person-bio" :innerHTML="person.bio" />
-
+        <PrevNext v-if="person" type="people" :item="person" class="column" />
       </div>
 
-      <div class="column-books" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
-        <BookListView v-for="book of books" :key="book.id" :book="book" />
+      <div class="is-flex is-flex-direction-row is-flex-wrap-wrap">
+        <div class="column-person" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
+          <div class="cover-wrapper">
+            <div v-if="person.photo && person.photo.length" :style="{backgroundImage: 'url('+bgImage+')'}" class="cover-photo bg-secondary" />
+          </div>
+
+          <div class="title-container divider-bottom">
+            <div class="name ml-2">{{ isAuthor ? 'Author' : 'Illustrator' }}</div>
+            <h1 class="title mt-5">{{ person.name }}</h1>
+          </div>
+
+          <p class="person-bio" :innerHTML="person.bio" />
+
+        </div>
+
+        <div class="column-books" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
+          <BookListView v-for="book of books" :key="book.id" :book="book" />
+        </div>
+
       </div>
 
     </div>
-
   </div>
 
   <!-- Add a bottom spacer so that fixed position footer clears content when scrolled to the bottom. -->
@@ -83,6 +102,14 @@ export default {
 @import "bulma/sass/utilities/_all.sass";
 @import '@/assets/style/mixins.scss';
 @import '@/assets/style/vars.scss';
+
+.wide-page {
+  margin: 0 20px;
+  max-width: $widescreen;
+  @include from($desktop) {
+    margin: 0 60px;
+  }
+}
 
 .directory-nav-link {
   color: black;

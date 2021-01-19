@@ -60,7 +60,7 @@ export default {
         <router-link :to="{ name: 'Home' }" class="is-uppercase is-primary">&lt; Back to Books</router-link>
       </div>
 
-      <PrevNext v-if="book" :book="book" class="column" />
+      <PrevNext v-if="book" type="books" :item="book" class="column" />
     </div>
 
     <div class="columns">
