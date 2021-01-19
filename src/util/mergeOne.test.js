@@ -1,6 +1,6 @@
 import mergeOne from './mergeOne'
 
-test('mergeTo', () => {
+test('merge one level deep', () => {
   expect(mergeOne({
     getters: {
       x: {
@@ -70,6 +70,29 @@ test('mergeTo', () => {
         z: {
           zb: 'zb',
         }
+      },
+    })
+})
+
+test('merge multiple objects', () => {
+  expect(mergeOne({
+    getters: {
+      x: 0,
+    },
+  }, {
+    getters: {
+      y: 1,
+    },
+  }, {
+    getters: {
+      z: 2,
+    },
+  }))
+    .toEqual({
+      getters: {
+        x: 0,
+        y: 1,
+        z: 2,
       },
     })
 })

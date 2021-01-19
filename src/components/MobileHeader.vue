@@ -44,8 +44,10 @@ export default {
 <!-- unscoped styles -->
 <style lang="scss">
 // hide filters
-.submenu #tags-filter-menu {
-  display: none;
+.submenu {
+  #books-filter-menu, #bundles-filter-menu, #people-filter-menu {
+    display: none;
+  }
 }
 </style>
 

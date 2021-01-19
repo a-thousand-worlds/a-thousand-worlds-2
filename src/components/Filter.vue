@@ -1,23 +1,41 @@
 <script>
 export default {
+  props: {
+    type: {
+      type: String,
+      required: true,
+      validator: value => ['books', 'bundles', 'people'].indexOf(value) !== -1,
+    }
+  },
   computed: {
     filters() {
-      return Object.values(this.$store.state.books.filters)
+      return Object.values(this.$store.state[this.storeType].filters)
     },
     tags() {
-      return this.$store.getters['tags/books/listSorted']()
+      return this.$store.getters[`tags/${this.type}/listSorted`]()
+    },
+    // map the prop type to the store type
+    storeType() {
+      return this.type === 'people' ? 'creators' : this.type
+    },
+    // map the prop type to the router type
+    routerType() {
+      return this.type === 'books' ? 'Home'
+        : this.type === 'people' ? 'People'
+        : this.type === 'bundles' ? 'Bundles'
+        : null
     },
   },
   methods: {
     toggleFilter(fid) {
-      this.$store.commit('books/toggleFilter', fid)
-      this.$router.push({ name: 'Home' })
+      this.$store.commit(`${this.storeType}/toggleFilter`, fid)
+      this.$router.push({ name: this.routerType })
     },
     resetFilters() {
-      this.$store.commit('books/resetFilters')
+      this.$store.commit(`${this.storeType}/resetFilters`)
     },
-    filterOn(fid) {
-      return this.$store.state.books.filters.includes(fid)
+    isFiltered(fid) {
+      return this.$store.state[this.storeType].filters.includes(fid)
     },
   }
 }
@@ -27,7 +45,7 @@ export default {
   <aside v-if="tags.length" class="menu mb-5">
     <ul class="menu-list submenu">
       <li v-for="filter in tags" :key="filter.id" @click="toggleFilter(filter.id)">
-        <button v-if="filter.showOnFront" :class="{toggled:filterOn(filter.id)}" class="pb-2" style="padding-left: 2px;">{{ filter.tag }}<span v-if="filterOn(filter.id)" class="remove-tag">{{ '—' }}</span></button>
+        <button v-if="filter.showOnFront" :class="{toggled:isFiltered(filter.id)}" class="pb-2" style="padding-left: 2px;">{{ filter.tag }}<span v-if="isFiltered(filter.id)" class="remove-tag">{{ '—' }}</span></button>
       </li>
     </ul>
     <button v-if="filters.length > 0" class="button is-rounded is-primary" @click.prevent="resetFilters">Reset Filter</button>

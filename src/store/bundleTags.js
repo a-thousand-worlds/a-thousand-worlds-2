@@ -1,14 +1,7 @@
 import mergeOne from '@/util/mergeOne'
 import collection from '@/store/collection/managed'
+import sortable from '@/store/collection/sortable'
 
-const module = mergeOne(collection('tags/bundles'), {
-  getters: {
-    listSorted: (state, getters) => () => state.loaded
-      // eslint-disable-next-line fp/no-mutating-methods
-      ? getters.list()
-        .sort((a, b) => parseInt(a.sortOrder) === parseInt(b.sortOrder) ? 0 : parseInt(a.sortOrder) > parseInt(b.sortOrder) ? 1 : -1)
-      : []
-  }
-})
+const module = mergeOne(collection('tags/bundles'), sortable())
 
 export default module

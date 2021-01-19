@@ -1,12 +1,12 @@
 <script>
-import BooksFilter from '../components/BooksFilter.vue'
 import BooksView from '../components/BooksView.vue'
+import Filter from '../components/Filter.vue'
 
 export default {
   name: 'HomePage',
   components: {
-    BooksFilter,
     BooksView,
+    Filter,
   },
   beforeRouteLeave(to, from, next) {
     // mark the user's visit once they navigate to any other page
@@ -29,8 +29,8 @@ export default {
 
   <BooksView />
 
-  <teleport to="#tags-filter-menu">
-    <BooksFilter />
+  <teleport to="#books-filter-menu">
+    <Filter type="books" />
   </teleport>
 
 </template>

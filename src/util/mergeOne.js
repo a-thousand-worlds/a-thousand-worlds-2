@@ -1,9 +1,13 @@
-/** Merges two objects, one level deep. One level deeper than { ...a, ...b }. */
-const mergeOne = (a, b) => {
-  const o = { ...a }
+/** Merges two or more objects, one level deep. One level deeper than { ...a, ...b }. */
+const mergeOne = (...args) => {
+  if (args.length > 2) {
+    return mergeOne(args[0], mergeOne(...args.slice(1)))
+  }
+
+  const o = { ...args[0] }
   // eslint-disable-next-line fp/no-loops
-  for (const key in b) {
-    o[key] = { ...a[key], ...b[key] }
+  for (const key in args[1]) {
+    o[key] = { ...args[0][key], ...args[1][key] }
   }
   return o
 }

@@ -2,7 +2,7 @@
 import AuthorWidget from '@/components/AuthorWidget'
 import BookDetailFooter from '@/components/BookDetailFooter'
 import BookmarkButton from '@/components/BookmarkButton'
-import BooksFilter from '@/components/BooksFilter'
+import Filter from '@/components/Filter'
 import Clipboard from 'clipboard'
 import CreatorsWidget from '@/components/CreatorsWidget'
 import LazyImage from '@/components/LazyImage'
@@ -17,7 +17,7 @@ export default {
     AuthorWidget,
     BookDetailFooter,
     BookmarkButton,
-    BooksFilter,
+    Filter,
     CreatorsWidget,
     LazyImage,
     Loader,
@@ -48,8 +48,8 @@ export default {
 
 <template>
 
-  <teleport to="#tags-filter-menu">
-    <BooksFilter />
+  <teleport to="#books-filter-menu">
+    <Filter type="books" />
   </teleport>
 
   <div class="book-detail">
