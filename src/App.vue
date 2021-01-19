@@ -69,7 +69,7 @@ export default ({
         <Confirm />
         <Prompt />
         <Alert />
-        <div v-if="$store.state.ui.pageLoading" class="has-text-centered">
+        <div v-if="$store.state.ui.pageLoading" class="has-text-centered" style="margin-top: 20vh;">
           <Loader />
         </div>
         <router-view />
