@@ -15,6 +15,10 @@ export default {
   data() {
     return {
       busy: false,
+      ckConfig: {
+        toolbar: [],
+        placeholder: 'No summary'
+      },
       sub: this.submission || {},
       editor: BalloonEditor,
       // selected: this.checked || false,
@@ -24,12 +28,6 @@ export default {
     }
   },
   computed: {
-    ckConfig() {
-      return {
-        toolbar: [],
-        placeholder: 'No summary'
-      }
-    },
     coverRatio() {
       return this.sub.cover?.height / this.sub.cover?.width * 100 || 100
     },
