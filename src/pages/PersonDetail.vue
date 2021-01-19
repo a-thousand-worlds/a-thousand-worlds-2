@@ -121,8 +121,8 @@ export default {
   text-align: center;
 
   @include from($widescreen) {
-    width: 48%;
-    margin-right: 0.75rem;
+    width: calc(50% - 20px);
+    margin-right: 20px;
     text-align: left;
   }
 
@@ -136,7 +136,8 @@ export default {
   width: 100%;
 
   @include from($widescreen) {
-    width: 48%;
+    width: calc(50% - 20px);
+    margin-left: 20px;
   }
 
   &.with-bookmarks {
@@ -171,15 +172,17 @@ export default {
 }
 
 .person-bio {
+  @include primary(border-color);
   font-size: 22px;
   text-align: justify;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1.5rem;
+  padding-bottom: 30px;
+  margin-bottom: 30px;
   border-bottom: solid 1px #ddd;
 
   @include from($widescreen) {
     text-align: left;
     border-bottom: none;
+    padding-bottom: 0.5rem;
   }
 }
 </style>
