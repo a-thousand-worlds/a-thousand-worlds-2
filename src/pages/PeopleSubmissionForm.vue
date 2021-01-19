@@ -57,7 +57,7 @@ export default {
       if (next && !prev) {
         this.submission = this.newSubmission()
       }
-    }
+    },
   },
   created() {
     this.submission = {
@@ -89,8 +89,9 @@ export default {
         gender: '',
         identities: {},
         name: '',
+        photo: '',
         pronoun: '',
-        title: 'Author',
+        title: 'author',
         website: '',
       }
       const newPerson = {
@@ -105,7 +106,8 @@ export default {
       return newPerson
     },
 
-    saveDraft: _.debounce(function() {
+    saveDraftAndRevalidate: _.debounce(function() {
+      this.revalidate()
       clearTimeout(this.draftSaved)
       this.$store.dispatch('user/savePersonSubmissionDraft', this.submission)
       this.draftSaved = setTimeout(() => {
@@ -151,30 +153,34 @@ export default {
           <!-- name -->
           <div class="field">
             <label class="label" :class="{ 'has-text-danger': hasError('name') }" style="font-weight: bold; text-transform: uppercase;">Your Name</label>
-            <input type="text" class="input" v-model="submission.name" @input="revalidate">
+            <input type="text" class="input" v-model="submission.name" @input="saveDraftAndRevalidate">
           </div>
 
           <!-- title -->
           <div class="field">
             <label class="label" :class="{ 'has-text-danger': hasError('title') }" style="font-weight: bold; text-transform: uppercase;">Your Title</label>
-            <div class="control">
+
+            <div class="control is-flex">
               <label style="cursor: pointer;">
-                <input type="radio" id="title" name="title" v-model="submission.title" value="Author">
+                <input type="radio" name="title" v-model="submission.title" value="author" class="checkbox mb-3 mt-1">
                 Author
               </label>
             </div>
-            <div class="control">
+
+            <div class="control is-flex">
               <label style="cursor: pointer;">
-                <input type="radio" id="title" name="title" v-model="submission.title" value="Illustrator">
+                <input type="radio" name="title" v-model="submission.title" value="illustrator" class="checkbox mb-3 mt-1">
                 Illustrator
               </label>
             </div>
-            <div class="control">
+
+            <div class="control is-flex">
               <label style="cursor: pointer;">
-                <input type="radio" id="title" name="title" v-model="submission.title" value="Author/Illustrator">
+                <input type="radio" name="title" v-model="submission.title" value="author-illustrator" class="checkbox mb-3 mt-1">
                 Author/Illustrator
               </label>
             </div>
+
           </div>
 
           <!-- gender -->
@@ -213,22 +219,28 @@ export default {
             <label class="label" :class="{ 'has-text-danger': hasError('identities') }" style="font-weight: bold; text-transform: uppercase;">Identity</label>
             <div class="sublabel tablet-columns-2">
               <div v-for="(identity, key) of identityOptions" :key="key" class="control is-flex" style="column-break-inside: avoid;">
-                <input v-model="submission.identities[key]" :id="`identity-${key}`" :false-value="null" type="checkbox" class="checkbox mb-3 mt-1" @input="revalidate">
+                <input v-model="submission.identities[key]" :id="`identity-${key}`" :false-value="null" type="checkbox" class="checkbox mb-3 mt-1" @input="saveDraftAndRevalidate">
                 <label class="label pl-2 pb-1" :for="`identity-${key}`" style="cursor: pointer;">{{ identity }}</label>
               </div>
             </div>
           </div>
 
+          <!-- bio -->
+          <div class="field">
+            <label class="label"><b>Bio</b></label>
+            <textarea class="textarea" v-model="submission.bio" @input="saveDraftAndRevalidate" />
+          </div>
+
           <!-- awards -->
           <div class="field">
             <label class="label"><b>List of awards and recognition that you would like us to highlight</b> (optional)</label>
-            <input type="text" class="input" v-model="submission.awards">
+            <input type="text" class="input" v-model="submission.awards" @input="saveDraftAndRevalidate">
           </div>
 
           <!-- bonus -->
           <div class="field">
             <label class="label"><b>Links to bonus material relevant to you</b> (optional)</label>
-            <input type="text" class="input" v-model="submission.bonus">
+            <input type="text" class="input" v-model="submission.bonus" @input="saveDraftAndRevalidate">
           </div>
 
           <!-- curateInterest -->
@@ -236,19 +248,19 @@ export default {
             <label class="label"><b>Would you be in interested in curating a picture book bundle?</b> This entails listing your favorite 3-5 picture books (by other BIPOC creatives) that represent a theme of your choosing and writing a paragraph about this book collection.</label>
             <div class="control">
               <label style="cursor: pointer;">
-                <input type="radio" name="title" v-model="submission.curateInterest" value="Yes">
+                <input type="radio" name="curateInterest" v-model="submission.curateInterest" value="Yes" @input="saveDraftAndRevalidate">
                 Yes! Please send me a curation form
               </label>
             </div>
             <div class="control">
               <label style="cursor: pointer;">
-                <input type="radio" name="title" v-model="submission.curateInterest" value="No">
+                <input type="radio" name="curateInterest" v-model="submission.curateInterest" value="No" @input="saveDraftAndRevalidate">
                 No
               </label>
             </div>
             <div class="control">
               <label style="cursor: pointer;">
-                <input type="radio" name="title" v-model="submission.curateInterest" value="Maybe">
+                <input type="radio" name="curateInterest" v-model="submission.curateInterest" value="Maybe" @input="saveDraftAndRevalidate">
                 Maybe, please send me more info
               </label>
             </div>
@@ -261,7 +273,7 @@ export default {
         <div class="field is-grouped">
           <button :class="{'is-loading': $uiBusy}" class="button is-rounded is-primary mr-20" @click.prevent="submitForReview">Submit for review</button>
           <button class="button is-rounded" @click.prevent="reset">Reset</button>
-          <button v-if="draftSaved" class="button is-flat" @click.prevent="saveDraft" style="cursor: text;">Draft Saved</button>
+          <button v-if="draftSaved" class="button is-flat" @click.prevent="saveDraftAndRevalidate" style="cursor: text;">Draft Saved</button>
         </div>
 
         <div v-if="errors.length" class="field">

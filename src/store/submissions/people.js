@@ -105,7 +105,7 @@ const module = mergeOne(managedCollection('submits/people'), {
             'gender',
             'identities',
             'name',
-            // 'photo',
+            'photo',
             'pronoun',
             'title',
             'website',
