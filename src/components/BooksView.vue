@@ -1,11 +1,13 @@
 <script>
 import BookCoverView from '@/components/BookCoverView'
 import BookListView from '@/components/BookListView'
+import Loader from '@/components/Loader'
 
 export default {
   components: {
     BookCoverView,
     BookListView,
+    Loader,
   },
   computed: {
     books() {
@@ -13,6 +15,9 @@ export default {
     },
     filters() {
       return Object.values(this.$store.state.books.filters)
+    },
+    loading() {
+      return !this.$store.state.books.loaded || !this.$store.state.tags.books.loaded
     },
   },
   methods: {
@@ -29,15 +34,21 @@ export default {
 <template>
   <div class="mx-20">
 
-    <div v-if="filters.length && books.length === 0" class="my-50 has-text-centered">
-      <h2 class="mb-20">No matching books</h2>
-      <p><a @click.prevent="resetFilter" class="button is-rounded is-primary">Reset Filter</a></p>
+    <div v-if="loading" class="has-text-centered" style="margin-top: 20vh;">
+      <Loader />
     </div>
 
-    <div :class="{ masonry: $store.state.ui.viewMode === 'covers', 'with-bookmarks': $store.state.ui.bookmarksOpen }">
-      <div v-for="book of books" :key="book.id" :class="{ 'masonry-item': true, ['masonry-item-' + $store.state.ui.viewMode] : true }">
-        <BookCoverView v-if="$store.state.ui.viewMode === 'covers'" :book="book" />
-        <BookListView v-else :book="book" />
+    <div v-else>
+      <div v-if="filters.length && books.length === 0" class="my-50 has-text-centered">
+        <h2 class="mb-20">No matching books</h2>
+        <p><a @click.prevent="resetFilter" class="button is-rounded is-primary">Reset Filter</a></p>
+      </div>
+
+      <div :class="{ masonry: $store.state.ui.viewMode === 'covers', 'with-bookmarks': $store.state.ui.bookmarksOpen }">
+        <div v-for="book of books" :key="book.id" :class="{ 'masonry-item': true, ['masonry-item-' + $store.state.ui.viewMode] : true }">
+          <BookCoverView v-if="$store.state.ui.viewMode === 'covers'" :book="book" />
+          <BookListView v-else :book="book" />
+        </div>
       </div>
     </div>
 

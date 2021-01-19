@@ -20,6 +20,19 @@ export default {
     return {
       lastVisited: localStorage.getItem('lastVisited')
     }
+  },
+  computed: {
+    bookTags() {
+      return this.$store.state.tags.books.data
+    }
+  },
+  watch: {
+    bookTags(next, prev) {
+      // load filters from url when tags/books are first loaded
+      if (Object.keys(prev).length === 0 && Object.keys(next).length > 0) {
+        this.$store.dispatch('books/setFiltersFromUrl', 'books')
+      }
+    }
   }
 }
 
@@ -27,10 +40,10 @@ export default {
 
 <template>
 
-  <BooksView />
-
   <teleport to="#books-filter-menu">
     <Filter type="books" />
   </teleport>
+
+  <BooksView />
 
 </template>

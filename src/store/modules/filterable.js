@@ -1,3 +1,5 @@
+import * as slugify from '@sindresorhus/slugify'
+
 const module = () => ({
   state: {
     filters: [],
@@ -30,6 +32,24 @@ const module = () => ({
         })
       )
     }
+  },
+  actions: {
+    setFiltersFromUrl({ state, commit, rootGetters }, type) {
+      const urlParams = new URLSearchParams(window.location.search)
+      const filters = (urlParams.get('filters') || '').split(',')
+
+      if (filters.length > 0) {
+        const tags = rootGetters[`tags/${type}/list`]()
+        const tagsSelected = filters
+          .map(filter => tags.find(tag => slugify(tag.tag) === filter))
+          .filter(x => x)
+        commit('setFilters', tagsSelected.map(tag => tag.id))
+      }
+      else {
+        commit('resetFilters')
+      }
+
+    },
   },
 })
 

@@ -9,6 +9,17 @@ export default {
   computed: {
     bundles() {
       return this.$store.state.bundles.data
+    },
+    bundleTags() {
+      return this.$store.state.tags.bundles.data
+    },
+  },
+  watch: {
+    bundleTags(next, prev) {
+      // load filters from url when tags/bundles are first loaded
+      if (Object.keys(prev).length === 0 && Object.keys(next).length > 0) {
+        this.$store.dispatch('bundles/setFiltersFromUrl', 'bundles')
+      }
     }
   },
 }

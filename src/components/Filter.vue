@@ -1,4 +1,6 @@
 <script>
+import * as slugify from '@sindresorhus/slugify'
+
 export default {
   props: {
     type: {
@@ -11,13 +13,6 @@ export default {
     filters() {
       return Object.values(this.$store.state[this.storeType].filters)
     },
-    tags() {
-      return this.$store.getters[`tags/${this.type}/listSorted`]()
-    },
-    // map the prop type to the store type
-    storeType() {
-      return this.type === 'people' ? 'creators' : this.type
-    },
     // map the prop type to the router type
     routerType() {
       return this.type === 'books' ? 'Home'
@@ -25,14 +20,29 @@ export default {
         : this.type === 'bundles' ? 'Bundles'
         : null
     },
+    // map the prop type to the store type
+    storeType() {
+      return this.type === 'people' ? 'creators' : this.type
+    },
+    tags() {
+      return this.$store.getters[`tags/${this.type}/listSorted`]()
+    },
   },
   methods: {
     toggleFilter(fid) {
       this.$store.commit(`${this.storeType}/toggleFilter`, fid)
-      this.$router.push({ name: this.routerType })
+      const tags = this.$store.state.tags[this.type].data
+      const filters = this.$store.state[this.storeType].filters
+      this.$router.replace({
+        name: this.routerType,
+        query: filters.length > 0 ? {
+          filters: filters.map(fid => slugify(tags[fid].tag)).join(',')
+        } : null
+      })
     },
     resetFilters() {
       this.$store.commit(`${this.storeType}/resetFilters`)
+      this.$router.replace({ name: this.routerType })
     },
     isFiltered(fid) {
       return this.$store.state[this.storeType].filters.includes(fid)

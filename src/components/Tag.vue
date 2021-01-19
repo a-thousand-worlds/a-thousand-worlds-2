@@ -1,4 +1,5 @@
 <script>
+import * as slugify from '@sindresorhus/slugify'
 
 export default {
   props: {
@@ -10,7 +11,7 @@ export default {
   methods: {
     goToFilter() {
       this.$store.commit('books/setFilters', [this.tag.id])
-      this.$router.push({ name: 'Home' })
+      this.$router.push({ name: 'Home', query: { filters: slugify(this.tag.tag) } })
     },
   }
 }

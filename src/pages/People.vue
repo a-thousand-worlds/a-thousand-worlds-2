@@ -1,11 +1,13 @@
 <script>
-import PersonCard from '@/components/PersonCard'
 import Filter from '../components/Filter.vue'
+import Loader from '@/components/Loader'
+import PersonCard from '@/components/PersonCard'
 
 export default {
   components: {
-    PersonCard,
     Filter,
+    Loader,
+    PersonCard,
   },
   computed: {
     people() {
@@ -14,6 +16,20 @@ export default {
     filters() {
       return Object.values(this.$store.state.creators.filters)
     },
+    loading() {
+      return !this.$store.state.creators.loaded || !this.$store.state.tags.people.loaded
+    },
+    peopleTags() {
+      return this.$store.state.tags.people.data
+    },
+  },
+  watch: {
+    peopleTags(next, prev) {
+      // load filters from url when tags/people are first loaded
+      if (Object.keys(prev).length === 0 && Object.keys(next).length > 0) {
+        this.$store.dispatch('creators/setFiltersFromUrl', 'people')
+      }
+    }
   },
 }
 
@@ -25,7 +41,12 @@ export default {
     <Filter type="people" />
   </teleport>
 
-  <div class="container is-flex is-flex-direction-row is-flex-wrap-wrap mx-20 mb-60">
+  <div v-if="loading" class="has-text-centered" style="margin-top: 20vh;">
+    <Loader />
+  </div>
+
+  <div v-else class="container is-flex is-flex-direction-row is-flex-wrap-wrap mx-20 mb-60">
+
     <div v-for="person of people" :key="person.id" :class="{ 'with-bookmarks': $store.state.ui.bookmarksOpen }" class="has-text-centered person-block p-3">
       <PersonCard :person="person" />
     </div>
