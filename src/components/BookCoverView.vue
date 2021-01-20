@@ -1,12 +1,10 @@
 <script>
-import AuthorWidget from '@/components/AuthorWidget'
 import CreatorsWidget from '@/components/CreatorsWidget'
 import BookmarkButton from '@/components/BookmarkButton'
 import BookDetailLink from '@/components/BookDetailLink'
 
 export default {
   components: {
-    AuthorWidget,
     CreatorsWidget,
     BookmarkButton,
     BookDetailLink,
@@ -39,8 +37,7 @@ export default {
       <div class="cover-data">
         <div class="title">{{ book.title }}</div>
         <div class="authors">
-          <AuthorWidget v-for="person of book.authors" :key="person" :name="person" :nolink="true" />
-          <CreatorsWidget v-if="book.creators" :creators="book.creators" :linked="true" :nolink="true" />
+          <CreatorsWidget :creators="book.creators" :linked="true" :nolink="true" />
         </div>
         <div class="bmb">
           <BookmarkButton :book="book" />
@@ -52,9 +49,7 @@ export default {
       <div class="divider-bottom is-flex is-justify-content-space-between">
         <div>
           <h1 class="title">{{ book.title }}</h1>
-          <div v-for="person of book.authors" :key="person" class="mb-2">
-            <AuthorWidget :name="person" />
-          </div>
+          <CreatorsWidget :creators="book.creators" :linked="true" :nolink="true" />
         </div>
         <div style="padding-top: 0px;"><BookmarkButton :book="book" /></div>
       </div>

@@ -1,13 +1,11 @@
 <script>
 
-import AuthorWidget from '@/components/AuthorWidget'
 import CreatorsWidget from '@/components/CreatorsWidget'
 import BookmarkButton from '@/components/BookmarkButton'
 import BookDetailLink from '@/components/BookDetailLink'
 
 export default {
   components: {
-    AuthorWidget,
     CreatorsWidget,
     BookmarkButton,
     BookDetailLink,
@@ -54,8 +52,7 @@ export default {
                 <h3 class="mb-10" style="color: black; margin-right: 15px;">{{ book.title }}</h3>
               </BookDetailLink>
               <div class="authors">
-                <AuthorWidget v-for="person of book?.authors" :key="person" :name="person" />
-                <CreatorsWidget v-if="book?.creators" :creators="book.creators" :linked="true" />
+                <CreatorsWidget :creators="book.creators" :linked="true" />
               </div>
             </div>
 

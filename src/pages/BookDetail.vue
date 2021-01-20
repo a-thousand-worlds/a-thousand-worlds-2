@@ -1,5 +1,4 @@
 <script>
-import AuthorWidget from '@/components/AuthorWidget'
 import BookDetailFooter from '@/components/BookDetailFooter'
 import BookmarkButton from '@/components/BookmarkButton'
 import Filter from '@/components/Filter'
@@ -14,7 +13,6 @@ import Tag from '@/components/Tag'
 export default {
   name: 'BookDetail',
   components: {
-    AuthorWidget,
     BookDetailFooter,
     BookmarkButton,
     Filter,
@@ -90,7 +88,6 @@ export default {
           </div>
 
           <div class="authors divider-bottom">
-            <AuthorWidget v-for="person of book.authors" :key="person" class="mb-2" :name="person" />
             <CreatorsWidget v-if="book.creators" class="mb-2" :creators="book.creators" :linked="true" />
           </div>
 

@@ -1,14 +1,10 @@
 <script>
 
 import { metadataByISBN } from '@/utils'
-import AuthorWidget from '@/components/AuthorWidget'
 
 // const isValidIsbn = code => typeof code === 'string' && (code.length === 10 || code.length === 13)
 
 export default {
-  components: {
-    'author-widget': AuthorWidget
-  },
   props: ['modelValue', 'disabled', 'searchable'],
   emits: ['update:modelValue', 'bookSelected', 'isbnSearchState', 'isbnSearchResult'],
   data() {
@@ -75,7 +71,6 @@ export default {
             <div class="media-right">
               <b>{{ res.title }}</b><br>
               <small>{{ res.isbn }}</small><br>
-              <author-widget :name="res.authors[0]" />
             </div>
           </div>
         </div>

@@ -1,11 +1,6 @@
 <script>
 
-import AuthorWidget from '@/components/AuthorWidget'
-
 export default {
-  components: {
-    'author-widget': AuthorWidget
-  },
   props: ['inputClass', 'inputId', 'modelValue', 'disabled', 'searchable'],
   emits: ['update:modelValue', 'bookSelected'],
   data() {
@@ -56,7 +51,6 @@ export default {
           <div class="media-right">
             <b>{{ res.title }}</b><br>
             <small>{{ res.isbn }}</small><br>
-            <author-widget :name="res.authors[0]" />
           </div>
         </div>
       </div>
