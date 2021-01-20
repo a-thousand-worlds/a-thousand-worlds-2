@@ -2,6 +2,14 @@
 import Content from '@/components/Content'
 import HeartIcon from '@/assets/icons/heart.svg'
 
+const PaypalButtons = {
+  $3: process.env.VUE_APP_SUPPORT_PAYPAL_3,
+  $5: process.env.VUE_APP_SUPPORT_PAYPAL_5,
+  $7: process.env.VUE_APP_SUPPORT_PAYPAL_7,
+  $10: process.env.VUE_APP_SUPPORT_PAYPAL_10,
+  $15: process.env.VUE_APP_SUPPORT_PAYPAL_15,
+}
+
 export default {
   name: 'Support',
   components: {
@@ -13,7 +21,8 @@ export default {
     check5: false,
     check7: false,
     check10: false,
-    check15: false
+    check15: false,
+    paypalSelectedSubscription: ''
   }),
   computed: {
     btcAddress: () => process.env.VUE_APP_SUPPORT_BITCOIN || null
@@ -25,7 +34,8 @@ export default {
       this.check7 = false
       this.check10 = false
       this.check15 = false
-      this[`check${amount}`] = !this[`check${amount}`]
+      this.paypalSelectedSubscription = PaypalButtons['$' + amount]
+      this[`check${amount}`] = true
     }
   }
 }
@@ -67,7 +77,11 @@ export default {
           <span class="ml-2">$15/month</span>
         </li>
       </ul>
-      <button class="button is-primary is-uppercase is-rounded mt-3">Start Now</button>
+      <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+        <input type="hidden" name="cmd" value="_s-xclick">
+        <input type="hidden" name="hosted_button_id" :value="paypalSelectedSubscription">
+        <button :disabled="!paypalSelectedSubscription.length" type="submit" class="button is-primary is-uppercase is-rounded mt-3">Start Now</button>
+      </form>
       <h3 class="is-uppercase divider-bottom mt-6">One-time donation</h3>
       <p>You can also support with a one-time donation in any time</p>
       <button class="button is-primary is-uppercase is-rounded mt-2">Give now</button>
