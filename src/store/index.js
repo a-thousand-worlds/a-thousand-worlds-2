@@ -34,7 +34,6 @@ const store = createStore({
       dispatch('books/subscribe')
       dispatch('bundles/subscribe')
       dispatch('content/subscribe')
-      dispatch('creators/subscribe')
       dispatch('invites/subscribe')
       dispatch('submissions/subscribe')
       dispatch('tags/subscribe')
@@ -43,6 +42,13 @@ const store = createStore({
       // 1. fix leaking of users profile and roles data to everyone
       // 2. not all users table is requires - only contributors
       dispatch('users/subscribe')
+
+      // shuffle
+      dispatch('creators/subscribe', value => {
+        console.log('onValue', value)
+        return value
+      })
+
     },
 
   }

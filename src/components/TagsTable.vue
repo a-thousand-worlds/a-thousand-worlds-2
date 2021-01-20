@@ -69,8 +69,9 @@ export default {
     <thead>
       <tr>
         <th style="width: 100%;">Tag</th>
-        <th class="has-text-right" style="white-space: nowrap;">Sort Order</th>
-        <th class="has-text-centered" v-tippy="{ content: `Show the tag in the ${type} filters menu` }" style="white-space: nowrap;">Show <i class="far fa-question-circle" /></th>
+        <th class="has-text-right">Sort</th>
+        <th class="has-text-centered" v-tippy="{ content: 'Adjust the likelihood of a book being sorted to the top. A higher number means more likely.' }" style="white-space: nowrap;">Weight <i class="far fa-question-circle" /></th>
+        <th class="has-text-centered" v-tippy="{ content: 'Show this tag in the book filters' }" style="white-space: nowrap;">Show <i class="far fa-question-circle" /></th>
         <th>Edit/Delete</th>
       </tr>
     </thead>
@@ -87,13 +88,23 @@ export default {
           </div>
         </td>
 
-        <!-- sort order -->
+        <!-- sort -->
         <td class="has-text-right">
           <span v-if="!edits[tag.id]">
             <span class="ml-2">{{ tag.sortOrder }}</span>
           </span>
           <span v-if="edits[tag.id]">
             <input v-model="edits[tag.id].sortOrder" type="text" class="input">
+          </span>
+        </td>
+
+        <!-- weight -->
+        <td class="has-text-right">
+          <span v-if="!edits[tag.id]">
+            <span class="ml-2">{{ tag.weight }}</span>
+          </span>
+          <span v-if="edits[tag.id]">
+            <input v-model="edits[tag.id].weight" type="number" class="input" style="padding-right: calc(0.75rem - 8px);" required>
           </span>
         </td>
 
@@ -163,10 +174,10 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-th:last-child {
+table th:last-child {
   text-align: right;
 }
-td {
+table td {
   vertical-align: middle;
 }
 </style>

@@ -71,10 +71,11 @@ const collectionModule = name => ({
       await ref.set(value)
     },
     /** Subscribes to the collection in Firebase, syncing with this.data */
-    subscribe(context) {
+    subscribe(context, transform = () => {}) {
       const ref = firebase.database().ref(name)
       ref.on('value', snap => {
-        context.commit('set', snap.val() || {})
+        const value = snap.val()
+        context.commit('set', (transform ? transform(value) : value) || {})
       })
     },
     /** Removes collection entry from Firebase */
