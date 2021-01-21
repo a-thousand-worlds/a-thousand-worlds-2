@@ -70,7 +70,7 @@ export default {
       <tr>
         <th style="width: 100%;">Tag</th>
         <th class="has-text-right" style="white-space: nowrap;">Sort Order</th>
-        <th class="has-text-centered" title="Show this tag in the book filters" style="white-space: nowrap;">Show <i class="far fa-question-circle" /></th>
+        <th class="has-text-centered" v-tippy="{ content: `Show the tag in the ${type} filters menu` }" style="white-space: nowrap;">Show <i class="far fa-question-circle" /></th>
         <th>Edit/Delete</th>
       </tr>
     </thead>

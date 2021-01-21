@@ -126,7 +126,7 @@ export default {
         </div>
       </div>
     <!-- <div v-if="mode === 'view' && hasNewPeople" class="control">
-      <i :class="{disabled:disabled}" class="fas fa-exclamation-triangle fa-danger" title="There is a not existing in database person. On book approve they will be automatically approved and created without biography"></i>
+      <i :class="{disabled:disabled}" class="fas fa-exclamation-triangle fa-danger" v-tippy="{ content: 'There is a not existing in database person. On book approve they will be automatically approved and created without biography' }"></i>
     </div> -->
     </div>
   </div>

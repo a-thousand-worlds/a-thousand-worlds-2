@@ -66,13 +66,13 @@ export default {
         <td v-if="fields.includes('email')">{{ invite.lastName }}</td>
         <td class="is-capitalized">{{ invite.role }}</td>
         <td>
-          <button v-if="fields.includes('resend')" class="is-flat" title="Resend invitation" :disabled="resendDisabled[invite.code]" @click="resend(invite)">
+          <button v-if="fields.includes('resend')" class="is-flat" v-tippy="{ content: 'Resend invitation' }" :disabled="resendDisabled[invite.code]" @click="resend(invite)">
             <i class="fas fa-paper-plane" />
           </button>
-          <button v-if="fields.includes('cancel')" class="is-flat" title="Cancel invitation" @click="cancel(invite)">
+          <button v-if="fields.includes('cancel')" class="is-flat" v-tippy="{ content: 'Cancel invitation' }" @click="cancel(invite)">
             <i class="fas fa-times" />
           </button>
-          <!-- <button v-if="fields.includes('profile')" class="is-flat" title="View profile">
+          <!-- <button v-if="fields.includes('profile')" class="is-flat" v-tippy="{ content: 'View profile' }">
             <i class="fas fa-user"></i>
           </button> -->
         </td>

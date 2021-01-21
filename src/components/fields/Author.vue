@@ -119,7 +119,7 @@ export default {
         </div>
       </div>
       <div v-if="mode === 'view' && person.name.length && !person.id" class="control">
-        <i class="fas fa-exclamation-triangle fa-danger" title="Person not exists in database and will be automatically approved and created without biography" />
+        <i class="fas fa-exclamation-triangle fa-danger" v-tippy="{ content: 'Person not exists in database and will be automatically approved and created without biography' }" />
       </div>
     </div>
   </div>

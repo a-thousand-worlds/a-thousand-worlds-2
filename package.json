@@ -42,6 +42,7 @@
     "uuid": "^8.3.2",
     "vue": "^3.0.5",
     "vue-router": "^4.0.3",
+    "vue-tippy": "^6.0.0-alpha.24",
     "vuex": "^4.0.0-rc.1"
   },
   "devDependencies": {
