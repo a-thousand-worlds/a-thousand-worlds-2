@@ -45,7 +45,7 @@ const store = createStore({
       // shuffle the creators so that we can set weights
       const shuffle = () => {
         if (!state.creators.loaded || !state.tags.people.loaded) return
-        commit('creators/shuffle', state.tags.people.data)
+        commit('creators/shuffle', { idProp: 'identities', weights: state.tags.people.data })
       }
       dispatch('creators/subscribe', { onValue: shuffle })
       dispatch('tags/subscribe', { people: { onValue: shuffle } })
