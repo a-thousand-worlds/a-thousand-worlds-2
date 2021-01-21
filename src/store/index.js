@@ -1,5 +1,4 @@
 import { createStore } from 'vuex'
-
 import alert from '@/store/alert'
 import books from '@/store/books'
 import bundles from '@/store/bundles'
@@ -30,24 +29,26 @@ const store = createStore({
     auth: false,
   },
   actions: {
+
     async subscribe({ state, dispatch, commit }) {
       dispatch('books/subscribe')
       dispatch('bundles/subscribe')
       dispatch('content/subscribe')
       dispatch('invites/subscribe')
       dispatch('submissions/subscribe')
-      dispatch('tags/subscribe')
       dispatch('user/subscribe')
       // TODO rebuild to
       // 1. fix leaking of users profile and roles data to everyone
       // 2. not all users table is requires - only contributors
       dispatch('users/subscribe')
 
-      // shuffle
-      dispatch('creators/subscribe', value => {
-        console.log('onValue', value)
-        return value
-      })
+      // shuffle the creators so that we can set weights
+      const shuffle = () => {
+        if (!state.creators.loaded || !state.tags.people.loaded) return
+        commit('creators/shuffle', state.tags.people.data)
+      }
+      dispatch('creators/subscribe', { onValue: shuffle })
+      dispatch('tags/subscribe', { people: { onValue: shuffle } })
 
     },
 
