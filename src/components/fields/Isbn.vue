@@ -2,11 +2,11 @@
 // import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 
 import { isbnSearch } from '@/utils'
-import AuthorWidget from '@/components/AuthorWidget'
+import CreatorsWidget from '@/components/CreatorsWidget'
 
 export default {
   components: {
-    AuthorWidget
+    CreatorsWidget
   },
   props: ['modelValue', 'disabled', 'searchDb', 'searchOnStart'],
   emits: ['update:modelValue', 'book-selected', 'isbn-search-state', 'isbn-search-result'],
@@ -130,7 +130,7 @@ export default {
               <div class="media-right">
                 <b>{{ res.title }}</b><br>
                 <small>{{ res.isbn }}</small><br>
-                <AuthorWidget :nolink="true" :name="res.authors[0]" />
+                <CreatorsWidget :name="res.authors[0]" />
               </div>
             </div>
           </div>
