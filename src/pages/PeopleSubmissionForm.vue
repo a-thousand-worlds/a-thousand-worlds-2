@@ -27,7 +27,7 @@ export default {
       return this.$store.state.user.user?.profile.draftPerson
     },
     identityOptions() {
-      return this.$store.state.tags.people.data
+      return this.$store.getters[`tags/people/listSorted`]()
     },
     person() {
       const peopleSubmissions = this.$store.state.submissions.people.data || {}
