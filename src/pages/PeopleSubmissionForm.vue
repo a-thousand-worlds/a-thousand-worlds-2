@@ -119,6 +119,7 @@ export default {
       this.$store.commit('ui/setBusy', true)
       try {
         await this.$store.dispatch('submissions/people/submit', this.submission)
+        this.$store.commit('ui/setBusy', false)
         this.$router.push({ name: 'SubmissionThankYou', params: { type: 'people' } })
       }
       catch (e) {
@@ -212,13 +213,13 @@ export default {
           <!-- awards -->
           <div class="field">
             <label class="label"><b>List of awards and recognition that you would like us to highlight</b> (optional)</label>
-            <input type="text" class="input" v-model="submission.awards" @input="saveDraftAndRevalidate">
+            <textarea class="textarea" v-model="submission.awards" @input="saveDraftAndRevalidate" style="min-height: 6em;" />
           </div>
 
           <!-- bonus -->
           <div class="field">
             <label class="label"><b>Links to bonus material relevant to you</b> (optional)</label>
-            <input type="text" class="input" v-model="submission.bonus" @input="saveDraftAndRevalidate">
+            <textarea class="input" v-model="submission.bonus" @input="saveDraftAndRevalidate" style="min-height: 6em;" />
           </div>
 
           <!-- curateInterest -->
