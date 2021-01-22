@@ -16,11 +16,6 @@ export default {
     }
     next()
   },
-  data() {
-    return {
-      lastVisited: localStorage.getItem('lastVisited')
-    }
-  },
   computed: {
     bookTags() {
       return this.$store.state.tags.books.data

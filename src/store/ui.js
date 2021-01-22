@@ -8,7 +8,8 @@ const module = {
     dlgConfirm: null,
     popups: [],
     // updated in Home component beforeRouteLeave
-    lastVisited: localStorage.getItem('lastVisited'),
+    // disable lastVisited persistance
+    // lastVisited: localStorage.getItem('lastVisited'),
   }),
   mutations: {
     setBusy: (state, value) => {
@@ -22,7 +23,8 @@ const module = {
     },
     setLastVisited: (state, value) => {
       state.lastVisited = value
-      localStorage.setItem('lastVisited', value)
+    // disable lastVisited persistance
+      // localStorage.setItem('lastVisited', value)
     },
     setViewMode: (state, value) => {
       state.viewMode = value
