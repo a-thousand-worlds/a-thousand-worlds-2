@@ -3,6 +3,10 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Sen:wght@400;700&display=swap');
 
+// set font-family before importing Bulma
+$family-sans-serif: Sen, sans-serif;
+$family-primary: $family-sans-serif;
+
 @import "bulma/sass/utilities/_all.sass";
 @import "bulma/sass/base/_all.sass";
 @import "bulma/sass/helpers/_all.sass";
