@@ -49,7 +49,7 @@ export default {
           <div class="is-flex is-justify-content-space-between mb-20">
             <div>
               <BookDetailLink :book="book" class="cover-data">
-                <h3 class="mb-10" style="color: black; margin-right: 15px;">{{ book.title }}</h3>
+                <h3 class="link mb-10" style="margin-right: 15px;">{{ book.title }}</h3>
               </BookDetailLink>
               <div class="authors">
                 <CreatorsWidget :creators="book.creators" :linked="true" />
@@ -66,7 +66,17 @@ export default {
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@import "bulma/sass/utilities/_all.sass";
+@import '@/assets/style/mixins.scss';
+
+.link {
+  color: black;
+  &:hover {
+    @include primary(color);
+  }
+}
+
 .is-vcentered {
   height: 100%;
 }
