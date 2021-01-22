@@ -31,24 +31,35 @@ const store = createStore({
   actions: {
 
     async subscribe({ state, dispatch, commit }) {
-      dispatch('books/subscribe')
+
+      // shuffle by tag weight
+      const shuffle = type => {
+        const storeType = type === 'people' ? 'creators' : type
+        if (!state[storeType].loaded || !state.tags[type].loaded) return
+        commit(`${storeType}/shuffle`, {
+          idProp: type === 'people' ? 'identities' : 'tags',
+          weights: state.tags[type].data
+        })
+      }
+
       dispatch('bundles/subscribe')
       dispatch('content/subscribe')
       dispatch('invites/subscribe')
       dispatch('submissions/subscribe')
       dispatch('user/subscribe')
+
       // TODO rebuild to
       // 1. fix leaking of users profile and roles data to everyone
       // 2. not all users table is requires - only contributors
       dispatch('users/subscribe')
 
-      // shuffle the creators so that we can set weights
-      const shuffle = () => {
-        if (!state.creators.loaded || !state.tags.people.loaded) return
-        commit('creators/shuffle', { idProp: 'identities', weights: state.tags.people.data })
-      }
-      dispatch('creators/subscribe', { onValue: shuffle })
-      dispatch('tags/subscribe', { people: { onValue: shuffle } })
+      // subscribe to books and people and shuffle on load
+      dispatch('books/subscribe', { onValue: () => shuffle('books') })
+      dispatch('creators/subscribe', { onValue: () => shuffle('people') })
+      dispatch('tags/subscribe', { people: { onValue: () => {
+        shuffle('books')
+        shuffle('people')
+      } } })
 
     },
 
