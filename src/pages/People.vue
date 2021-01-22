@@ -45,10 +45,17 @@ export default {
     <Loader />
   </div>
 
-  <div v-else class="container is-flex is-flex-direction-row is-flex-wrap-wrap mx-20 mb-60">
+  <div v-else>
+    <div v-if="filters.length && people.length === 0" class="my-50 has-text-centered">
+      <h2 class="mb-20">No matching people</h2>
+      <p><a @click.prevent="resetFilter" class="button is-rounded is-primary">Reset Filter</a></p>
+    </div>
 
-    <div v-for="person of people" :key="person.id" :class="{ 'with-bookmarks': $store.state.ui.bookmarksOpen }" class="has-text-centered person-block p-3">
-      <PersonCard :person="person" />
+    <div class="container is-flex is-flex-direction-row is-flex-wrap-wrap mx-20 mb-60">
+
+      <div v-for="person of people" :key="person.id" :class="{ 'with-bookmarks': $store.state.ui.bookmarksOpen }" class="has-text-centered person-block p-3">
+        <PersonCard :person="person" />
+      </div>
     </div>
   </div>
 
