@@ -228,3 +228,7 @@ a.button.is-secondary.is-outlined:hover,
     background-color: transparent;
   }
 }
+
+.no-user-select {
+  user-select: none;
+}
