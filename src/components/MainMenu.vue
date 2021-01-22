@@ -20,7 +20,7 @@ export default {
 <template>
   <div>
     <ul class="menu-list is-flex-grow-1">
-      <li><router-link :to="{name: 'Home'}">Books</router-link></li>
+      <li><router-link :to="{name: 'Home'}" :class="{ 'router-link-active': $route.name === 'BookDetail' }">Books</router-link></li>
       <li id="books-filter-menu" />
       <li><router-link :to="{name: 'Bundles'}">Book Bundles</router-link></li>
       <li id="bundles-filter-menu" />
@@ -58,6 +58,10 @@ export default {
   font-weight: bold;
   text-transform: uppercase;
   padding: 0 0 20px 0;
+
+  &.router-link-active {
+    @include primary(color)
+  }
 
   &:hover {
     background: none;
