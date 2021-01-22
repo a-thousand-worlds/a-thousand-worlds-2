@@ -51,7 +51,7 @@ export default {
   <aside v-if="tags.length" class="menu mb-5">
     <ul class="menu-list submenu">
       <li v-for="filter in tags" :key="filter.id" @click="toggleFilter(filter.id)">
-        <button v-if="filter.showOnFront" :class="{toggled:isFiltered(filter.id)}" class="pb-2" style="padding-left: 2px;">{{ filter.tag }}<span v-if="isFiltered(filter.id)" class="remove-tag">{{ '—' }}</span></button>
+        <button v-if="filter.showOnFront" :class="{ active: isFiltered(filter.id)}" class="pb-2" style="padding-left: 2px;">{{ filter.tag }}<span v-if="isFiltered(filter.id)" class="remove-tag">{{ '—' }}</span></button>
       </li>
     </ul>
     <button v-if="filters.length > 0" class="button is-rounded is-primary" @click.prevent="resetFilters">Reset Filter</button>
@@ -90,7 +90,7 @@ a {
       outline: 0;
     }
 
-    &.toggled {
+    &:hover, &.active  {
       @include primary(color);
       border: 0;
     }
