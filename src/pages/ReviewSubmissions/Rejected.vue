@@ -27,14 +27,15 @@ export default {
     <div class="is-flex-grow-1 mx-20" style="max-width: 760px;">
 
       <div class="mb-5">
-        <router-link :to="{ name: 'Dashboard' }" class="is-uppercase is-primary">&lt; Back to Dashboard</router-link>
+        <router-link :to="{ name: 'ReviewSubmissions' }" class="is-uppercase is-primary">&lt; Back to Submissions</router-link>
       </div>
 
-      <h1 class="divider-bottom is-capitalized is-flex is-justify-content-space-between is-align-items-center">
-        <span>Review {{ label }} Submissions</span>
-        <router-link :to="{ name: 'ReviewRejectedSubmissions', params: { type } }"><i class="fa fa-trash" style="font-size: 22px;" /></router-link>
+      <h1 class="divider-bottom is-capitalized">
+        <span>Rejected {{ label }} Submissions</span>
       </h1>
-      <Groups :type="type" />
+
+      <Groups :type="type" status="rejected" />
+
     </div>
   </div>
 

@@ -35,7 +35,7 @@ export default ({
   },
   computed: {
     showWelcome() {
-      return !this.$store.state.ui.lastVisited
+      return !this.$store.state.ui.lastVisited && !this.$route.meta?.access
     }
   },
   watch: {
@@ -56,7 +56,7 @@ export default ({
 
     <div v-if="showWelcome">
       <Welcome :style="{ position: 'fixed' }" />
-      <!-- statically positioned duplicatte in order to force page content down by dynamic height of welcome message -->
+      <!-- statically positioned duplicate in order to force page content down by dynamic height of welcome message -->
       <Welcome :style="{ position: 'static', visibility: 'hidden' }" />
     </div>
 

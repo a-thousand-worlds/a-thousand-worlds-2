@@ -19,10 +19,10 @@ export default {
     }
   },
   methods: {
-    /** Gets the values of all records that do not have an approvedAt timestamp. */
+    /** Gets the values of all records that do not have an reviewedAt timestamp. */
     getPending(data) {
       return Object.values(data || {})
-        .filter(sub => sub && !sub.approvedAt)
+        .filter(sub => sub && !sub.reviewedAt)
     }
   }
 

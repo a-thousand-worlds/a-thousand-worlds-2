@@ -182,6 +182,13 @@ const routes = [
       access: ['advisor', 'owner']
     }
   }, {
+    path: '/admin/review/:type/rejected',
+    name: 'ReviewRejectedSubmissions',
+    component: () => import(/* webpackChunkName: "advisor" */ './pages/ReviewSubmissions/Rejected'),
+    meta: {
+      access: ['advisor', 'owner']
+    }
+  }, {
     path: '/:catchAll(.*)',
     name: 'NotFound',
     component: NotFound,

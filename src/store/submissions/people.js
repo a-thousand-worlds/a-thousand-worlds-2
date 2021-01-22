@@ -13,11 +13,9 @@ const module = mergeOne(managed('submits/people'), {
       const id = uid()
       const submissionApprovable = {
         ...submission,
-        approveComment: '',
-        approved: false,
-        approvedAt: null,
-        approvedBy: null,
         id,
+        reviewComment: '',
+        status: 'pending',
         type: 'people',
       }
 
@@ -44,9 +42,9 @@ const module = mergeOne(managed('submits/people'), {
       await context.dispatch('update', {
         path: sub.id,
         values: {
-          approved: status === 'approved',
-          approvedBy: context.rootState.user.user.uid,
-          approvedAt: dayjs().format(),
+          reviewedBy: context.rootState.user.user.uid,
+          reviewedAt: dayjs().format(),
+          status,
           ...peopleId ? { peopleId } : null
         },
       })

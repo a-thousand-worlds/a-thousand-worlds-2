@@ -28,10 +28,6 @@ const module = mergeOne(managed('submits/books'), {
       for (const sub of list) {
         const sid = v4()
         const subData = {
-          approveComment: '',
-          approved: false,
-          approvedAt: null,
-          approvedBy: null,
           authors: Array.isArray(sub.authors) ? sub.authors.join(', ') : sub.authors || '',
           group: submissionGroupId,
           id: sid,
@@ -39,6 +35,8 @@ const module = mergeOne(managed('submits/books'), {
           isbn: sub.isbn || '',
           otherTag: sub.otherTag || '',
           publisher: sub.publisher || '',
+          reviewComment: '',
+          status: 'pending',
           summary: sub.summary || '',
           tags: sub.tags || {},
           thumbnail: sub.thumbnail,
@@ -60,8 +58,9 @@ const module = mergeOne(managed('submits/books'), {
     /** Reject submission */
     reject: async (context, sub) => {
       const now = dayjs()
-      sub.approvedBy = context.rootState.user.user.uid
-      sub.approvedAt = now.format()
+      sub.reviewedBy = context.rootState.user.user.uid
+      sub.reviewedAt = now.format()
+      sub.status = 'rejected'
       await context.dispatch('save', { path: sub.id, value: sub })
       context.commit('setOne', { path: sub.id, value: sub })
 
@@ -99,7 +98,7 @@ const module = mergeOne(managed('submits/books'), {
             .reduce((acc, person) => person.name.toLowerCase() === author.toLowerCase() ? person.id : acc, null)
           if (!cid) {
             cid = v4()
-            await context.dispatch('people/save', { path: cid, value: { id: cid, name: author, approvedBy: context.rootState.user.user.uid } }, { root: true })
+            await context.dispatch('people/save', { path: cid, value: { id: cid, name: author, reviewedBy: context.rootState.user.user.uid } }, { root: true })
           }
           creators[cid] = creators[cid] ? 'both' : 'author'
         }
@@ -109,7 +108,7 @@ const module = mergeOne(managed('submits/books'), {
             .reduce((acc, person) => person.name.toLowerCase() === author.toLowerCase() ? person.id : acc, null)
           if (!cid) {
             cid = v4()
-            await context.dispatch('people/save', { path: cid, value: { id: cid, name: author, approvedBy: context.rootState.user.user.uid } }, { root: true })
+            await context.dispatch('people/save', { path: cid, value: { id: cid, name: author, reviewedBy: context.rootState.user.user.uid } }, { root: true })
           }
           creators[cid] = creators[cid] ? 'both' : 'illustrator'
         }
@@ -117,9 +116,6 @@ const module = mergeOne(managed('submits/books'), {
         // save book
         const bookId = v4()
         await context.dispatch('books/save', { path: bookId, value: {
-          approved: true,
-          approvedBy: context.rootState.user.user.uid,
-          approvedAt: dayjs().format(),
           createdBy: sub.createdBy,
           creators: creators,
           goodread: sub.goodread || '',
@@ -127,6 +123,9 @@ const module = mergeOne(managed('submits/books'), {
           isbn: sub.isbn,
           cover: sub.cover?.base64 ? sub.cover : null,
           publisher: sub.publisher,
+          reviewedAt: dayjs().format(),
+          reviewedBy: context.rootState.user.user.uid,
+          status: 'approved',
           submissionId: sub.id,
           summary: sub.summary,
           tags: sub.tags,
@@ -146,9 +145,9 @@ const module = mergeOne(managed('submits/books'), {
           path: sub.id,
           value: {
             ...sub,
-            approved: true,
-            approvedAt: dayjs().format(),
-            approvedBy: context.rootState.user.user.uid,
+            reviewedAt: dayjs().format(),
+            reviewedBy: context.rootState.user.user.uid,
+            status: 'approved',
           },
         })
       }

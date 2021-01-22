@@ -142,7 +142,7 @@ export default {
       </div>
 
       <!-- reject -->
-      <div class="column is-1 has-text-right">
+      <div v-if="sub?.status !== 'rejected'" class="column is-1 has-text-right">
         <button :class="{ disabled: busy }" :disabled="busy" v-tippy="{ content: 'Reject submission' }" class="is-flat is-uppercase is-underlined" @click="reject">
           <i class="fas fa-times" style="font-size: 20px;" />
         </button>
