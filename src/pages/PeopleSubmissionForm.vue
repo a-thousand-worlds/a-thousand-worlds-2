@@ -1,13 +1,9 @@
 <script>
 import _ from 'lodash'
 import validator from '@/mixins/validator'
-import Toggle from '@/components/Toggle'
 import genderOptions from '@/store/genderOptions'
 
 export default {
-  components: {
-    Toggle,
-  },
   mixins: [
     validator(function() {
       return [
@@ -188,31 +184,12 @@ export default {
           <div class="field">
             <label class="label" :class="{ 'has-text-danger': hasError('gender') }" style="font-weight: bold; text-transform: uppercase;">Gender</label>
 
-            <!-- basic genders (M/W) -->
-            <div class="sublabel">
-
-              <div class="control is-flex">
-                <input type="radio" name="gender" id="gender-woman" v-model="submission.gender" value="woman" class="checkbox mb-3 mt-1">
-                <label class="label pl-2 pb-1 no-user-select" for="gender-woman" style="cursor: pointer;">Woman</label>
-              </div>
-              <div class="control is-flex">
-                <input type="radio" name="gender" id="gender-man" v-model="submission.gender" value="man" class="checkbox mb-3 mt-1">
-                <label class="label pl-2 pb-1 no-user-select" for="gender-man" style="cursor: pointer;">Man</label>
+            <div class="sublabel tablet-columns-2">
+              <div v-for="(gender, key) of genderOptions" :key="key" class="control is-flex" style="column-break-inside: avoid;">
+                <input type="radio" name="gender" :id="`gender-${key}`" v-model="submission.gender" :value="key" class="checkbox mb-3 mt-1">
+                <label class="label pl-2 pb-1 no-user-select" :for="`gender-${key}`" style="cursor: pointer;">{{ gender }}</label>
               </div>
             </div>
-
-            <!-- more genders -->
-            <Toggle>
-              <template #label>More</template>
-              <template #content>
-                <div class="sublabel tablet-columns-2 m-10">
-                  <div v-for="(gender, key) of genderOptions" :key="key" class="control is-flex" style="column-break-inside: avoid;">
-                    <input type="radio" name="gender" :id="`gender-${key}`" v-model="submission.gender" :value="key" class="checkbox mb-3 mt-1">
-                    <label class="label pl-2 pb-1 no-user-select" :for="`gender-${key}`" style="cursor: pointer;">{{ gender }}</label>
-                  </div>
-                </div>
-              </template>
-            </Toggle>
           </div>
 
           <!-- identity -->
