@@ -162,8 +162,14 @@ export default {
       }
       else if (this.invalidRecipients.length > 0) {
         this.error = {
-          message: `Invalid recipient${this.invalidRecipients.length > 1 ? 's' : ''}:`,
+          message: `Invalid email${this.invalidRecipients.length > 1 ? 's' : ''}:`,
           data: this.invalidRecipients.map(recipient => recipient.raw),
+          fields: { ...this.error?.fields, emailInput: true },
+        }
+      }
+      else if (this.recipients.some(recipient => !recipient.firstName)) {
+        this.error = {
+          message: 'Name is also required, e.g. "Sarah Lopez - sarah@test.com"',
           fields: { ...this.error?.fields, emailInput: true },
         }
       }
