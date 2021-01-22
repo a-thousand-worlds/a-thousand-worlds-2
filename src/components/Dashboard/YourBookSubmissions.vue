@@ -10,19 +10,27 @@ export default {
   props: [],
   computed: {
     acceptedSubmissions() {
-      return this.filterByValue(this.userSubmissions, 'approved')
+      return this.filterByValue(this.userBookSubmissions, 'approved')
     },
     pendingSubmissions() {
-      return this.filterByValue(this.userSubmissions, 'pending')
+      return this.filterByValue(this.userBookSubmissions, 'pending')
     },
     rejectedSubmissions() {
-      return this.filterByValue(this.userSubmissions, 'rejected')
+      return this.filterByValue(this.userBookSubmissions, 'rejected')
     },
-    userSubmissions() {
-      return this.$store.state.user.user.profile.submissions || {}
+    userBookSubmissions() {
+      const submissions = this.$store.state.user.user.profile.submissions || {}
+      return Object.keys(submissions).reduce((accum, id) => ({
+        ...accum,
+        ...this.bookSubmission(id) ? { [id]: submissions[id] } : null
+      }), {})
     },
   },
   methods: {
+    /** Gets a book submission from a user submission id. */
+    bookSubmission(sid) {
+      return this.$store.state.submissions.books.data[sid]
+    },
     /** Filters a collection by a value and returns ids. */
     filterByValue(collection, value) {
       return Object.entries(collection)
