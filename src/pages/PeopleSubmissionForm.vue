@@ -164,21 +164,21 @@ export default {
             <div class="control is-flex">
               <label style="cursor: pointer;">
                 <input type="radio" name="title" v-model="submission.title" value="author" class="checkbox mb-3 mt-1">
-                <span class="no-user-select">Author</span>
+                <span class="no-user-select ml-1">Author</span>
               </label>
             </div>
 
             <div class="control is-flex">
               <label style="cursor: pointer;">
                 <input type="radio" name="title" v-model="submission.title" value="illustrator" class="checkbox mb-3 mt-1">
-                <span class="no-user-select">Illustrator</span>
+                <span class="no-user-select ml-1">Illustrator</span>
               </label>
             </div>
 
             <div class="control is-flex">
               <label style="cursor: pointer;">
                 <input type="radio" name="title" v-model="submission.title" value="author-illustrator" class="checkbox mb-3 mt-1">
-                <span class="no-user-select">Author/Illustrator</span>
+                <span class="no-user-select ml-1">Author/Illustrator</span>
               </label>
             </div>
 
@@ -250,19 +250,19 @@ export default {
             <div class="control">
               <label style="cursor: pointer;">
                 <input type="radio" name="curateInterest" v-model="submission.curateInterest" value="Yes" @input="saveDraftAndRevalidate">
-                <span class="no-user-select">Yes! Please send me a curation form</span>
+                <span class="no-user-select ml-1">Yes! Please send me a curation form</span>
               </label>
             </div>
             <div class="control">
               <label style="cursor: pointer;">
                 <input type="radio" name="curateInterest" v-model="submission.curateInterest" value="No" @input="saveDraftAndRevalidate">
-                <span class="no-user-select">No</span>
+                <span class="no-user-select ml-1">No</span>
               </label>
             </div>
             <div class="control">
               <label style="cursor: pointer;">
                 <input type="radio" name="curateInterest" v-model="submission.curateInterest" value="Maybe" @input="saveDraftAndRevalidate">
-                <span class="no-user-select">Maybe, please send me more info</span>
+                <span class="no-user-select ml-1">Maybe, please send me more info</span>
               </label>
             </div>
           </div>
