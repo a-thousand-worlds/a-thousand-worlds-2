@@ -14,7 +14,7 @@ export default {
   computed: {
     peopleList() {
       return Object.keys(this.creators || {})
-        .map(creatorId => ({ person: this.$store.state.creators.data?.[creatorId] || null, role: this.creators[creatorId] }))
+        .map(creatorId => ({ person: this.$store.state.people.data?.[creatorId] || null, role: this.creators[creatorId] }))
     },
     authors() {
       return this.peopleList.filter(info => info.role === 'both' || info.role === 'author')

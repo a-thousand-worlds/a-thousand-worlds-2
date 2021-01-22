@@ -95,21 +95,21 @@ const module = mergeOne(managed('submits/books'), {
         const creators = {}
         // eslint-disable-next-line  fp/no-loops
         for (const author of authors) {
-          let cid = context.rootGetters['creators/list']()
+          let cid = context.rootGetters['people/list']()
             .reduce((acc, person) => person.name.toLowerCase() === author.toLowerCase() ? person.id : acc, null)
           if (!cid) {
             cid = v4()
-            await context.dispatch('creators/save', { path: cid, value: { id: cid, name: author, approvedBy: context.rootState.user.user.uid } }, { root: true })
+            await context.dispatch('people/save', { path: cid, value: { id: cid, name: author, approvedBy: context.rootState.user.user.uid } }, { root: true })
           }
           creators[cid] = creators[cid] ? 'both' : 'author'
         }
         // eslint-disable-next-line  fp/no-loops
         for (const author of illustrators) {
-          let cid = context.rootGetters['creators/list']()
+          let cid = context.rootGetters['people/list']()
             .reduce((acc, person) => person.name.toLowerCase() === author.toLowerCase() ? person.id : acc, null)
           if (!cid) {
             cid = v4()
-            await context.dispatch('creators/save', { path: cid, value: { id: cid, name: author, approvedBy: context.rootState.user.user.uid } }, { root: true })
+            await context.dispatch('people/save', { path: cid, value: { id: cid, name: author, approvedBy: context.rootState.user.user.uid } }, { root: true })
           }
           creators[cid] = creators[cid] ? 'both' : 'illustrator'
         }

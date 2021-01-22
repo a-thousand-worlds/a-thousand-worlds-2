@@ -21,7 +21,7 @@ export default {
     person() {
       const peopleSubmissions = this.$store.state.submissions.people.data || {}
       const peopleId = peopleSubmissions[this.peopleSubmissionId]?.peopleId
-      const person = this.$store.state.creators.data[peopleId]
+      const person = this.$store.state.people.data[peopleId]
       return person
     },
     userPersonSubmission() {

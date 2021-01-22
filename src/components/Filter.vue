@@ -11,7 +11,7 @@ export default {
   },
   computed: {
     filters() {
-      return Object.values(this.$store.state[this.storeType].filters)
+      return Object.values(this.$store.state[this.type].filters)
     },
     // map the prop type to the router type
     routerType() {
@@ -20,19 +20,15 @@ export default {
         : this.type === 'bundles' ? 'Bundles'
         : null
     },
-    // map the prop type to the store type
-    storeType() {
-      return this.type === 'people' ? 'creators' : this.type
-    },
     tags() {
       return this.$store.getters[`tags/${this.type}/listSorted`]()
     },
   },
   methods: {
     toggleFilter(fid) {
-      this.$store.commit(`${this.storeType}/toggleFilter`, fid)
+      this.$store.commit(`${this.type}/toggleFilter`, fid)
       const tags = this.$store.state.tags[this.type].data
-      const filters = this.$store.state[this.storeType].filters
+      const filters = this.$store.state[this.type].filters
       this.$router.replace({
         name: this.routerType,
         query: filters.length > 0 ? {
@@ -41,11 +37,11 @@ export default {
       })
     },
     resetFilters() {
-      this.$store.commit(`${this.storeType}/resetFilters`)
+      this.$store.commit(`${this.type}/resetFilters`)
       this.$router.replace({ name: this.routerType })
     },
     isFiltered(fid) {
-      return this.$store.state[this.storeType].filters.includes(fid)
+      return this.$store.state[this.type].filters.includes(fid)
     },
   }
 }

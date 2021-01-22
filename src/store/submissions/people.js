@@ -116,7 +116,7 @@ const module = mergeOne(managed('submits/people'), {
         await context.dispatch('updateSubmission', { peopleId: id, sub, status: 'approved' })
 
         // save user
-        await context.dispatch('creators/save', {
+        await context.dispatch('people/save', {
           path: id,
           value: personNew
         }, { root: true })

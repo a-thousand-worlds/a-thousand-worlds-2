@@ -19,17 +19,14 @@ export default {
   },
   computed: {
     next() {
-      const list = this.$store.getters[`${this.storeType}/filtered`]
+      const list = this.$store.getters[`${this.type}/filtered`]
       const pos = list.map(x => x.id).indexOf(this.item?.id)
       return list[pos + 1]
     },
     prev() {
-      const list = this.$store.getters[`${this.storeType}/filtered`]
+      const list = this.$store.getters[`${this.type}/filtered`]
       const pos = list.map(x => x.id).indexOf(this.item?.id)
       return list[pos - 1]
-    },
-    storeType() {
-      return this.type === 'people' ? 'creators' : this.type
     },
   }
 }

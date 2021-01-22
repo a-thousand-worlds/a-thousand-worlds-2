@@ -11,13 +11,13 @@ export default {
   },
   computed: {
     people() {
-      return this.$store.getters['creators/filtered']
+      return this.$store.getters['people/filtered']
     },
     filters() {
-      return Object.values(this.$store.state.creators.filters)
+      return Object.values(this.$store.state.people.filters)
     },
     loading() {
-      return !this.$store.state.creators.loaded || !this.$store.state.tags.people.loaded
+      return !this.$store.state.people.loaded || !this.$store.state.tags.people.loaded
     },
     peopleTags() {
       return this.$store.state.tags.people.data
@@ -27,7 +27,7 @@ export default {
     peopleTags(next, prev) {
       // load filters from url when tags/people are first loaded
       if (Object.keys(prev).length === 0 && Object.keys(next).length > 0) {
-        this.$store.dispatch('creators/setFiltersFromUrl', 'people')
+        this.$store.dispatch('people/setFiltersFromUrl', 'people')
       }
     }
   },

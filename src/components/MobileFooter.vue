@@ -16,7 +16,7 @@ export default {
       return Object.keys(this.$store.state.user.user?.profile.bookmarks || {}).length
     },
     filters() {
-      return this.$store.state[this.storeType].filters
+      return this.$store.state[this.filterType].filters
     },
     showFilters() {
       return this.filterType
@@ -31,16 +31,13 @@ export default {
         : this.$route.name === 'Bundles' || this.$route.name === 'BundleDetail' ? 'bundles'
         : null
     },
-    storeType() {
-      return this.filterType === 'people' ? 'creators' : this.filterType
-    },
   },
   methods: {
     isFiltered(tag) {
       return this.filters.includes(tag)
     },
     resetFilters() {
-      this.$store.commit(`${this.storeType}/resetFilters`)
+      this.$store.commit(`${this.type}/resetFilters`)
     },
     setFilters(e) {
       const options = [...e.target.options]
@@ -48,7 +45,7 @@ export default {
         // ignore reset option
         .filter(option => option.selected && option.value !== '_reset')
         .map(option => option.value)
-      this.$store.commit(`${this.storeType}/setFilters`, selected)
+      this.$store.commit(`${this.type}/setFilters`, selected)
     },
     toggleBookmarks() {
       if (!this.$iam('authorized')) {
