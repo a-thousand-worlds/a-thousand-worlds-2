@@ -85,6 +85,7 @@ a {
     background: #fff;
     font-size: 10px;
     text-align: left;
+    text-transform: uppercase;
 
     &:focus, &:active {
       outline: 0;

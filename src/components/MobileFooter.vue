@@ -67,7 +67,7 @@ export default {
       <ul class="menu-list my-10">
 
         <li v-if="showFilters && !$store.state.ui.bookmarksOpen" style="position: relative;">
-          <select @change="setFilters" multiple style="position: absolute; background-color: tomato; overflow: hidden; left: 0: top: 0; overflow: hidden; min-width: 60px; max-width: 100px; width: 70px; height: 100%; font-size: 20px; cursor: pointer; opacity: 0;">
+          <select @change="setFilters" multiple style="position: absolute; overflow: hidden; left: 0: top: 0; overflow: hidden; min-width: 60px; max-width: 100px; width: 70px; height: 100%; font-size: 20px; cursor: pointer; opacity: 0; text-transform: uppercase;">
             <!-- <option @click="resetFilters" value="_reset">Reset Filter</option> -->
             <optgroup disabled hidden />
             <option v-for="tag in tags" :key="tag.id" :selected="isFiltered(tag.id)" :value="tag.id">{{ tag.tag }}</option>
