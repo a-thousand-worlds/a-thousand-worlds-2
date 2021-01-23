@@ -29,7 +29,7 @@ export default {
 <template>
   <div class="creators-widget is-uppercase">
     <div class="person-block is-flex is-flex-direction-row is-justify-content-flex-start">
-      <span class="comma mr-2">by</span>
+      <b class="comma mr-2">words&nbsp;by</b>
       <span v-for="(person, i) of authors" :key="i">
         <PersonDetailLink v-if="person.person && linked" :person="person.person" class="name linked">{{ person.person.name }}</PersonDetailLink>
         <span v-if="person.person && !linked" class="name">{{ person.person?.name }}</span>
@@ -37,7 +37,7 @@ export default {
       </span>
     </div>
     <div v-if="illustrators.length" class="person-block is-flex is-flex-direction-row is-justify-content-flex-start">
-      <span class="comma mr-2">illustrated&nbsp;by</span>
+      <b class="comma mr-2">pictures&nbsp;by</b>
       <span v-for="(person, i) of illustrators" :key="i">
         <PersonDetailLink v-if="person.person && linked" :person="person.person" class="name linked">{{ person.person.name }}</PersonDetailLink>
         <span v-if="person.person && !linked" class="name">{{ person.person.name }}</span>
