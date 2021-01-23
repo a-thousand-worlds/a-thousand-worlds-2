@@ -91,7 +91,7 @@ export default {
             </div>
           </div>
 
-          <p class="person-bio" :innerHTML="person.bio" />
+          <p v-if="person.bio" class="person-bio" :innerHTML="person.bio" />
 
         </div>
 
