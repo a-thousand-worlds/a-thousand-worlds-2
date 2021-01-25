@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "dependencies": {
     "amazon-buddy": "^2.2.21",
+    "amazon-budy": "git+https://github.com/drawrowfly/amazon-product-api.git#98aeff9",
     "express": "^4.17.1",
     "is-isbn": "^1.1.0",
     "lodash": "^4.17.20"

@@ -38,6 +38,8 @@ app.get('/', handleError(async (req, res) => {
     category: 'stripbooks',
   })
 
+  console.log('products', products)
+
   // find the first non-sponsored product with a valid ISBN extracted from its url
   const product = products.result
     .find(product => {
