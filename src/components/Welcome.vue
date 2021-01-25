@@ -1,15 +1,5 @@
-<script>
-
-export default {
-  data() {
-    return {}
-  },
-}
-
-</script>
-
 <template>
-  <div class="welcome">
+  <div class="welcome" ref="welcome">
     <div class="px-20 my-50">
       <h1 class="title is-uppercase mb-30" style="font-weight: 500;">A Thousand Worlds</h1>
       <h2 class="subtitle">COLORFUL READS x COLORFUL PEOPLE<br>
