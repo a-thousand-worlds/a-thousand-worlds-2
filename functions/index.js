@@ -4,7 +4,9 @@ const email = require('./email')
 const metadataByISBN = require('./metadataByISBN')
 const searchISBN = require('./searchISBN')
 const watchBookSubmissions = require('./watchBookSubmissions')
-const watchBooks = require('./watchBooks')
+const watchBooksCreate = require('./watchBooks/onCreate')
+const watchBooksUpdate = require('./watchBooks/onUpdate')
+const watchBooksDelete = require('./watchBooks/onDelete')
 const watchUsers = require('./watchUsers')
 
 exports.coverImageByISBN = functions
@@ -24,6 +26,9 @@ exports.searchISBN = functions
   .https.onRequest(searchISBN())
 
 exports.watchBookSubmissions = watchBookSubmissions
-exports.watchBooks = watchBooks
+
+exports.watchBooksCreate = watchBooksCreate
+exports.watchBooksUpdate = watchBooksUpdate
+exports.watchBooksDelete = watchBooksDelete
 
 exports.watchUsers = watchUsers

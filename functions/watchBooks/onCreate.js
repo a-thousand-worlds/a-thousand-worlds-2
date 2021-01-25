@@ -1,6 +1,6 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
-const coverImageByISBN = require('./util/coverImageByISBN')
+const coverImageByISBN = require('../util/coverImageByISBN')
 const UUID = require('uuid')
 
 const getDownloadUrl = (fileName, bucketName, token) => `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(fileName)}?alt=media&token=${token}`
@@ -14,7 +14,9 @@ const watchBooks = functions
   .onCreate(async (snap, context) => {
 
     const book = snap.val()
-    console.log(new Date(), 'Finding cover for book submission:', book.isbn)
+    // there is no need to push date to logs, cuz firebase functions logging system does this itself
+    console.log('Finding cover for book submission:', book.isbn)
+    /**/
 
     await snap.ref.child('findingCover').set(true)
     let img
@@ -31,7 +33,7 @@ const watchBooks = functions
       return
     }
 
-    console.log(new Date(), 'Saving cover to storage:', book.isbn)
+    console.log('Saving cover to storage:', book.isbn)
 
     const bucket = admin.storage().bucket()
     const uuid = UUID.v4()
@@ -54,7 +56,8 @@ const watchBooks = functions
       width: img.width,
       height: img.height
     })
-    console.log(new Date(), 'Cover saved:', book.isbn, url)
+    console.log('Cover saved:', book.isbn, url)
+    /**/
 
   })
 

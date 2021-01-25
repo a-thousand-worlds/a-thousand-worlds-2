@@ -18,7 +18,6 @@ const module = (name, field) => mergeOne(managed(name), {
         const url = await ref.getDownloadURL()
         value[field] = {
           url: url,
-          base64: '',
           width: img.bitmap.width,
           height: img.bitmap.height
         }
@@ -31,7 +30,6 @@ const module = (name, field) => mergeOne(managed(name), {
         const url = await ref.getDownloadURL()
         value[field] = {
           url: url,
-          base64: '',
           width: img.bitmap.width,
           height: img.bitmap.height
         }

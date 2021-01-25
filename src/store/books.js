@@ -1,10 +1,10 @@
 import _ from 'lodash'
 import mergeOne from '@/util/mergeOne'
-import imaged from '@/store/modules/imaged'
+import managed from '@/store/modules/managed'
 import filterable from '@/store/modules/filterable'
 
 const moduleFilterable = filterable()
-const module = mergeOne(imaged('books', 'cover'), moduleFilterable, {
+const module = mergeOne(managed('books'), moduleFilterable, {
   state: {
     booksOrdered: [],
   },
