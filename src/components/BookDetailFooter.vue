@@ -6,16 +6,6 @@ export default {
       required: true
     },
   },
-  data() {
-    return {
-      pageUrl: window.location.href,
-    }
-  },
-  watch: {
-    '$route'() {
-      this.pageUrl = window.location.href
-    }
-  },
 }
 
 </script>
@@ -23,10 +13,6 @@ export default {
 <template>
   <div class="content-footer">
     <div class="content-footer-inner">
-      <div class="from-widescreen mr-30">
-        <input type="text" class="input from-fullhd" style="width: 16rem;" :value="pageUrl" readonly>
-        <button id="copy-link" class="button is-rounded is-secondary mx-10" :data-clipboard-text="pageUrl">Copy <span class="is-hidden-fullhd mx-1"> Page </span> Link</button>
-      </div>
       <div class="link-container">
         <button class="button button-unstyled is-primary pl-0">FIND BOOK AT</button>
         <button class="button is-rounded is-secondary mx-1 test">LOCAL LIBRARY</button>
