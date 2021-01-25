@@ -1,8 +1,20 @@
 <!-- A square component that expands to fit while maintaining a 1:1 aspect ratio. -->
 
+<script>
+export default {
+  props: {
+    color: {
+      type: String,
+      validator: value => ['primary', 'secondary'].indexOf(value) !== -1,
+      default: 'secondary'
+    }
+  }
+}
+</script>
+
 <template>
 
-  <div class="square bg-secondary is-flex is-justify-content-center is-align-items-center">
+  <div class="square is-flex is-justify-content-center is-align-items-center" :class="'bg-' + color">
     <slot />
   </div>
 
@@ -20,6 +32,10 @@
 
   &:hover {
     @include primary(color);
+  }
+
+  h3 {
+    position: relative;
   }
 
   // shrink text on tablet
