@@ -21,7 +21,7 @@ const module = () => ({
     filtered: state => (items, tagName = 'tags') => {
       if (!state.loaded) return []
 
-      if (state.filters.length === 0) return items
+      if (!Array.isArray(state.filters) || state.filters.length === 0) return items
 
       return items.filter(item =>
         state.filters.every(tag => {

@@ -21,14 +21,10 @@ export default {
         : this.type === 'bundles' ? 'Bundles'
         : null
     },
-    // map the prop type to the store type
-    storeType() {
-      return this.type === 'people' ? 'creators' : this.type
-    },
   },
   methods: {
     goToFilter() {
-      this.$store.commit(`${this.storeType}/setFilters`, [this.tag.id])
+      this.$store.commit(`${this.type}/setFilters`, [this.tag.id])
       this.$router.push({ name: this.routerType, query: { filters: slugify(this.tag.tag) } })
     },
   }

@@ -1,4 +1,6 @@
 import { createApp } from 'vue'
+import VueTippy from 'vue-tippy'
+import 'tippy.js/dist/tippy.css'
 import CKEditor from '@ckeditor/ckeditor5-vue'
 import App from '@/App.vue'
 import router from '@/router'
@@ -43,6 +45,7 @@ const app = createApp(App)
   .use(store)
   .use(router)
   .use(CKEditor)
+  .use(VueTippy)
 
 // sourced from https://stackoverflow.com/questions/63869859/detect-click-outside-element-on-vue-3
 Object.entries(directives).forEach(([name, directive]) => app.directive(name, directive))

@@ -2,7 +2,6 @@
 import _ from 'lodash'
 import Jimp from 'jimp'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
-
 import MultiPersonField from '@/components/fields/MultiPerson'
 import SimpleInput from '@/components/fields/SimpleInput'
 
@@ -183,7 +182,7 @@ export default {
       </div>
 
       <!-- reject -->
-      <div class="column is-1 has-text-right">
+      <div v-if="sub?.status !== 'rejected'" class="column is-1 has-text-right">
         <button :class="{disabled:busy}" :disabled="busy" class="is-flat is-uppercase is-underlined" @click="reject()">
           <i class="fas fa-times" style="font-size: 20px;" />
         </button>

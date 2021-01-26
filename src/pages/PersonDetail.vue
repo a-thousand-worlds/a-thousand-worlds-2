@@ -35,7 +35,7 @@ export default {
       return this.$route.params.name
     },
     person() {
-      return this.$store.getters['creators/findBy']('name', name => slugify(name) === this.name)
+      return this.$store.getters['people/findBy']('name', name => slugify(name) === this.name)
     },
     tags() {
       const peopleTags = this.$store.state.tags.people.data || {}
@@ -45,7 +45,7 @@ export default {
     }
   },
   watch: {
-    '$store.state.creators.data'(next, prev) {
+    '$store.state.people.data'(next, prev) {
       if (next && Object.keys(next).length && !next[this.person.id]) {
         // person not found! drop to 404
         // timeout to make router finish any his current work, if doing any
@@ -91,7 +91,7 @@ export default {
             </div>
           </div>
 
-          <p class="person-bio" :innerHTML="person.bio" />
+          <p v-if="person.bio" class="person-bio" :innerHTML="person.bio" />
 
         </div>
 

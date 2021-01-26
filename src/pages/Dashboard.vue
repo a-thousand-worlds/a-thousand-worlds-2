@@ -1,14 +1,14 @@
 <script>
 import CreatorProfilePreview from '@/components/Dashboard/CreatorProfilePreview'
 import ReviewSubmissionsPreview from '@/components/Dashboard/ReviewSubmissionsPreview'
-import YourSubmissions from '@/components/Dashboard/YourSubmissions'
+import YourBookSubmissions from '@/components/Dashboard/YourBookSubmissions'
 import InviteWidget from '@/components/InviteWidget'
 
 export default {
   components: {
     CreatorProfilePreview,
     ReviewSubmissionsPreview,
-    YourSubmissions,
+    YourBookSubmissions,
     InviteWidget,
   },
   data() {
@@ -67,7 +67,7 @@ export default {
       </section>
 
       <section v-if="$can('submit') && bookSubmissions.length" class="section my-30 py-0">
-        <YourSubmissions />
+        <YourBookSubmissions />
       </section>
 
       <section v-if="$can('review')" class="section my-30 py-0">

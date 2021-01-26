@@ -6,16 +6,21 @@ export default {
     Group,
   },
   props: {
+    status: {
+      type: String,
+      validator: value => ['approved', 'pending', 'rejected'].indexOf(value) !== -1,
+      default: 'pending',
+    },
     type: {
       type: String,
       required: true,
       validator: value => ['books', 'bundles', 'people'].indexOf(value) !== -1,
-    }
+    },
   },
   computed: {
     submissions() {
       return this.$store.getters[`submissions/${this.type}/list`]()
-        .filter(sub => sub && !sub.approved && !sub.approvedBy && !sub.approvedAt)
+        .filter(sub => sub && sub.status === this.status)
     },
     submissionsGroups() {
       const groups = this.submissions
@@ -50,7 +55,7 @@ export default {
 
   <div>
 
-    <div v-if="submissionsGroups.length" class="is-flex is-justify-content-flex-end">
+    <div v-if="submissionsGroups.length && status === 'pending'" class="is-flex is-justify-content-flex-end">
       <div><button :disabled="$uiBusy" class="button is-rounded" @click="approveAll">Approve all ({{ submissions.length }})</button></div>
     </div>
 
@@ -58,7 +63,7 @@ export default {
 
     <div v-else>
       <div v-for="(group, gid) of submissionsGroups" :key="gid" class="sub-group py-20">
-        <Group :group="group" :type="type" />
+        <Group :group="group" :type="type" :status="status" />
       </div>
     </div>
 

@@ -69,8 +69,9 @@ export default {
     <thead>
       <tr>
         <th style="width: 100%;">Tag</th>
-        <th class="has-text-right" style="white-space: nowrap;">Sort Order</th>
-        <th class="has-text-centered" title="Show this tag in the book filters" style="white-space: nowrap;">Show <i class="far fa-question-circle" /></th>
+        <th class="has-text-right">Sort</th>
+        <th class="has-text-centered" v-tippy="{ content: `Adjust the likelihood of ${type} being sorted to the top. For example, a person that has a tag with weight 10 means the person is 10 times more likely to be sorted to the top than a person that has a tag with weight 1` }" style="white-space: nowrap;">Weight <i class="far fa-question-circle" /></th>
+        <th class="has-text-centered" v-tippy="{ content: `Show this tag in the ${type} filter menu` }" style="white-space: nowrap;">Show <i class="far fa-question-circle" /></th>
         <th>Edit/Delete</th>
       </tr>
     </thead>
@@ -87,13 +88,23 @@ export default {
           </div>
         </td>
 
-        <!-- sort order -->
+        <!-- sort -->
         <td class="has-text-right">
           <span v-if="!edits[tag.id]">
             <span class="ml-2">{{ tag.sortOrder }}</span>
           </span>
           <span v-if="edits[tag.id]">
             <input v-model="edits[tag.id].sortOrder" type="text" class="input">
+          </span>
+        </td>
+
+        <!-- weight -->
+        <td class="has-text-right">
+          <span v-if="!edits[tag.id]">
+            <span class="ml-2">{{ tag.weight }}</span>
+          </span>
+          <span v-if="edits[tag.id]">
+            <input v-model.number="edits[tag.id].weight" type="number" class="input" style="padding-right: calc(0.75rem - 8px);" required>
           </span>
         </td>
 
@@ -143,7 +154,7 @@ export default {
         <a class="button is-static">Sort Order</a>
       </p>
       <p class="control">
-        <input v-model="newTag.sortOrder" :disabled="$uiBusy" type="number" class="input" placeholder="1" style="min-width: 60px">
+        <input v-model.number="newTag.sortOrder" :disabled="$uiBusy" type="number" class="input" placeholder="1" style="min-width: 60px">
       </p>
       <p class="control">
         <a class="button" @click.prevent="newTag.showOnFront = !newTag.showOnFront">
@@ -163,10 +174,10 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-th:last-child {
+table th:last-child {
   text-align: right;
 }
-td {
+table td {
   vertical-align: middle;
 }
 </style>

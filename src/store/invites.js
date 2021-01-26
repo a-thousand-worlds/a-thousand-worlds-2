@@ -90,7 +90,7 @@ const module = mergeOne(collectionModule('invites'), {
         return invites
       })
 
-      dispatch('send', { code, email, firstName, lastName, role })
+      return dispatch('send', { code, email, firstName, lastName, role })
     },
 
   },

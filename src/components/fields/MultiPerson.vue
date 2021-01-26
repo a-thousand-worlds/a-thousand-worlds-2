@@ -17,7 +17,7 @@ export default {
         return false
       }
       return !this.people
-        .map(name => this.$store.getters['creators/list']().reduce((acc, p) => p.name.toLowerCase() === name.toLowerCase() ? true : acc, false))
+        .map(name => this.$store.getters['people/list']().reduce((acc, p) => p.name.toLowerCase() === name.toLowerCase() ? true : acc, false))
         .reduce((acc, exists) => acc && exists, true)
     }
   },
@@ -26,8 +26,6 @@ export default {
       this.names = next
     }
   },
-  created() {
-  },
   methods: {
     doSearch(e) {
       this.$emit('update:modelValue', this.names)
@@ -35,7 +33,7 @@ export default {
         return
       }
       const search = this.names
-      this.searches = this.$store.getters['creators/list']()
+      this.searches = this.$store.getters['people/list']()
         .filter(person => search.length && person.name.toLowerCase().includes(search) && person.role === this.role)
     },
     fillPerson(p) {
@@ -126,7 +124,7 @@ export default {
         </div>
       </div>
     <!-- <div v-if="mode === 'view' && hasNewPeople" class="control">
-      <i :class="{disabled:disabled}" class="fas fa-exclamation-triangle fa-danger" title="There is a not existing in database person. On book approve they will be automatically approved and created without biography"></i>
+      <i :class="{disabled:disabled}" class="fas fa-exclamation-triangle fa-danger" v-tippy="{ content: 'There is a not existing in database person. On book approve they will be automatically approved and created without biography' }"></i>
     </div> -->
     </div>
   </div>

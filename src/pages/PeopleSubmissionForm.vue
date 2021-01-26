@@ -1,13 +1,9 @@
 <script>
 import _ from 'lodash'
 import validator from '@/mixins/validator'
-import Toggle from '@/components/Toggle'
 import genderOptions from '@/store/genderOptions'
 
 export default {
-  components: {
-    Toggle,
-  },
   mixins: [
     validator(function() {
       return [
@@ -31,15 +27,15 @@ export default {
       return this.$store.state.user.user?.profile.draftPerson
     },
     identityOptions() {
-      return this.$store.state.tags.people.data
+      return this.$store.getters[`tags/people/listSorted`]()
     },
     person() {
       const peopleSubmissions = this.$store.state.submissions.people.data || {}
       const userSubmissions = this.$store.state.user.user.profile.submissions || {}
       const peopleSubmissionId = Object.keys(userSubmissions)
-        .find(sid => peopleSubmissions[sid]?.type === 'people' && peopleSubmissions[sid]?.approved)
+        .find(sid => peopleSubmissions[sid]?.type === 'people' && peopleSubmissions[sid]?.status === 'approved')
       const peopleId = peopleSubmissions[peopleSubmissionId]?.peopleId
-      const person = this.$store.state.creators.data[peopleId]
+      const person = this.$store.state.people.data[peopleId]
       return person
     },
   },
@@ -123,6 +119,7 @@ export default {
       this.$store.commit('ui/setBusy', true)
       try {
         await this.$store.dispatch('submissions/people/submit', this.submission)
+        this.$store.commit('ui/setBusy', false)
         this.$router.push({ name: 'SubmissionThankYou', params: { type: 'people' } })
       }
       catch (e) {
@@ -164,21 +161,21 @@ export default {
             <div class="control is-flex">
               <label style="cursor: pointer;">
                 <input type="radio" name="title" v-model="submission.title" value="author" class="checkbox mb-3 mt-1">
-                Author
+                <span class="no-user-select ml-1">Author</span>
               </label>
             </div>
 
             <div class="control is-flex">
               <label style="cursor: pointer;">
                 <input type="radio" name="title" v-model="submission.title" value="illustrator" class="checkbox mb-3 mt-1">
-                Illustrator
+                <span class="no-user-select ml-1">Illustrator</span>
               </label>
             </div>
 
             <div class="control is-flex">
               <label style="cursor: pointer;">
                 <input type="radio" name="title" v-model="submission.title" value="author-illustrator" class="checkbox mb-3 mt-1">
-                Author/Illustrator
+                <span class="no-user-select ml-1">Author/Illustrator</span>
               </label>
             </div>
 
@@ -188,31 +185,12 @@ export default {
           <div class="field">
             <label class="label" :class="{ 'has-text-danger': hasError('gender') }" style="font-weight: bold; text-transform: uppercase;">Gender</label>
 
-            <!-- basic genders (M/W) -->
-            <div class="sublabel">
-
-              <div class="control is-flex">
-                <input type="radio" name="gender" id="gender-woman" v-model="submission.gender" value="woman" class="checkbox mb-3 mt-1">
-                <label class="label pl-2 pb-1" for="gender-woman" style="cursor: pointer;">Woman</label>
-              </div>
-              <div class="control is-flex">
-                <input type="radio" name="gender" id="gender-man" v-model="submission.gender" value="man" class="checkbox mb-3 mt-1">
-                <label class="label pl-2 pb-1" for="gender-man" style="cursor: pointer;">Man</label>
+            <div class="sublabel tablet-columns-2">
+              <div v-for="(gender, key) of genderOptions" :key="key" class="control is-flex" style="column-break-inside: avoid;">
+                <input type="radio" name="gender" :id="`gender-${key}`" v-model="submission.gender" :value="key" class="checkbox mb-3 mt-1">
+                <label class="label pl-2 pb-1 no-user-select" :for="`gender-${key}`" style="cursor: pointer;">{{ gender }}</label>
               </div>
             </div>
-
-            <!-- more genders -->
-            <Toggle>
-              <template #label>More</template>
-              <template #content>
-                <div class="sublabel tablet-columns-2 m-10">
-                  <div v-for="(gender, key) of genderOptions" :key="key" class="control is-flex" style="column-break-inside: avoid;">
-                    <input type="radio" name="gender" :id="`gender-${key}`" v-model="submission.gender" :value="key" class="checkbox mb-3 mt-1">
-                    <label class="label pl-2 pb-1" :for="`gender-${key}`" style="cursor: pointer;">{{ gender }}</label>
-                  </div>
-                </div>
-              </template>
-            </Toggle>
           </div>
 
           <!-- identity -->
@@ -221,7 +199,7 @@ export default {
             <div class="sublabel tablet-columns-2">
               <div v-for="identity of identityOptions" :key="identity.id" class="control is-flex" style="column-break-inside: avoid;">
                 <input v-model="submission.identities[identity.id]" :id="`identity-${identity.id}`" :false-value="null" type="checkbox" class="checkbox mb-3 mt-1" @input="saveDraftAndRevalidate">
-                <label class="label pl-2 pb-1" :for="`identity-${identity.id}`" style="cursor: pointer;">{{ identity.tag }}</label>
+                <label class="label pl-2 pb-1 no-user-select" :for="`identity-${identity.id}`" style="cursor: pointer;">{{ identity.tag }}</label>
               </div>
             </div>
           </div>
@@ -235,13 +213,13 @@ export default {
           <!-- awards -->
           <div class="field">
             <label class="label"><b>List of awards and recognition that you would like us to highlight</b> (optional)</label>
-            <input type="text" class="input" v-model="submission.awards" @input="saveDraftAndRevalidate">
+            <textarea class="textarea" v-model="submission.awards" @input="saveDraftAndRevalidate" style="min-height: 6em;" />
           </div>
 
           <!-- bonus -->
           <div class="field">
             <label class="label"><b>Links to bonus material relevant to you</b> (optional)</label>
-            <input type="text" class="input" v-model="submission.bonus" @input="saveDraftAndRevalidate">
+            <textarea class="input" v-model="submission.bonus" @input="saveDraftAndRevalidate" style="min-height: 6em;" />
           </div>
 
           <!-- curateInterest -->
@@ -250,19 +228,19 @@ export default {
             <div class="control">
               <label style="cursor: pointer;">
                 <input type="radio" name="curateInterest" v-model="submission.curateInterest" value="Yes" @input="saveDraftAndRevalidate">
-                Yes! Please send me a curation form
+                <span class="no-user-select ml-1">Yes! Please send me a curation form</span>
               </label>
             </div>
             <div class="control">
               <label style="cursor: pointer;">
                 <input type="radio" name="curateInterest" v-model="submission.curateInterest" value="No" @input="saveDraftAndRevalidate">
-                No
+                <span class="no-user-select ml-1">No</span>
               </label>
             </div>
             <div class="control">
               <label style="cursor: pointer;">
                 <input type="radio" name="curateInterest" v-model="submission.curateInterest" value="Maybe" @input="saveDraftAndRevalidate">
-                Maybe, please send me more info
+                <span class="no-user-select ml-1">Maybe, please send me more info</span>
               </label>
             </div>
           </div>

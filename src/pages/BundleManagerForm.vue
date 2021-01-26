@@ -13,15 +13,15 @@ export default {
       mode: 'new',
       bundle: {
         id: null,
-        curator: '',
-        name: '',
-        description: '',
         books: {},
         created: '',
+        curator: '',
+        description: '',
+        name: '',
+        reviewedAt: '',
+        reviewedBy: '',
+        status: 'pending',
         updated: '',
-        approved: false,
-        approvedBy: '',
-        approvedAt: '',
       }
     }
   },

@@ -1,6 +1,6 @@
 {
   "name": "atw2",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "scripts": {
     "build": "vue-cli-service build",
@@ -33,6 +33,7 @@
     "core-js": "^3.8.2",
     "cute-animals": "^0.2.0",
     "dayjs": "^1.10.3",
+    "deck": "0.0.4",
     "email-validator": "^2.0.4",
     "firebase": "^8.2.2",
     "firebaseui": "^4.7.1",
@@ -43,6 +44,7 @@
     "uuid": "^8.3.2",
     "vue": "^3.0.5",
     "vue-router": "^4.0.3",
+    "vue-tippy": "^6.0.0-alpha.24",
     "vuex": "^4.0.0-rc.1"
   },
   "devDependencies": {

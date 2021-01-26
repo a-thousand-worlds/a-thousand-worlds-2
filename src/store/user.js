@@ -75,9 +75,9 @@ const module = mergeOne(usersModule, {
       // save profile to user record
       await dispatch('saveProfile', {
         email,
-        code,
         name,
-        affiliations
+        ...code ? { code } : null,
+        ...affiliations?.organization ? { affiliations } : null,
       })
 
       return user

@@ -182,6 +182,13 @@ const routes = [
       access: ['advisor', 'owner']
     }
   }, {
+    path: '/admin/review/:type/rejected',
+    name: 'ReviewRejectedSubmissions',
+    component: () => import(/* webpackChunkName: "advisor" */ './pages/ReviewSubmissions/Rejected'),
+    meta: {
+      access: ['advisor', 'owner']
+    }
+  }, {
     path: '/:catchAll(.*)',
     name: 'NotFound',
     component: NotFound,
@@ -191,10 +198,12 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
-  // scroll to top on navigate, except for back/forward
+  // scroll to top on navigate, except for back/forward and same page (e.g. filter change)
   // https://router.vuejs.org/guide/advanced/scroll-behavior.html#async-scrolling
   scrollBehavior(to, from, savedPosition) {
-    return savedPosition || { left: 0, top: 0 }
+    const samePage = from.name === to.name
+    // position is not saved with router.replace, so we need to get the scroll position manually
+    return savedPosition || { left: 0, top: samePage ? window.scrollY : 0 }
   }
 })
 

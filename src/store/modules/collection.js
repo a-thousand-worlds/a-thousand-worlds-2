@@ -70,11 +70,23 @@ const collectionModule = name => ({
       const ref = firebase.database().ref(`${name}/${path}`)
       await ref.set(value)
     },
-    /** Subscribes to the collection in Firebase, syncing with this.data */
-    subscribe(context) {
+    /**
+     * Subscribes to the collection in Firebase, syncing with this.data
+     *
+     * @param onValue    Pass-through Firebase value event.
+     * @param transform  Transform the value before it is saved to the state.
+     */
+    subscribe(context, { onValue, transform } = {}) {
       const ref = firebase.database().ref(name)
       ref.on('value', snap => {
-        context.commit('set', snap.val() || {})
+        const value = snap.val()
+        const valueTransformed = transform ? transform(value) : value
+        context.commit('set', valueTransformed || {})
+
+        // call onValue after updating state
+        if (onValue) {
+          onValue(value)
+        }
       })
     },
     /** Removes collection entry from Firebase */

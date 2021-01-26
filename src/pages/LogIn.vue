@@ -51,7 +51,8 @@ export default {
         : null
     },
     showOrgLink() {
-      return (this.active === 'signup' || this.active === 'profile') && (this.invite?.role === 'contributor' || this.$can('submit'))
+      return (this.active === 'signup' || this.active === 'profile') &&
+        (this.invite?.role === 'contributor' || this.$can('submit'))
     }
   },
 
@@ -78,7 +79,10 @@ export default {
         }
       }
 
-      this.name = this.$store.state.user?.profile?.name
+      const userProfileName = this.$store.state.user?.profile?.name
+      if (userProfileName) {
+        this.name = userProfileName
+      }
     }
   },
 
@@ -265,6 +269,36 @@ export default {
         }
       }
 
+      // contributor fields
+      if ((this.active === 'signup' && this.invite?.role === 'contributor') || this.active === 'profile') {
+
+        // engagements
+        const hasSelectedEngagements = Object.values(this.affiliations.selectedEngagementCategories)
+          .some(x => x)
+        if (!hasSelectedEngagements && !this.affiliations.otherEngagementCategory) {
+          this.error = {
+            message: 'Please check required fields',
+            fields: { ...this.error?.fields, engagements: true },
+          }
+        }
+
+        // organization name
+        if (!this.affiliations.organization) {
+          this.error = {
+            message: 'Please check required fields',
+            fields: { ...this.error?.fields, organizationName: true },
+          }
+        }
+
+        // organization link
+        if (!this.affiliations.organizationLink) {
+          this.error = {
+            message: 'Please check required fields',
+            fields: { ...this.error?.fields, organizationLink: true },
+          }
+        }
+      }
+
       return !this.error
     },
 
@@ -329,32 +363,32 @@ export default {
             </div>
           </div>
 
-          <div v-if="active === 'signup' || active === 'profile'" class="field">
-            <label class="label is-uppercase">How do you engage with books?</label>
+          <div v-if="(active === 'signup' && invite?.role === 'contributor') || active === 'profile'" class="field">
+            <label class="label is-uppercase" :class="{ error: hasError('engagements') }">How do you engage with books?</label>
             <div style="column-count: 2;">
               <div v-for="category of engagementCategories" :key="category.id" class="control columns-2">
-                <input :id="category.id" v-model="affiliations.selectedEngagementCategories[category.id]" :disabled="loading" :name="category.id" type="checkbox" class="checkbox mr-3 mb-3">
-                <label class="label is-inline is-uppercase" style="word-wrap: nobreak;" :for="category.id">
+                <input :id="category.id" v-model="affiliations.selectedEngagementCategories[category.id]" :disabled="loading" :name="category.id" @input="revalidate" type="checkbox" class="checkbox mr-3 mb-3">
+                <label class="label is-inline is-uppercase no-user-select" style="word-wrap: nobreak;" :for="category.id">
                   {{ category.text }}
                 </label>
               </div>
               <div>
                 <input v-model="affiliations.selectedEngagementCategories.other" :disabled="loading" type="checkbox" class="checkbox mr-3 mb-3">
                 <label class="label is-inline mr-2">OTHER</label>
-                <input v-model="affiliations.otherEngagementCategory" :disabled="loading" class="input" style="max-width: 200px;" type="text">
+                <input v-model="affiliations.otherEngagementCategory" :disabled="loading" @input="revalidate" class="input" style="max-width: 200px;" type="text">
               </div>
             </div>
 
           </div>
 
-          <div v-if="active === 'signup' || active === 'profile'" class="field" :class="{ 'divider-30': !showOrgLink }">
-            <label class="label is-uppercase">Are you affiliated with any organization(s)?</label>
-            <input v-model="affiliations.organization" :disabled="loading" class="input" type="text">
+          <div v-if="(active === 'signup' && invite?.role === 'contributor') || active === 'profile'" class="field" :class="{ 'divider-30': !showOrgLink }">
+            <label class="label is-uppercase" :class="{ error: hasError('organizationName') }">Are you affiliated with an organization?</label>
+            <input v-model="affiliations.organization" :disabled="loading" @input="revalidate" class="input" type="text">
           </div>
 
           <div v-if="showOrgLink" class="field divider-30">
-            <label class="label is-uppercase">Link to organization if exists:</label>
-            <input v-model="affiliations.organizationLink" :disabled="loading" class="input" type="text">
+            <label class="label is-uppercase" :class="{ error: hasError('organizationLink') }">Link to organization:</label>
+            <input v-model="affiliations.organizationLink" :disabled="loading" @input="revalidate" class="input" type="text">
           </div>
 
           <div class="field my-4">

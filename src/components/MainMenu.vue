@@ -2,10 +2,12 @@
 import firebase from '../firebase'
 import InstagramIcon from '../assets/icons/instagram.svg'
 import TwitterIcon from '../assets/icons/twitter.svg'
+import Fragment from '@/components/Fragment'
 
 export default {
   components: {
     InstagramIcon,
+    Fragment,
     TwitterIcon,
   },
   methods: {
@@ -20,7 +22,7 @@ export default {
 <template>
   <div>
     <ul class="menu-list is-flex-grow-1">
-      <li><router-link :to="{name: 'Home'}">Books</router-link></li>
+      <li><router-link :to="{name: 'Home'}" :class="{ 'router-link-active': $route.name === 'BookDetail' }">Books</router-link></li>
       <li id="books-filter-menu" />
       <li><router-link :to="{name: 'Bundles'}">Book Bundles</router-link></li>
       <li id="bundles-filter-menu" />
@@ -30,14 +32,15 @@ export default {
       <li><router-link :to="{name: 'About'}">About</router-link></li>
       <li v-if="!$iam('authorized')"><router-link :to="{name: 'LogIn'}">Log In</router-link></li>
       <li v-if="$iam('authorized')"><router-link :to="{name: 'Dashboard'}">Dashboard</router-link></li>
-      <li v-if="$iam('authorized')"><a @click.prevent="logout">Log Out</a></li>
-    </ul>
 
-    <ul v-if="$can('manageCollections')" class="menu-list mt-5">
-      <li><router-link :to="{name: 'TagsManager'}">Tags Manager</router-link></li>
-      <li><router-link :to="{name: 'BooksManager'}">Books Manager</router-link></li>
-      <li><router-link :to="{name: 'BundlesManager'}">Bundle Manager</router-link></li>
-      <li><router-link :to="{name: 'PeopleManager'}">People Manager</router-link></li>
+      <Fragment v-if="$can('manageCollections')">
+        <li><router-link :to="{name: 'TagsManager'}">Tags Manager</router-link></li>
+        <li><router-link :to="{name: 'BooksManager'}">Books Manager</router-link></li>
+        <li><router-link :to="{name: 'BundlesManager'}">Bundle Manager</router-link></li>
+        <li><router-link :to="{name: 'PeopleManager'}">People Manager</router-link></li>
+      </Fragment>
+
+      <li v-if="$iam('authorized')"><a @click.prevent="logout">Log Out</a></li>
     </ul>
 
     <ul class="menu-list mt-50">
@@ -58,6 +61,10 @@ export default {
   font-weight: bold;
   text-transform: uppercase;
   padding: 0 0 20px 0;
+
+  &.router-link-active {
+    @include primary(color)
+  }
 
   &:hover {
     background: none;

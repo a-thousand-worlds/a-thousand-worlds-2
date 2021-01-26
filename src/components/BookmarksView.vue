@@ -13,7 +13,7 @@ export default {
   },
   methods: {
     unmarkAll() {
-      this.$store.dispatch('clearBookmarks')
+      this.$store.dispatch('user/clearBookmarks')
     }
   }
 }
@@ -24,7 +24,7 @@ export default {
     <p v-if="!bookmarks.length">You don't have any bookmarks yet.</p>
     <BookmarkWidget v-for="(mark, i) of bookmarks" :key="i" :mark="mark" class="bookmark-widget" />
     <div v-if="bookmarks.length" class="container has-text-right">
-      <a class="unmark-all m-5" :href="null" @click.prevent="unmarkAll()">Unsave All</a>
+      <a class="unmark-all m-5" @click.prevent="unmarkAll()">Unsave All</a>
     </div>
   </div>
 </template>

@@ -6,5 +6,5 @@ export default {
 </script>
 
 <template>
-  <img :src="book.thumbnail || book.cover" style="max-width: 100%; min-width: 60px; min-height: 100px;">
+  <img :src="book.thumbnail || book.cover" class="bg-secondary" style="max-width: 100%; min-width: 80px; min-height: 100px;">
 </template>

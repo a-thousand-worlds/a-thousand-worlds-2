@@ -12,6 +12,11 @@ export default {
     group: {
       required: true,
     },
+    status: {
+      type: String,
+      validator: value => ['approved', 'pending', 'rejected'].indexOf(value) !== -1,
+      default: 'pending',
+    },
     type: {
       type: String,
       required: true,
@@ -73,16 +78,22 @@ export default {
     <p v-if="!group?.[type]?.length" style="font-size: 20px;">No Submissions to review</p>
 
     <div v-else>
-      <div>
+
+      <!-- approve -->
+      <div v-if="status !== 'approved'">
         <button
           :disabled="$uiBusy"
           class="level-item is-flat is-underlined is-uppercase"
           @click="approveGroup()">Approve</button>
       </div>
+
+      <!-- book/person review -->
       <div v-for="(sub, i) of group[type]" :key="i">
         <Book v-if="type === 'books'" :submission="sub" />
         <Person v-if="type === 'people'" :submission="sub" />
       </div>
+
+      <!-- submitter -->
       <div class="has-text-right mt-20">
         {{ submitterName }}{{ submitterRoles ? `, ${submitterRoles}` : '' }}
         <span v-if="submitterOrganization">
@@ -96,3 +107,12 @@ export default {
   </div>
 
 </template>
+
+<style scoped lang="scss">
+@import '@/assets/style/mixins.scss';
+@import '@/assets/style/vars.scss';
+.level-item:hover {
+  @include primary(color);
+
+}
+</style>

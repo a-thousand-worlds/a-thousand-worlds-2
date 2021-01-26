@@ -1,10 +1,12 @@
 <script>
 import Filter from '../components/Filter.vue'
+import Loader from '@/components/Loader'
 
 export default {
   name: 'BundlesPage',
   components: {
     Filter,
+    Loader,
   },
   computed: {
     bundles() {
@@ -12,6 +14,13 @@ export default {
     },
     bundleTags() {
       return this.$store.state.tags.bundles.data
+    },
+    filters() {
+      return Object.values(this.$store.state.bundles.filters)
+    },
+    loading() {
+      // return !this.$store.state.bundles.loaded || !this.$store.state.tags.bundles.loaded
+      return false
     },
   },
   watch: {
@@ -32,9 +41,20 @@ export default {
     <Filter type="bundles" />
   </teleport>
 
-  <div class="container is-flex is-flex-direction-row is-flex-wrap-wrap p-3">
-    <div v-for="bundle of bundles" :key="bundle.id" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}" class="has-text-centered bundle-block p-3">
-      {{ bundle }}
+  <div v-if="loading" class="has-text-centered" style="margin-top: 20vh;">
+    <Loader />
+  </div>
+
+  <div v-else>
+    <div v-if="Object.keys(bundles).length === 0" class="my-50 has-text-centered">
+      <h2 class="mb-20">No {{ filters.length ? 'matching' : '' }} bundles {{ !filters.length ? 'yet!' : '' }}</h2>
+      <p v-if="filters.length"><a @click.prevent="resetFilter" class="button is-rounded is-primary">Reset Filter</a></p>
+    </div>
+
+    <div class="container is-flex is-flex-direction-row is-flex-wrap-wrap p-3">
+      <div v-for="bundle of bundles" :key="bundle.id" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}" class="has-text-centered bundle-block p-3">
+        {{ bundle }}
+      </div>
     </div>
   </div>
 

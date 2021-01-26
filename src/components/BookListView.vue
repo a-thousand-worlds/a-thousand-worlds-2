@@ -38,7 +38,7 @@ export default {
   <div v-if="book" class="columns m-0">
     <div class="column is-one-half p-0 mb-20">
       <BookDetailLink :book="book" class="cover-data">
-        <div class="img-cover bg-secondary" :style="{width: '100%', paddingTop: coverRatio+'%', backgroundImage: 'url('+bgImage+')', backgroundSize: 'contain'}" />
+        <div class="img-cover bg-secondary" :style="{ width: '100%', minWidth: '100px', paddingTop: coverRatio+'%', backgroundImage: 'url('+bgImage+')', backgroundSize: 'contain' }" />
       </BookDetailLink>
     </div>
     <div class="column is-one-half is-align-content-center p-0">
@@ -49,7 +49,7 @@ export default {
           <div class="is-flex is-justify-content-space-between mb-20">
             <div>
               <BookDetailLink :book="book" class="cover-data">
-                <h3 class="mb-10" style="color: black; margin-right: 15px;">{{ book.title }}</h3>
+                <h3 class="link mb-10" style="margin-right: 15px;">{{ book.title }}</h3>
               </BookDetailLink>
               <div class="authors">
                 <CreatorsWidget :creators="book.creators" :linked="true" />
@@ -66,7 +66,17 @@ export default {
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+@import "bulma/sass/utilities/_all.sass";
+@import '@/assets/style/mixins.scss';
+
+.link {
+  color: black;
+  &:hover {
+    @include primary(color);
+  }
+}
+
 .is-vcentered {
   height: 100%;
 }

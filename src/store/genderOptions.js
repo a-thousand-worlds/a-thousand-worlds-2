@@ -1,4 +1,6 @@
 const genderOptions = {
+  woman: 'Woman',
+  man: 'Man',
   transWoman: 'Trans Woman',
   transMan: 'Trans Man',
   nonBinary: 'Non-Binary',

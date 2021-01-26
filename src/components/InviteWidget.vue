@@ -162,8 +162,14 @@ export default {
       }
       else if (this.invalidRecipients.length > 0) {
         this.error = {
-          message: `Invalid recipient${this.invalidRecipients.length > 1 ? 's' : ''}:`,
+          message: `Invalid email${this.invalidRecipients.length > 1 ? 's' : ''}:`,
           data: this.invalidRecipients.map(recipient => recipient.raw),
+          fields: { ...this.error?.fields, emailInput: true },
+        }
+      }
+      else if (this.recipients.some(recipient => !recipient.firstName)) {
+        this.error = {
+          message: 'Name is also required, e.g. "Sarah Lopez - sarah@test.com"',
           fields: { ...this.error?.fields, emailInput: true },
         }
       }
@@ -208,7 +214,7 @@ export default {
             @input="autosize"
           />
           <div class="ml-2">
-            <a title="Invite multiple" class="pt-2 pr-2" @click.prevent="toggleExpanded">
+            <a v-tippy="{ content: 'Invite multiple' }" class="pt-2 pr-2" @click.prevent="toggleExpanded">
               <i :class="`fas fa-angle-double-${expanded ? 'up' : 'down'}`" />
             </a>
           </div>

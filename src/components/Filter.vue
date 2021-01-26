@@ -11,7 +11,7 @@ export default {
   },
   computed: {
     filters() {
-      return Object.values(this.$store.state[this.storeType].filters)
+      return Object.values(this.$store.state[this.type]?.filters || {})
     },
     // map the prop type to the router type
     routerType() {
@@ -20,19 +20,31 @@ export default {
         : this.type === 'bundles' ? 'Bundles'
         : null
     },
-    // map the prop type to the store type
-    storeType() {
-      return this.type === 'people' ? 'creators' : this.type
-    },
     tags() {
       return this.$store.getters[`tags/${this.type}/listSorted`]()
     },
   },
   methods: {
+    /** Adds manual <br> to long tags otherwise the inline-block elements will take up the full width and add unnecessary space before the selection icon. */
+    formatTag(name) {
+      if (name.length < 22) return name
+      const firstSpace = name.indexOf(' ')
+      if (firstSpace === -1) return name
+      const secondSpace = name.indexOf(' ', firstSpace + 1)
+      return firstSpace < 10 && secondSpace !== -1
+        ? `${name.slice(0, secondSpace)}<br/>${name.slice(secondSpace)}`
+        : `${name.slice(0, firstSpace)}<br/>${name.slice(firstSpace)}`
+    },
+    /** Sets custom offsets on the selection icon to vertically center it on long tags. */
+    selectedIconStyle(name) {
+      return name.toUpperCase().startsWith('ARAB/MIDDLE')
+        ? { marginLeft: '6px', top: '11px' }
+        : null
+    },
     toggleFilter(fid) {
-      this.$store.commit(`${this.storeType}/toggleFilter`, fid)
+      this.$store.commit(`${this.type}/toggleFilter`, fid)
       const tags = this.$store.state.tags[this.type].data
-      const filters = this.$store.state[this.storeType].filters
+      const filters = this.$store.state[this.type].filters
       this.$router.replace({
         name: this.routerType,
         query: filters.length > 0 ? {
@@ -41,11 +53,11 @@ export default {
       })
     },
     resetFilters() {
-      this.$store.commit(`${this.storeType}/resetFilters`)
+      this.$store.commit(`${this.type}/resetFilters`)
       this.$router.replace({ name: this.routerType })
     },
     isFiltered(fid) {
-      return this.$store.state[this.storeType].filters.includes(fid)
+      return this.$store.state[this.type]?.filters?.includes(fid)
     },
   }
 }
@@ -55,7 +67,9 @@ export default {
   <aside v-if="tags.length" class="menu mb-5">
     <ul class="menu-list submenu">
       <li v-for="filter in tags" :key="filter.id" @click="toggleFilter(filter.id)">
-        <button v-if="filter.showOnFront" :class="{toggled:isFiltered(filter.id)}" class="pb-2" style="padding-left: 2px;">{{ filter.tag }}<span v-if="isFiltered(filter.id)" class="remove-tag">{{ '—' }}</span></button>
+        <button v-if="filter.showOnFront" :class="{ active: isFiltered(filter.id)}" class="pb-2" style="padding-left: 2px;">
+          <span style="display: inline-block;" :innerHTML="formatTag(filter.tag)" />
+          <span v-if="isFiltered(filter.id)" class="remove-tag" :style="selectedIconStyle(filter.tag)">{{ '—' }}</span></button>
       </li>
     </ul>
     <button v-if="filters.length > 0" class="button is-rounded is-primary" @click.prevent="resetFilters">Reset Filter</button>
@@ -89,12 +103,13 @@ a {
     background: #fff;
     font-size: 10px;
     text-align: left;
+    text-transform: uppercase;
 
     &:focus, &:active {
       outline: 0;
     }
 
-    &.toggled {
+    &:hover, &.active  {
       @include primary(color);
       border: 0;
     }
@@ -111,11 +126,11 @@ a {
   display: inline-block;
   border-radius: 99px;
   width: 15px;
-  height: 15px;
+  line-height: 15px; // use line-height instead of height to vertically center the dash
   margin-left: 5px;
   text-align: center;
   position: absolute;
-  top: 0;
+  top: -1px;
 }
 
 </style>

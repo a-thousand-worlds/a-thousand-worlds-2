@@ -14,7 +14,7 @@ export default {
       return this.$store.getters['books/filtered']
     },
     filters() {
-      return Object.values(this.$store.state.books.filters)
+      return Object.values(this.$store.state.books?.filters || {})
     },
     loading() {
       return !this.$store.state.books.loaded || !this.$store.state.tags.books.loaded

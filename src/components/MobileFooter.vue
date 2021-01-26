@@ -16,7 +16,8 @@ export default {
       return Object.keys(this.$store.state.user.user?.profile.bookmarks || {}).length
     },
     filters() {
-      return this.$store.state[this.storeType].filters
+      const ret = this.$store.state[this.filterType].filters
+      return ret
     },
     showFilters() {
       return this.filterType
@@ -31,16 +32,14 @@ export default {
         : this.$route.name === 'Bundles' || this.$route.name === 'BundleDetail' ? 'bundles'
         : null
     },
-    storeType() {
-      return this.filterType === 'people' ? 'creators' : this.filterType
-    },
   },
   methods: {
     isFiltered(tag) {
-      return this.filters.includes(tag)
+      const filters = this.filters || []
+      return filters.includes(tag)
     },
     resetFilters() {
-      this.$store.commit(`${this.storeType}/resetFilters`)
+      this.$store.commit(`${this.type}/resetFilters`)
     },
     setFilters(e) {
       const options = [...e.target.options]
@@ -48,7 +47,7 @@ export default {
         // ignore reset option
         .filter(option => option.selected && option.value !== '_reset')
         .map(option => option.value)
-      this.$store.commit(`${this.storeType}/setFilters`, selected)
+      this.$store.commit(`${this.type}/setFilters`, selected)
     },
     toggleBookmarks() {
       if (!this.$iam('authorized')) {
@@ -70,14 +69,14 @@ export default {
       <ul class="menu-list my-10">
 
         <li v-if="showFilters && !$store.state.ui.bookmarksOpen" style="position: relative;">
-          <select @change="setFilters" multiple style="position: absolute; background-color: tomato; overflow: hidden; left: 0: top: 0; overflow: hidden; min-width: 60px; max-width: 100px; width: 70px; height: 100%; font-size: 20px; cursor: pointer; opacity: 0;">
+          <select @change="setFilters" multiple style="position: absolute; overflow: hidden; left: 0: top: 0; overflow: hidden; min-width: 60px; max-width: 100px; width: 70px; height: 100%; font-size: 20px; cursor: pointer; opacity: 0; text-transform: uppercase;">
             <!-- <option @click="resetFilters" value="_reset">Reset Filter</option> -->
             <optgroup disabled hidden />
             <option v-for="tag in tags" :key="tag.id" :selected="isFiltered(tag.id)" :value="tag.id">{{ tag.tag }}</option>
           </select>
           <FilterIcon />
           <div class="icon-label mt-2">Filter</div>
-          <span v-if="filters.length > 0" class="badge">{{ filters.length }}</span>
+          <span v-if="filters?.length > 0" class="badge">{{ filters?.length }}</span>
         </li>
 
         <li>

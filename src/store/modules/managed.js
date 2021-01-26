@@ -1,4 +1,4 @@
-/** Managed collection elements use `createdAt`/`createdBy`, `updatedAt`/`updatedBy`, `approvedBy`/`approvedAt` fields for elements */
+/** Managed collection elements use `createdAt`/`createdBy`, `updatedAt`/`updatedBy`, `reviewedBy`/`reviewedAt` fields for elements */
 import collection from '@/store/modules/collection'
 import mergeOne from '@/util/mergeOne'
 import firebase from '@/firebase'
@@ -20,8 +20,8 @@ const module = name => mergeOne(collection(name), {
         value.createdAt = now.format()
         value.createdBy = user
       }
-      if (value.approvedBy && !value.approvedAt) {
-        value.approvedAt = now.format()
+      if (value.reviewedBy && !value.reviewedAt) {
+        value.reviewedAt = now.format()
       }
       const ref = firebase.database().ref(`${name}/${path}`)
       await ref.set(value)
