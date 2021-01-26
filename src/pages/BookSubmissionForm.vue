@@ -63,18 +63,21 @@ export default {
     async setConfirmed(si, state) {
 
       const sub = this.submissions[si]
-
       sub.confirmed = state
-      if (state) {
+
+      // yes
+      if (state === true) {
         if (sub.isbnLastFound) {
           sub.isbn = sub.isbnLastFound
         }
-        this.updateMetadata(si)
+        this.updateMetadataDebounced(si)
       }
+      // no
       else if (state === false) {
         sub.isbnLastFound = sub.isbn
         sub.isbn = null
       }
+      // pending/cancelled
       else if (state === null) {
         sub.isbn = null
       }
@@ -88,6 +91,7 @@ export default {
       this.$store.commit('ui/setBusy', true)
 
       try {
+        await this.submissions.forEach(async (_, sid) => this.updateMetadata(sid))
         await this.$store.dispatch('submissions/books/submit', this.submissions)
       }
       finally {
@@ -178,12 +182,21 @@ export default {
 
     }, 500),
 
-    // populate empty and suggested fields with metadata
-    updateMetadata: _.debounce(async function(si) {
+    // fetch metadata and populate empty and suggested fields
+    async updateMetadata(si) {
+      let meta
       const sub = this.submissions[si]
       sub.loadingMetadata = true
-      const meta = await metadataByISBN(sub.isbn)
-      sub.loadingMetadata = false
+      try {
+        meta = await metadataByISBN(sub.isbn)
+      }
+      catch (e) {
+        console.warn('metadataByISBN error:', e)
+      }
+      finally {
+        sub.loadingMetadata = false
+      }
+
       if (!meta) return
       this.suggested = meta
       if (meta.summary && !sub.summary) sub.summary = meta.summary
@@ -197,6 +210,10 @@ export default {
       // set authors or illustrators only if not specified by user (will be validated during approval)
       if (meta.authors?.length && meta.authors?.join(', ') !== sub.authors && !sub.authors) sub.authors = meta.authors.join(', ')
       if (meta.illustrators?.length && meta.illustrators?.join(', ') !== sub.illustrators && !sub.illustrators) sub.illustrators = meta.illustrators.join(', ')
+    },
+
+    updateMetadataDebounced: _.debounce(function(si) {
+      return this.updateMetadata(si)
     }, 500),
 
     async searchManualIsbn(si) {
@@ -218,7 +235,7 @@ export default {
         sub.thumbnail = thumbnail
         sub.attempts = 2
         this.setConfirmed(si, null)
-        this.updateMetadata(si)
+        this.updateMetadataDebounced(si)
       }
       else {
         sub.isbnLastFound = sub.isbn
@@ -231,8 +248,7 @@ export default {
       return [
         !sub.title ? { name: 'title', message: 'Title is required' } : null,
         !sub.authors ? { name: 'authors', message: 'Author is required' } : null,
-        sub.confirmed === null ? { name: 'confirm', message: 'Confirm book' } : null,
-        Object.keys(sub.tags).length === 0 ? { name: 'tags', message: 'Tags are required' } : null,
+        Object.values(sub.tags).filter(x => x).length === 0 ? { name: 'tags', message: 'Tags are required' } : null,
       ].filter(x => x)
     },
 
@@ -241,7 +257,14 @@ export default {
       if (this.errors.length > 0) {
         this.validate()
       }
-    }, 500)
+    }, 500),
+
+    // checkboxes do not update state immediately for some reason
+    revalidateDelayed: function() {
+      setTimeout(() => {
+        this.revalidate()
+      })
+    },
 
   },
 }
@@ -356,7 +379,7 @@ export default {
               <label class="label" :class="{ 'has-text-danger': hasError('tags') }">How would you categorize this book? Select all that apply</label>
               <div class="text-14 tablet-columns-2">
                 <div v-for="tag of $store.getters['tags/books/listSorted']()" :key="tag.id" class="control is-flex" style="column-break-inside: avoid;">
-                  <input :id="tag.id+'-'+si" v-model="sub.tags[tag.id]" :name="tag.id" type="checkbox" class="checkbox mr-3 mb-3 mt-1" @input="revalidate">
+                  <input :id="tag.id+'-'+si" v-model="sub.tags[tag.id]" :name="tag.id" type="checkbox" class="checkbox mr-3 mb-3 mt-1" @input="revalidateDelayed">
                   <label class="label mb-1 no-user-select" :for="tag.id+'-'+si">
                     {{ tag.tag }}
                   </label>
