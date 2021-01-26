@@ -1,5 +1,6 @@
-import mergeOne from '@/util/mergeOne'
+import almostEqual from '@/util/almostEqual'
 import isSame from '@/util/isSame'
+import mergeOne from '@/util/mergeOne'
 import managed from '@/store/modules/managed'
 import { v4 } from 'uuid'
 import dayjs from 'dayjs'
@@ -94,7 +95,7 @@ const module = mergeOne(managed('submits/books'), {
         // eslint-disable-next-line  fp/no-loops
         for (const author of authors) {
           let cid = context.rootGetters['people/list']()
-            .reduce((acc, person) => person.name.toLowerCase() === author.toLowerCase() ? person.id : acc, null)
+            .reduce((acc, person) => almostEqual(person.name, author) ? person.id : acc, null)
           if (!cid) {
             cid = v4()
             await context.dispatch('people/save', { path: cid, value: { id: cid, name: author, reviewedBy: context.rootState.user.user.uid } }, { root: true })
@@ -104,7 +105,7 @@ const module = mergeOne(managed('submits/books'), {
         // eslint-disable-next-line  fp/no-loops
         for (const author of illustrators) {
           let cid = context.rootGetters['people/list']()
-            .reduce((acc, person) => person.name.toLowerCase() === author.toLowerCase() ? person.id : acc, null)
+            .reduce((acc, person) => almostEqual(person.name, author) ? person.id : acc, null)
           if (!cid) {
             cid = v4()
             await context.dispatch('people/save', { path: cid, value: { id: cid, name: author, reviewedBy: context.rootState.user.user.uid } }, { root: true })
