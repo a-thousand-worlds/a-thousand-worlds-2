@@ -39,11 +39,10 @@ export default {
 @import '@/assets/style/vars.scss';
 
 .welcome-banner {
-  @include primary(background-color);
+  background-color: white;
   width: 100%;
   top: 0;
   text-align: center;
-  color: white;
   font-size: 20px;
 
   @include from($widescreen) { font-size: 26px; }
@@ -58,7 +57,6 @@ export default {
   }
 
   .logo {
-    fill: white !important;
     width: 100%;
     max-height: 150px;
   }

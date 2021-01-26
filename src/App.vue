@@ -56,7 +56,7 @@ export default ({
 
     <WelcomeDismissable v-if="showWelcome" />
 
-    <div class="site columns m-0">
+    <div class="site columns m-0" :class="{ 'border-top':showWelcome}">
       <section class="leftbar column is-narrow is-hidden-mobile px-20 py-30">
         <LeftBar />
       </section>
@@ -73,6 +73,7 @@ export default ({
       <section v-if="$store.state.ui.bookmarksOpen" class="bookmarks column">
         <BookmarksView />
       </section>
+      <div class="rightbar-border" />
 
     </div>
 
@@ -115,8 +116,6 @@ body {
 }
 
 .rightbar {
-  @include primary(border-left-color);
-  border-left: solid 1px;
   position: fixed;
   height: 100%;
   right: 0;
@@ -139,7 +138,9 @@ body {
 }
 
 .site {
-  @include primary(box-shadow, 0px -10px 20px 0px);
+  // box-shadow for welcome banner
+  // doesn't look great with dark on light design
+  // box-shadow: white 0px -10px 20px 0px;
   background: $background;
   position: relative;
 }
@@ -170,4 +171,21 @@ body {
     border-left: solid 1px;
   }
 }
+
+// add the rightbar-border to main instead of rightbar itself in order to get correct z-indexing with welcome banner
+.rightbar-border {
+  @include primary(border-left-color);
+  border-left: solid 1px;
+  width: $rightbar-width;
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+}
+
+.border-top {
+  @include primary(border-top-color);
+  border-top: solid 1px;
+}
+
 </style>
