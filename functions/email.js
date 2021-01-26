@@ -9,6 +9,7 @@ const handleError = routeHandler => async (req, res) => {
     await routeHandler(req, res)
   }
   catch (err) {
+    console.error(err)
     res.setHeader('content-type', 'text/plain')
     res.status(500)
     res.send(err.stack)
@@ -17,9 +18,11 @@ const handleError = routeHandler => async (req, res) => {
 
 module.exports = () => {
 
-  admin.initializeApp({
+  const adminConfig = {
+    ...JSON.parse(process.env.FIREBASE_CONFIG),
     credential: admin.credential.cert(serviceAccount),
-  })
+  }
+  admin.initializeApp(adminConfig)
   const db = admin.firestore()
   const app = express()
 
@@ -43,6 +46,7 @@ module.exports = () => {
       }
     })
 
+    console.log(`Email sent to ${to}: "${subject}"`)
     res.status(200).json({ id })
 
   }))
