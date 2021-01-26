@@ -12,6 +12,14 @@ export default {
     PrevNext,
     Tag,
   },
+  beforeRouteLeave(to, from, next) {
+    // mark the user's visit once they navigate to any other page
+    // used to show the one-time welcome messagein App.vue
+    if (!this.$store.state.ui.lastVisited) {
+      this.$store.commit('ui/setLastVisited', new Date())
+    }
+    next()
+  },
   data() {
     return {
       pageUrl: window.location.href,

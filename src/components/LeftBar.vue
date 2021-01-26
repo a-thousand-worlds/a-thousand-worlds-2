@@ -18,6 +18,11 @@ export default {
       return !this.$store.state.ui.lastVisited
     },
   },
+  watch: {
+    showWelcome(next) {
+      this.onScroll()
+    },
+  },
   mounted() {
     window.addEventListener('scroll', this.onScroll)
   },
@@ -37,11 +42,6 @@ export default {
         window.removeEventListener('scroll', this.onScroll)
       }
     }
-  },
-  watch: {
-    showWelcome(next) {
-      this.onScroll()
-    },
   }
 }
 </script>

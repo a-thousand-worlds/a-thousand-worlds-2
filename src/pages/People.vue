@@ -9,6 +9,14 @@ export default {
     Loader,
     PersonCard,
   },
+  beforeRouteLeave(to, from, next) {
+    // mark the user's visit once they navigate to any other page
+    // used to show the one-time welcome messagein App.vue
+    if (!this.$store.state.ui.lastVisited) {
+      this.$store.commit('ui/setLastVisited', new Date())
+    }
+    next()
+  },
   computed: {
     people() {
       return this.$store.getters['people/filtered']
