@@ -34,7 +34,6 @@ const module = mergeOne(managed('submits/books'), {
           id: sid,
           illustrators: Array.isArray(sub.illustrators) ? sub.illustrators.join('. ') : sub.illustrators || '',
           isbn: sub.isbn || '',
-          otherTag: sub.otherTag || '',
           publisher: sub.publisher || '',
           reviewComment: '',
           status: 'pending',
@@ -73,18 +72,6 @@ const module = mergeOne(managed('submits/books'), {
 
       // eslint-disable-next-line  fp/no-loops
       for (const sub of list) {
-        // create tags if required
-        if (sub.otherTag?.length) {
-          const tagId = v4()
-          await context.dispatch('tags/books/save', { path: tagId, value: {
-            id: tagId,
-            tag: sub.otherTag,
-            showOnFront: false,
-            sortOrder: 50
-          } }, { root: true })
-          if (!sub.tags) sub.tags = {}
-          sub.tags[tagId] = true
-        }
 
         // collect creators and create not existing people
         const authors = sub.authors.split(',').map(x => x.trim()).filter(x => x?.length)
