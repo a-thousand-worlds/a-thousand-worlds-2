@@ -54,7 +54,7 @@ export default ({
 
     <MobileHeader class="is-hidden-tablet" />
 
-    <WelcomeDismissable />
+    <WelcomeDismissable v-if="showWelcome" />
 
     <div class="site columns m-0">
       <section class="leftbar column is-narrow is-hidden-mobile px-20 py-30">
