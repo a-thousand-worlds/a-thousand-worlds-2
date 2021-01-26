@@ -93,7 +93,7 @@ export default {
   <div class="control">
     <div class="field is-grouped">
       <div class="control is-flex is-flex-wrap-wrap w-100">
-        <div class="mr-1" style="white-space: nowrap;">{{ preText }}</div>
+        <div class="mr-1" style="white-space: nowrap; font-weight: bold;">{{ preText }}</div>
         <div
           v-if="mode === 'view' && !names?.length && placeholder?.length"
           :class="{disabled:disabled}"
@@ -102,7 +102,7 @@ export default {
         <div
           v-if="mode === 'view' && names?.length"
           :class="{disabled:disabled}"
-          class="w-50 pointer"
+          class="pointer"
           :title="placeholder"
           @click="onDivClick()">{{ names }}</div>
         <input

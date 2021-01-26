@@ -133,7 +133,7 @@ export default {
             :role="'author'"
             :placeholder="'author(s)'"
             :search-db="false"
-            pre-text="by" />
+            pre-text="words by" />
         </div>
         <div>
           <MultiPersonField

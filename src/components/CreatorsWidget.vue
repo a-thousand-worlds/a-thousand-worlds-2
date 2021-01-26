@@ -5,7 +5,10 @@ export default {
   components: {
     PersonDetailLink,
   },
-  props: ['creators', 'linked'],
+  props: {
+    creators: {},
+    linked: Boolean,
+  },
   data() {
     return {
       people: []
@@ -21,7 +24,10 @@ export default {
     },
     illustrators() {
       return this.peopleList.filter(info => info.role === 'both' || info.role === 'illustrator')
-    }
+    },
+    illustratorsSame() {
+      return this.illustrators.every(creator => creator.role === 'both')
+    },
   }
 }
 </script>
@@ -30,7 +36,7 @@ export default {
   <div class="creators-widget is-uppercase">
 
     <div class="person-block is-flex is-flex-direction-row is-justify-content-flex-start">
-      <b class="comma mr-2">words&nbsp;by</b>
+      <b class="comma mr-2" style="white-space: nowrap;">{{ illustratorsSame ? '' : 'words ' }}by</b>
       <!-- allow long names to push a few pixels into the padding before wrapping -->
       <span v-for="(person, i) of authors" :key="i" style="margin-right: -5px;">
         <PersonDetailLink v-if="person.person && linked" :person="person.person" class="name linked">{{ person.person.name }}</PersonDetailLink>
@@ -39,8 +45,8 @@ export default {
       </span>
     </div>
 
-    <div v-if="illustrators.length" class="person-block is-flex is-flex-direction-row is-justify-content-flex-start">
-      <b class="comma mr-2">pictures&nbsp;by</b>
+    <div v-if="!illustratorsSame && illustrators.length" class="person-block is-flex is-flex-direction-row is-justify-content-flex-start">
+      <b class="comma mr-2" style="white-space: nowrap;">pictures by</b>
       <!-- allow long names to push a few pixels into the padding before wrapping -->
       <span v-for="(person, i) of illustrators" :key="i" style="margin-right: -5px;">
         <PersonDetailLink v-if="person.person && linked" :person="person.person" class="name linked">{{ person.person.name }}</PersonDetailLink>

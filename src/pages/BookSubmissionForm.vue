@@ -6,6 +6,7 @@ import BookTitleField from '@/components/fields/BookTitle'
 import Loader from '@/components/Loader'
 import { findBookByKeyword, metadataByISBN } from '@/utils'
 import isValidISBN from '@/util/isValidISBN'
+import isSame from '@/util/isSame'
 import validator from '@/mixins/validator'
 
 export default {
@@ -85,8 +86,13 @@ export default {
       if (!this.validate()) return
 
       this.$store.commit('ui/setBusy', true)
-      await this.$store.dispatch('submissions/books/submit', this.submissions)
-      this.$store.commit('ui/setBusy', false)
+
+      try {
+        await this.$store.dispatch('submissions/books/submit', this.submissions)
+      }
+      finally {
+        this.$store.commit('ui/setBusy', false)
+      }
       this.$router.push({ name: 'SubmissionThankYou', params: { type: 'book' } })
     },
     clearDraft() {
@@ -149,7 +155,7 @@ export default {
       }
 
       this.loadingBook[si] = true
-      const search = `${title} by ${authors} ${illustrators}`
+      const search = `${title} by ${authors} ${!isSame(illustrators) ? illustrators : ''}`
       const result = await findBookByKeyword(search).catch(e => {
         console.error(e)
         return null
@@ -265,7 +271,7 @@ export default {
             </div>
 
             <div class="field">
-              <label class="label" for="illustrators">Illustrator(s)</label>
+              <label class="label" for="illustrators">Illustrator(s)<p style="font-weight: normal; text-transform: none;">If same as author type "same"</p></label>
               <div class="control">
                 <input id="illustrators" v-model="sub.illustrators" class="input" type="text" :disabled="$uiBusy || (books[si]?.id)" @input="metadataInputsChanged(si)">
               </div>

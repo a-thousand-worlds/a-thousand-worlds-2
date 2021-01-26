@@ -1,4 +1,5 @@
 import mergeOne from '@/util/mergeOne'
+import isSame from '@/util/isSame'
 import managed from '@/store/modules/managed'
 import { v4 } from 'uuid'
 import dayjs from 'dayjs'
@@ -17,7 +18,6 @@ const module = mergeOne(managed('submits/books'), {
 
     /** Submit books suggestions to Firebase */
     submit: async (context, list) => {
-      const ids = []
       const submissionGroupId = v4()
       const profile = context.rootState.user.user.profile
       profile.draftBooks = []
@@ -48,11 +48,8 @@ const module = mergeOne(managed('submits/books'), {
         context.commit('setOne', { path: sid, value: subData })
         context.dispatch('save', { path: sid, value: subData })
         profile.submissions[sid] = 'pending'
-        // eslint-disable-next-line  fp/no-mutating-methods
-        ids.push(sid)
       }
       await context.dispatch('user/saveProfile', profile, { root: true })
-      /**/
     },
 
     /** Reject submission */
@@ -91,6 +88,8 @@ const module = mergeOne(managed('submits/books'), {
         // collect creators and create not existing people
         const authors = sub.authors.split(',').map(x => x.trim()).filter(x => x?.length)
         const illustrators = sub.illustrators.split(',').map(x => x.trim()).filter(x => x?.length)
+          // convert "same" text to creator name
+          .map(illustrator => isSame(illustrator) ? authors[0] : illustrator)
         const creators = {}
         // eslint-disable-next-line  fp/no-loops
         for (const author of authors) {
