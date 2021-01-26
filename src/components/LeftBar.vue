@@ -15,7 +15,7 @@ export default {
   },
   computed: {
     showWelcome() {
-      return !this.$store.state.ui.lastVisited
+      return !this.$store.state.ui.lastVisited && !this.$route.meta?.access
     },
   },
   watch: {
