@@ -28,22 +28,27 @@ export default {
 
 <template>
   <div class="creators-widget is-uppercase">
+
     <div class="person-block is-flex is-flex-direction-row is-justify-content-flex-start">
       <b class="comma mr-2">words&nbsp;by</b>
-      <span v-for="(person, i) of authors" :key="i">
+      <!-- allow long names to push a few pixels into the padding before wrapping -->
+      <span v-for="(person, i) of authors" :key="i" style="margin-right: -5px;">
         <PersonDetailLink v-if="person.person && linked" :person="person.person" class="name linked">{{ person.person.name }}</PersonDetailLink>
         <span v-if="person.person && !linked" class="name">{{ person.person?.name }}</span>
         <span v-if="authors?.length > 1 && i !== authors?.length - 1" class="comma mr-2">,</span>
       </span>
     </div>
+
     <div v-if="illustrators.length" class="person-block is-flex is-flex-direction-row is-justify-content-flex-start">
       <b class="comma mr-2">pictures&nbsp;by</b>
-      <span v-for="(person, i) of illustrators" :key="i">
+      <!-- allow long names to push a few pixels into the padding before wrapping -->
+      <span v-for="(person, i) of illustrators" :key="i" style="margin-right: -5px;">
         <PersonDetailLink v-if="person.person && linked" :person="person.person" class="name linked">{{ person.person.name }}</PersonDetailLink>
         <span v-if="person.person && !linked" class="name">{{ person.person.name }}</span>
         <span v-if="illustrators.length > 1 && i !== illustrators?.length - 1" class="comma mr-2">,</span>
       </span>
     </div>
+
   </div>
 </template>
 
@@ -56,7 +61,6 @@ export default {
 
   .name {
     color: #000;
-    white-space: nowrap;
 
     &.linked:hover {
       @include primary(color);
@@ -67,11 +71,7 @@ export default {
 .person-block {
   width: 100%;
   margin-bottom: 20px;
-
-  @include from($tablet) { width: 50%; }
-  @include from($desktop) { width: 33%; }
-  @include from($widescreen) { width: 25%; }
-
+  margin-right: -5px;
 }
 
 </style>
