@@ -139,6 +139,7 @@ body {
 }
 
 .site {
+  @include primary(box-shadow, 0px -10px 20px 0px);
   background: $background;
   position: relative;
 }
