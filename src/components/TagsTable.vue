@@ -1,5 +1,5 @@
 <script>
-import { v4 } from 'uuid'
+import { v4 as uid } from 'uuid'
 
 export default {
   name: 'TagsTable',
@@ -31,7 +31,7 @@ export default {
   },
   methods: {
     async addTag() {
-      const id = v4()
+      const id = uid()
       await this.$store.dispatch(`tags/${this.type}/save`, { path: id, value: { id, ...this.newTag } })
       this.resetNewTag()
     },
@@ -118,7 +118,7 @@ export default {
         </td>
 
         <!-- edit/delete -->
-        <td class="actions">
+        <td>
           <div v-if="!edits[tag.id]" class="field is-grouped is-justify-content-flex-end">
             <p class="control"><button :disabled="$uiBusy" class="button is-flat" @click.prevent="toggleEditTag(tag.id, tag)">
                                  <i class="fas fa-pencil-alt" />

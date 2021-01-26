@@ -91,7 +91,7 @@ const routes = [
       access: ['creator', 'advisor', 'owner']
     }
   }, {
-    path: '/tags-manager',
+    path: '/admin/tags',
     name: 'TagsManager',
     component: () => import(/* webpackChunkName: "advisor" */ './pages/TagsManager.vue'),
     meta: {
@@ -121,7 +121,7 @@ const routes = [
   }, {
     path: '/admin/books',
     name: 'BooksManager',
-    component: () => import(/* webpackChunkName: "advisor" */ './pages/BooksManagerList.vue'),
+    component: () => import(/* webpackChunkName: "advisor" */ './pages/BooksManager.vue'),
     meta: {
       access: 'owner'
     }
