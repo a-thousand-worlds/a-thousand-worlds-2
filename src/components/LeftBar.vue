@@ -7,6 +7,42 @@ export default {
     Logo,
     MainMenu,
   },
+  data() {
+    return {
+      menuOffset: -50,
+      opacity: 0,
+    }
+  },
+  computed: {
+    showWelcome() {
+      return !this.$store.state.ui.lastVisited
+    },
+  },
+  mounted() {
+    window.addEventListener('scroll', this.onScroll)
+  },
+  unmounted() {
+    window.removeEventListener('scroll', this.onScroll)
+  },
+  methods: {
+    // once the banner is scrolled completely out of view, hide the welcome banner
+    onScroll() {
+      if (this.showWelcome) {
+        this.menuOffset = Math.min(window.scrollY - 100, 0) / 2
+        this.opacity = Math.min(Math.max(0, window.scrollY - 80), 90) / 90
+      }
+      else {
+        this.menuOffset = 0
+        this.opacity = 1
+        window.removeEventListener('scroll', this.onScroll)
+      }
+    }
+  },
+  watch: {
+    showWelcome(next) {
+      this.onScroll()
+    },
+  }
 }
 </script>
 
@@ -14,10 +50,12 @@ export default {
   <aside class="is-align-self-stretch menu is-flex-direction-column is-justify-content-space-between">
 
     <div class="mb-10">
-      <router-link :to="{name: 'Home'}"><span class="wrapper"><Logo title="COLORFUL READS X COLORFUL PEOPLE: Picture books curated by leaders in the industry" style="max-width: 100px; max-height: 100px;" /></span></router-link>
+      <router-link :to="{name: 'Home'}" :style="{ opacity: showWelcome ? opacity : null }">
+        <Logo title="COLORFUL READS X COLORFUL PEOPLE: Picture books curated by leaders in the industry" style="max-width: 100px; max-height: 100px;" />
+      </router-link>
     </div>
 
-    <MainMenu />
+    <MainMenu :style="{ transform: `translateY(${menuOffset}px)` }" />
 
   </aside>
 </template>
