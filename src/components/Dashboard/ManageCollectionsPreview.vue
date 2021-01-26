@@ -41,7 +41,7 @@ export default {
     <div class="column">
       <router-link :to="{ name: 'BundlesManager' }">
         <Square color="primary" style="color: black !important;">
-          <BundlesLayoutIcon style="position: absolute; opacity: 0.1; width: 90%; height: 100%;" />
+          <BundlesLayoutIcon style="position: absolute; opacity: 0.1; width: 90%; height: 100%;" fill="white" />
           <!-- position: relative so text covers the BundlesLayoutIcon -->
           <h3 style="position: relative">Bundles ({{ bundleSubmissions.length }})</h3>
         </Square>
