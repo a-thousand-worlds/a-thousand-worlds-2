@@ -11,7 +11,7 @@
     - App → Firebase SDK snippet → Config
 1. Create Realtime Database in Firebase project
 1. Enable Firebase Storage
-2. Configure CORS policy for storage bucket
+1. Configure CORS policy for storage bucket
     - Copy the storage folder path which appears at the top of the Storage → Files table, e.g. `gs://a-thousand-worlds.appspot.com`
     - Open the [GCP console](console.cloud.google.com) and start a cloud terminal session by clicking the >\_ icon button in the top navbar.
     - Click the "Open Editor" button with the pencil icon.
@@ -29,6 +29,14 @@
 1. Add Goodreads API key for firebase function
     - `firebase functions:config:set goodreads.api_key="YOUR_API_KEY"`
 1. Redeploy Firebase functions: `firebase deploy --only functions`
+
+### Email
+1. Create and configure mailgun account
+1. Update DNS MX records
+1. Generate service account key
+    - Firebase Project -> Settings -> Service Accounts -> Generate new private key
+    - Save to `/functions/serviceAccountKey.json`
+1. `npm run deploy:functions`
 
 ## Scripts
 

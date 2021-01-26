@@ -1,6 +1,7 @@
-const express = require('express')
 const admin = require('firebase-admin')
+const express = require('express')
 const uid = require('uuid/v4')
+const serviceAccount = require('./serviceAccountKey.json')
 
 /** Wraps a route handler in a try-catch statement that sends an error as a 500 response. */
 const handleError = routeHandler => async (req, res) => {
@@ -16,7 +17,9 @@ const handleError = routeHandler => async (req, res) => {
 
 module.exports = () => {
 
-  admin.initializeApp()
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  })
   const db = admin.firestore()
   const app = express()
 
