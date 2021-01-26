@@ -1,15 +1,17 @@
 <script>
 import CreatorProfilePreview from '@/components/Dashboard/CreatorProfilePreview'
+import InviteWidget from '@/components/InviteWidget'
+import ManageCollectionsPreview from '@/components/Dashboard/ManageCollectionsPreview'
 import ReviewSubmissionsPreview from '@/components/Dashboard/ReviewSubmissionsPreview'
 import YourBookSubmissions from '@/components/Dashboard/YourBookSubmissions'
-import InviteWidget from '@/components/InviteWidget'
 
 export default {
   components: {
     CreatorProfilePreview,
+    InviteWidget,
+    ManageCollectionsPreview,
     ReviewSubmissionsPreview,
     YourBookSubmissions,
-    InviteWidget,
   },
   data() {
     return {
@@ -73,6 +75,12 @@ export default {
       <section v-if="$can('review')" class="section my-30 py-0">
         <h2>Review Submissions</h2>
         <ReviewSubmissionsPreview />
+      </section>
+
+      <section v-if="$can('manageCollections')" class="section my-30 py-0">
+        <h2>Manage Collections</h2>
+        <ManageCollectionsPreview />
+        <router-link :to="{ name: 'TagsManager' }">Tags Manager</router-link>
       </section>
 
     </div>

@@ -9,7 +9,7 @@ import MobileHeader from '@/components/MobileHeader'
 import Popups from '@/components/ui/Popups'
 import Prompt from '@/components/ui/Prompt'
 import RightBar from '@/components/RightBar.vue'
-import Welcome from '@/components/Welcome'
+import WelcomeDismissable from '@/components/WelcomeDismissable'
 import Loader from '@/components/Loader'
 
 export default ({
@@ -19,13 +19,13 @@ export default ({
     BookmarksView,
     Confirm,
     LeftBar,
+    Loader,
     MobileFooter,
     MobileHeader,
     Popups,
     Prompt,
     RightBar,
-    Welcome,
-    Loader,
+    WelcomeDismissable,
   },
   data() {
     const hour = Math.floor(Date.now() / 1000 / 60 / 60)
@@ -54,11 +54,7 @@ export default ({
 
     <MobileHeader class="is-hidden-tablet" />
 
-    <div v-if="showWelcome">
-      <Welcome :style="{ position: 'fixed' }" />
-      <!-- statically positioned duplicate in order to force page content down by dynamic height of welcome message -->
-      <Welcome :style="{ position: 'static', visibility: 'hidden' }" />
-    </div>
+    <WelcomeDismissable v-if="showWelcome" />
 
     <div class="site columns m-0">
       <section class="leftbar column is-narrow is-hidden-mobile px-20 py-30">

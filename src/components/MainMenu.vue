@@ -2,12 +2,10 @@
 import firebase from '../firebase'
 import InstagramIcon from '../assets/icons/instagram.svg'
 import TwitterIcon from '../assets/icons/twitter.svg'
-import Fragment from '@/components/Fragment'
 
 export default {
   components: {
     InstagramIcon,
-    Fragment,
     TwitterIcon,
   },
   methods: {
@@ -32,13 +30,6 @@ export default {
       <li><router-link :to="{name: 'About'}">About</router-link></li>
       <li v-if="!$iam('authorized')"><router-link :to="{name: 'LogIn'}">Log In</router-link></li>
       <li v-if="$iam('authorized')"><router-link :to="{name: 'Dashboard'}">Dashboard</router-link></li>
-
-      <Fragment v-if="$can('manageCollections')">
-        <li><router-link :to="{name: 'TagsManager'}">Tags Manager</router-link></li>
-        <li><router-link :to="{name: 'BooksManager'}">Books Manager</router-link></li>
-        <li><router-link :to="{name: 'BundlesManager'}">Bundle Manager</router-link></li>
-        <li><router-link :to="{name: 'PeopleManager'}">People Manager</router-link></li>
-      </Fragment>
 
       <li v-if="$iam('authorized')"><a @click.prevent="logout">Log Out</a></li>
     </ul>
