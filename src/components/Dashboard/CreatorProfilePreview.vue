@@ -1,8 +1,10 @@
 <script>
+import PersonDetailLink from '@/components/PersonDetailLink'
 import Square from '@/components/Square'
 
 export default {
   components: {
+    PersonDetailLink,
     Square,
   },
   computed: {
@@ -48,20 +50,23 @@ export default {
     <div v-if="person">
       <h2 class="mb-20">Your Public Profile</h2>
       <div class="columns">
-        <div class="column is-one-third">
-          <router-link :to="{ name: 'PeopleSubmissionForm' }">
-            <Square>
-              <h3>Edit</h3>
-            </Square>
-          </router-link>
-        </div>
+
         <div class="column is-one-third">
           <PersonDetailLink :person="person" class="name">
-            <Square style="border-radius: 999px;">
+            <Square>
               <h3>View</h3>
             </Square>
           </PersonDetailLink>
         </div>
+
+        <div class="column is-one-third">
+          <router-link :to="{ name: 'PeopleSubmissionForm' }">
+            <Square style="border-radius: 999px;">
+              <h3>Edit</h3>
+            </Square>
+          </router-link>
+        </div>
+
       </div>
     </div>
 
