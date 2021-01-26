@@ -2,7 +2,7 @@ import almostEqual from '@/util/almostEqual'
 import isSame from '@/util/isSame'
 import mergeOne from '@/util/mergeOne'
 import managed from '@/store/modules/managed'
-import { v4 } from 'uuid'
+import { v4 as uid } from 'uuid'
 import dayjs from 'dayjs'
 
 const module = mergeOne(managed('submits/books'), {
@@ -19,7 +19,7 @@ const module = mergeOne(managed('submits/books'), {
 
     /** Submit books suggestions to Firebase */
     submit: async (context, list) => {
-      const submissionGroupId = v4()
+      const submissionGroupId = uid()
       const profile = context.rootState.user.user.profile
       profile.draftBooks = []
       if (!profile.submissions) {
@@ -27,7 +27,7 @@ const module = mergeOne(managed('submits/books'), {
       }
       // eslint-disable-next-line  fp/no-loops
       for (const sub of list) {
-        const sid = v4()
+        const sid = uid()
         const subData = {
           authors: Array.isArray(sub.authors) ? sub.authors.join(', ') : sub.authors || '',
           group: submissionGroupId,
@@ -67,77 +67,84 @@ const module = mergeOne(managed('submits/books'), {
       }, { root: true })
     },
 
-    /** Approves submissions group */
+    /** Approves submissions group. */
     approve: async (context, list) => {
+      list.forEach(sub => context.dispatch('approveBook', sub))
+    },
 
-      // eslint-disable-next-line  fp/no-loops
-      for (const sub of list) {
+    /** Approves a single book submission. */
+    approveBook: async (context, sub) => {
 
-        // collect creators and create not existing people
-        const authors = sub.authors.split(',').map(x => x.trim()).filter(x => x?.length)
-        const illustrators = sub.illustrators.split(',').map(x => x.trim()).filter(x => x?.length)
-          // convert "same" text to creator name
-          .map(illustrator => isSame(illustrator) ? authors[0] : illustrator)
-        const creators = {}
-        // eslint-disable-next-line  fp/no-loops
-        for (const author of authors) {
-          let cid = context.rootGetters['people/list']()
-            .reduce((acc, person) => almostEqual(person.name, author) ? person.id : acc, null)
-          if (!cid) {
-            cid = v4()
-            await context.dispatch('people/save', { path: cid, value: { id: cid, name: author, reviewedBy: context.rootState.user.user.uid } }, { root: true })
-          }
-          creators[cid] = creators[cid] ? 'both' : 'author'
+      // collect creators and create not existing people
+      const authors = sub.authors.split(',').map(x => x.trim()).filter(x => x)
+      const illustrators = sub.illustrators.split(',').map(x => x.trim()).filter(x => x)
+        // convert "same" text to creator name
+        .map(illustrator => isSame(illustrator) ? authors[0] : illustrator)
+      const creators = {}
+
+      // add author creators
+      // use ids of existing authors if their names match
+      // otherwise create a new author
+      await authors.forEach(async author => {
+        let cid = context.rootGetters['people/list']()
+          .find(person => almostEqual(person.name, author))?.id
+        if (!cid) {
+          cid = uid()
+          await context.dispatch('people/save', { path: cid, value: { id: cid, name: author, reviewedBy: context.rootState.user.user.uid } }, { root: true })
         }
-        // eslint-disable-next-line  fp/no-loops
-        for (const author of illustrators) {
-          let cid = context.rootGetters['people/list']()
-            .reduce((acc, person) => almostEqual(person.name, author) ? person.id : acc, null)
-          if (!cid) {
-            cid = v4()
-            await context.dispatch('people/save', { path: cid, value: { id: cid, name: author, reviewedBy: context.rootState.user.user.uid } }, { root: true })
-          }
-          creators[cid] = creators[cid] ? 'both' : 'illustrator'
-        }
+        creators[cid] = creators[cid] ? 'both' : 'author'
+      })
 
-        // save book
-        const bookId = v4()
-        await context.dispatch('books/save', { path: bookId, value: {
-          createdBy: sub.createdBy,
-          creators: creators,
-          goodread: sub.goodread || '',
-          id: bookId,
-          isbn: sub.isbn,
-          cover: sub.cover?.base64 ? sub.cover : null,
-          publisher: sub.publisher,
+      // add illustrator creators
+      // use ids of existing illustrators if their names match
+      // otherwise create a new illustrator
+      await illustrators.forEach(async illustrator => {
+        let cid = context.rootGetters['people/list']()
+          .find(person => almostEqual(person.name, illustrator))?.id
+        if (!cid) {
+          cid = uid()
+          await context.dispatch('people/save', { path: cid, value: { id: cid, name: illustrator, reviewedBy: context.rootState.user.user.uid } }, { root: true })
+        }
+        creators[cid] = creators[cid] ? 'both' : 'illustrator'
+      })
+
+      // save book
+      const bookId = uid()
+      await context.dispatch('books/save', { path: bookId, value: {
+        createdBy: sub.createdBy,
+        creators: creators,
+        goodread: sub.goodread || '',
+        id: bookId,
+        isbn: sub.isbn,
+        cover: sub.cover?.base64 ? sub.cover : null,
+        publisher: sub.publisher,
+        reviewedAt: dayjs().format(),
+        reviewedBy: context.rootState.user.user.uid,
+        status: 'approved',
+        submissionId: sub.id,
+        summary: sub.summary,
+        tags: sub.tags,
+        thumbnail: sub.thumbnail,
+        title: sub.title,
+        year: sub.year,
+      } }, { root: true })
+
+      // update user profile
+      await context.dispatch('users/save', {
+        path: `${sub.createdBy}/profile/submissions/${sub.id}`,
+        value: 'approved',
+      }, { root: true })
+
+      // update book submission
+      await context.dispatch('save', {
+        path: sub.id,
+        value: {
+          ...sub,
           reviewedAt: dayjs().format(),
           reviewedBy: context.rootState.user.user.uid,
           status: 'approved',
-          submissionId: sub.id,
-          summary: sub.summary,
-          tags: sub.tags,
-          thumbnail: sub.thumbnail,
-          title: sub.title,
-          year: sub.year,
-        } }, { root: true })
-
-        // update user profile
-        await context.dispatch('users/save', {
-          path: `${sub.createdBy}/profile/submissions/${sub.id}`,
-          value: 'approved',
-        }, { root: true })
-
-        // update book submission
-        await context.dispatch('save', {
-          path: sub.id,
-          value: {
-            ...sub,
-            reviewedAt: dayjs().format(),
-            reviewedBy: context.rootState.user.user.uid,
-            status: 'approved',
-          },
-        })
-      }
+        },
+      })
 
     },
 
