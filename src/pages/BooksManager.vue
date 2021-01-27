@@ -146,7 +146,7 @@ export default {
             <!-- cover -->
             <td>
               <BookDetailLink :book="book">
-                <StaticBookCover :book="book" style="width: 150px; min-width: auto; min-height: auto;" />
+                <StaticBookCover :book="book" style="width: 150px; min-width: 50px; min-height: auto;" />
               </BookDetailLink>
             </td>
 
