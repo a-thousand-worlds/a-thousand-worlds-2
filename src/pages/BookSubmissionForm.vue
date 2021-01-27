@@ -47,9 +47,16 @@ export default {
   created() {
     const draftBooks = this.$store.state.user.user?.profile.draftBooks
     this.submissions = draftBooks?.length
-      ? draftBooks.map(book => ({
-        ...book,
-        tags: book.tags || {}
+      ? draftBooks.map(draft => ({
+        ...draft,
+        tags: draft.tags || {},
+        // do not restore thumbnail if draft has no isbn
+        // this occurs if the user confirms no then refreshes the page before the thumbnail is reset
+        thumbnail: draft.isbn ? draft.thumbnail : '',
+        ...!draft.isbn && draft.isbnLastFound && {
+          attempts: 0,
+          confirmed: false,
+        },
       }))
       : [this.newSubmissionObject()]
   },
@@ -141,6 +148,7 @@ export default {
     clearAllSubmissions(si) {
       this.submissions = [this.newSubmissionObject()]
       this.clearDraft()
+      this.errors = []
     },
 
     metadataInputsChanged(si) {
@@ -261,6 +269,7 @@ export default {
       return [
         !sub.title ? { name: 'title', message: 'Title is required' } : null,
         !sub.authors ? { name: 'authors', message: 'Author is required' } : null,
+        !sub.isbn ? { name: 'isbn', message: 'ISBN is required' } : null,
         Object.values(sub.tags).filter(x => x).length === 0 ? { name: 'tags', message: 'Tags are required' } : null,
       ].filter(x => x)
     },
@@ -313,7 +322,7 @@ export default {
               </div>
             </div>
 
-            <div v-if="loadingBook[si] || books[si] || coverImage(si) || sub.confirmed != null" class="field">
+            <div v-if="loadingBook[si] || books[si] || coverImage(si) || sub.confirmed != null || (!sub.isbn && sub.isbnLastFound)" class="field">
               <div class="columns">
 
                 <!-- cover/loading -->
@@ -336,7 +345,7 @@ export default {
                   <!-- Is this your book? -->
                   <div v-else-if="!loadingBook[si] && (coverImage(si) || sub.confirmed != null)" class="column field">
                     <div v-if="sub.confirmed === null" class="control mb-20">
-                      <label class="label" :class="{ 'has-text-danger': hasError('tags') }">Is this your book?</label>
+                      <label class="label" :class="{ 'has-text-danger': hasError('isbn') }">Is this your book?</label>
                       <div class="field" :class="{ 'is-grouped': sub.attempts === 1 }">
                         <div class="control mb-2">
                           <button class="button is-rounded" :class="{ 'is-primary': sub.confirmed !== false, 'is-selected': sub.confirmed }" :disabled="sub.confirmed" :style="sub.confirmed ? { cursor: 'default' } : null" @click.prevent="setConfirmed(si, true)">Yes</button>
@@ -354,8 +363,8 @@ export default {
                     </div>
                     <div v-if="sub.confirmed === false" class="control">
                       <div class="field mb-20">
-                        <label v-if="!sub.thumbnail" class="label">Hmmm... we couldn't find that book.</label>
-                        <label for="isbn" class="label" style="margin-right: -20px;">{{ sub.thumbnail ? 'Okay, ' : '' }}please enter the ISBN:</label>
+                        <label v-if="!sub.thumbnail && sub.attempts > 0" class="label">Hmmm... we couldn't find that book.</label>
+                        <label for="isbn" class="label" :class="{ 'has-text-danger': hasError('isbn') }" style="margin-right: -20px;">{{ sub.thumbnail ? 'Okay, ' : '' }}please enter the ISBN:</label>
                         <div class="control">
                           <input id="isbn" v-model="sub.isbn" class="input" :disabled="$uiBusy">
                         </div>
