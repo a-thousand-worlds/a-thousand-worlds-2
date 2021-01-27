@@ -94,7 +94,7 @@ export default {
       </div>
 
       <!-- submitter -->
-      <div class="has-text-right mt-20">
+      <div v-if="type !== 'people'" class="has-text-right mt-20">
         {{ submitterName }}{{ submitterRoles ? `, ${submitterRoles}` : '' }}
         <span v-if="submitterOrganization">
           <span class="ml-1">at</span>
