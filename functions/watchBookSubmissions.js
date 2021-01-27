@@ -1,7 +1,7 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 const coverImageByISBN = require('./util/coverImageByISBN')
-const UUID = require('uuid')
+const uid = require('uuid').v4
 
 const getDownloadUrl = (fileName, bucketName, token) => `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(fileName)}?alt=media&token=${token}`
 
@@ -33,7 +33,7 @@ const watchBookSubmissions = functions
     console.log(new Date(), 'Saving cover to storage:', book.isbn)
 
     const bucket = admin.storage().bucket()
-    const uuid = UUID.v4()
+    const id = uid()
     const fname = `submits/${context.params.id}`
     const file = await bucket.file(fname)
     await file
@@ -42,11 +42,11 @@ const watchBookSubmissions = functions
           contentType: 'image/png',
           cacheControl: 'public,max-age=31536000',
           metadata: {
-            firebaseStorageDownloadTokens: uuid
+            firebaseStorageDownloadTokens: id
           }
         }
       })
-    const url = getDownloadUrl(fname, bucket.name, uuid)
+    const url = getDownloadUrl(fname, bucket.name, id)
 
     await snap.ref.child('cover').set({
       url,
