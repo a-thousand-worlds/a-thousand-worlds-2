@@ -28,6 +28,7 @@ export default {
       },
       confirms: [],
       draftSaved: null,
+      findBookByKeywordNonce: 0,
       loadingBook: [],
       submissions: [],
       titleId: uid(),
@@ -160,10 +161,16 @@ export default {
 
       this.loadingBook[si] = true
       const search = `${title} by ${authors} ${!isSame(illustrators) ? illustrators : ''}`
+      const nonce = ++this.findBookByKeywordNonce
       const result = await findBookByKeyword(search).catch(e => {
         console.error(e)
         return null
       })
+
+      // bail if findBookByKeyword was called while this one was running
+      // effectively cancels the old call
+      if (nonce !== this.findBookByKeywordNonce) return
+
       this.submissions[si].attempts = 1
       this.loadingBook[si] = false
       const { isbn, thumbnail } = result || {}
@@ -224,10 +231,16 @@ export default {
 
       this.loadingBook[si] = true
       const search = `${sub.isbn}`
+      const nonce = ++this.findBookByKeywordNonce
       const result = await findBookByKeyword(search).catch(e => {
         console.error(e)
         return null
       })
+
+      // bail if findBookByKeyword was called while this one was running
+      // effectively cancels the old call
+      if (nonce !== this.findBookByKeywordNonce) return
+
       this.loadingBook[si] = false
       const { isbn, thumbnail } = result || {}
       if (isbn) {
