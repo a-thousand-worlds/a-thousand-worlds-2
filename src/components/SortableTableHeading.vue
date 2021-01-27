@@ -8,6 +8,11 @@ export default {
       type: String,
       required: true,
     },
+    default: {
+      type: String,
+      validator: value => ['asc', 'desc'].indexOf(value) !== -1,
+      default: 'asc',
+    },
   },
   emits: ['update:modelValue'],
   data() {
@@ -27,7 +32,9 @@ export default {
     sort(field) {
       this.sortConfig = {
         field,
-        dir: this.sortConfig.field === field && this.sortConfig.dir === 'desc' ? 'asc' : 'desc'
+        dir: this.sortConfig.field === field
+          ? this.sortConfig.dir === 'desc' ? 'asc' : 'desc'
+          : this.default
       }
       this.$emit('update:modelValue', this.sortConfig)
     }

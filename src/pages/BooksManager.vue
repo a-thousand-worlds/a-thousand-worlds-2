@@ -3,6 +3,10 @@ import _ from 'lodash'
 import dayjs from 'dayjs'
 import SortableTableHeading from '@/components/SortableTableHeading'
 
+/** Generates a sort token that will sort empty strings to the end regardless of sort direction. */
+const sortEmptyToEnd = (s, dir) =>
+  `${dir === 'asc' && s === '' ? 1 : 0}-${s}`
+
 export default {
   name: 'BooksManager',
   components: {
@@ -18,15 +22,26 @@ export default {
   },
 
   computed: {
+
     books() {
-      const bookList = this.$store.getters['books/list']()
+      // sort books by the sort config
+      const sorted = _.sortBy(this.booksList, [
+        book => this.sortConfig.field === 'authors' ? sortEmptyToEnd(this.authors(book.creators), this.sortConfig.dir)
+        : this.sortConfig.field === 'illustrators' ? sortEmptyToEnd(this.illustrators(book.creators), this.sortConfig.dir)
+        : book[this.sortConfig.field],
+        'titleLower'
+      ])
+      return this.sortConfig.dir === 'desc' ? _.reverse(sorted) : sorted
+    },
+
+    booksList() {
+      return this.$store.getters['books/list']()
         .map(book => ({
           ...book,
           titleLower: book.title.toLowerCase(),
         }))
-      const sorted = _.sortBy(bookList, [this.sortConfig.field, 'titleLower'])
-      return this.sortConfig.dir === 'desc' ? _.reverse(sorted) : sorted
-    },
+    }
+
   },
 
   methods: {
@@ -88,7 +103,7 @@ export default {
             <SortableTableHeading id="titleLower" v-model="sortConfig">Title</SortableTableHeading>
             <SortableTableHeading id="authors" v-model="sortConfig">Author(s)</SortableTableHeading>
             <SortableTableHeading id="illustrators" v-model="sortConfig">Illustrator(s)</SortableTableHeading>
-            <SortableTableHeading id="created" v-model="sortConfig" class="has-text-right">Created</SortableTableHeading>
+            <SortableTableHeading id="created" v-model="sortConfig" default="desc" class="has-text-right pr-20">Created</SortableTableHeading>
             <th class="has-text-right">Delete</th>
           </tr>
         </thead>
