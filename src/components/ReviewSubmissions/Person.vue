@@ -4,6 +4,7 @@ import Jimp from 'jimp'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import SimpleInput from '@/components/fields/SimpleInput'
 import Tag from '@/components/Tag'
+import almostEqual from '@/util/almostEqual'
 
 export default {
   components: {
@@ -45,6 +46,18 @@ export default {
     },
     identityOptions() {
       return this.$store.state.tags.people.data
+    },
+    /** Gets the person with an almost equal name. */
+    person() {
+      if (!this.sub) return null
+      return this.$store.getters['people/findBy']('', person => almostEqual(person.name, this.sub.name))
+    },
+    /** If there is a matching person, get their books. */
+    books() {
+      if (!this.person) return null
+      return this.$store.getters['books/list']().filter(book =>
+        Object.keys(book.creators || {}).includes(this.person.id)
+      )
     },
   },
   watch: {
@@ -130,7 +143,8 @@ export default {
           placeholder="Title"
         />
 
-        <Tag :tag="{ tag: 'NEW' }" :nolink="true" class="mt-1" />
+        <Tag v-if="!person" :tag="{ tag: 'NEW' }" :nolink="true" class="mt-1" />
+        <div v-else>{{ books.length }} book{{ books.length === 1 ?'' : 's' }}</div>
       </div>
 
       <div class="column is-5">
