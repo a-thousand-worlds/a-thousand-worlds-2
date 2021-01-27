@@ -70,19 +70,15 @@ export default {
       this.active = this.getActiveFromUrl()
     },
     '$store.state.user.user'(next, prev) {
-      if (!prev && !!next) {
-        if (this.$can('viewDashboard')) {
-          this.$router.push({ name: 'Dashboard' })
-        }
-        else {
-          this.$router.push({ name: 'Home' })
-        }
+      // redirect to Dashboard on login (or Home for regular users)
+      if (next && !prev) {
+        this.$router.push({
+          name: this.$can('viewDashboard') ? 'Dashboard' : 'Home'
+        })
       }
 
-      const userProfileName = this.$store.state.user?.profile?.name
-      if (userProfileName) {
-        this.name = userProfileName
-      }
+      this.email = next?.profile?.email || ''
+      this.name = next?.profile?.name || ''
     }
   },
 
