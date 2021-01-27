@@ -2,6 +2,7 @@
 import _ from 'lodash'
 import dayjs from 'dayjs'
 import BookDetailLink from '@/components/BookDetailLink'
+import Loader from '@/components/Loader'
 import SortableTableHeading from '@/components/SortableTableHeading'
 import StaticCoverImage from '@/components/StaticCoverImage'
 import { remove as diacritics } from 'diacritics'
@@ -14,6 +15,7 @@ export default {
   name: 'BooksManager',
   components: {
     BookDetailLink,
+    Loader,
     SortableTableHeading,
     StaticCoverImage,
   },
@@ -28,6 +30,10 @@ export default {
   },
 
   computed: {
+
+    loaded() {
+      return this.$store.state.books.loaded
+    },
 
     books() {
 
@@ -122,63 +128,70 @@ export default {
         </div>
       </div>
 
-      <div v-if="!books.length" class="w-100 my-100 has-text-centered">
-        <h2 class="mb-20">No matching books</h2>
-        <p><a @click.prevent="search = ''" class="button is-rounded is-primary">Reset Search</a></p>
+      <div v-if="!loaded" class="has-text-centered" style="margin-top: 20vh;">
+        <Loader />
       </div>
 
-      <table v-else class="table w-100">
-        <thead>
-          <tr>
-            <td />
-            <SortableTableHeading id="isbn" v-model="sortConfig">ISBN</SortableTableHeading>
-            <SortableTableHeading id="titleLower" v-model="sortConfig">Title</SortableTableHeading>
-            <SortableTableHeading id="authors" v-model="sortConfig">Author(s)</SortableTableHeading>
-            <SortableTableHeading id="illustrators" v-model="sortConfig">Illustrator(s)</SortableTableHeading>
-            <SortableTableHeading id="created" v-model="sortConfig" default="desc" class="has-text-right pr-20">Created</SortableTableHeading>
-            <th class="has-text-right">Delete</th>
-          </tr>
-        </thead>
-        <tbody>
+      <div v-else>
 
-          <tr v-for="book of books" :key="book.id" :data-book-id="book.id">
+        <div v-if="!books.length" class="w-100 my-100 has-text-centered">
+          <h2 class="mb-20">No matching books</h2>
+          <p><a @click.prevent="search = ''" class="button is-rounded is-primary">Reset Search</a></p>
+        </div>
 
-            <!-- cover -->
-            <td>
-              <BookDetailLink :book="book">
-                <StaticCoverImage :item="book" style="width: 150px; min-width: 50px; min-height: auto;" />
-              </BookDetailLink>
-            </td>
+        <table v-else class="table w-100">
+          <thead>
+            <tr>
+              <td />
+              <SortableTableHeading id="isbn" v-model="sortConfig">ISBN</SortableTableHeading>
+              <SortableTableHeading id="titleLower" v-model="sortConfig">Title</SortableTableHeading>
+              <SortableTableHeading id="authors" v-model="sortConfig">Author(s)</SortableTableHeading>
+              <SortableTableHeading id="illustrators" v-model="sortConfig">Illustrator(s)</SortableTableHeading>
+              <SortableTableHeading id="created" v-model="sortConfig" default="desc" class="has-text-right pr-20">Created</SortableTableHeading>
+              <th class="has-text-right">Delete</th>
+            </tr>
+          </thead>
+          <tbody>
 
-            <!-- ISBN -->
-            <td>{{ book.isbn }}</td>
+            <tr v-for="book of books" :key="book.id" :data-book-id="book.id">
 
-            <!-- title -->
-            <td>{{ book.title }}</td>
+              <!-- cover -->
+              <td>
+                <BookDetailLink :book="book">
+                  <StaticCoverImage :item="book" style="width: 150px; min-width: 50px; min-height: auto;" />
+                </BookDetailLink>
+              </td>
 
-            <!-- author(s) -->
-            <td>{{ authors(book.creators) }}</td>
+              <!-- ISBN -->
+              <td>{{ book.isbn }}</td>
 
-            <!-- illustrator(r) -->
-            <td>{{ illustrators(book.creators) }}</td>
+              <!-- title -->
+              <td>{{ book.title }}</td>
 
-            <!-- created -->
-            <td class="has-text-right">{{ formatDate(book.created) }}</td>
+              <!-- author(s) -->
+              <td>{{ authors(book.creators) }}</td>
 
-            <!-- edit/delete -->
-            <td class="has-text-right">
-              <div class="field is-grouped is-justify-content-flex-end">
-                <p class="control">
-                  <button :disabled="$uiBusy" class="button is-flat" @click.prevent="remove(book.id)">
-                    <i class="fas fa-times" />
-                  </button></p>
-              </div>
-            </td>
+              <!-- illustrator(r) -->
+              <td>{{ illustrators(book.creators) }}</td>
 
-          </tr>
+              <!-- created -->
+              <td class="has-text-right">{{ formatDate(book.created) }}</td>
 
-        </tbody>
-      </table>
+              <!-- edit/delete -->
+              <td class="has-text-right">
+                <div class="field is-grouped is-justify-content-flex-end">
+                  <p class="control">
+                    <button :disabled="$uiBusy" class="button is-flat" @click.prevent="remove(book.id)">
+                      <i class="fas fa-times" />
+                    </button></p>
+                </div>
+              </td>
+
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
 
     </div>
   </div>

@@ -1,6 +1,7 @@
 <script>
 import _ from 'lodash'
 import dayjs from 'dayjs'
+import Loader from '@/components/Loader'
 import PersonDetailLink from '@/components/PersonDetailLink'
 import SortableTableHeading from '@/components/SortableTableHeading'
 import StaticCoverImage from '@/components/StaticCoverImage'
@@ -13,6 +14,7 @@ const sortEmptyToEnd = (s, dir) =>
 export default {
   name: 'PeopleManager',
   components: {
+    Loader,
     PersonDetailLink,
     SortableTableHeading,
     StaticCoverImage,
@@ -28,6 +30,10 @@ export default {
   },
 
   computed: {
+
+    loaded() {
+      return this.$store.state.people.loaded
+    },
 
     people() {
 
@@ -108,55 +114,62 @@ export default {
         </div>
       </div>
 
-      <div v-if="!people.length" class="w-100 my-100 has-text-centered">
-        <h2 class="mb-20">No matching people</h2>
-        <p><a @click.prevent="search = ''" class="button is-rounded is-primary">Reset Search</a></p>
+      <div v-if="!loaded" class="has-text-centered" style="margin-top: 20vh;">
+        <Loader />
       </div>
 
-      <table v-else class="table w-100">
-        <thead>
-          <tr>
-            <td />
-            <SortableTableHeading id="nameLower" v-model="sortConfig">Name</SortableTableHeading>
-            <SortableTableHeading id="title" v-model="sortConfig">Title</SortableTableHeading>
-            <SortableTableHeading id="created" v-model="sortConfig" default="desc" class="has-text-right pr-20">Created</SortableTableHeading>
-            <th class="has-text-right">Delete</th>
-          </tr>
-        </thead>
-        <tbody>
+      <div v-else>
 
-          <tr v-for="person of people" :key="person.id" :data-person-id="person.id">
+        <div v-if="!people.length" class="w-100 my-100 has-text-centered">
+          <h2 class="mb-20">No matching people</h2>
+          <p><a @click.prevent="search = ''" class="button is-rounded is-primary">Reset Search</a></p>
+        </div>
 
-            <!-- photo -->
-            <td>
-              <PersonDetailLink :person="person">
-                <StaticCoverImage :item="person" style="width: 150px; min-width: 50px; min-height: auto;" />
-              </PersonDetailLink>
-            </td>
+        <table v-else class="table w-100">
+          <thead>
+            <tr>
+              <td />
+              <SortableTableHeading id="nameLower" v-model="sortConfig">Name</SortableTableHeading>
+              <SortableTableHeading id="title" v-model="sortConfig">Title</SortableTableHeading>
+              <SortableTableHeading id="created" v-model="sortConfig" default="desc" class="has-text-right pr-20">Created</SortableTableHeading>
+              <th class="has-text-right">Delete</th>
+            </tr>
+          </thead>
+          <tbody>
 
-            <!-- name -->
-            <td>{{ person.name }}</td>
+            <tr v-for="person of people" :key="person.id" :data-person-id="person.id">
 
-            <!-- title -->
-            <td>{{ person.title || person.role }}</td>
+              <!-- photo -->
+              <td>
+                <PersonDetailLink :person="person">
+                  <StaticCoverImage :item="person" style="width: 150px; min-width: 50px; min-height: auto;" />
+                </PersonDetailLink>
+              </td>
 
-            <!-- created -->
-            <td class="has-text-right">{{ formatDate(person.created) }}</td>
+              <!-- name -->
+              <td>{{ person.name }}</td>
 
-            <!-- edit/delete -->
-            <td class="has-text-right">
-              <div class="field is-grouped is-justify-content-flex-end">
-                <p class="control">
-                  <button :disabled="$uiBusy" class="button is-flat" @click.prevent="remove(person.id)">
-                    <i class="fas fa-times" />
-                  </button></p>
-              </div>
-            </td>
+              <!-- title -->
+              <td>{{ person.title || person.role }}</td>
 
-          </tr>
+              <!-- created -->
+              <td class="has-text-right">{{ formatDate(person.created) }}</td>
 
-        </tbody>
-      </table>
+              <!-- edit/delete -->
+              <td class="has-text-right">
+                <div class="field is-grouped is-justify-content-flex-end">
+                  <p class="control">
+                    <button :disabled="$uiBusy" class="button is-flat" @click.prevent="remove(person.id)">
+                      <i class="fas fa-times" />
+                    </button></p>
+                </div>
+              </td>
+
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
 
     </div>
   </div>
