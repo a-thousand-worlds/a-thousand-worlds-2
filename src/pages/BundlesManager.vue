@@ -1,8 +1,8 @@
 <script>
 import _ from 'lodash'
 import dayjs from 'dayjs'
-import BookDetailLink from '@/components/BookDetailLink'
 import Loader from '@/components/Loader'
+import PersonDetailLink from '@/components/PersonDetailLink'
 import SortableTableHeading from '@/components/SortableTableHeading'
 import StaticCoverImage from '@/components/StaticCoverImage'
 import { remove as diacritics } from 'diacritics'
@@ -12,10 +12,10 @@ const sortEmptyToEnd = (s, dir) =>
   `${dir === 'asc' && s === '' ? 1 : 0}-${s}`
 
 export default {
-  name: 'BooksManager',
+  name: 'BundleManager',
   components: {
-    BookDetailLink,
     Loader,
+    PersonDetailLink,
     SortableTableHeading,
     StaticCoverImage,
   },
@@ -32,41 +32,41 @@ export default {
   computed: {
 
     loaded() {
-      return this.$store.state.books.loaded
+      return this.$store.state.bundles.loaded
     },
 
-    books() {
+    bundles() {
 
-      // sort books by the sort config
+      // sort bundles by the sort config
       const sort = list => {
         const sorted = _.sortBy(list, [
-          book => this.sortConfig.field === 'authors' ? sortEmptyToEnd(this.authors(book.creators), this.sortConfig.dir)
-          : this.sortConfig.field === 'illustrators' ? sortEmptyToEnd(this.illustrators(book.creators), this.sortConfig.dir)
-          : book[this.sortConfig.field],
-          'titleLower'
+          bundle => this.sortConfig.field === 'title' ? sortEmptyToEnd((bundle.title || bundle.role || '').toLowerCase(), this.sortConfig.dir)
+          : this.sortConfig.field === 'created' ? dayjs(bundle.created)
+          : this.sortConfig.field === 'updated' ? dayjs(bundle.updated)
+          : (bundle[this.sortConfig.field] || '').toLowerCase(),
+          'nameLower'
         ])
         return this.sortConfig.dir === 'desc' ? _.reverse(sorted) : sorted
       }
 
-      // filter books by the active search
+      // filter bundles by the active search
       const filter = list => this.search
-        ? list.filter(book => diacritics([
-          book.created,
-          book.isbn,
-          book.title,
-          this.authors(book.creators),
-          this.illustrators(book.creators)
+        ? list.filter(bundle => diacritics([
+          bundle.created,
+          bundle.name,
+          bundle.title,
+          bundle.role,
         ].join(' ')).toLowerCase().includes(diacritics(this.search.trim()).toLowerCase()))
         : list
 
-      return sort(filter(this.booksList))
+      return sort(filter(this.bundlesList))
     },
 
-    booksList() {
-      return this.$store.getters['books/list']()
-        .map(book => ({
-          ...book,
-          titleLower: book.title.toLowerCase(),
+    bundlesList() {
+      return this.$store.getters['bundles/list']()
+        .map(bundle => ({
+          ...bundle,
+          nameLower: bundle.name.toLowerCase(),
         }))
     }
 
@@ -74,30 +74,14 @@ export default {
 
   methods: {
 
-    authors(creators) {
-      const people = this.$store.state.people.data
-      return Object.entries(creators)
-        .filter(([id, value]) => value === 'author')
-        .map(([id, value]) => people[id]?.name)
-        .join(', ')
-    },
-
     formatDate(d) {
       return dayjs(d).format('M/D/YYYY hh:mm')
-    },
-
-    illustrators(creators) {
-      const people = this.$store.state.people.data
-      return Object.entries(creators)
-        .filter(([id, value]) => value === 'illustrator')
-        .map(([id, value]) => people[id]?.name)
-        .join(', ')
     },
 
     async remove(id) {
       this.$store.commit('ui/setBusy', true)
       try {
-        await this.$store.dispatch('books/remove', id)
+        await this.$store.dispatch('bundles/remove', id)
       }
       finally {
         this.$store.commit('ui/setBusy', false)
@@ -118,24 +102,24 @@ export default {
         <router-link :to="{ name: 'Dashboard' }" class="is-uppercase is-primary">&lt; Back to Dashboard</router-link>
       </div>
 
-      <h1 class="title divider-bottom mb-30">Books Manager</h1>
+      <h1 class="title divider-bottom mb-30">Bundles Manager</h1>
 
       <div class="mb-30 is-flex is-justify-content-space-between">
-        <router-link class="button is-rounded is-primary mr-20" :to="{name:'BookManagerAddForm'}">Add Book</router-link>
+        <router-link class="button is-rounded is-primary mr-20" :to="{name:'BookManagerAddForm'}">Add bundle</router-link>
         <div class="is-flex is-align-items-center">
           <i class="fas fa-search" style="transform: translateX(23px); z-index: 10; opacity: 0.3;" />
           <input v-model="search" class="input" placeholder="Search" style="padding-left: 30px;">
         </div>
       </div>
 
-      <div v-if="!loaded" class="has-text-centered" style="margin-top: 20vh;">
+      <div v-if="!loaded && false" class="has-text-centered" style="margin-top: 20vh;">
         <Loader />
       </div>
 
       <div v-else>
 
-        <div v-if="!books.length" class="w-100 my-100 has-text-centered">
-          <h2 class="mb-20">No {{ search ? 'matching ' : '' }}books{{ !search ? ' yet!' : '' }}</h2>
+        <div v-if="!bundles.length" class="w-100 my-100 has-text-centered">
+          <h2 class="mb-20">No {{ search ? 'matching ' : '' }}bundles{{ !search ? ' yet!' : '' }}</h2>
           <p v-if="search"><a @click.prevent="search = ''" class="button is-rounded is-primary">Reset Search</a></p>
         </div>
 
@@ -143,45 +127,37 @@ export default {
           <thead>
             <tr>
               <td />
-              <SortableTableHeading id="isbn" v-model="sortConfig">ISBN</SortableTableHeading>
-              <SortableTableHeading id="titleLower" v-model="sortConfig">Title</SortableTableHeading>
-              <SortableTableHeading id="authors" v-model="sortConfig">Author(s)</SortableTableHeading>
-              <SortableTableHeading id="illustrators" v-model="sortConfig">Illustrator(s)</SortableTableHeading>
+              <SortableTableHeading id="nameLower" v-model="sortConfig">Name</SortableTableHeading>
+              <SortableTableHeading id="title" v-model="sortConfig">Title</SortableTableHeading>
               <SortableTableHeading id="created" v-model="sortConfig" default="desc" class="has-text-right pr-20">Created</SortableTableHeading>
               <th class="has-text-right">Delete</th>
             </tr>
           </thead>
           <tbody>
 
-            <tr v-for="book of books" :key="book.id" :data-book-id="book.id">
+            <tr v-for="bundle of bundles" :key="bundle.id" :data-bundle-id="bundle.id">
 
-              <!-- cover -->
+              <!-- photo -->
               <td>
-                <BookDetailLink :book="book">
-                  <StaticCoverImage :item="book" style="width: 150px; min-width: 50px; min-height: auto;" />
-                </BookDetailLink>
+                <PersonDetailLink :bundle="bundle">
+                  <StaticCoverImage :item="bundle" style="width: 150px; min-width: 50px; min-height: auto;" />
+                </PersonDetailLink>
               </td>
 
-              <!-- ISBN -->
-              <td>{{ book.isbn }}</td>
+              <!-- name -->
+              <td>{{ bundle.name }}</td>
 
               <!-- title -->
-              <td>{{ book.title }}</td>
-
-              <!-- author(s) -->
-              <td>{{ authors(book.creators) }}</td>
-
-              <!-- illustrator(r) -->
-              <td>{{ illustrators(book.creators) }}</td>
+              <td>{{ bundle.title || bundle.role }}</td>
 
               <!-- created -->
-              <td class="has-text-right">{{ formatDate(book.created) }}</td>
+              <td class="has-text-right">{{ formatDate(bundle.created) }}</td>
 
               <!-- edit/delete -->
               <td class="has-text-right">
                 <div class="field is-grouped is-justify-content-flex-end">
                   <p class="control">
-                    <button :disabled="$uiBusy" class="button is-flat" @click.prevent="remove(book.id)">
+                    <button :disabled="$uiBusy" class="button is-flat" @click.prevent="remove(bundle.id)">
                       <i class="fas fa-times" />
                     </button></p>
                 </div>

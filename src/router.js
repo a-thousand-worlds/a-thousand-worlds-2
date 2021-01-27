@@ -142,7 +142,7 @@ const routes = [
   }, {
     path: '/admin/bundles',
     name: 'BundlesManager',
-    component: () => import(/* webpackChunkName: "advisor" */ './pages/BundleManagerList.vue'),
+    component: () => import(/* webpackChunkName: "advisor" */ './pages/BundlesManager.vue'),
     meta: {
       access: 'owner'
     }

@@ -40,8 +40,6 @@ export default {
       // sort people by the sort config
       const sort = list => {
         const sorted = _.sortBy(list, [
-          // person => this.sortConfig.field === 'authors' ? sortEmptyToEnd(this.authors(person.creators), this.sortConfig.dir)
-          // : this.sortConfig.field === 'illustrators' ? sortEmptyToEnd(this.illustrators(person.creators), this.sortConfig.dir)
           person => this.sortConfig.field === 'title' ? sortEmptyToEnd((person.title || person.role || '').toLowerCase(), this.sortConfig.dir)
           : this.sortConfig.field === 'created' ? dayjs(person.created)
           : this.sortConfig.field === 'updated' ? dayjs(person.updated)
@@ -121,8 +119,8 @@ export default {
       <div v-else>
 
         <div v-if="!people.length" class="w-100 my-100 has-text-centered">
-          <h2 class="mb-20">No matching people</h2>
-          <p><a @click.prevent="search = ''" class="button is-rounded is-primary">Reset Search</a></p>
+          <h2 class="mb-20">No {{ search ? 'matching ' : '' }}people{{ !search ? ' yet!' : '' }}</h2>
+          <p v-if="search"><a @click.prevent="search = ''" class="button is-rounded is-primary">Reset Search</a></p>
         </div>
 
         <table v-else class="table w-100">
