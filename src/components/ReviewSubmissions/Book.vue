@@ -2,13 +2,16 @@
 import _ from 'lodash'
 import Jimp from 'jimp'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
+import almostEqual from '@/util/almostEqual'
 import MultiPersonField from '@/components/fields/MultiPerson'
 import SimpleInput from '@/components/fields/SimpleInput'
+import Tag from '@/components/Tag'
 
 export default {
   components: {
     MultiPersonField,
     SimpleInput,
+    Tag,
   },
   props: ['submission', 'modelValue', 'checked'],
   data() {
@@ -41,10 +44,26 @@ export default {
               : `data:image/png;base64,${this.sub.cover.base64}`
             : ''
     },
+    /** Returns true if all authors exist in the people directory already. */
+    authorsExist() {
+      if (!this.sub) return null
+      const authors = this.sub.authors.split(',').map(x => x && x.trim()).filter(x => x)
+      return authors.every(name => this.$store.getters['people/findBy'](person =>
+        almostEqual(name, person.name)
+      ))
+    },
+    /** Returns true if all authors exist in the people directory already. */
+    illustratorsExist() {
+      if (!this.sub) return null
+      const illustrators = this.sub.illustrators.split(',').map(x => x && x.trim()).filter(x => x)
+      return illustrators.every(name => this.$store.getters['people/findBy'](person =>
+        almostEqual(name, person.name)
+      ))
+    },
     tags() {
       return this.$store.getters['tags/books/listSorted']()
         .filter(tag => this.sub.tags && this.sub.tags[tag.id])
-    }
+    },
   },
   watch: {
     submission(next) {
@@ -131,7 +150,11 @@ export default {
             :role="'author'"
             :placeholder="'author(s)'"
             :search-db="false"
-            pre-text="words by" />
+            pre-text="words by"
+            :class="!authorsExist && 'mr-1'"
+            :style="!authorsExist && { display: 'inline-block' }"
+          />
+          <Tag v-if="!authorsExist" :tag="{ tag: 'NEW' }" :nolink="true" v-tippy="{ content: 'This author is new! When the book is approved, they will be added to the people directory.' }" />
         </div>
         <div>
           <MultiPersonField
@@ -141,7 +164,11 @@ export default {
             :role="'illustrator'"
             :placeholder="'illustrator(s)'"
             :search-db="false"
-            pre-text="illustrated by" />
+            pre-text="illustrated by"
+            :class="!authorsExist && 'mr-1'"
+            :style="!illustratorsExist && { display: 'inline-block' }"
+          />
+          <Tag v-if="!illustratorsExist" :tag="{ tag: 'NEW' }" :nolink="true" v-tippy="{ content: 'This illustrator is new! When the book is approved, they will be added to the people directory.' }" />
         </div>
         <div>
           <SimpleInput
