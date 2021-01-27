@@ -1,7 +1,7 @@
 <script>
 
 export default {
-  props: ['modelValue', 'disabled', 'placeholder'],
+  props: ['modelValue', 'disabled', 'placeholder', 'controlStyle'],
   emits: ['update:modelValue'],
   data() {
     return {
@@ -53,7 +53,7 @@ export default {
 
   <div class="control">
     <div class="field">
-      <div class="control w-50">
+      <div class="control w-50" :style="controlStyle">
         <div
           v-if="mode === 'view' && !hasValue && placeholder?.length"
           :class="{disabled:disabled}"

@@ -142,6 +142,7 @@ export default {
             @update:modelValue="save()"
             :disabled="busy"
             placeholder="Title"
+            controlStyle="font-size: 20px;"
           />
         </div>
 
@@ -177,26 +178,30 @@ export default {
           <Tag v-if="!illustratorsExist" :tag="{ tag: 'NEW' }" nolink v-tippy="{ content: 'This illustrator is new! When the book is approved, they will be added to the people directory.' }" />
         </div>
 
-        <!-- year -->
-        <div>
-          <SimpleInput
-            v-model="sub.year"
-            @update:modelValue="save()"
-            :disabled="busy"
-            :placeholder="'Year'"
-          />
-        </div>
-
-        <!--
-        <div>
+        <!-- ISBN -->
+        <div class="is-flex">
+          <b class="mr-1">isbn</b>
           <SimpleInput
             :disabled="busy"
             @update:modelValue="save()"
             v-model="sub.isbn"
-            placeholder="ISBN"
+            placeholder="Enter ISBN"
           />
         </div>
 
+        <!-- year -->
+        <div class="flex">
+          <b class="mr-1">year</b>
+          <SimpleInput
+            v-model="sub.year"
+            @update:modelValue="save()"
+            :disabled="busy"
+            placeholder="Enter Year"
+            style="display: inline-block;"
+          />
+        </div>
+
+        <!--
         <div>
           <SimpleInput
             :disabled="busy"
