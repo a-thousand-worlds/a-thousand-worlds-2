@@ -118,7 +118,7 @@ export default {
         <router-link class="button is-rounded is-primary mr-20" :to="{name:'BookManagerAddForm'}">Add Book</router-link>
         <div class="is-flex is-align-items-center">
           <i class="fas fa-search" style="transform: translateX(23px); z-index: 10; opacity: 0.3;" />
-          <input v-model="search" class="input" placeholder="Search" style="padding-left: 30px;" />
+          <input v-model="search" class="input" placeholder="Search" style="padding-left: 30px;">
         </div>
       </div>
 
@@ -130,7 +130,7 @@ export default {
       <table v-else class="table w-100">
         <thead>
           <tr>
-            <td></td>
+            <td />
             <SortableTableHeading id="isbn" v-model="sortConfig">ISBN</SortableTableHeading>
             <SortableTableHeading id="titleLower" v-model="sortConfig">Title</SortableTableHeading>
             <SortableTableHeading id="authors" v-model="sortConfig">Author(s)</SortableTableHeading>
