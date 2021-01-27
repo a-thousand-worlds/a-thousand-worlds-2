@@ -120,7 +120,7 @@ export default {
       try {
         await this.$store.dispatch('submissions/people/submit', this.submission)
         this.$store.commit('ui/setBusy', false)
-        this.$router.push({ name: 'SubmissionThankYou', params: { type: 'people' } })
+        this.$router.push({ name: 'Dashboard' })
       }
       catch (e) {
         console.error(e)
