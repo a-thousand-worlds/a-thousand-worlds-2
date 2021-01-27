@@ -154,7 +154,7 @@ export default {
             :class="!authorsExist && 'mr-1'"
             :style="!authorsExist && { display: 'inline-block' }"
           />
-          <Tag v-if="!authorsExist" :tag="{ tag: 'NEW' }" :nolink="true" v-tippy="{ content: 'This author is new! When the book is approved, they will be added to the people directory.' }" />
+          <Tag v-if="!authorsExist" :tag="{ tag: 'NEW' }" nolink v-tippy="{ content: 'This author is new! When the book is approved, they will be added to the people directory.' }" />
         </div>
         <div>
           <MultiPersonField
@@ -168,7 +168,7 @@ export default {
             :class="!authorsExist && 'mr-1'"
             :style="!illustratorsExist && { display: 'inline-block' }"
           />
-          <Tag v-if="!illustratorsExist" :tag="{ tag: 'NEW' }" :nolink="true" v-tippy="{ content: 'This illustrator is new! When the book is approved, they will be added to the people directory.' }" />
+          <Tag v-if="!illustratorsExist" :tag="{ tag: 'NEW' }" nolink v-tippy="{ content: 'This illustrator is new! When the book is approved, they will be added to the people directory.' }" />
         </div>
         <div>
           <SimpleInput

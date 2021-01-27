@@ -52,7 +52,7 @@ export default {
                 <h3 class="link mb-10" style="margin-right: 15px;">{{ book.title }}</h3>
               </BookDetailLink>
               <div class="authors">
-                <CreatorsWidget :creators="book.creators" :linked="true" />
+                <CreatorsWidget :creators="book.creators" linked />
               </div>
             </div>
 

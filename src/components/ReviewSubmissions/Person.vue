@@ -143,7 +143,7 @@ export default {
           placeholder="Title"
         />
 
-        <Tag v-if="!person" :tag="{ tag: 'NEW' }" :nolink="true" class="mt-1"  v-tippy="{ content: 'This person is new! When they are approved, they will be added to the people directory but they won\'t have any books.' }" />
+        <Tag v-if="!person" :tag="{ tag: 'NEW' }" nolink class="mt-1" v-tippy="{ content: 'This person is new! When they are approved, they will be added to the people directory but they won\'t have any books.' }" />
         <div v-else>{{ books.length }} book{{ books.length === 1 ?'' : 's' }}</div>
       </div>
 
