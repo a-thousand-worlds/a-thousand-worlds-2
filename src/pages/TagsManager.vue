@@ -8,12 +8,18 @@ export default {
   },
   data() {
     return {
-      active: 'books'
+      active: this.$route.query?.active || 'books'
     }
   },
   methods: {
     setActive(value) {
       this.active = value
+      this.$router.replace({
+        name: this.$route.name,
+        query: {
+          active: value
+        }
+      })
     },
   },
 }

@@ -94,7 +94,7 @@ export default {
             <span class="ml-2">{{ tag.sortOrder }}</span>
           </span>
           <span v-if="edits[tag.id]">
-            <input v-model="edits[tag.id].sortOrder" type="text" class="input">
+            <input v-model.number="edits[tag.id].sortOrder" type="number" class="input" style="min-width: 50px; padding-right: calc(0.75rem - 8px);">
           </span>
         </td>
 
@@ -104,7 +104,7 @@ export default {
             <span class="ml-2">{{ tag.weight }}</span>
           </span>
           <span v-if="edits[tag.id]">
-            <input v-model.number="edits[tag.id].weight" type="number" class="input" style="padding-right: calc(0.75rem - 8px);" required>
+            <input v-model.number="edits[tag.id].weight" type="number" class="input" style="min-width: 50px;padding-right: calc(0.75rem - 8px);" required>
           </span>
         </td>
 
@@ -154,7 +154,7 @@ export default {
         <a class="button is-static">Sort Order</a>
       </p>
       <p class="control">
-        <input v-model.number="newTag.sortOrder" :disabled="$uiBusy" type="number" class="input" placeholder="1" style="min-width: 60px">
+        <input v-model.number="newTag.sortOrder" :disabled="$uiBusy" type="text" class="input" placeholder="1" style="min-width: 60px">
       </p>
       <p class="control">
         <a class="button" @click.prevent="newTag.showOnFront = !newTag.showOnFront">
