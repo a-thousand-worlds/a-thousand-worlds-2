@@ -122,7 +122,12 @@ export default {
         </div>
       </div>
 
-      <table class="table w-100">
+      <div v-if="!books.length" class="w-100 my-100 has-text-centered">
+        <h2 class="mb-20">No matching books</h2>
+        <p><a @click.prevent="search = ''" class="button is-rounded is-primary">Reset Search</a></p>
+      </div>
+
+      <table v-else class="table w-100">
         <thead>
           <tr>
             <td></td>
@@ -135,6 +140,7 @@ export default {
           </tr>
         </thead>
         <tbody>
+
           <tr v-for="book of books" :key="book.id">
 
             <!-- cover -->
@@ -170,6 +176,7 @@ export default {
             </td>
 
           </tr>
+
         </tbody>
       </table>
 
