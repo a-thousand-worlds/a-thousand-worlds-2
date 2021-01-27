@@ -51,6 +51,14 @@ export default {
     toggleEditTag(id, state) {
       this.edits[id] = state
     },
+    async toggleShowOnFront(id) {
+      const tag = this.$store.state.tags[this.type].data[id]
+      tag.showOnFront = !tag.showOnFront
+      await this.$store.dispatch(`tags/${this.type}/save`, {
+        path: `${id}/showOnFront`,
+        value: tag.showOnFront
+      })
+    },
     async updateTag(tagid) {
       const tag = { ...this.edits[tagid] }
       this.$store.commit('ui/setBusy', true)
@@ -110,10 +118,10 @@ export default {
 
         <!-- show in book filters -->
         <td class="has-text-centered">
-          <span v-if="!edits[tag.id]">
+          <a v-if="!edits[tag.id]" @click.prevent="toggleShowOnFront(tag.id)">
             <i v-if="tag.showOnFront" class="fas fa-check has-text-primary" />
             <i v-else class="fas fa-minus has-text-secondary" />
-          </span>
+          </a>
           <span v-if="edits[tag.id]"><input v-model="edits[tag.id].showOnFront" type="checkbox" class="checkbox"></span>
         </td>
 
