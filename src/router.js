@@ -100,7 +100,7 @@ const routes = [
   }, {
     path: '/admin/people',
     name: 'PeopleManager',
-    component: () => import(/* webpackChunkName: "advisor" */ './pages/PeopleManagerList.vue'),
+    component: () => import(/* webpackChunkName: "advisor" */ './pages/PeopleManager.vue'),
     meta: {
       access: 'owner'
     }
