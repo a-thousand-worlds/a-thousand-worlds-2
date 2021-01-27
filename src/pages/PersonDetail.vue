@@ -73,7 +73,7 @@ export default {
     <Filter type="people" />
   </teleport>
 
-  <div v-if="person" class="mx-5">
+  <div v-if="person" class="mx-5" :data-person-id="person.id">
 
     <div class="wide-page">
       <div class="columns mb-5">
