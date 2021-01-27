@@ -35,7 +35,11 @@ export default ({
   },
   computed: {
     showWelcome() {
-      return !this.$store.state.ui.lastVisited && !this.$route.meta?.access
+      // do not show welcome banner until route is loaded
+      // $route.name is undefined on initial load
+      // window.location.pathname is available immediately
+      return (window.location.pathname === '/' || this.$route.name)
+        && !this.$store.state.ui.lastVisited && !this.$route.meta?.access
     }
   },
   watch: {
@@ -58,7 +62,7 @@ export default ({
 
     <div class="site columns m-0" :class="{ 'border-top':showWelcome}">
       <section class="leftbar column is-narrow is-hidden-mobile px-20 py-30">
-        <LeftBar />
+        <LeftBar :animateLogo="showWelcome" />
       </section>
       <section class="main column px-0 pb-20" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
         <Popups />
