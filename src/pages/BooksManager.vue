@@ -2,6 +2,7 @@
 import _ from 'lodash'
 import dayjs from 'dayjs'
 import SortableTableHeading from '@/components/SortableTableHeading'
+import { remove as diacritics } from 'diacritics'
 
 /** Generates a sort token that will sort empty strings to the end regardless of sort direction. */
 const sortEmptyToEnd = (s, dir) =>
@@ -14,24 +15,41 @@ export default {
   },
   data() {
     return {
+      search: '',
       sortConfig: {
         field: 'created',
         dir: 'desc',
-      }
+      },
     }
   },
 
   computed: {
 
     books() {
+
       // sort books by the sort config
-      const sorted = _.sortBy(this.booksList, [
-        book => this.sortConfig.field === 'authors' ? sortEmptyToEnd(this.authors(book.creators), this.sortConfig.dir)
-        : this.sortConfig.field === 'illustrators' ? sortEmptyToEnd(this.illustrators(book.creators), this.sortConfig.dir)
-        : book[this.sortConfig.field],
-        'titleLower'
-      ])
-      return this.sortConfig.dir === 'desc' ? _.reverse(sorted) : sorted
+      const sort = list => {
+        const sorted = _.sortBy(list, [
+          book => this.sortConfig.field === 'authors' ? sortEmptyToEnd(this.authors(book.creators), this.sortConfig.dir)
+          : this.sortConfig.field === 'illustrators' ? sortEmptyToEnd(this.illustrators(book.creators), this.sortConfig.dir)
+          : book[this.sortConfig.field],
+          'titleLower'
+        ])
+        return this.sortConfig.dir === 'desc' ? _.reverse(sorted) : sorted
+      }
+
+      // filter books by the active search
+      const filter = list => this.search
+        ? list.filter(book => diacritics([
+          book.created,
+          book.isbn,
+          book.title,
+          this.authors(book.creators),
+          this.illustrators(book.creators)
+        ].join(' ')).toLowerCase().includes(diacritics(this.search.trim()).toLowerCase()))
+        : list
+
+      return sort(filter(this.booksList))
     },
 
     booksList() {
@@ -92,8 +110,12 @@ export default {
 
       <h1 class="title divider-bottom mb-30">Books Manager</h1>
 
-      <div class="mb-30">
-        <router-link class="button is-rounded is-primary" :to="{name:'BookManagerAddForm'}">Add Book</router-link>
+      <div class="mb-30 is-flex is-justify-content-space-between">
+        <router-link class="button is-rounded is-primary mr-20" :to="{name:'BookManagerAddForm'}">Add Book</router-link>
+        <div class="is-flex is-align-items-center">
+          <i class="fas fa-search" style="transform: translateX(23px); z-index: 10; opacity: 0.3;" />
+          <input v-model="search" class="input" placeholder="Search" style="padding-left: 30px;" />
+        </div>
       </div>
 
       <table class="table w-100">

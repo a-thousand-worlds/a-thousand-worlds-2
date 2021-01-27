@@ -35,6 +35,7 @@
     "cute-animals": "^0.2.0",
     "dayjs": "^1.10.3",
     "deck": "0.0.4",
+    "diacritics": "^1.3.0",
     "email-validator": "^2.0.4",
     "firebase": "^8.2.4",
     "firebaseui": "^4.7.1",
