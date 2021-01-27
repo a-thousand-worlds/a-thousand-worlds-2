@@ -23,24 +23,24 @@ export default {
 </script>
 
 <template>
-  <div class="columns">
+  <div class="manage-collections-preview columns">
     <div class="column">
       <router-link :to="{ name: 'BooksManager' }">
-        <Square color="primary" style="color: black !important;">
+        <Square class="square">
           <h3>Books ({{ bookSubmissions.length }})</h3>
         </Square>
       </router-link>
     </div>
     <div class="column">
       <router-link :to="{ name: 'PeopleManager' }">
-        <Square color="primary" style="color: black !important; border-radius: 999px;">
+        <Square class="square" style=" border-radius: 999px;">
           <h3>People ({{ Object.keys(peopleSubmissions).length }})</h3>
         </Square>
       </router-link>
     </div>
     <div class="column">
       <router-link :to="{ name: 'BundlesManager' }">
-        <Square color="primary" style="color: black !important;">
+        <Square class="square">
           <BundlesLayoutIcon style="position: absolute; opacity: 0.1; width: 90%; height: 100%;" fill="white" />
           <!-- position: relative so text covers the BundlesLayoutIcon -->
           <h3 style="position: relative">Bundles ({{ bundleSubmissions.length }})</h3>
@@ -56,5 +56,22 @@ export default {
 
 h3:hover {
   color: white;
+}
+
+.square {
+  @include primary(background-color);
+  color: white;
+}
+
+</style>
+
+<!-- unscoped css to modify square's hover style -->
+<style lang="scss">
+@import "bulma/sass/utilities/_all.sass";
+@import '@/assets/style/mixins.scss';
+
+.manage-collections-preview .square:hover,
+.manage-collections-preview .square h3:hover {
+  color: black !important;
 }
 </style>
