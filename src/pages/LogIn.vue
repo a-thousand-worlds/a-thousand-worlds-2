@@ -88,14 +88,14 @@ export default {
       this.disableResetPassword = true
       try {
         await this.$store.dispatch('user/passwordReset', this.email)
-        this.$store.dispatch('alert', {
+        this.$store.dispatch('ui/popup', {
           text: 'Check your email to reset your password',
           timer: 10000,
         })
       }
       catch (e) {
         this.disableResetPassword = false
-        this.$store.dispatch('alert', {
+        this.$store.dispatch('ui/popup', {
           text: 'Error resetting password',
           type: 'error'
         })
@@ -213,7 +213,7 @@ export default {
         })
           .then(() => {
             if (!this.error) {
-              this.$store.dispatch('alert', {
+              this.$store.dispatch('ui/popup', {
                 text: 'Profile saved',
                 type: 'success'
               })

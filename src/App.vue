@@ -1,6 +1,5 @@
 <script>
 
-import Alert from '@/components/Alert'
 import BookmarksView from '@/components/BookmarksView'
 import Confirm from '@/components/ui/Confirm'
 import LeftBar from '@/components/LeftBar.vue'
@@ -15,7 +14,6 @@ import Loader from '@/components/Loader'
 export default ({
   name: 'App',
   components: {
-    Alert,
     BookmarksView,
     Confirm,
     LeftBar,
@@ -68,7 +66,6 @@ export default ({
         <Popups />
         <Confirm />
         <Prompt />
-        <Alert />
         <div v-if="$store.state.ui.pageLoading" class="has-text-centered" style="margin-top: 20vh;">
           <Loader />
         </div>

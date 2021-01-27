@@ -25,7 +25,7 @@ const module = {
     },
     setLastVisited: (state, value) => {
       state.lastVisited = value
-    // disable lastVisited persistance
+      // disable lastVisited persistance
       // localStorage.setItem('lastVisited', value)
     },
     setViewMode: (state, value) => {
