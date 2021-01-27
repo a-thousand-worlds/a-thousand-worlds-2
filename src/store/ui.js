@@ -1,3 +1,5 @@
+import { v4 as uid } from 'uuid'
+
 const module = {
   namespaced: true,
   state: () => ({
@@ -29,11 +31,11 @@ const module = {
     setViewMode: (state, value) => {
       state.viewMode = value
     },
+    closePopup(state, id) {
+      state.popups = state.popups.filter(popup => popup.id !== id)
+    },
     pushPopup(state, value) {
       state.popups = [...state.popups, value]
-    },
-    shiftPopup(state) {
-      state.popups = state.popups.slice(1)
     },
     confirm(state, result) {
       state.dlgConfirm.resolve(result)
@@ -48,17 +50,22 @@ const module = {
     },
     doPrompt(state, value) {
       state.dlgPrompt = value
-    }
+    },
   },
   actions: {
     popup(context, data) {
       const { text, type } = typeof data === 'string'
         ? { text: data, type: 'info' }
         : data
-      context.commit('pushPopup', { text, type })
+      const id = uid()
+      context.commit('pushPopup', { id, text, type })
       setTimeout(() => {
-        context.commit('shiftPopup')
+        context.commit('closePopup', id)
       }, 3000)
+      return id
+    },
+    close(context, id) {
+      context.commit('closePopup', id)
     },
     /* @param data = { text, header, type } */
     confirm(context, data) {

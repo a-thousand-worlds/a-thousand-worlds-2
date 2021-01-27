@@ -11,23 +11,32 @@ export default {
 </script>
 
 <template>
-  <div class="popups-area">
-    <div v-for="(pp, i) of $store.state.ui.popups" :key="i">
-      <Popup class="mb-2" :popup="pp" />
+  <div class="popups-area is-flex is-justify-content-center">
+    <div>
+      <div v-for="popup of $store.state.ui.popups" :key="popup.id">
+        <Popup class="mb-2" :popup="popup" />
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
+@import "bulma/sass/utilities/_all.sass";
+@import "bulma/sass/elements/box.sass";
 @import '@/assets/style/vars.scss';
 
 .popups-area {
   position: fixed;
-  top: 30;
-  left: 50%;
-  width: 200px;
-  margin-left: -100px;
   z-index: $zPopup;
+  font-size: 18px;
+  left: 0;
+  top: 10px;
+  width: 100%;
+
+  @include from($tablet) {
+    left: $leftbar-width;
+    width: calc(100% - #{$leftbar-width} - #{$rightbar-width});
+  }
 }
 
 </style>
