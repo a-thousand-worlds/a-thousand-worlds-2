@@ -40,8 +40,8 @@ export default {
       <div class="tabs">
         <ul>
           <li :class="{ 'is-active': active === 'books' }"><a @click.prevent="setActive('books')">Books</a></li>
-          <li :class="{ 'is-active': active === 'bundles' }"><a @click.prevent="setActive('bundles')">Bundles</a></li>
           <li :class="{ 'is-active': active === 'people' }"><a @click.prevent="setActive('people')">People</a></li>
+          <li :class="{ 'is-active': active === 'bundles' }"><a @click.prevent="setActive('bundles')">Bundles</a></li>
         </ul>
       </div>
 

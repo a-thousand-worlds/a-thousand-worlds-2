@@ -107,14 +107,14 @@ const routes = [
   }, {
     path: '/admin/people/add',
     name: 'PeopleManagerAddForm',
-    component: () => import(/* webpackChunkName: "advisor" */ './pages/PersonManagerForm.vue'),
+    component: () => import(/* webpackChunkName: "advisor" */ './pages/PeopleManagerForm.vue'),
     meta: {
       access: 'owner'
     }
   }, {
     path: '/admin/people/update/:uid',
-    name: 'PersonManagerUpdateForm',
-    component: () => import(/* webpackChunkName: "advisor" */ './pages/PersonManagerForm.vue'),
+    name: 'PeopleManagerUpdateForm',
+    component: () => import(/* webpackChunkName: "advisor" */ './pages/PeopleManagerForm.vue'),
     meta: {
       access: 'owner'
     }

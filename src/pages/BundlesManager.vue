@@ -105,7 +105,10 @@ export default {
       <h1 class="title divider-bottom mb-30">Bundles Manager</h1>
 
       <div class="mb-30 is-flex is-justify-content-space-between">
-        <router-link class="button is-rounded is-primary mr-20" :to="{name:'BookManagerAddForm'}">Add bundle</router-link>
+        <div>
+          <router-link class="button is-rounded is-primary mr-20" :to="{name:'BookManagerAddForm'}">Add bundle</router-link>
+          <router-link class="mr-20" :to="{ name:'TagsManager', query: { active: 'bundles' } }" style="color: black; line-height: 2.5;">Bundle Tags</router-link>
+        </div>
         <div class="is-flex is-align-items-center">
           <i class="fas fa-search" style="transform: translateX(23px); z-index: 10; opacity: 0.3;" />
           <input v-model="search" class="input" placeholder="Search" style="padding-left: 30px;">
