@@ -141,7 +141,7 @@ export default {
         </thead>
         <tbody>
 
-          <tr v-for="book of books" :key="book.id">
+          <tr v-for="book of books" :key="book.id" :data-book-id="book.id">
 
             <!-- cover -->
             <td>
@@ -151,7 +151,7 @@ export default {
             </td>
 
             <!-- ISBN -->
-            <td><span v-tippy="{ content: book.id }">{{ book.isbn }}</span></td>
+            <td>{{ book.isbn }}</td>
 
             <!-- title -->
             <td>{{ book.title }}</td>

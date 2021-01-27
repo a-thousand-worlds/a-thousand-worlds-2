@@ -60,7 +60,7 @@ export default {
     <Filter type="books" />
   </teleport>
 
-  <div class="book-detail">
+  <div class="book-detail" :data-book-id="book?.id">
 
     <div class="columns mb-5">
 
