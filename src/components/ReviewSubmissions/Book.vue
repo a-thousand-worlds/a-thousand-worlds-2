@@ -216,7 +216,7 @@ export default {
 
       <div class="column is-5" style="margin-top: -20px;">
         <!-- summary -->
-        <div>
+        <div class="mb-10" style="max-height: 25rem; overflow: scroll;">
           <ckeditor @update:modelValue="save()" v-model="sub.summary" :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" style="padding: 0;" />
         </div>
         <!-- tags -->
