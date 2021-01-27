@@ -3,7 +3,7 @@ import _ from 'lodash'
 import dayjs from 'dayjs'
 import PersonDetailLink from '@/components/PersonDetailLink'
 import SortableTableHeading from '@/components/SortableTableHeading'
-import StaticBookCover from '@/components/StaticBookCover'
+import StaticCoverImage from '@/components/StaticCoverImage'
 import { remove as diacritics } from 'diacritics'
 
 /** Generates a sort token that will sort empty strings to the end regardless of sort direction. */
@@ -15,7 +15,7 @@ export default {
   components: {
     PersonDetailLink,
     SortableTableHeading,
-    StaticBookCover,
+    StaticCoverImage,
   },
   data() {
     return {
@@ -130,7 +130,7 @@ export default {
             <!-- photo -->
             <td>
               <PersonDetailLink :person="person">
-                <StaticBookCover :book="person" style="width: 150px; min-width: 50px; min-height: auto;" />
+                <StaticCoverImage :item="person" style="width: 150px; min-width: 50px; min-height: auto;" />
               </PersonDetailLink>
             </td>
 
@@ -166,19 +166,4 @@ export default {
 <style lang="scss" scoped>
 @import "bulma/sass/utilities/_all.sass";
 @import "bulma/sass/elements/table.sass";
-@import "bulma/sass/form/shared.sass";
-@import "bulma/sass/form/checkbox-radio.sass";
-
-.table {
-
-  th {
-    user-select: none;
-  }
-
-  td {
-    vertical-align: middle;
-  }
-
-}
-
 </style>
