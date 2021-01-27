@@ -52,7 +52,7 @@ export default {
     },
     showOrgLink() {
       return (this.active === 'signup' || this.active === 'profile') &&
-        (this.invite?.role === 'contributor' || this.$can('submit'))
+        (this.invite?.role === 'contributor' || this.$can('submitBookOrBundle'))
     }
   },
 

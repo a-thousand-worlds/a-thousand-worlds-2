@@ -60,7 +60,7 @@ export default {
         </div>
 
         <div class="column is-one-third">
-          <router-link :to="{ name: 'PeopleSubmissionForm' }">
+          <router-link :to="{ name: 'PersonSubmissionForm' }">
             <Square style="border-radius: 999px;">
               <h3>Edit</h3>
             </Square>
@@ -76,7 +76,7 @@ export default {
       <h2 v-else>Please fill our your profile for the People Directory</h2>
       <div class="field is-grouped">
         <div class="control my-20">
-          <router-link class="button is-primary is-rounded" :to="{name:'PeopleSubmissionForm'}">Create Profile</router-link>
+          <router-link class="button is-primary is-rounded" :to="{name:'PersonSubmissionForm'}">Create Profile</router-link>
         </div>
       </div>
     </div>

@@ -47,14 +47,18 @@ export default {
         <CreatorProfilePreview />
       </section>
 
-      <section v-if="$can('submit')" class="section bordered-top">
-        <h2>Suggest a book or bundle</h2>
+      <section v-if="$can('submitBookOrBundle')" class="section bordered-top">
+        <h2 v-if="$can('submitPerson')">Submission Forms</h2>
+        <h2 v-else>Suggest a book or bundle</h2>
         <div class="field is-grouped">
           <div class="control">
-            <router-link class="button is-outlined is-primary" :to="{name:'BookSuggest'}">Book</router-link>
+            <router-link class="button is-outlined is-primary" :to="{name:'BookSubmissionForm'}">Book</router-link>
+          </div>
+          <div v-if="$can('submitPerson')" class="control">
+            <router-link class="button is-outlined is-primary" :to="{name:'PersonSubmissionForm'}">Person</router-link>
           </div>
           <div class="control">
-            <router-link class="button is-outlined is-primary" :to="{name:'BundleSuggest'}">Bundle</router-link>
+            <router-link class="button is-outlined is-primary" :to="{name:'BundleSubmissionForm'}">Bundle</router-link>
           </div>
         </div>
       </section>
@@ -68,7 +72,7 @@ export default {
         </ul>
       </section>
 
-      <section v-if="$can('submit') && bookSubmissions.length" class="section my-30 py-0">
+      <section v-if="$can('submitBookOrBundle') && bookSubmissions.length" class="section my-30 py-0">
         <YourBookSubmissions />
       </section>
 

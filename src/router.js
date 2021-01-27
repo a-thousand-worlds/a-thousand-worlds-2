@@ -71,21 +71,21 @@ const routes = [
     }
   }, {
     path: '/suggest/book',
-    name: 'BookSuggest',
+    name: 'BookSubmissionForm',
     component: () => import(/* webpackChunkName: "contributor" */ './pages/BookSubmissionForm.vue'),
     meta: {
       access: ['contributor', 'advisor', 'owner']
     }
   }, {
     path: '/suggest/bundle',
-    name: 'BundleSuggest',
+    name: 'BundleSubmissionForm',
     component: () => import(/* webpackChunkName: "contributor" */ './pages/BundleSubmissionForm.vue'),
     meta: {
       access: ['contributor', 'advisor', 'owner']
     }
   }, {
     path: '/suggest/people',
-    name: 'PeopleSubmissionForm',
+    name: 'PersonSubmissionForm',
     component: () => import(/* webpackChunkName: "creator" */ './pages/PeopleSubmissionForm.vue'),
     meta: {
       access: ['creator', 'advisor', 'owner']

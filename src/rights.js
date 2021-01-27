@@ -12,7 +12,8 @@ export const rights = {
   editContent: [],
   editEmailTemplates: [],
   review: ['advisor'],
-  submit: ['advisor', 'contributor'],
+  submitBookOrBundle: ['advisor', 'contributor'],
+  submitPerson: ['advisor', 'creator'],
   viewDashboard: ['advisor', 'contributor', 'creator'],
 }
 
