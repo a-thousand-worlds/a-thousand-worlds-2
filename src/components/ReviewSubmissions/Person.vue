@@ -99,7 +99,7 @@ export default {
 
       <!-- image -->
       <div class="column is-2 is-offset-1">
-        <div class="bg-secondary image-wrapper" :style="{'padding-top': imageRatio +'%', 'background-image': 'url('+imageUrl+')'}">
+        <div class="bg-secondary image-wrapper" :style="{'padding-top': imageRatio +'%', 'background-image': `url(${imageUrl})`}">
           <div v-if="busy" class="upload-icon loading">
             <i class="fas fa-spinner fa-pulse fa-fw" />
           </div>

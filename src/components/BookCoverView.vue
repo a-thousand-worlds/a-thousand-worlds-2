@@ -32,7 +32,7 @@ export default {
 
 <template>
   <BookDetailLink :book="book">
-    <div :style="{width: '100%', paddingTop: coverRatio+'%', backgroundImage: 'url('+bgImage+')', backgroundSize: 'contain'}" class="book-cover-wrapper bg-secondary">
+    <div :style="{width: '100%', paddingTop: coverRatio+'%', backgroundImage: `url(${bgImage})`, backgroundSize: 'contain'}" class="book-cover-wrapper bg-secondary">
       <div class="cover-shadow" />
       <div class="cover-data">
         <div class="title">{{ book.title }}</div>

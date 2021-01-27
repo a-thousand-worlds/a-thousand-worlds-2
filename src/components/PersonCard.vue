@@ -17,7 +17,7 @@ export default {
 
 <template>
   <PersonDetailLink :person="person">
-    <div :style="{backgroundImage: 'url('+bgImage+')'}" class="photo-wrapper bg-secondary mb-20" />
+    <div :style="{backgroundImage: `url(${bgImage})`}" class="photo-wrapper bg-secondary mb-20" />
     <span class="is-uppercase">{{ person.name }}</span>
   </PersonDetailLink>
 

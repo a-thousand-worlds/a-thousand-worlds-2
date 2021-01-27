@@ -26,9 +26,6 @@ export default {
     }
   },
   computed: {
-    bgImage() {
-      return this.person.photo
-    },
     books() {
       return this.person ? this.$store.getters['books/list']().filter(book =>
         (book.authors || []).includes(this.person.name) ||
@@ -88,7 +85,7 @@ export default {
       <div class="is-flex is-flex-direction-row is-flex-wrap-wrap">
         <div class="column-person" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
           <div class="cover-wrapper mb-20">
-            <div v-if="person.photo && person.photo.length" :style="{backgroundImage: 'url('+bgImage+')'}" class="cover-photo bg-secondary" />
+            <div v-if="person.photo && person.photo.length" :style="{ backgroundImage: `url(${person.photo})`}" class="cover-photo bg-secondary" />
           </div>
 
           <div class="title-container divider-30">

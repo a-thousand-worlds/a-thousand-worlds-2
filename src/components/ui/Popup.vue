@@ -7,7 +7,7 @@ export default {
 </script>
 
 <template>
-  <div class="popup message" :class="'is-'+popup.type">
+  <div class="popup message" :class="`is-${popup.type}`">
     <div class="message-body">
       {{ popup.text }}
     </div>

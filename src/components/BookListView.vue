@@ -38,7 +38,7 @@ export default {
   <div v-if="book" class="columns m-0">
     <div class="column is-one-half p-0 mb-20">
       <BookDetailLink :book="book" class="cover-data">
-        <div class="img-cover bg-secondary" :style="{ width: '100%', minWidth: '100px', paddingTop: coverRatio+'%', backgroundImage: 'url('+bgImage+')', backgroundSize: 'contain' }" />
+        <div class="img-cover bg-secondary" :style="{ width: '100%', minWidth: '100px', paddingTop: coverRatio+'%', backgroundImage: `url(${bgImage})`, backgroundSize: 'contain' }" />
       </BookDetailLink>
     </div>
     <div class="column is-one-half is-align-content-center p-0">

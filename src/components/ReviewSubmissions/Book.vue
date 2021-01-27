@@ -102,7 +102,7 @@ export default {
 
       <!-- cover -->
       <div class="column is-2 is-offset-1">
-        <div class="bg-secondary cover-wrapper" :style="{'padding-top': coverRatio +'%', 'background-image': 'url('+coverUrl+')'}">
+        <div class="bg-secondary cover-wrapper" :style="{'padding-top': coverRatio +'%', 'background-image': `url(${coverUrl})`}">
           <div v-if="busy" class="upload-icon loading">
             <i class="fas fa-spinner fa-pulse fa-fw" />
           </div>
