@@ -105,12 +105,12 @@ export default {
   <div class="control">
     <div class="field is-grouped">
       <div class="control">
-        <button :disabled="disabled || loading || !isbn.length" :class="{'is-loading': loading}" class="is-flat" @click="searchGlobal()">
+        <button :disabled="disabled || loading || !isbn.length" :class="{'is-loading': loading}" class="is-flat" @click="searchGlobal">
           <i class="fas fa-search" />
         </button>
       </div>
       <div class="control w-50">
-        <div v-if="mode === 'view'" class="w-50 pointer" :class="{disabled:disabled}" @click="onDivClick()">{{ isbn }}</div>
+        <div v-if="mode === 'view'" class="w-50 pointer" :class="{disabled:disabled}" @click="onDivClick">{{ isbn }}</div>
         <input
           v-if="mode === 'edit'"
           ref="input"

@@ -33,7 +33,7 @@ export default {
 <template>
 
   <div class="is-flex is-justify-content-center">
-    <form class="is-flex-grow-1" style="max-width: 480px;" @submit.prevent="pReset()">
+    <form class="is-flex-grow-1" style="max-width: 480px;" @submit.prevent="pReset">
 
       <h1 class="title page-title divider-bottom">Password Reset</h1>
 

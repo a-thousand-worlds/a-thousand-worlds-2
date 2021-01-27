@@ -93,13 +93,13 @@ export default {
   <div class="control">
     <div class="field is-grouped">
       <div class="control">
-        <button class="is-flat" @click.prevent="toggleRole()">
+        <button class="is-flat" @click.prevent="toggleRole">
           <i v-if="person.role === 'author'" class="fas fa-pencil-alt" />
           <i v-if="person.role === 'illustrator'" class="fas fa-palette" />
         </button>
       </div>
       <div class="control w-50">
-        <div v-if="mode === 'view'" class="w-50 pointer" @click="onDivClick()">{{ person.name }}</div>
+        <div v-if="mode === 'view'" class="w-50 pointer" @click="onDivClick">{{ person.name }}</div>
         <input
           v-if="mode === 'edit'"
           ref="input"

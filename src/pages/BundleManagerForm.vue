@@ -63,7 +63,7 @@ export default {
   <h1 v-if="mode!=='new'" class="title page-title">Update Bundle</h1>
 
   <section class="section">
-    <form @submit.prevent="save()">
+    <form @submit.prevent="save">
       <div class="columns">
         <div class="column">
 
@@ -90,7 +90,7 @@ export default {
 
           <div class="field">
             <label class="label d-inline">Books</label>
-            <button class="button is-primary is-small d-inline ml-5" @click.prevent="addBook()">
+            <button class="button is-primary is-small d-inline ml-5" @click.prevent="addBook">
               <i class="fas fa-plus mr-2" />
               <span>Add</span>
             </button>

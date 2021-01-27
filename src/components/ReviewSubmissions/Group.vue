@@ -84,7 +84,7 @@ export default {
         <button
           :disabled="$uiBusy"
           class="level-item is-flat is-underlined is-uppercase"
-          @click="approveGroup()">Approve</button>
+          @click="approveGroup">Approve</button>
       </div>
 
       <!-- book/person review -->

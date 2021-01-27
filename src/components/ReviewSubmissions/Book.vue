@@ -139,7 +139,7 @@ export default {
         <div style="font-weight: bold;">
           <SimpleInput
             v-model="sub.title"
-            @update:modelValue="save()"
+            @update:modelValue="save"
             :disabled="busy"
             placeholder="Title"
             controlStyle="font-size: 20px;"
@@ -150,7 +150,7 @@ export default {
         <div>
           <MultiPersonField
             v-model="sub.authors"
-            @update:modelValue="save()"
+            @update:modelValue="save"
             :disabled="busy"
             :search-db="false"
             placeholder="author(s)"
@@ -166,7 +166,7 @@ export default {
         <div>
           <MultiPersonField
             v-model="sub.illustrators"
-            @update:modelValue="save()"
+            @update:modelValue="save"
             :disabled="busy"
             :placeholder="'illustrator(s)'"
             :search-db="false"
@@ -183,7 +183,7 @@ export default {
           <b class="mr-1">isbn</b>
           <SimpleInput
             :disabled="busy"
-            @update:modelValue="save()"
+            @update:modelValue="save"
             v-model="sub.isbn"
             placeholder="Enter ISBN"
           />
@@ -194,7 +194,7 @@ export default {
           <b class="mr-1">year</b>
           <SimpleInput
             v-model="sub.year"
-            @update:modelValue="save()"
+            @update:modelValue="save"
             :disabled="busy"
             placeholder="Enter Year"
             style="display: inline-block;"
@@ -205,7 +205,7 @@ export default {
         <div>
           <SimpleInput
             :disabled="busy"
-            @update:modelValue="save()"
+            @update:modelValue="save"
             v-model="sub.publisher"
             placeholder="Publisher"
           />
@@ -217,7 +217,7 @@ export default {
       <div class="column is-5" style="margin-top: -20px;">
         <!-- summary -->
         <div class="mb-10" style="max-height: 25rem; overflow: scroll;">
-          <ckeditor @update:modelValue="save()" v-model="sub.summary" :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" style="padding: 0;" />
+          <ckeditor @update:modelValue="save" v-model="sub.summary" :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" style="padding: 0;" />
         </div>
         <!-- tags -->
         <div class="tags">
@@ -227,7 +227,7 @@ export default {
 
       <!-- reject -->
       <div v-if="sub?.status !== 'rejected'" class="column is-1 has-text-right">
-        <button :class="{disabled:busy}" :disabled="busy" class="is-flat is-uppercase is-underlined" @click="reject()">
+        <button :class="{disabled:busy}" :disabled="busy" class="is-flat is-uppercase is-underlined" @click="reject">
           <i class="fas fa-times" style="font-size: 20px;" />
         </button>
       </div>

@@ -142,7 +142,7 @@ export default {
     </tbody>
   </table>
 
-  <form class="w-100" @submit.prevent="addTag()">
+  <form class="w-100" @submit.prevent="addTag">
     <div class="field has-addons">
       <p class="control">
         <a class="button is-static">Add Tag</a>

@@ -89,7 +89,7 @@ export default {
   <h1 v-if="mode!=='new'" class="title page-title">Update Person</h1>
 
   <section class="section">
-    <form @submit.prevent="save()">
+    <form @submit.prevent="save">
       <div class="columns">
         <div class="column is-one-third">
           <div id="photo-wrapper">

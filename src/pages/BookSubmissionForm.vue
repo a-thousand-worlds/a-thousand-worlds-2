@@ -423,7 +423,7 @@ export default {
         </div>
 
         <div>
-          <button :disabled="$uiBusy" class="button is-rounded" @click.prevent="addMoreSubmission()">
+          <button :disabled="$uiBusy" class="button is-rounded" @click.prevent="addMoreSubmission">
             <i class="fas fa-plus" />
             <span class="ml-2">Add another book</span>
           </button>
@@ -432,7 +432,7 @@ export default {
         <hr>
 
         <div class="field is-grouped">
-          <button :class="{'is-loading': $uiBusy}" class="button is-rounded is-primary mr-20" @click.prevent="submitForReview()">Submit for review</button>
+          <button :class="{'is-loading': $uiBusy}" class="button is-rounded is-primary mr-20" @click.prevent="submitForReview">Submit for review</button>
           <button class="button is-rounded" @click.prevent="clearAllSubmissions">Reset All</button>
           <button v-if="draftSaved" class="button is-flat" @click.prevent="saveDraft" style="cursor: text;">Draft Saved</button>
         </div>

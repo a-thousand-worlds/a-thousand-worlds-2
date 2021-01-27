@@ -130,7 +130,7 @@ export default {
   <h1 v-if="mode!=='new'" class="title page-title">Update Book</h1>
 
   <section class="section">
-    <form class="w-100" @submit.prevent="searchISBN()">
+    <form class="w-100" @submit.prevent="searchISBN">
       <div class="field has-addons">
         <p class="control">
           <a v-if="mode==='new'" class="button is-static">Search by ISBN</a>
@@ -151,14 +151,14 @@ export default {
   </section>
 
   <section class="section">
-    <form class="w-100" @submit.prevent="save()">
+    <form class="w-100" @submit.prevent="save">
       <div class="columns">
         <div class="column is-one-third">
           <div>
             <img v-if="coverURL.length" :src="coverURL">
           </div>
           <div>
-            <button class="button is-outlined" :disabled="$uiBusy || searching" :class="{'is-loading': searching}" @click.prevent="reloadCover()">Reload</button>
+            <button class="button is-outlined" :disabled="$uiBusy || searching" :class="{'is-loading': searching}" @click.prevent="reloadCover">Reload</button>
           </div>
         </div>
         <div class="column is-two-thirds">
@@ -179,11 +179,11 @@ export default {
 
           <div class="field">
             <label class="label d-inline">Authors</label>
-            <button class="button is-primary is-small d-inline ml-5" @click.prevent="addAuthor()">
+            <button class="button is-primary is-small d-inline ml-5" @click.prevent="addAuthor">
               <i class="fas fa-plus mr-2" />
               <span>Add</span>
             </button>
-            <button v-if="book.authors.length" class="button is-secondary is-small d-inline ml-5" @click.prevent="delAuthor()">
+            <button v-if="book.authors.length" class="button is-secondary is-small d-inline ml-5" @click.prevent="delAuthor">
               <i class="fas fa-minus mr-2" />
               <span>Remove</span>
             </button>

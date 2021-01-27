@@ -77,7 +77,7 @@ export default {
       </div>
     </div>
     <div v-if="searchable" class="control">
-      <button :disabled="disabled || loading || !isbn" :class="{'is-loading': loading}" class="button is-primary" @click="searchGlobal()">
+      <button :disabled="disabled || loading || !isbn" :class="{'is-loading': loading}" class="button is-primary" @click="searchGlobal">
         <i class="fas fa-search" />
         <span class="ml-3">Search</span>
       </button>

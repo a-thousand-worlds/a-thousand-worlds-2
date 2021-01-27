@@ -58,13 +58,13 @@ export default {
           v-if="mode === 'view' && !hasValue && placeholder?.length"
           :class="{disabled:disabled}"
           class="w-50 pointer placeholder"
-          @click="onDivClick()">{{ placeholder }}</div>
+          @click="onDivClick">{{ placeholder }}</div>
         <div
           v-if="mode === 'view' && hasValue"
           :class="{disabled:disabled}"
           :title="placeholder"
           class="w-50 pointer"
-          @click="onDivClick()">{{ value }}</div>
+          @click="onDivClick">{{ value }}</div>
         <input
           v-if="mode === 'edit'"
           ref="input"

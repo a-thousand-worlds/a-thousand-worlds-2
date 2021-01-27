@@ -30,7 +30,7 @@ export default {
 </script>
 
 <template>
-  <div style="cursor: pointer;" @click.prevent="toggleBookmark()">
+  <div style="cursor: pointer;" @click.prevent="toggleBookmark">
     <BookmarkIcon :class="{ 'fill-primary': isMarked }" />
   </div>
 </template>
