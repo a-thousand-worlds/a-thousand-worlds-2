@@ -77,7 +77,7 @@ export default {
     <thead>
       <tr>
         <th style="width: 100%;">Tag</th>
-        <th class="has-text-right">Sort</th>
+        <th class="has-text-right" v-tippy="{ content: `Set the sort order of the tags in the filter menu. Tags with lower numbers show up above tags with higher numbers.` }" style="white-space: nowrap;">Sort <i class="far fa-question-circle" /></th>
         <th class="has-text-centered" v-tippy="{ content: `Adjust the likelihood of ${type} being sorted to the top. For example, a person that has a tag with weight 10 means the person is 10 times more likely to be sorted to the top than a person that has a tag with weight 1` }" style="white-space: nowrap;">Weight <i class="far fa-question-circle" /></th>
         <th class="has-text-centered" v-tippy="{ content: `Show this tag in the ${type} filter menu` }" style="white-space: nowrap;">Show <i class="far fa-question-circle" /></th>
         <th>Edit/Delete</th>
