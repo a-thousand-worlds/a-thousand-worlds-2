@@ -3,10 +3,12 @@ import _ from 'lodash'
 import Jimp from 'jimp'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import SimpleInput from '@/components/fields/SimpleInput'
+import Tag from '@/components/Tag'
 
 export default {
   components: {
     SimpleInput,
+    Tag,
   },
   props: ['submission', 'modelValue', 'checked'],
   data() {
@@ -113,21 +115,22 @@ export default {
       <!-- name -->
       <div class="column is-3">
 
-        <div>
-          <SimpleInput
-            v-model="sub.name"
-            @update:modelValue="save"
-            :disabled="busy"
-            style="font-weight: bold;"
-            placeholder="Name"
-          />
-          <SimpleInput
-            v-model="sub.title"
-            @update:modelValue="save"
-            :disabled="busy"
-            placeholder="Title"
-          />
-        </div>
+        <SimpleInput
+          v-model="sub.name"
+          @update:modelValue="save"
+          :disabled="busy"
+          style="font-weight: bold;"
+          placeholder="Name"
+        />
+
+        <SimpleInput
+          v-model="sub.title"
+          @update:modelValue="save"
+          :disabled="busy"
+          placeholder="Title"
+        />
+
+        <Tag :tag="{ tag: 'NEW' }" :nolink="true" class="mt-1" />
       </div>
 
       <div class="column is-5">
