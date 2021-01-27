@@ -135,64 +135,78 @@ export default {
       <!-- title, authors, illustrators -->
       <div class="column is-3">
 
+        <!-- title -->
         <div style="font-weight: bold;">
           <SimpleInput
             v-model="sub.title"
             @update:modelValue="save()"
             :disabled="busy"
-            :placeholder="'Title'" />
+            placeholder="Title"
+          />
         </div>
+
+        <!-- author(s) -->
         <div>
           <MultiPersonField
             v-model="sub.authors"
             @update:modelValue="save()"
             :disabled="busy"
-            :role="'author'"
-            :placeholder="'author(s)'"
             :search-db="false"
+            placeholder="author(s)"
             pre-text="words by"
+            role="author"
             :class="!authorsExist && 'mr-1'"
             :style="!authorsExist && { display: 'inline-block' }"
           />
           <Tag v-if="!authorsExist" :tag="{ tag: 'NEW' }" nolink v-tippy="{ content: 'This author is new! When the book is approved, they will be added to the people directory.' }" />
         </div>
+
+        <!-- illustrator(s) -->
         <div>
           <MultiPersonField
             v-model="sub.illustrators"
             @update:modelValue="save()"
             :disabled="busy"
-            :role="'illustrator'"
             :placeholder="'illustrator(s)'"
             :search-db="false"
+            role="illustrator"
             pre-text="illustrated by"
             :class="!authorsExist && 'mr-1'"
             :style="!illustratorsExist && { display: 'inline-block' }"
           />
           <Tag v-if="!illustratorsExist" :tag="{ tag: 'NEW' }" nolink v-tippy="{ content: 'This illustrator is new! When the book is approved, they will be added to the people directory.' }" />
         </div>
+
+        <!-- year -->
         <div>
           <SimpleInput
             v-model="sub.year"
             @update:modelValue="save()"
             :disabled="busy"
-            :placeholder="'Year'" />
+            :placeholder="'Year'"
+          />
         </div>
-      <!--
-      <div>
-        <SimpleInput
-          :disabled="busy"
-          :placeholder="'ISBN'"
+
+        <!--
+        <div>
+          <SimpleInput
+            :disabled="busy"
             @update:modelValue="save()"
-          v-model="sub.isbn"/>
-      </div>
-      <div>
-        <SimpleInput
-          :disabled="busy"
-          :placeholder="'Publisher'"
+            v-model="sub.isbn"
+            placeholder="ISBN"
+          />
+        </div>
+
+        <div>
+          <SimpleInput
+            :disabled="busy"
             @update:modelValue="save()"
-          v-model="sub.publisher"/>
-      </div>
-      -->
+            v-model="sub.publisher"
+            placeholder="Publisher"
+          />
+        </div>
+        -->
+
       </div>
 
       <div class="column is-5" style="margin-top: -20px;">
