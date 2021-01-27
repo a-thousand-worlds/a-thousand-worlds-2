@@ -16,8 +16,10 @@ const module = name => mergeOne(collection(name), {
       const user = state.rootState?.user?.user?.uid || null
       value.updatedAt = now.format()
       value.updatedBy = user
-      if (!value.createdAt || !value.createdBy) {
+      if (!value.createdAt) {
         value.createdAt = now.format()
+      }
+      if (!value.createdBy) {
         value.createdBy = user
       }
       if (value.reviewedBy && !value.reviewedAt) {

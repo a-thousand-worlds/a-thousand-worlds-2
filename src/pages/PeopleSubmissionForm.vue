@@ -34,7 +34,7 @@ export default {
       const userSubmissions = this.$store.state.user.user.profile.submissions || {}
       const peopleSubmissionId = Object.keys(userSubmissions)
         .find(sid => peopleSubmissions[sid]?.type === 'people' && peopleSubmissions[sid]?.status === 'approved')
-      const peopleId = peopleSubmissions[peopleSubmissionId]?.peopleId
+      const peopleId = peopleSubmissions[peopleSubmissionId]?.peopleSubmissionId
       const person = this.$store.state.people.data[peopleId]
       return person
     },
@@ -87,9 +87,7 @@ export default {
         identities: {},
         name: '',
         photo: '',
-        pronoun: '',
         title: 'author',
-        website: '',
       }
       const newPerson = {
         ...emptySubmission,

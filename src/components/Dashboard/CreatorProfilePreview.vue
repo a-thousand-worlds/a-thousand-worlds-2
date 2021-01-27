@@ -21,13 +21,25 @@ export default {
         .find(sid => peopleSubmissions[sid]?.type === 'people' && peopleSubmissions[sid].status === 'approved')
     },
     person() {
-      const peopleSubmissions = this.$store.state.submissions.people.data || {}
-      const peopleId = peopleSubmissions[this.peopleSubmissionId]?.peopleId
-      const person = this.$store.state.people.data[peopleId]
+
+      // searches for the person id based on the submission and logged in user
+      const getPersonId = () => {
+
+        // first check user profile
+        const profilePersonId = this.$store.state.user.user.profile.personId
+        if (profilePersonId) return profilePersonId
+
+        // if not found, then check people submission
+        const peopleSubmissions = this.$store.state.submissions.people.data || {}
+        const peopleSubmissionPersonId = peopleSubmissions[this.peopleSubmissionId]?.personId
+        return peopleSubmissionPersonId
+      }
+
+      const person = this.$store.state.people.data[getPersonId()]
       return person
     },
     userPersonSubmission() {
-      return this.userSubmissions[this.peopleSubmissionId]
+      return this.userSubmissions[this.peopleSubmissionPersonId]
     },
     userSubmissions() {
       return this.$store.state.user.user.profile.submissions || {}
