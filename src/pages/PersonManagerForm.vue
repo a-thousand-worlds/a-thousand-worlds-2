@@ -13,7 +13,6 @@ export default {
       person: {
         id: null,
         name: '',
-        email: '',
         bio: '',
         photo: '',
         file: null,
@@ -105,13 +104,6 @@ export default {
             <label class="label">Name</label>
             <div class="control">
               <input v-model="person.name" type="text" class="input">
-            </div>
-          </div>
-
-          <div class="field">
-            <label class="label">E-mail</label>
-            <div class="control">
-              <input v-model="person.email" type="email" class="input">
             </div>
           </div>
 
