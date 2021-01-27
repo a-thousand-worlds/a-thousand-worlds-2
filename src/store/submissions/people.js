@@ -78,7 +78,7 @@ const module = mergeOne(managed('submits/people'), {
 
       /** Gets the person with an almost equal name. */
       const person = async sub =>
-        context.rootGetters['people/findBy']('', person => almostEqual(person.name, sub.name))
+        context.rootGetters['people/findBy'](person => almostEqual(person.name, sub.name))
 
       /** Get the creator id if it exists for the given user. */
       // TODO: This would be a lot easier if the peopleId was stored in the user profile

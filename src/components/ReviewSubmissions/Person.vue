@@ -50,7 +50,7 @@ export default {
     /** Gets the person with an almost equal name. */
     person() {
       if (!this.sub) return null
-      return this.$store.getters['people/findBy']('', person => almostEqual(person.name, this.sub.name))
+      return this.$store.getters['people/findBy'](person => almostEqual(person.name, this.sub.name))
     },
     /** If there is a matching person, get their books. */
     books() {
