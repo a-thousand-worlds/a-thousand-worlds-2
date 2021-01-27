@@ -1,15 +1,36 @@
 <script>
+import _ from 'lodash'
 import dayjs from 'dayjs'
+import SortableTableHeading from '@/components/SortableTableHeading'
 
 export default {
   name: 'BooksManager',
-  methods: {
-    delBook(id) {
-      this.$store.commit('ui/setBusy', true)
-      this.$store.dispatch('books/remove', id).then(() => {
-        this.$store.commit('ui/setBusy', false)
-      })
+  components: {
+    SortableTableHeading,
+  },
+  data() {
+    return {
+      sortConfig: {
+        field: 'created',
+        dir: 'desc',
+      }
+    }
+  },
+
+  computed: {
+    books() {
+      const bookList = this.$store.getters['books/list']()
+        .map(book => ({
+          ...book,
+          titleLower: book.title.toLowerCase(),
+        }))
+      const sorted = _.sortBy(bookList, [this.sortConfig.field, 'titleLower'])
+      return this.sortConfig.dir === 'desc' ? _.reverse(sorted) : sorted
     },
+  },
+
+  methods: {
+
     authors(creators) {
       const people = this.$store.state.people.data
       return Object.entries(creators)
@@ -17,9 +38,11 @@ export default {
         .map(([id, value]) => people[id]?.name)
         .join(', ')
     },
+
     formatDate(d) {
       return dayjs(d).format('M/D/YYYY hh:mm')
     },
+
     illustrators(creators) {
       const people = this.$store.state.people.data
       return Object.entries(creators)
@@ -27,6 +50,17 @@ export default {
         .map(([id, value]) => people[id]?.name)
         .join(', ')
     },
+
+    async remove(id) {
+      this.$store.commit('ui/setBusy', true)
+      try {
+        await this.$store.dispatch('books/remove', id)
+      }
+      finally {
+        this.$store.commit('ui/setBusy', false)
+      }
+    },
+
   }
 }
 
@@ -50,19 +84,19 @@ export default {
       <table class="table w-100">
         <thead>
           <tr>
-            <th>ISBN</th>
-            <th>Title</th>
-            <th>Author(s)</th>
-            <th>Illustrator(s)</th>
-            <th class="has-text-right">Created</th>
+            <SortableTableHeading id="isbn" v-model="sortConfig">ISBN</SortableTableHeading>
+            <SortableTableHeading id="titleLower" v-model="sortConfig">Title</SortableTableHeading>
+            <SortableTableHeading id="authors" v-model="sortConfig">Author(s)</SortableTableHeading>
+            <SortableTableHeading id="illustrators" v-model="sortConfig">Illustrator(s)</SortableTableHeading>
+            <SortableTableHeading id="created" v-model="sortConfig" class="has-text-right">Created</SortableTableHeading>
             <th class="has-text-right">Delete</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="book of $store.getters['books/list']()" :key="book.id">
+          <tr v-for="book of books" :key="book.id">
 
             <!-- ISBN -->
-            <td>{{ book.isbn }}</td>
+            <td><span v-tippy="{ content: book.id }">{{ book.isbn }}</span></td>
 
             <!-- title -->
             <td>{{ book.title }}</td>
@@ -101,7 +135,16 @@ export default {
 @import "bulma/sass/form/shared.sass";
 @import "bulma/sass/form/checkbox-radio.sass";
 
-.table td {
-  vertical-align: middle;
+.table {
+
+  th {
+    user-select: none;
+  }
+
+  td {
+    vertical-align: middle;
+  }
+
 }
+
 </style>
