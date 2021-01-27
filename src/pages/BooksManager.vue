@@ -1,7 +1,9 @@
 <script>
 import _ from 'lodash'
 import dayjs from 'dayjs'
+import BookDetailLink from '@/components/BookDetailLink'
 import SortableTableHeading from '@/components/SortableTableHeading'
+import StaticBookCover from '@/components/StaticBookCover'
 import { remove as diacritics } from 'diacritics'
 
 /** Generates a sort token that will sort empty strings to the end regardless of sort direction. */
@@ -11,7 +13,9 @@ const sortEmptyToEnd = (s, dir) =>
 export default {
   name: 'BooksManager',
   components: {
+    BookDetailLink,
     SortableTableHeading,
+    StaticBookCover,
   },
   data() {
     return {
@@ -101,7 +105,7 @@ export default {
 
 <template>
 
-  <div class="m-20 is-flex is-justify-content-center">
+  <div class="is-flex is-justify-content-center m-20 mb-40">
     <div class="is-flex-grow-1 mx-20" style="max-width: 900px;">
 
       <div class="mb-5">
@@ -121,6 +125,7 @@ export default {
       <table class="table w-100">
         <thead>
           <tr>
+            <td></td>
             <SortableTableHeading id="isbn" v-model="sortConfig">ISBN</SortableTableHeading>
             <SortableTableHeading id="titleLower" v-model="sortConfig">Title</SortableTableHeading>
             <SortableTableHeading id="authors" v-model="sortConfig">Author(s)</SortableTableHeading>
@@ -131,6 +136,13 @@ export default {
         </thead>
         <tbody>
           <tr v-for="book of books" :key="book.id">
+
+            <!-- cover -->
+            <td>
+              <BookDetailLink :book="book">
+                <StaticBookCover :book="book" style="width: 150px; min-width: auto; min-height: auto;" />
+              </BookDetailLink>
+            </td>
 
             <!-- ISBN -->
             <td><span v-tippy="{ content: book.id }">{{ book.isbn }}</span></td>

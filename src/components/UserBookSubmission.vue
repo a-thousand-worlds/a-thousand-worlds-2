@@ -25,9 +25,9 @@ export default {
 
   <div v-if="sub">
     <BookDetailLink v-if="book" :book="book">
-      <StaticBookCover :book="sub" />
+      <StaticBookCover :book="sub" style="max-width: 200px;" />
     </BookDetailLink>
-    <StaticBookCover v-else :book="sub" />
+    <StaticBookCover v-else :book="sub" style="max-width: 200px;" />
   </div>
   <!-- <div v-else-if="bookSub?.type === 'bundle'">
     <h4>
