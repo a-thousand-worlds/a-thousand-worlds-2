@@ -110,8 +110,9 @@ export default {
           <router-link class="mr-20" :to="{ name:'TagsManager', query: { active: 'people' } }" style="color: black; line-height: 2.5;">People Tags</router-link>
         </div>
         <div class="is-flex is-align-items-center">
+          <span class="has-text-right" v-tippy="{ content: `Search by name, title, or date created` }" style="white-space: nowrap;"><i class="far fa-question-circle" /></span>
           <i class="fas fa-search" style="transform: translateX(23px); z-index: 10; opacity: 0.3;" />
-          <input v-model="search" class="input" placeholder="Search" style="padding-left: 30px;">
+          <input v-model="search" placeholder="Search" class="input pl-30">
         </div>
       </div>
 

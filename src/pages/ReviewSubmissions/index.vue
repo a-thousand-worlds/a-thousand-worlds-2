@@ -32,7 +32,7 @@ export default {
 
       <h1 class="divider-bottom is-capitalized is-flex is-justify-content-space-between is-align-items-center">
         <span>Review {{ label }} Submissions</span>
-        <router-link :to="{ name: 'ReviewRejectedSubmissions', params: { type } }"><i class="fa fa-trash" style="font-size: 22px;" /></router-link>
+        <router-link :to="{ name: 'ReviewRejectedSubmissions', params: { type } }"><i v-tippy="{ content: `View rejected submissions` }" class="fa fa-trash" style="font-size: 22px;" /></router-link>
       </h1>
       <Groups :type="type" />
     </div>
