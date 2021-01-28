@@ -82,9 +82,11 @@ export default {
       <!-- approve -->
       <div v-if="status !== 'approved'">
         <button
+          @click="approveGroup"
           :disabled="$uiBusy"
           class="level-item is-flat is-underlined is-uppercase"
-          @click="approveGroup">Approve</button>
+          v-tippy="{ content: `Approve submission and add to public directory` }"
+        >Approve</button>
       </div>
 
       <!-- book/person review -->
@@ -95,11 +97,13 @@ export default {
 
       <!-- submitter -->
       <div v-if="type !== 'people'" class="has-text-right mt-20">
-        {{ submitterName }}{{ submitterRoles ? `, ${submitterRoles}` : '' }}
-        <span v-if="submitterOrganization">
-          <span class="ml-1">at</span>
-          <a target="_blank" class="ml-1" v-if="submitterOrganizationLink" :href="submitterOrganizationLink">{{ submitterOrganization }}</a>
-          <span class="ml-1" v-else>{{ submitterOrganization }}</span>
+        <span v-tippy="{ content: `Submitted by` }">
+          {{ submitterName }}{{ submitterRoles ? `, ${submitterRoles}` : '' }}
+          <span v-if="submitterOrganization">
+            <span class="ml-1">at</span>
+            <a target="_blank" class="ml-1" v-if="submitterOrganizationLink" :href="submitterOrganizationLink">{{ submitterOrganization }}</a>
+            <span class="ml-1" v-else>{{ submitterOrganization }}</span>
+          </span>
         </span>
       </div>
     </div>
