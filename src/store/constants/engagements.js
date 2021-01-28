@@ -1,11 +1,11 @@
 const engagements = [
   { id: 'editor', text: 'Editor' },
-  { id: 'author', text: 'Author' },
-  { id: 'illustrator', text: 'Illustrator' },
-  { id: 'manager', text: 'Manager' },
-  { id: 'agent', text: 'Agent' },
-  { id: 'owner', text: 'owner' },
-  { id: 'coowner', text: 'Co-owner' }
+  { id: 'reviewer-critic', text: 'Reviewer/Critic' },
+  { id: 'librarian', text: 'Librarian' },
+  { id: 'educator', text: 'Educator' },
+  { id: 'publisher', text: 'Publisher' },
+  { id: 'reader', text: 'Reader' },
+  { id: 'parent-caregiver', text: 'Parent/Caregiver' }
 ]
 
 export default engagements
