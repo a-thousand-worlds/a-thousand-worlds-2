@@ -221,7 +221,7 @@ export default {
         </div>
         <!-- tags -->
         <div class="tags">
-          <div v-for="(tag, tagi) of tags" :key="tagi" class="button is-primary is-rounded is-mini mr-1 mb-1" style="cursor: default;">{{ tag.tag }}</div>
+          <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="books" linkToManager class="mr-1 mb-1" v-tippy="{ content: 'Edit book tags' }" />
         </div>
       </div>
 

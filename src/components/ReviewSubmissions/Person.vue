@@ -44,7 +44,7 @@ export default {
     identities() {
       return Object.keys(this.sub?.identities || {})
     },
-    identityOptions() {
+    peopleTags() {
       return this.$store.state.tags.people.data
     },
     /** Gets the person with an almost equal name. */
@@ -154,7 +154,7 @@ export default {
         </div>
         <!-- identities -->
         <div class="tags">
-          <div v-for="identity of identities" :key="identity.id" class="button is-primary is-rounded is-mini mr-1 mb-1" style="cursor: default;">{{ identityOptions[identity].tag }}</div>
+          <Tag v-for="id of identities" :key="id" :tag="peopleTags[id]" type="people" linkToManager class="mr-1 mb-1" v-tippy="{ content: 'Edit people tags' }" />
         </div>
       </div>
 
