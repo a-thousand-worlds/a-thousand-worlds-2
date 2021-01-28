@@ -30,12 +30,12 @@ export default {
     imageUrl() {
       return this.sub.thumbnail?.startsWith('http')
         ? this.sub.thumbnail
-        : this.sub.image?.url.startsWith('http')
-          ? this.sub.image?.url
-          : this.sub.image?.base64
-            ? this.sub.image?.base64.startsWith('data:image')
-              ? this.sub.image?.base64
-              : `data:image/png;base64,${this.sub.image.base64}`
+        : this.sub.photo?.url?.startsWith('http')
+          ? this.sub.photo.url
+          : this.sub.photo?.base64
+            ? this.sub.photo.base64.startsWith('data:image')
+              ? this.sub.photo.base64
+              : `data:image/png;base64,${this.sub.photo.base64}`
             : ''
     },
     identities() {
@@ -75,7 +75,7 @@ export default {
             console.error('jimp error', err)
           }
           if (img) {
-            this.sub.image = {
+            this.sub.photo = {
               base64: reader.result,
               height: img.bitmap.width,
               width: img.bitmap.height,

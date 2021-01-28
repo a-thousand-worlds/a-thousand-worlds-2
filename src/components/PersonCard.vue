@@ -8,7 +8,12 @@ export default {
   props: ['person'],
   computed: {
     bgImage() {
-      return this.person.photo
+      if (!this.person.photo) return ''
+      return typeof this.person.photo === 'string'
+        ? this.person.photo
+        : this.person.photo.url?.startsWith('http')
+          ? this.person.photo.url
+          : ''
     }
   },
 }

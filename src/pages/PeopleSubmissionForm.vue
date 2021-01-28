@@ -1,5 +1,7 @@
 <script>
 import _ from 'lodash'
+// Jimp required if dimensions checks needs to be done on file upload
+// import Jimp from 'jimp'
 import validator from '@/mixins/validator'
 import genderOptions from '@/store/genderOptions'
 
@@ -38,6 +40,11 @@ export default {
       const person = this.$store.state.people.data[peopleId]
       return person
     },
+    bgPhoto() {
+      return this.submission.photo.base64?.length
+        ? this.submission.photo.base64
+        : null
+    }
   },
   watch: {
     // update submission when draftPerson is first loaded
@@ -86,7 +93,9 @@ export default {
         gender: '',
         identities: {},
         name: '',
-        photo: '',
+        photo: {
+          base64: ''
+        },
         pronoun: '',
         title: 'author',
         website: '',
@@ -129,6 +138,41 @@ export default {
       }
     },
 
+    fileChange(e) {
+      const file = e.target.files[0]
+      const reader = new FileReader()
+      this.submission.photo.base64 = ''
+      reader.onload = () => {
+        this.submission.photo.base64 = reader.result
+        // any additional checks on file size or type, using file.size, file.type
+        // can be done here
+        // if additional checks on file dimensions required - jimp is required
+        /*
+        Jimp.read(reader.result, (err, img) => {
+          if (err) {
+            console.error('jimp error', err)
+          }
+          if (img) {
+            if (img.bitmap.width !== img.bitmap.height) {
+              alert('recommended to use square images')
+            }
+            this.saveDraftAndRevalidate()
+          }
+        })
+        */
+        this.saveDraftAndRevalidate()
+      }
+      reader.onerror = err => {
+        console.error('FileReader error', err)
+      }
+      reader.readAsDataURL(file)
+    },
+
+    clearPhoto() {
+      this.submission.photo.base64 = ''
+      this.saveDraftAndRevalidate()
+    },
+
   },
 }
 </script>
@@ -147,6 +191,20 @@ export default {
         <h1 class="title page-title divider-bottom">{{ person ? 'Edit public profile' : 'Create a profile' }}</h1>
 
         <section class="basic-information">
+
+          <!-- photo -->
+          <div class="field">
+            <label class="label" :class="{ 'has-text-danger': hasError('photo') }" style="font-weight: bold; text-transform: uppercase;">Your Photo</label>
+            <div>
+              <img v-if="bgPhoto" :src="bgPhoto">
+              <label for="photo-field" class="upload-label">
+                <span v-if="bgPhoto">Upload other photo (replace)</span>
+                <span v-else>Upload</span>
+              </label>
+              <label v-if="bgPhoto" class="upload-label ml-5" @click.prevent="clearPhoto()">Remove photo</label>
+              <input id="photo-field" type="file" class="is-invisible" @change.prevent="fileChange($event)">
+            </div>
+          </div>
 
           <!-- name -->
           <div class="field">
@@ -267,6 +325,10 @@ export default {
 <style scoped lang="scss">
 @import "bulma/sass/utilities/_all.sass";
 @import '@/assets/style/vars.scss';
+
+.upload-label {
+  cursor: pointer;
+}
 
 .sublabel .label {
   font-size: 14px;

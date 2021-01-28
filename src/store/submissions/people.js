@@ -110,6 +110,15 @@ const module = mergeOne(managed('submits/people'), {
           ])
         }
 
+        // if submission contains photo - we resaving it to separate file related with creator record
+        // submission photo file may be removed if submission record is removed, and we don't want to lose photo file
+        // we use 'donwloadUrl' field as mark for backend function to resave file from provided url
+        if (sub.photo?.url?.startsWith('http')) {
+          personNew.photo = {
+            downloadUrl: sub.photo.url
+          }
+        }
+
         // update user submission and people submission
         await context.dispatch('updateSubmission', { peopleId: id, sub, status: 'approved' })
 

@@ -1,42 +1,43 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
-const coverImageByISBN = require('../util/coverImageByISBN')
+const image64ToBuffer = require('../util/image64ToBuffer')
 const UUID = require('uuid')
 const getDownloadUrl = require('../util/getBucketFileDownloadUrl')
 
-const watchBooks = functions
+const watch = functions
   .runWith({
     timeoutSeconds: 300,
     memory: '1GB',
   })
-  .database.ref('/books/{id}')
+  .database.ref('/submits/people/{id}')
   .onCreate(async (snap, context) => {
 
-    const book = snap.val()
-    // there is no need to push date to logs, cuz firebase functions logging system does this itself
-    console.log('Finding cover for book submission:', book.isbn)
-    /**/
-
-    await snap.ref.child('findingCover').set(true)
-    let img
-    try {
-      // scaling cover image for book for maximum width 400px
-      img = await coverImageByISBN(book.isbn, 400)
-    }
-    finally {
-      await snap.ref.child('findingCover').remove()
-    }
-
-    if (!img) {
-      console.log('No cover:', book.isbn)
+    const submission = snap.val()
+    // nothing to do if there is no uploaded photo
+    if (!submission.photo || !submission.photo.base64) {
       return
     }
 
-    console.log('Saving cover to storage:', book.isbn)
+    let img
+    try {
+      // scaling image for maximum width 400px
+      img = await image64ToBuffer(submission.photo.base64, 400)
+    }
+    catch (err) {
+      console.log('error happens on converting image from base64', err)
+      img = null
+    }
+
+    if (!img) {
+      console.log('No photo')
+      return
+    }
+
+    console.log('Saving photo to storage:', submission.name)
 
     const bucket = admin.storage().bucket()
     const uuid = UUID.v4()
-    const fname = `books/${context.params.id}`
+    const fname = `submits/people/${context.params.id}`
     const file = await bucket.file(fname)
     await file
       .save(img.buffer, {
@@ -50,14 +51,14 @@ const watchBooks = functions
       })
     const url = getDownloadUrl(fname, bucket.name, uuid)
 
-    await snap.ref.child('cover').set({
+    await snap.ref.child('photo').set({
       url,
       width: img.width,
       height: img.height
     })
-    console.log('Cover saved:', book.isbn, url)
+    console.log('Photo saved:', submission.name, url)
     /**/
 
   })
 
-module.exports = watchBooks
+module.exports = watch

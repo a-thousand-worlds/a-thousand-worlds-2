@@ -10,6 +10,7 @@ export default {
   },
   computed: {
     route() {
+      if (!this.person.name) return { name: 'People' }
       return {
         name: 'PersonDetail',
         params: {
