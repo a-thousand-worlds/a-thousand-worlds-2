@@ -47,7 +47,7 @@ export default {
     /** Returns true if all authors exist in the people directory already. */
     authorsExist() {
       if (!this.sub) return null
-      const authors = this.sub.authors.split(',').map(x => x && x.trim()).filter(x => x)
+      const authors = (this.sub.authors || '').split(',').map(x => x && x.trim()).filter(x => x)
       return authors.every(name => this.$store.getters['people/findBy'](person =>
         almostEqual(name, person.name)
       ))
@@ -55,7 +55,7 @@ export default {
     /** Returns true if all authors exist in the people directory already. */
     illustratorsExist() {
       if (!this.sub) return null
-      const illustrators = this.sub.illustrators.split(',').map(x => x && x.trim()).filter(x => x)
+      const illustrators = (this.sub.illustrators || '').split(',').map(x => x && x.trim()).filter(x => x)
       return illustrators.every(name => this.$store.getters['people/findBy'](person =>
         almostEqual(name, person.name)
       ))
