@@ -28,9 +28,6 @@ export default {
     draftPerson() {
       return this.$store.state.user.user?.profile.draftPerson
     },
-    identityOptions() {
-      return this.$store.getters[`tags/people/listSorted`]()
-    },
     person() {
       const peopleSubmissions = this.$store.state.submissions.people.data || {}
       const userSubmissions = this.$store.state.user.user.profile.submissions || {}
@@ -249,17 +246,6 @@ export default {
             </div>
           </div>
 
-          <!-- identity -->
-          <div class="field">
-            <label class="label" :class="{ 'has-text-danger': hasError('identities') }" style="font-weight: bold; text-transform: uppercase;">Identity</label>
-            <div class="sublabel tablet-columns-2">
-              <div v-for="identity of identityOptions" :key="identity.id" class="control is-flex" style="column-break-inside: avoid;">
-                <input v-model="submission.identities[identity.id]" :id="`identity-${identity.id}`" :false-value="null" type="checkbox" class="checkbox mb-3 mt-1" @input="saveDraftAndRevalidate">
-                <label class="label pl-2 pb-1 no-user-select" :for="`identity-${identity.id}`" style="cursor: pointer;">{{ identity.tag }}</label>
-              </div>
-            </div>
-          </div>
-
           <!-- bio -->
           <div class="field">
             <label class="label"><b>Bio</b></label>
@@ -328,10 +314,6 @@ export default {
   cursor: pointer;
 }
 
-.sublabel .label {
-  font-size: 14px;
-}
-
 .basic-information > .field {
   margin-bottom: 30px;
 }
@@ -339,14 +321,6 @@ export default {
 .label {
   font-size: 18px;
   font-weight: normal;
-}
-
-.tablet-columns-2 {
-  column-count: 1;
-
-  @include from($tablet) {
-    column-count: 2;
-  }
 }
 
 .w-100 {

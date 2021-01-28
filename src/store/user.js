@@ -62,13 +62,14 @@ const module = mergeOne(usersModule, {
       return firebase.auth().signInWithEmailAndPassword(data.email, data.password)
     },
 
-    async signup({ commit, dispatch, rootState }, { code, email, name, affiliations, password }) {
+    async signup({ commit, dispatch, rootState }, { code, email, name, identities, affiliations, password }) {
       const { user } = await firebase.auth().createUserWithEmailAndPassword(email, password)
 
       commit('setUser', auth2user(user))
       // save profile to user record
       await dispatch('saveProfile', {
         email,
+        identities,
         name,
         ...code ? { code } : null,
         ...affiliations?.organization ? { affiliations } : null,
@@ -103,7 +104,7 @@ const module = mergeOne(usersModule, {
       const ref = firebase.database().ref(`users/${ctx.state.user.uid}/profile`)
       await ref.update(values)
       ctx.commit('setProfile', {
-        ...ctx.user.profile,
+        ...ctx.state.user.profile,
         ...values,
       })
     },

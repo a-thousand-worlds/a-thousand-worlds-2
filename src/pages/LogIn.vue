@@ -9,23 +9,27 @@ export default {
     Loader,
   },
   data() {
+    const profile = this.$store.state.user.user?.profile
     return {
       // the active tab (login or signup)
       active: this.getActiveFromUrl(),
-      email: this.$store.state.user.user?.profile?.email || '',
-      name: this.$store.state.user.user?.profile?.name || '',
+      email: profile?.email || '',
+      name: profile?.name || '',
       // all options for enagement checkboxes
       engagementCategories: Engagements,
+      // copy identities object, otherwise editing the form will update the person identities object by reference
+      identities: profile?.identities ? { ...profile.identities } : {},
       disableAfterSave: false,
       disableResetPassword: false,
       error: null,
       loading: false,
       password: '',
-      affiliations: this.$store.state.user.user?.profile?.affiliations || {
+      affiliations: {
         organization: '',
         organizationLink: '',
         otherEngagementCategory: '',
         selectedEngagementCategories: {},
+        ...profile?.affiliations,
       },
       // only show errors after a submit has been attempted
       submitAttempt: false,
@@ -43,11 +47,14 @@ export default {
     invite() {
       return this.$store.getters['invites/get'](this.code)
     },
+    peopleTags() {
+      return this.$store.getters[`tags/people/listSorted`]()
+    },
     title() {
       return this.active === 'signup' ?
         this.invite?.role ? `You have been invited to join as a ${this.invite.role}!` : 'Sign up for an account'
         : this.active === 'login' ? 'Log In'
-        : this.active === 'profile' ? 'Profile'
+        : this.active === 'profile' ? 'Edit Profile'
         : null
     },
     showOrgLink() {
@@ -161,7 +168,7 @@ export default {
         password: this.password
       })
         .then(() => {
-          this.$router.push({ name: 'Dashboard' })
+          this.$router.push({ name: this.$can('viewDashboard') ? 'Dashboard' : 'Home' })
         })
       )
     },
@@ -175,10 +182,11 @@ export default {
         email: this.email,
         name: this.name,
         password: this.password,
+        identities: this.identities,
         affiliations: this.affiliations,
       })
         .then(() => {
-          this.$router.push({ name: 'Dashboard' })
+          this.$router.push({ name: this.$can('viewDashboard') ? 'Dashboard' : 'Home' })
         })
       )
     },
@@ -206,9 +214,10 @@ export default {
         })
 
       if (!this.error) {
-        await this.handleResponse(this.$store.dispatch('user/saveProfile', {
+        await this.handleResponse(this.$store.dispatch('user/updateProfile', {
           name: this.name,
           email: this.email,
+          identities: this.identities,
           affiliations: this.affiliations,
         })
           .then(() => {
@@ -244,6 +253,7 @@ export default {
 
       this.error = null
 
+      // name
       if ((this.active === 'signup' || this.active === 'profile') && !this.name.length) {
         this.error = {
           message: 'Please check required fields',
@@ -251,6 +261,7 @@ export default {
         }
       }
 
+      // email
       if ((this.active === 'signup' || this.active === 'login' || this.active === 'profile') && !this.email.length) {
         this.error = {
           message: 'Please check required fields',
@@ -258,6 +269,7 @@ export default {
         }
       }
 
+      // password
       if ((this.active === 'signup' || this.active === 'login') && !this.password.length) {
         this.error = {
           message: 'Please check required fields',
@@ -266,7 +278,7 @@ export default {
       }
 
       // contributor fields
-      if ((this.active === 'signup' && this.invite?.role === 'contributor') || this.active === 'profile') {
+      if (this.invite?.role === 'contributor' && (this.active === 'signup' || this.active === 'profile')) {
 
         // engagements
         const hasSelectedEngagements = Object.values(this.affiliations.selectedEngagementCategories)
@@ -336,7 +348,7 @@ export default {
         </div>
 
         <div>
-          <h1 v-if="!invite || invite.role" class="title page-title divider-bottom">{{ title }}</h1>
+          <h1 class="title page-title divider-bottom">{{ title }}</h1>
 
           <div v-if="active === 'signup' || active === 'profile'" class="field">
             <label :class="['label', { error: hasError('name') }]">NAME</label>
@@ -359,9 +371,20 @@ export default {
             </div>
           </div>
 
+          <!-- identities -->
+          <div v-if="active === 'signup' || active === 'profile'" class="field">
+            <label class="label" :class="{ 'has-text-danger': hasError('identities') }" style="font-weight: bold; text-transform: uppercase;">Identity</label>
+            <div class="sublabel tablet-columns-2">
+              <div v-for="identity of peopleTags" :key="identity.id" class="control is-flex" style="column-break-inside: avoid;">
+                <input v-model="identities[identity.id]" :id="`identity-${identity.id}`" :false-value="null" type="checkbox" class="checkbox mb-3 mt-1" @input="saveDraftAndRevalidate">
+                <label class="label pl-2 pb-1" :for="`identity-${identity.id}`" style="cursor: pointer;">{{ identity.tag }}</label>
+              </div>
+            </div>
+          </div>
+
           <div v-if="(active === 'signup' && invite?.role === 'contributor') || active === 'profile'" class="field">
             <label class="label is-uppercase" :class="{ error: hasError('engagements') }">How do you engage with books?</label>
-            <div style="column-count: 2;">
+            <div class="sublabel tablet-columns-2">
               <div v-for="category of engagementCategories" :key="category.id" class="control columns-2">
                 <input :id="category.id" v-model="affiliations.selectedEngagementCategories[category.id]" :disabled="loading" :name="category.id" @input="revalidate" type="checkbox" class="checkbox mr-3 mb-3">
                 <label class="label is-inline is-uppercase no-user-select" style="word-wrap: nobreak;" :for="category.id">
@@ -377,7 +400,7 @@ export default {
 
           </div>
 
-          <div v-if="(active === 'signup' && invite?.role === 'contributor') || active === 'profile'" class="field" :class="{ 'divider-30': !showOrgLink }">
+          <div v-if="invite?.role === 'contributor' && (active === 'signup' || active === 'profile')" class="field" :class="{ 'divider-30': !showOrgLink }">
             <label class="label is-uppercase" :class="{ error: hasError('organizationName') }">Are you affiliated with an organization?</label>
             <input v-model="affiliations.organization" :disabled="loading" @input="revalidate" class="input" type="text">
           </div>

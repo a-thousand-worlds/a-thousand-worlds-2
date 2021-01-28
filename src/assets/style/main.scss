@@ -238,3 +238,18 @@ a.button.is-secondary.is-outlined:hover,
   vertical-align: middle;
 }
 
+.tablet-columns-2 {
+  column-count: 1;
+
+  @include from($tablet) {
+    column-count: 2;
+  }
+}
+
+.sublabel .label {
+  font-size: 14px;
+  font-weight: normal;
+  user-select: none;
+  cursor: pointer;
+}
+
