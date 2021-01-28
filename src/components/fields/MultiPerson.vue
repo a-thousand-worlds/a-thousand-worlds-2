@@ -11,16 +11,6 @@ export default {
       mode: 'view'
     }
   },
-  computed: {
-    hasNewPeople() {
-      if (!this.people.length) {
-        return false
-      }
-      return !this.people
-        .map(name => this.$store.getters['people/list']().reduce((acc, p) => p.name.toLowerCase() === name.toLowerCase() ? true : acc, false))
-        .reduce((acc, exists) => acc && exists, true)
-    }
-  },
   watch: {
     modelValue(next, prev) {
       this.names = next
@@ -98,13 +88,13 @@ export default {
           v-if="mode === 'view' && !names?.length && placeholder?.length"
           :class="{disabled:disabled}"
           class="w-50 pointer placeholder"
-          @click="onDivClick()">{{ placeholder }}</div>
+          @click="onDivClick">{{ placeholder }}</div>
         <div
           v-if="mode === 'view' && names?.length"
           :class="{disabled:disabled}"
           class="pointer"
           :title="placeholder"
-          @click="onDivClick()">{{ names }}</div>
+          @click="onDivClick">{{ names }}</div>
         <input
           v-if="mode === 'edit'"
           ref="input"
@@ -123,9 +113,6 @@ export default {
           </div>
         </div>
       </div>
-    <!-- <div v-if="mode === 'view' && hasNewPeople" class="control">
-      <i :class="{disabled:disabled}" class="fas fa-exclamation-triangle fa-danger" v-tippy="{ content: 'There is a not existing in database person. On book approve they will be automatically approved and created without biography' }"></i>
-    </div> -->
     </div>
   </div>
 

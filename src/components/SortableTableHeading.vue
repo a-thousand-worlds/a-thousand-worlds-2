@@ -43,7 +43,7 @@ export default {
 </script>
 
 <template>
-  <th style="cursor: pointer; white-space: nowrap;" @click="sort(id)">
+  <th style="cursor: pointer; white-space: nowrap; user-select: none;" @click="sort(id)">
     <slot />
     <i
       :class="`ml-1 fas fa-arrow-${sortConfig.dir === 'desc' ? 'down' : 'up'}`"

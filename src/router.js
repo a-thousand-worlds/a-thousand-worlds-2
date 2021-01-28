@@ -71,21 +71,21 @@ const routes = [
     }
   }, {
     path: '/suggest/book',
-    name: 'BookSuggest',
+    name: 'BookSubmissionForm',
     component: () => import(/* webpackChunkName: "contributor" */ './pages/BookSubmissionForm.vue'),
     meta: {
       access: ['contributor', 'advisor', 'owner']
     }
   }, {
     path: '/suggest/bundle',
-    name: 'BundleSuggest',
+    name: 'BundleSubmissionForm',
     component: () => import(/* webpackChunkName: "contributor" */ './pages/BundleSubmissionForm.vue'),
     meta: {
       access: ['contributor', 'advisor', 'owner']
     }
   }, {
     path: '/suggest/people',
-    name: 'PeopleSubmissionForm',
+    name: 'PersonSubmissionForm',
     component: () => import(/* webpackChunkName: "creator" */ './pages/PeopleSubmissionForm.vue'),
     meta: {
       access: ['creator', 'advisor', 'owner']
@@ -100,21 +100,21 @@ const routes = [
   }, {
     path: '/admin/people',
     name: 'PeopleManager',
-    component: () => import(/* webpackChunkName: "advisor" */ './pages/PeopleManagerList.vue'),
+    component: () => import(/* webpackChunkName: "advisor" */ './pages/PeopleManager.vue'),
     meta: {
       access: 'owner'
     }
   }, {
     path: '/admin/people/add',
     name: 'PeopleManagerAddForm',
-    component: () => import(/* webpackChunkName: "advisor" */ './pages/PersonManagerForm.vue'),
+    component: () => import(/* webpackChunkName: "advisor" */ './pages/PeopleManagerForm.vue'),
     meta: {
       access: 'owner'
     }
   }, {
     path: '/admin/people/update/:uid',
-    name: 'PersonManagerUpdateForm',
-    component: () => import(/* webpackChunkName: "advisor" */ './pages/PersonManagerForm.vue'),
+    name: 'PeopleManagerUpdateForm',
+    component: () => import(/* webpackChunkName: "advisor" */ './pages/PeopleManagerForm.vue'),
     meta: {
       access: 'owner'
     }
@@ -142,7 +142,7 @@ const routes = [
   }, {
     path: '/admin/bundles',
     name: 'BundlesManager',
-    component: () => import(/* webpackChunkName: "advisor" */ './pages/BundleManagerList.vue'),
+    component: () => import(/* webpackChunkName: "advisor" */ './pages/BundlesManager.vue'),
     meta: {
       access: 'owner'
     }

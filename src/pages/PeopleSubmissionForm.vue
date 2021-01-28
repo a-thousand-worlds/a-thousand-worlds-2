@@ -36,7 +36,7 @@ export default {
       const userSubmissions = this.$store.state.user.user.profile.submissions || {}
       const peopleSubmissionId = Object.keys(userSubmissions)
         .find(sid => peopleSubmissions[sid]?.type === 'people' && peopleSubmissions[sid]?.status === 'approved')
-      const peopleId = peopleSubmissions[peopleSubmissionId]?.peopleId
+      const peopleId = peopleSubmissions[peopleSubmissionId]?.peopleSubmissionId
       const person = this.$store.state.people.data[peopleId]
       return person
     },
@@ -96,9 +96,7 @@ export default {
         photo: {
           base64: ''
         },
-        pronoun: '',
         title: 'author',
-        website: '',
       }
       const newPerson = {
         ...emptySubmission,
@@ -129,7 +127,7 @@ export default {
       try {
         await this.$store.dispatch('submissions/people/submit', this.submission)
         this.$store.commit('ui/setBusy', false)
-        this.$router.push({ name: 'SubmissionThankYou', params: { type: 'people' } })
+        this.$router.push({ name: 'Dashboard' })
       }
       catch (e) {
         console.error(e)

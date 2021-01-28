@@ -1,12 +1,10 @@
 <script>
 
 export default {
-  props: ['book'],
+  props: ['item'],
   computed: {
     url() {
-      return (this.book.cover?.url?.startsWith('http')
-        ? this.book.cover?.url
-        : this.book.cover) || this.book.thumbnail || ''
+      return this.item.cover?.url || this.item.cover || this.item.photo || this.item.thumbnail || ''
     },
   }
 }

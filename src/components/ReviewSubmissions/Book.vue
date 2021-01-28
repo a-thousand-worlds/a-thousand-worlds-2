@@ -2,13 +2,16 @@
 import _ from 'lodash'
 import Jimp from 'jimp'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
+import almostEqual from '@/util/almostEqual'
 import MultiPersonField from '@/components/fields/MultiPerson'
 import SimpleInput from '@/components/fields/SimpleInput'
+import Tag from '@/components/Tag'
 
 export default {
   components: {
     MultiPersonField,
     SimpleInput,
+    Tag,
   },
   props: ['submission', 'modelValue', 'checked'],
   data() {
@@ -41,10 +44,26 @@ export default {
               : `data:image/png;base64,${this.sub.cover.base64}`
             : ''
     },
+    /** Returns true if all authors exist in the people directory already. */
+    authorsExist() {
+      if (!this.sub) return null
+      const authors = (this.sub.authors || '').split(',').map(x => x && x.trim()).filter(x => x)
+      return authors.every(name => this.$store.getters['people/findBy'](person =>
+        almostEqual(name, person.name)
+      ))
+    },
+    /** Returns true if all authors exist in the people directory already. */
+    illustratorsExist() {
+      if (!this.sub) return null
+      const illustrators = (this.sub.illustrators || '').split(',').map(x => x && x.trim()).filter(x => x)
+      return illustrators.every(name => this.$store.getters['people/findBy'](person =>
+        almostEqual(name, person.name)
+      ))
+    },
     tags() {
       return this.$store.getters['tags/books/listSorted']()
         .filter(tag => this.sub.tags && this.sub.tags[tag.id])
-    }
+    },
   },
   watch: {
     submission(next) {
@@ -102,7 +121,7 @@ export default {
 
       <!-- cover -->
       <div class="column is-2 is-offset-1">
-        <div class="bg-secondary cover-wrapper" :style="{'padding-top': coverRatio +'%', 'background-image': 'url('+coverUrl+')'}">
+        <div class="bg-secondary cover-wrapper" :style="{'padding-top': coverRatio +'%', 'background-image': `url(${coverUrl})`}">
           <div v-if="busy" class="upload-icon loading">
             <i class="fas fa-spinner fa-pulse fa-fw" />
           </div>
@@ -116,73 +135,100 @@ export default {
       <!-- title, authors, illustrators -->
       <div class="column is-3">
 
+        <!-- title -->
         <div style="font-weight: bold;">
           <SimpleInput
             v-model="sub.title"
-            @update:modelValue="save()"
+            @update:modelValue="save"
             :disabled="busy"
-            :placeholder="'Title'" />
+            placeholder="Title"
+            controlStyle="font-size: 20px;"
+          />
         </div>
+
+        <!-- author(s) -->
         <div>
           <MultiPersonField
             v-model="sub.authors"
-            @update:modelValue="save()"
+            @update:modelValue="save"
             :disabled="busy"
-            :role="'author'"
-            :placeholder="'author(s)'"
             :search-db="false"
-            pre-text="words by" />
+            placeholder="author(s)"
+            pre-text="words by"
+            role="author"
+            :class="!authorsExist && 'mr-1'"
+            :style="!authorsExist && { display: 'inline-block' }"
+          />
+          <Tag v-if="!authorsExist" :tag="{ tag: 'NEW' }" nolink v-tippy="{ content: 'This author is new! When the book is approved, they will be added to the people directory.' }" />
         </div>
+
+        <!-- illustrator(s) -->
         <div>
           <MultiPersonField
             v-model="sub.illustrators"
-            @update:modelValue="save()"
+            @update:modelValue="save"
             :disabled="busy"
-            :role="'illustrator'"
             :placeholder="'illustrator(s)'"
             :search-db="false"
-            pre-text="illustrated by" />
+            role="illustrator"
+            pre-text="illustrated by"
+            :class="!authorsExist && 'mr-1'"
+            :style="!illustratorsExist && { display: 'inline-block' }"
+          />
+          <Tag v-if="!illustratorsExist" :tag="{ tag: 'NEW' }" nolink v-tippy="{ content: 'This illustrator is new! When the book is approved, they will be added to the people directory.' }" />
         </div>
-        <div>
+
+        <!-- ISBN -->
+        <div class="is-flex">
+          <b class="mr-1">isbn</b>
+          <SimpleInput
+            :disabled="busy"
+            @update:modelValue="save"
+            v-model="sub.isbn"
+            placeholder="Enter ISBN"
+          />
+        </div>
+
+        <!-- year -->
+        <div class="flex">
+          <b class="mr-1">year</b>
           <SimpleInput
             v-model="sub.year"
-            @update:modelValue="save()"
+            @update:modelValue="save"
             :disabled="busy"
-            :placeholder="'Year'" />
+            placeholder="Enter Year"
+            style="display: inline-block;"
+          />
         </div>
-      <!--
-      <div>
-        <SimpleInput
-          :disabled="busy"
-          :placeholder="'ISBN'"
-            @update:modelValue="save()"
-          v-model="sub.isbn"/>
-      </div>
-      <div>
-        <SimpleInput
-          :disabled="busy"
-          :placeholder="'Publisher'"
-            @update:modelValue="save()"
-          v-model="sub.publisher"/>
-      </div>
-      -->
+
+        <!--
+        <div>
+          <SimpleInput
+            :disabled="busy"
+            @update:modelValue="save"
+            v-model="sub.publisher"
+            placeholder="Publisher"
+          />
+        </div>
+        -->
+
       </div>
 
       <div class="column is-5" style="margin-top: -20px;">
         <!-- summary -->
-        <div>
-          <ckeditor @update:modelValue="save()" v-model="sub.summary" :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" style="padding: 0;" />
+        <div class="mb-10" style="max-height: 25rem; overflow: scroll;">
+          <ckeditor @update:modelValue="save" v-model="sub.summary" :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" style="padding: 0;" />
         </div>
         <!-- tags -->
         <div class="tags">
-          <div v-for="(tag, tagi) of tags" :key="tagi" class="button is-primary is-rounded is-mini mr-1 mb-1" style="cursor: default;">{{ tag.tag }}</div>
+          <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="books" linkToManager class="mr-1 mb-1" v-tippy="{ content: 'Edit book tags' }" />
         </div>
       </div>
 
       <!-- reject -->
       <div v-if="sub?.status !== 'rejected'" class="column is-1 has-text-right">
-        <button :class="{disabled:busy}" :disabled="busy" class="is-flat is-uppercase is-underlined" @click="reject()">
-          <i class="fas fa-times" style="font-size: 20px;" />
+        <button :class="{disabled:busy}" :disabled="busy" class="is-flat is-uppercase is-underlined" @click="reject">
+          <i class="fas fa-times" style="font-size: 20px;" v-tippy="{ content: `Reject submission` }" />
         </button>
       </div>
     </div>

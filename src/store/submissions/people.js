@@ -1,8 +1,9 @@
 import _ from 'lodash'
-import mergeOne from '@/util/mergeOne'
-import managed from '@/store/modules/managed'
 import { v4 as uid } from 'uuid'
 import dayjs from 'dayjs'
+import managed from '@/store/modules/managed'
+import almostEqual from '@/util/almostEqual'
+import mergeOne from '@/util/mergeOne'
 
 const module = mergeOne(managed('submits/people'), {
   actions: {
@@ -36,7 +37,7 @@ const module = mergeOne(managed('submits/people'), {
     },
 
     /** Update submission status */
-    updateSubmission: async (context, { peopleId, sub, status }) => {
+    updateSubmission: async (context, { peopleSubmissionId, personId, sub, status }) => {
 
       // update person submission
       await context.dispatch('update', {
@@ -45,7 +46,8 @@ const module = mergeOne(managed('submits/people'), {
           reviewedBy: context.rootState.user.user.uid,
           reviewedAt: dayjs().format(),
           status,
-          ...peopleId ? { peopleId } : null
+          ...peopleSubmissionId ? { peopleSubmissionId } : null,
+          ...personId ? { personId } : null,
         },
       })
 
@@ -56,6 +58,14 @@ const module = mergeOne(managed('submits/people'), {
         path: `${sub.createdBy}/profile/submissions/${sub.id}`,
         value: status
       }, { root: true })
+
+      // update user profile personId
+      if (personId) {
+        await context.dispatch('users/save', {
+          path: `${sub.createdBy}/profile/personId`,
+          value: personId
+        }, { root: true })
+      }
     },
 
     /** Rejects a submission. */
@@ -66,9 +76,13 @@ const module = mergeOne(managed('submits/people'), {
     /** Approves submissions group */
     approve: (context, subs) => {
 
+      /** Gets the person with an almost equal name. */
+      const person = async sub =>
+        context.rootGetters['people/findBy'](person => almostEqual(person.name, sub.name))
+
       /** Get the creator id if it exists for the given user. */
       // TODO: This would be a lot easier if the peopleId was stored in the user profile
-      const existingPersonId = async userId => {
+      const personSubmissionId = async userId => {
 
         const userSubmissions = context.dispatch('users/loadOne', `${userId}/profile/submissions`, { root: true })
 
@@ -85,16 +99,14 @@ const module = mergeOne(managed('submits/people'), {
 
         const peopleSubmission = context.rootGetters['submissions/people/get'](approvedPeopleSubmissionId)
 
-        return peopleSubmission?.peopleId
+        return peopleSubmission?.peopleSubmissionId
       }
 
       return subs.map(async sub => {
 
-        // use existing person id if it exists
-        const id = await existingPersonId(sub.createdBy) || uid()
-
         const personNew = {
-          id,
+          id: await person(sub),
+          ...await person(sub),
           ..._.pick(sub, [
             'awards',
             'bio',
@@ -104,9 +116,7 @@ const module = mergeOne(managed('submits/people'), {
             'identities',
             'name',
             'photo',
-            'pronoun',
             'title',
-            'website',
           ])
         }
 
@@ -118,13 +128,19 @@ const module = mergeOne(managed('submits/people'), {
             downloadUrl: sub.photo.url
           }
         }
+        console.log('personNew', personNew)
 
         // update user submission and people submission
-        await context.dispatch('updateSubmission', { peopleId: id, sub, status: 'approved' })
+        await context.dispatch('updateSubmission', {
+          peopleSubmissionId: await personSubmissionId(sub.createdBy) || uid(),
+          personId: personNew.id,
+          sub,
+          status: 'approved'
+        })
 
         // save user
         await context.dispatch('people/save', {
-          path: id,
+          path: personNew.id,
           value: personNew
         }, { root: true })
       })

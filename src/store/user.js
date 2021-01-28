@@ -12,23 +12,17 @@ function defaultProfile(user, profile = {}) {
     bookmarks: {},
     submissions: {},
     draftBooks: [],
-    draftBundles: []
+    draftBundles: [],
   }
   return { ...def, ...profile }
 }
 
-function auth2user(db) {
-  const user = {}
-  user.displayName = db.displayName
-  user.email = db.email
-  user.emailVerified = db.emailVerified
-  user.photoURL = db.photoURL
-  user.isAnonymous = db.isAnonymous
-  user.uid = db.uid
-  user.providerData = db.providerData
-  user.profile = defaultProfile(user)
-  user.roles = {}
-  return user
+function auth2user(dbUser) {
+  return {
+    roles: {},
+    ...dbUser,
+    profile: defaultProfile(dbUser),
+  }
 }
 
 const usersModule = collection('users')

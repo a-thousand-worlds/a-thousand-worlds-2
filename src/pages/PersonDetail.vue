@@ -78,7 +78,7 @@ export default {
     <Filter type="people" />
   </teleport>
 
-  <div v-if="person" class="mx-5">
+  <div v-if="person" class="mx-5" :data-person-id="person.id">
 
     <div class="wide-page">
       <div class="columns mb-5">
@@ -93,7 +93,7 @@ export default {
       <div class="is-flex is-flex-direction-row is-flex-wrap-wrap">
         <div class="column-person" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
           <div class="cover-wrapper mb-20">
-            <div v-if="bgImage.length" :style="{backgroundImage: 'url('+bgImage+')'}" class="cover-photo bg-secondary" />
+            <div v-if="bgImage.length" :style="{backgroundImage: `url(${bgImage})`}" class="cover-photo bg-secondary" />
           </div>
 
           <div class="title-container divider-30">

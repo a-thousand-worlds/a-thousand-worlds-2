@@ -1,7 +1,7 @@
 <script>
 
 export default {
-  props: ['modelValue', 'disabled', 'placeholder'],
+  props: ['modelValue', 'disabled', 'placeholder', 'controlStyle'],
   emits: ['update:modelValue'],
   data() {
     return {
@@ -53,18 +53,18 @@ export default {
 
   <div class="control">
     <div class="field">
-      <div class="control w-50">
+      <div class="control w-50" :style="controlStyle">
         <div
           v-if="mode === 'view' && !hasValue && placeholder?.length"
           :class="{disabled:disabled}"
           class="w-50 pointer placeholder"
-          @click="onDivClick()">{{ placeholder }}</div>
+          @click="onDivClick">{{ placeholder }}</div>
         <div
           v-if="mode === 'view' && hasValue"
           :class="{disabled:disabled}"
           :title="placeholder"
           class="w-50 pointer"
-          @click="onDivClick()">{{ value }}</div>
+          @click="onDivClick">{{ value }}</div>
         <input
           v-if="mode === 'edit'"
           ref="input"

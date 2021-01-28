@@ -1,6 +1,5 @@
 <script>
 
-import Alert from '@/components/Alert'
 import BookmarksView from '@/components/BookmarksView'
 import Confirm from '@/components/ui/Confirm'
 import LeftBar from '@/components/LeftBar.vue'
@@ -15,7 +14,6 @@ import Loader from '@/components/Loader'
 export default ({
   name: 'App',
   components: {
-    Alert,
     BookmarksView,
     Confirm,
     LeftBar,
@@ -35,7 +33,11 @@ export default ({
   },
   computed: {
     showWelcome() {
-      return !this.$store.state.ui.lastVisited && !this.$route.meta?.access
+      // do not show welcome banner until route is loaded
+      // $route.name is undefined on initial load
+      // window.location.pathname is available immediately
+      return (window.location.pathname === '/' || this.$route.name)
+        && !this.$store.state.ui.lastVisited && !this.$route.meta?.access
     }
   },
   watch: {
@@ -58,13 +60,12 @@ export default ({
 
     <div class="site columns m-0" :class="{ 'border-top':showWelcome}">
       <section class="leftbar column is-narrow is-hidden-mobile px-20 py-30">
-        <LeftBar />
+        <LeftBar :animateLogo="showWelcome" />
       </section>
       <section class="main column px-0 pb-20" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
         <Popups />
         <Confirm />
         <Prompt />
-        <Alert />
         <div v-if="$store.state.ui.pageLoading" class="has-text-centered" style="margin-top: 20vh;">
           <Loader />
         </div>

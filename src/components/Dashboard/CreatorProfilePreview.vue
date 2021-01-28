@@ -21,13 +21,25 @@ export default {
         .find(sid => peopleSubmissions[sid]?.type === 'people' && peopleSubmissions[sid].status === 'approved')
     },
     person() {
-      const peopleSubmissions = this.$store.state.submissions.people.data || {}
-      const peopleId = peopleSubmissions[this.peopleSubmissionId]?.peopleId
-      const person = this.$store.state.people.data[peopleId]
+
+      // searches for the person id based on the submission and logged in user
+      const getPersonId = () => {
+
+        // first check user profile
+        const profilePersonId = this.$store.state.user.user.profile.personId
+        if (profilePersonId) return profilePersonId
+
+        // if not found, then check people submission
+        const peopleSubmissions = this.$store.state.submissions.people.data || {}
+        const peopleSubmissionPersonId = peopleSubmissions[this.peopleSubmissionId]?.personId
+        return peopleSubmissionPersonId
+      }
+
+      const person = this.$store.state.people.data[getPersonId()]
       return person
     },
     userPersonSubmission() {
-      return this.userSubmissions[this.peopleSubmissionId]
+      return this.userSubmissions[this.peopleSubmissionPersonId]
     },
     userSubmissions() {
       return this.$store.state.user.user.profile.submissions || {}
@@ -60,7 +72,7 @@ export default {
         </div>
 
         <div class="column is-one-third">
-          <router-link :to="{ name: 'PeopleSubmissionForm' }">
+          <router-link :to="{ name: 'PersonSubmissionForm' }">
             <Square style="border-radius: 999px;">
               <h3>Edit</h3>
             </Square>
@@ -76,7 +88,7 @@ export default {
       <h2 v-else>Please fill our your profile for the People Directory</h2>
       <div class="field is-grouped">
         <div class="control my-20">
-          <router-link class="button is-primary is-rounded" :to="{name:'PeopleSubmissionForm'}">Create Profile</router-link>
+          <router-link class="button is-primary is-rounded" :to="{name:'PersonSubmissionForm'}">Create Profile</router-link>
         </div>
       </div>
     </div>

@@ -47,7 +47,7 @@ export default {
     <!-- div must remain when hiding for justify-content: space-between -->
     <div>
       <ul v-if="!hideBookmarks" class="menu-list">
-        <li><a :href="null" class="bookmark-toggler" @click.prevent="toggleBookmarks()">
+        <li><a :href="null" class="bookmark-toggler" @click.prevent="toggleBookmarks">
           <BookmarkIcon class="fill-secondary" />
           <span v-if="$iam('authorized')" class="badge">{{ bookmarksCount }}</span>
         </a></li>

@@ -3,10 +3,13 @@ import _ from 'lodash'
 import Jimp from 'jimp'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import SimpleInput from '@/components/fields/SimpleInput'
+import Tag from '@/components/Tag'
+import almostEqual from '@/util/almostEqual'
 
 export default {
   components: {
     SimpleInput,
+    Tag,
   },
   props: ['submission', 'modelValue', 'checked'],
   data() {
@@ -41,8 +44,20 @@ export default {
     identities() {
       return Object.keys(this.sub?.identities || {})
     },
-    identityOptions() {
+    peopleTags() {
       return this.$store.state.tags.people.data
+    },
+    /** Gets the person with an almost equal name. */
+    person() {
+      if (!this.sub) return null
+      return this.$store.getters['people/findBy'](person => almostEqual(person.name, this.sub.name))
+    },
+    /** If there is a matching person, get their books. */
+    books() {
+      if (!this.person) return null
+      return this.$store.getters['books/list']().filter(book =>
+        Object.keys(book.creators || {}).includes(this.person.id)
+      )
     },
   },
   watch: {
@@ -99,7 +114,7 @@ export default {
 
       <!-- image -->
       <div class="column is-2 is-offset-1">
-        <div class="bg-secondary image-wrapper" :style="{'padding-top': imageRatio +'%', 'background-image': 'url('+imageUrl+')'}">
+        <div class="bg-secondary image-wrapper" :style="{'padding-top': imageRatio +'%', 'background-image': `url(${imageUrl})`}">
           <div v-if="busy" class="upload-icon loading">
             <i class="fas fa-spinner fa-pulse fa-fw" />
           </div>
@@ -113,21 +128,23 @@ export default {
       <!-- name -->
       <div class="column is-3">
 
-        <div>
-          <SimpleInput
-            v-model="sub.name"
-            @update:modelValue="save"
-            :disabled="busy"
-            style="font-weight: bold;"
-            placeholder="Name"
-          />
-          <SimpleInput
-            v-model="sub.title"
-            @update:modelValue="save"
-            :disabled="busy"
-            placeholder="Title"
-          />
-        </div>
+        <SimpleInput
+          v-model="sub.name"
+          @update:modelValue="save"
+          :disabled="busy"
+          style="font-weight: bold;"
+          placeholder="Name"
+        />
+
+        <SimpleInput
+          v-model="sub.title"
+          @update:modelValue="save"
+          :disabled="busy"
+          placeholder="Title"
+        />
+
+        <Tag v-if="!person" :tag="{ tag: 'NEW' }" nolink class="mt-1" v-tippy="{ content: 'This person is new! When they are approved, they will be added to the people directory but they won\'t have any books.' }" />
+        <div v-else>{{ books.length }} book{{ books.length === 1 ?'' : 's' }}</div>
       </div>
 
       <div class="column is-5">
@@ -137,7 +154,7 @@ export default {
         </div>
         <!-- identities -->
         <div class="tags">
-          <div v-for="identity of identities" :key="identity.id" class="button is-primary is-rounded is-mini mr-1 mb-1" style="cursor: default;">{{ identityOptions[identity].tag }}</div>
+          <Tag v-for="id of identities" :key="id" :tag="peopleTags[id]" type="people" linkToManager class="mr-1 mb-1" v-tippy="{ content: 'Edit people tags' }" />
         </div>
       </div>
 

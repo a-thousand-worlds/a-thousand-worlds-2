@@ -1,5 +1,4 @@
 import { createStore } from 'vuex'
-import alert from '@/store/alert'
 import books from '@/store/books'
 import bundles from '@/store/bundles'
 import content from '@/store/content'
@@ -13,7 +12,6 @@ import users from '@/store/users'
 
 const store = createStore({
   modules: {
-    alert,
     books,
     bundles,
     content,

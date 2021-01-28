@@ -163,7 +163,7 @@ export default {
 
   <section class="section">
     <div>
-      <button :disabled="$uiBusy" class="button is-primary" @click.prevent="addBook()">
+      <button :disabled="$uiBusy" class="button is-primary" @click.prevent="addBook">
         <i class="fas fa-plus" />
         <span class="ml-2">Add another book</span>
       </button>
@@ -173,12 +173,12 @@ export default {
   <section class="section">
     <div class="field is-grouped">
       <div class="control">
-        <button :disabled="!draftable||$uiBusy" :class="{'is-loading':$uiBusy}" class="button is-primary" @click.prevent="saveDraft()">
+        <button :disabled="!draftable||$uiBusy" :class="{'is-loading':$uiBusy}" class="button is-primary" @click.prevent="saveDraft">
           <span class="ml-2">Save as draft</span>
         </button>
       </div>
       <div class="control">
-        <button :disabled="!submitable||$uiBusy" :class="{'is-loading':$uiBusy}" class="button is-primary" @click.prevent="submitForReview()">
+        <button :disabled="!submitable||$uiBusy" :class="{'is-loading':$uiBusy}" class="button is-primary" @click.prevent="submitForReview">
           <span class="ml-2">Submit for review</span>
         </button>
       </div>

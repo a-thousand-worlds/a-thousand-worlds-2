@@ -52,7 +52,7 @@ export default {
     },
     showOrgLink() {
       return (this.active === 'signup' || this.active === 'profile') &&
-        (this.invite?.role === 'contributor' || this.$can('submit'))
+        (this.invite?.role === 'contributor' || this.$can('submitBookOrBundle'))
     }
   },
 
@@ -70,19 +70,15 @@ export default {
       this.active = this.getActiveFromUrl()
     },
     '$store.state.user.user'(next, prev) {
-      if (!prev && !!next) {
-        if (this.$can('viewDashboard')) {
-          this.$router.push({ name: 'Dashboard' })
-        }
-        else {
-          this.$router.push({ name: 'Home' })
-        }
+      // redirect to Dashboard on login (or Home for regular users)
+      if (next && !prev) {
+        this.$router.push({
+          name: this.$can('viewDashboard') ? 'Dashboard' : 'Home'
+        })
       }
 
-      const userProfileName = this.$store.state.user?.profile?.name
-      if (userProfileName) {
-        this.name = userProfileName
-      }
+      this.email = next?.profile?.email || ''
+      this.name = next?.profile?.name || ''
     }
   },
 
@@ -92,14 +88,14 @@ export default {
       this.disableResetPassword = true
       try {
         await this.$store.dispatch('user/passwordReset', this.email)
-        this.$store.dispatch('alert', {
+        this.$store.dispatch('ui/popup', {
           text: 'Check your email to reset your password',
           timer: 10000,
         })
       }
       catch (e) {
         this.disableResetPassword = false
-        this.$store.dispatch('alert', {
+        this.$store.dispatch('ui/popup', {
           text: 'Error resetting password',
           type: 'error'
         })
@@ -217,7 +213,7 @@ export default {
         })
           .then(() => {
             if (!this.error) {
-              this.$store.dispatch('alert', {
+              this.$store.dispatch('ui/popup', {
                 text: 'Profile saved',
                 type: 'success'
               })

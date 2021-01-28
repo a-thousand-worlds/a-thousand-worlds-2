@@ -3,7 +3,7 @@ const admin = require('firebase-admin')
 const coverImageByISBN = require('../util/coverImageByISBN')
 const loadImage = require('../util/loadImage')
 const image64ToBuffer = require('../util/image64ToBuffer')
-const UUID = require('uuid')
+const uid = require('uuid').v4
 const getDownloadUrl = require('../util/getBucketFileDownloadUrl')
 
 const watchBooks = functions
@@ -54,7 +54,7 @@ const watchBooks = functions
     if (cover && cover.buffer) {
       console.log('saving cover from buffer to storage')
       const bucket = admin.storage().bucket()
-      const uuid = UUID.v4()
+      const id = uid()
       const fname = `books/${context.params.id}`
       const file = await bucket.file(fname)
       await file
@@ -63,11 +63,11 @@ const watchBooks = functions
             contentType: 'image/png',
             cacheControl: 'public,max-age=31536000',
             metadata: {
-              firebaseStorageDownloadTokens: uuid
+              firebaseStorageDownloadTokens: id
             }
           }
         })
-      const url = getDownloadUrl(fname, bucket.name, uuid)
+      const url = getDownloadUrl(fname, bucket.name, id)
 
       await snap.ref.child('cover').set({
         url,

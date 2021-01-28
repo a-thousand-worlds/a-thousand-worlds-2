@@ -13,7 +13,6 @@ export default {
       person: {
         id: null,
         name: '',
-        email: '',
         bio: '',
         photo: '',
         file: null,
@@ -41,7 +40,7 @@ export default {
     }
   },
   created() {
-    if (this.$router.currentRoute._value.name === 'PersonManagerUpdateForm') {
+    if (this.$router.currentRoute._value.name === 'PeopleManagerUpdateForm') {
       const p = this.$store.state.peopleIndex[this.$route.params.uid] || null
       if (p) {
         this.person = p
@@ -90,7 +89,7 @@ export default {
   <h1 v-if="mode!=='new'" class="title page-title">Update Person</h1>
 
   <section class="section">
-    <form @submit.prevent="save()">
+    <form @submit.prevent="save">
       <div class="columns">
         <div class="column is-one-third">
           <div id="photo-wrapper">
@@ -105,13 +104,6 @@ export default {
             <label class="label">Name</label>
             <div class="control">
               <input v-model="person.name" type="text" class="input">
-            </div>
-          </div>
-
-          <div class="field">
-            <label class="label">E-mail</label>
-            <div class="control">
-              <input v-model="person.email" type="email" class="input">
             </div>
           </div>
 

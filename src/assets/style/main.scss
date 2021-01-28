@@ -232,3 +232,9 @@ a.button.is-secondary.is-outlined:hover,
 .no-user-select {
   user-select: none;
 }
+
+// increase specificy above bulma table
+.table.table.table td {
+  vertical-align: middle;
+}
+

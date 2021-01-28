@@ -15,9 +15,15 @@ export default {
     <div class="content-footer-inner">
       <div class="link-container">
         <button class="button button-unstyled is-primary pl-0">FIND BOOK AT</button>
-        <button class="button is-rounded is-secondary mx-1 test">LOCAL LIBRARY</button>
-        <a :href="`http://www.indiebound.org/book/${book.isbn}?aff=athousandworlds`" target="_blank"><button class="button is-rounded is-secondary mx-1">INDIE BOOKSELLERS</button></a>
-        <a v-if="book.goodread" :href="`https://www.goodreads.com/book/show/${book.goodread}`" target="_blank"><button class="button is-rounded is-secondary mx-1 mr-20">GOODREADS</button></a>
+        <button class="button is-rounded is-secondary mx-1 test">
+          <i class="fas fa-university mr-1" /> LOCAL LIBRARY
+        </button>
+        <a :href="`http://www.indiebound.org/book/${book.isbn}?aff=athousandworlds`" target="_blank"><button class="button is-rounded is-secondary mx-1">
+          <i class="fas fa-shopping-cart mr-1" /> INDIE BOOKSELLERS
+        </button></a>
+        <a v-if="book.goodread" :href="`https://www.goodreads.com/book/show/${book.goodread}`" target="_blank"><button class="button is-rounded is-secondary mx-1 mr-20">
+          <i class="fas fa-book-open mr-1" /> GOODREADS
+        </button></a>
       </div>
     </div>
   </div>

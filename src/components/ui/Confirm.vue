@@ -9,7 +9,7 @@ export default {
   <div v-if="$store.state.ui.dlgConfirm" class="modal is-active">
     <div class="modal-background" />
     <div class="modal-content">
-      <div class="popup message" :class="'is-'+$store.state.ui.dlgConfirm.type">
+      <div class="popup message" :class="`is-${$store.state.ui.dlgConfirm.type}`">
         <div class="message-header">{{ $store.state.ui.dlgConfirm.header }}</div>
         <div class="message-body">
           {{ $store.state.ui.dlgConfirm.text }}
