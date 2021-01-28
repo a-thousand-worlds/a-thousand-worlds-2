@@ -1,7 +1,7 @@
 <script>
 import _ from 'lodash'
 import Loader from '@/components/Loader'
-import Engagements from '@/store/userEngagements'
+import engagements from '@/store/constants/engagements'
 
 export default {
   name: 'LogInPage',
@@ -15,9 +15,9 @@ export default {
       active: this.getActiveFromUrl(),
       email: profile?.email || '',
       name: profile?.name || '',
-      // all options for enagement checkboxes
-      engagementCategories: Engagements,
-      // copy identities object, otherwise editing the form will update the person identities object by reference
+      // copy engagements and identities objects
+      // otherwise editing the form will update the objects by reference
+      engagements,
       identities: profile?.identities ? { ...profile.identities } : {},
       disableAfterSave: false,
       disableResetPassword: false,
@@ -385,15 +385,15 @@ export default {
           <div v-if="(active === 'signup' && invite?.role === 'contributor') || active === 'profile'" class="field">
             <label class="label is-uppercase" :class="{ error: hasError('engagements') }">How do you engage with books?</label>
             <div class="sublabel tablet-columns-2">
-              <div v-for="category of engagementCategories" :key="category.id" class="control columns-2">
-                <input :id="category.id" v-model="affiliations.selectedEngagementCategories[category.id]" :disabled="loading" :name="category.id" @input="revalidate" type="checkbox" class="checkbox mr-3 mb-3">
-                <label class="label is-inline is-uppercase no-user-select" style="word-wrap: nobreak;" :for="category.id">
-                  {{ category.text }}
+              <div v-for="engagement of engagements" :key="engagement.id" class="control columns-2">
+                <input :id="engagement.id" v-model="affiliations.selectedEngagementCategories[engagement.id]" :disabled="loading" :name="engagement.id" @input="revalidate" type="checkbox" class="checkbox mr-3 mb-3">
+                <label class="label is-inline" style="word-wrap: nobreak;" :for="engagement.id">
+                  {{ engagement.text }}
                 </label>
               </div>
               <div>
                 <input v-model="affiliations.selectedEngagementCategories.other" :disabled="loading" type="checkbox" class="checkbox mr-3 mb-3">
-                <label class="label is-inline mr-2">OTHER</label>
+                <label class="label is-inline mr-2">Other</label>
                 <input v-model="affiliations.otherEngagementCategory" :disabled="loading" @input="revalidate" class="input" style="max-width: 200px;" type="text">
               </div>
             </div>

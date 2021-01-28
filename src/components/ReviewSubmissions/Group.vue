@@ -1,7 +1,7 @@
 <script>
 import Book from './Book'
 import Person from './Person'
-import UserEngagements from '@/store/userEngagements'
+import engagements from '@/store/constants/engagements'
 
 export default {
   components: {
@@ -40,7 +40,7 @@ export default {
         .map(code => {
           if (!this.submitter.affiliations.selectedEngagementCategories[code]) return ''
           if (code === 'other') return this.submitter.affiliations.otherEngagementCategory
-          return UserEngagements.find(el => el.id === code)?.text || ''
+          return engagements.find(engagement => engagement.id === code)?.text || ''
         })
         .filter(line => line && line.length)
         .join(', ')

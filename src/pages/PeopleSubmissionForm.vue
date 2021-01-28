@@ -3,7 +3,7 @@ import _ from 'lodash'
 // Jimp required if dimensions checks needs to be done on file upload
 // import Jimp from 'jimp'
 import validator from '@/mixins/validator'
-import genderOptions from '@/store/genderOptions'
+import genders from '@/store/constants/genders'
 
 export default {
   mixins: [
@@ -17,7 +17,7 @@ export default {
   data() {
     return {
       draftSaved: null,
-      genderOptions,
+      genders,
       submission: this.newSubmission(),
     }
   },
@@ -239,9 +239,9 @@ export default {
             <label class="label" :class="{ 'has-text-danger': hasError('gender') }" style="font-weight: bold; text-transform: uppercase;">Gender</label>
 
             <div class="sublabel tablet-columns-2">
-              <div v-for="(gender, key) of genderOptions" :key="key" class="control is-flex" style="column-break-inside: avoid;">
-                <input type="radio" name="gender" :id="`gender-${key}`" v-model="submission.gender" :value="key" class="checkbox mb-3 mt-1">
-                <label class="label pl-2 pb-1 no-user-select" :for="`gender-${key}`" style="cursor: pointer;">{{ gender }}</label>
+              <div v-for="gender of genders" :key="gender.id" class="control is-flex" style="column-break-inside: avoid;">
+                <input type="radio" name="gender" :id="`gender-${gender.id}`" v-model="submission.gender" :value="gender.id" class="checkbox mb-3 mt-1">
+                <label class="label pl-2 pb-1 no-user-select" :for="`gender-${gender.id}`" style="cursor: pointer;">{{ gender.text }}</label>
               </div>
             </div>
           </div>
