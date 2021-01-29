@@ -62,7 +62,8 @@ export default {
   <div>
 
     <div class="photo-circle mb-1" style="position: relative; height: 100%;">
-      <div :class="{ 'bg-secondary': !modelValue, 'has-photo': modelValue }" class="photo-container is-flex is-justify-content-center is-align-items-center" style="border-radius: 999px; position: relative; cursor: pointer; height: 100%;">
+      <!-- TODO: preserve aspect ratio with dynamic width and height. min-height is currently a magic number to keep a square aspect ratio. -->
+      <div :class="{ 'bg-secondary': !modelValue, 'has-photo': modelValue }" class="photo-container is-flex is-justify-content-center is-align-items-center" style="min-height: 168px; border-radius: 999px; position: relative; cursor: pointer; height: 100%;">
         <div class="photo" v-if="modelValue" :style="{
           width: '100%',
           height: '100%',
