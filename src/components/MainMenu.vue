@@ -1,12 +1,6 @@
 <script>
-import InstagramIcon from '../assets/icons/instagram.svg'
-import TwitterIcon from '../assets/icons/twitter.svg'
 
 export default {
-  components: {
-    InstagramIcon,
-    TwitterIcon,
-  },
   methods: {
     logout() {
       this.$store.dispatch('user/logout')
@@ -32,10 +26,10 @@ export default {
       <li v-if="$iam('authorized')"><a @click.prevent="logout">Log Out</a></li>
     </ul>
 
-    <ul class="menu-list mt-50">
+    <ul class="menu-list mt-30">
       <li>
-        <a href="https://instagram.com" target="_blank" class="inline pr-20"><InstagramIcon /></a>
-        <a href="https://twitter.com" target="_blank" class="inline"><TwitterIcon /></a>
+        <a href="https://www.instagram.com/_athousandworlds_/" target="_blank" class="social-icon is-inline pr-20"><i class="fab fa-instagram is-primary" /></a>
+        <a href="https://www.facebook.com/A-Thousand-Worlds-102421671707042/?view_public_for=102421671707042" target="_blank" class="social-icon is-inline"><i class="fab fa-facebook-f is-primary" /></a>
       </li>
     </ul>
   </div>
@@ -61,8 +55,8 @@ export default {
   }
 }
 
-.inline {
-  display: inline;
+.social-icon i {
+  font-size: 24px;
 }
 
 </style>
