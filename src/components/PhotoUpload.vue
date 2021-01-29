@@ -9,6 +9,9 @@ export default {
     modelValue: {
       required: true,
     },
+    noremove: Boolean,
+    // TODO: fix dynamic height and remove photoHeight
+    photoHeight: String,
   },
   emits: ['update:modelValue'],
   methods: {
@@ -63,10 +66,10 @@ export default {
 
     <div class="photo-circle mb-1" style="position: relative; height: 100%;">
       <!-- TODO: preserve aspect ratio with dynamic width and height. min-height is currently a magic number to keep a square aspect ratio. -->
-      <div :class="{ 'bg-secondary': !modelValue, 'has-photo': modelValue }" class="photo-container is-flex is-justify-content-center is-align-items-center" style="min-height: 168px; border-radius: 999px; position: relative; cursor: pointer; height: 100%;">
+      <div :class="{ 'bg-secondary': !modelValue, 'has-photo': modelValue }" class="photo-container is-flex is-justify-content-center is-align-items-center" style="border-radius: 999px; position: relative; cursor: pointer; height: 100%;" :style="{ minHeight: photoHeight || '168px' }">
         <div class="photo" v-if="modelValue" :style="{
           width: '100%',
-          height: '100%',
+          height: photoHeight || '100%',
           borderRadius: '999px',
           backgroundImage: `url(${modelValue.base64})`,
           backgroundSize: 'cover',
@@ -78,7 +81,7 @@ export default {
       <input id="photo-field" ref="fileInput" type="file" @change="fileChange($event)" style="position: absolute; height: 100%; width: 100%; cursor: pointer; top: 0; opacity: 0; border-radius: 999px;">
     </div>
 
-    <div class="has-text-centered">
+    <div v-if="!noremove" class="has-text-centered">
       <a :class="{ 'is-invisible': !modelValue }" @click.prevent="clearPhoto">Remove photo</a>
     </div>
 

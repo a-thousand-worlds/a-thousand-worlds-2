@@ -2,12 +2,14 @@
 import _ from 'lodash'
 import Jimp from 'jimp'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
+import PhotoUpload from '@/components/PhotoUpload'
 import SimpleInput from '@/components/fields/SimpleInput'
 import Tag from '@/components/Tag'
 import almostEqual from '@/util/almostEqual'
 
 export default {
   components: {
+    PhotoUpload,
     SimpleInput,
     Tag,
   },
@@ -15,9 +17,10 @@ export default {
   data() {
     return {
       busy: false,
-      sub: this.submission || {},
       editor: BalloonEditor,
       image: null,
+      photo: this.user?.profile.photo,
+      sub: this.submission || {},
     }
   },
   computed: {
@@ -26,20 +29,6 @@ export default {
         toolbar: [],
         placeholder: 'No bio'
       }
-    },
-    imageRatio() {
-      return this.sub.image?.height / this.sub.image?.width * 100 || 100
-    },
-    imageUrl() {
-      return this.sub.thumbnail?.startsWith('http')
-        ? this.sub.thumbnail
-        : this.sub.photo?.url?.startsWith('http')
-          ? this.sub.photo.url
-          : this.sub.photo?.base64
-            ? this.sub.photo.base64.startsWith('data:image')
-              ? this.sub.photo.base64
-              : `data:image/png;base64,${this.sub.photo.base64}`
-            : ''
     },
     identities() {
       return Object.keys(this.sub?.identities || {})
@@ -59,11 +48,20 @@ export default {
         Object.keys(book.creators || {}).includes(this.person.id)
       )
     },
+    /** Gets the user that createtd the submission. */
+    user() {
+      return this.$store.state.users.data?.[this.sub?.createdBy]
+    },
   },
   watch: {
     submission(next) {
       this.sub = next
-    }
+    },
+    user(next) {
+      if (next?.profile.photo) {
+        this.photo = next.profile.photo
+      }
+    },
   },
   methods: {
 
@@ -114,15 +112,7 @@ export default {
 
       <!-- image -->
       <div class="column is-2 is-offset-1">
-        <div class="bg-secondary image-wrapper" :style="{'padding-top': imageRatio +'%', 'background-image': `url(${imageUrl})`}">
-          <div v-if="busy" class="upload-icon loading">
-            <i class="fas fa-spinner fa-pulse fa-fw" />
-          </div>
-          <label v-if="!busy" class="upload-icon" for="image-upload">
-            <i class="fas fa-file-upload fa-fw" />
-          </label>
-          <input id="image-upload" type="file" class="image-file-uploader" @change.prevent="fileChange($event)">
-        </div>
+        <PhotoUpload v-model="photo" photoHeight="88px" noremove />
       </div>
 
       <!-- name -->
