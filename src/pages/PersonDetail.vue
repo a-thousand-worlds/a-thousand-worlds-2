@@ -48,7 +48,9 @@ export default {
       return this.$route.params.name
     },
     person() {
-      return this.$store.getters['people/findBy']('name', name => slugify(name) === this.name)
+      const person = this.$store.getters['people/findBy']('name', name => slugify(name) === this.name)
+      this.$store.dispatch('debug', { person })
+      return person
     },
     tags() {
       const peopleTags = this.$store.state.tags.people.data || {}
