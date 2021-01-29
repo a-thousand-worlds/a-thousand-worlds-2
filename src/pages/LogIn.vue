@@ -1,12 +1,14 @@
 <script>
 import _ from 'lodash'
-import Loader from '@/components/Loader'
 import engagements from '@/store/constants/engagements'
+import Loader from '@/components/Loader'
+import PhotoUpload from '@/components/PhotoUpload'
 
 export default {
   name: 'LogInPage',
   components: {
     Loader,
+    PhotoUpload,
   },
   data() {
     const profile = this.$store.state.user.user?.profile
@@ -15,6 +17,7 @@ export default {
       active: this.getActiveFromUrl(),
       email: profile?.email || '',
       name: profile?.name || '',
+      photo: null,
       // copy engagements and identities objects
       // otherwise editing the form will update the objects by reference
       engagements,
@@ -181,6 +184,7 @@ export default {
         code: this.code,
         email: this.email,
         name: this.name,
+        photo: this.photo,
         password: this.password,
         identities: this.identities,
         affiliations: this.affiliations,
@@ -217,6 +221,7 @@ export default {
         await this.handleResponse(this.$store.dispatch('user/updateProfile', {
           name: this.name,
           email: this.email,
+          photo: this.photo,
           identities: this.identities,
           affiliations: this.affiliations,
         })
@@ -339,7 +344,9 @@ export default {
     </div>
 
     <div v-else class="is-flex is-justify-content-center">
-      <form class="is-flex-grow-1" style="max-width: 480px;" @submit.prevent="submit">
+
+      <!-- TODO: width affects PhotoUpload aspect ratio -->
+      <form class="is-flex-grow-1" style="max-width: 490px;" @submit.prevent="submit">
 
         <!-- Cannot use are-small and is-rounded until #3208 is merged. See https://github.com/jgthms/bulma/pull/3208. -->
         <div v-if="active === 'login' || (active === 'signup' && !code)" class="buttons is-centered has-addons">
@@ -350,25 +357,36 @@ export default {
         <div>
           <h1 class="title page-title divider-bottom">{{ title }}</h1>
 
-          <div v-if="active === 'signup' || active === 'profile'" class="field">
-            <label :class="['label', { error: hasError('name') }]">NAME</label>
-            <div class="control">
-              <input v-model="name" :disabled="loading" type="text" class="input" :class="{ 'is-danger': hasError('name') }" @input="revalidate">
-            </div>
-          </div>
+          <!-- name -->
+          <div class="is-flex field">
 
-          <div v-if="active ==='login' || active === 'signup' || active === 'profile'" class="field">
-            <label :class="['label', { error: hasError('email') }]">EMAIL</label>
-            <div class="control">
-              <input v-model="email" :disabled="loading" type="email" class="input" :class="{ 'is-danger': hasError('email') }" @input="revalidate">
-            </div>
-          </div>
+            <PhotoUpload v-if="(invite?.role === 'creator' || invite?.role === 'contributor') && (active === 'signup' || active === 'profile')" v-model="photo" class="mr-30 my-40" style="width: 40%" />
 
-          <div v-if="active === 'login' || active === 'signup'" class="field">
-            <label :class="['label', { error: hasError('password') }]">PASSWORD</label>
-            <div class="control">
-              <input v-model="password" :disabled="loading" type="password" class="input" :class="{ 'is-danger': hasError('password') }" @keypress.enter.prevent="onPasswordKeyEnter" @input="revalidate">
+            <div class="is-flex-grow-1">
+              <div v-if="active === 'signup' || active === 'profile'" class="field">
+                <label :class="['label', { error: hasError('name') }]">NAME</label>
+                <div class="control">
+                  <input v-model="name" :disabled="loading" type="text" class="input" :class="{ 'is-danger': hasError('name') }" @input="revalidate">
+                </div>
+              </div>
+
+              <!-- email -->
+              <div v-if="active ==='login' || active === 'signup' || active === 'profile'" class="field">
+                <label :class="['label', { error: hasError('email') }]">EMAIL</label>
+                <div class="control">
+                  <input v-model="email" :disabled="loading" type="email" class="input" :class="{ 'is-danger': hasError('email') }" @input="revalidate">
+                </div>
+              </div>
+
+              <!-- password -->
+              <div v-if="active === 'login' || active === 'signup'" class="field">
+                <label :class="['label', { error: hasError('password') }]">PASSWORD</label>
+                <div class="control">
+                  <input v-model="password" :disabled="loading" type="password" class="input" :class="{ 'is-danger': hasError('password') }" @keypress.enter.prevent="onPasswordKeyEnter" @input="revalidate">
+                </div>
+              </div>
             </div>
+
           </div>
 
           <!-- identities -->
