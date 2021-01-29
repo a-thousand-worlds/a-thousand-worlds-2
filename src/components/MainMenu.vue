@@ -1,5 +1,4 @@
 <script>
-import firebase from '../firebase'
 import InstagramIcon from '../assets/icons/instagram.svg'
 import TwitterIcon from '../assets/icons/twitter.svg'
 
@@ -10,8 +9,7 @@ export default {
   },
   methods: {
     logout() {
-      firebase.auth().signOut()
-      this.$router.push({ name: 'LogIn' })
+      this.$store.dispatch('user/logout')
     }
   },
 }

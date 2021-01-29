@@ -3,6 +3,7 @@ import _ from 'lodash'
 import firebase from '@/firebase'
 import mergeOne from '@/util/mergeOne'
 import collection from '@/store/modules/collection'
+import router from '../router'
 
 function defaultProfile(user, profile = {}) {
   const def = {
@@ -60,6 +61,13 @@ const module = mergeOne(usersModule, {
 
     login(ctx, data) {
       return firebase.auth().signInWithEmailAndPassword(data.email, data.password)
+    },
+
+    logout(ctx) {
+      firebase.auth().signOut()
+      ctx.commit('setUser', null)
+      ctx.commit('ui/setLastVisited', new Date(), { root: true })
+      router.push({ name: 'LogIn' })
     },
 
     async signup({ commit, dispatch, rootState }, { code, email, name, identities, photo, affiliations, password }) {
