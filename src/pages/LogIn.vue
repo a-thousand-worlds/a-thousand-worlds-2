@@ -190,11 +190,7 @@ export default {
       return this.handleResponse(this.$store.dispatch('user/login', {
         email: this.email,
         password: this.password
-      })
-        .then(() => {
-          this.$router.push({ name: this.$can('viewDashboard') ? 'Dashboard' : 'Home' })
-        })
-      )
+      }))
     },
 
     async signup() {
@@ -209,11 +205,7 @@ export default {
         password: this.password,
         identities: this.identities,
         affiliations: this.affiliations,
-      })
-        .then(() => {
-          this.$router.push({ name: this.$can('viewDashboard') ? 'Dashboard' : 'Home' })
-        })
-      )
+      }))
     },
 
     async saveProfile() {
