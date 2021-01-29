@@ -76,7 +76,9 @@ export default {
       return this.isSignup ?
         this.invite?.role ? `You have been invited to join as a ${this.invite.role}!` : 'Sign up for an account'
         : this.isLogin ? 'Log In'
-        : this.isEditProfile ? 'Edit Profile'
+        : this.isEditProfile ? this.$iam('creator')
+          ? 'Your Account'
+          : 'Edit Profile'
         : null
     },
     showOrgLink() {
