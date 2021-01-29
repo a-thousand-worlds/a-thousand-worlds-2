@@ -12,8 +12,9 @@ const module = name => {
       save(state, { path, value }) {
         if (!path) throw new Error('path required')
 
-        // only manage timestamps if saving a whole collection item
-        if (path !== '/' && path !== '.') {
+        // only manage timestamps if saving a collection item
+        const isSubpath = /.[/.]./g.test(path)
+        if (isSubpath) {
           return collectionModule.actions.save(state, { path, value })
         }
 
