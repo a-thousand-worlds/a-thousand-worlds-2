@@ -47,6 +47,12 @@ export default {
     hasFieldErrors() {
       return Object.keys(this.error?.fields || {}).length > 0
     },
+    isContributer() {
+      return this.$store.state.user.user?.roles?.contributor || this.invite?.role === 'contributor'
+    },
+    isCreator() {
+      return this.$store.state.user.user?.roles?.creator || this.invite?.role === 'creator'
+    },
     invite() {
       return this.$store.getters['invites/get'](this.code)
     },
@@ -89,6 +95,8 @@ export default {
 
       this.email = next?.profile?.email || ''
       this.name = next?.profile?.name || ''
+      this.photo = next?.profile?.photo || ''
+      this.identities = { ...next?.profile?.identities }
     }
   },
 
@@ -360,9 +368,10 @@ export default {
           <!-- name -->
           <div class="is-flex field">
 
-            <PhotoUpload v-if="(invite?.role === 'creator' || invite?.role === 'contributor') && (active === 'signup' || active === 'profile')" v-model="photo" class="mr-30 my-40" style="width: 40%" />
+            <PhotoUpload v-if="(isContributor || isCreator) && (active === 'signup' || active === 'profile')" v-model="photo" class="mr-30 my-40" style="width: 40%" />
 
-            <div class="is-flex-grow-1">
+            <!-- vertically center name, email, and password since height is variable (password is not shown on Edit Profile page) -->
+            <div class="is-flex-grow-1 is-flex is-justify-content-center is-flex-direction-column">
               <div v-if="active === 'signup' || active === 'profile'" class="field">
                 <label :class="['label', { error: hasError('name') }]">NAME</label>
                 <div class="control">
