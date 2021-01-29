@@ -165,7 +165,7 @@ export default {
         : null
     },
 
-    async onPasswordKeyEnter() {
+    async onEnter() {
       if (this.isLogin) {
         await this.login()
       }
@@ -396,7 +396,7 @@ export default {
               <div v-if="isLogin || isSignup || isEditProfile" class="field">
                 <label :class="['label', { error: hasError('email') }]">EMAIL</label>
                 <div class="control">
-                  <input v-model="email" :disabled="loading" type="email" class="input" :class="{ 'is-danger': hasError('email') }" @input="revalidate">
+                  <input v-model="email" @keypress.enter.prevent="onEnter" :disabled="loading" type="email" class="input" :class="{ 'is-danger': hasError('email') }" @input="revalidate">
                 </div>
               </div>
 
@@ -404,7 +404,7 @@ export default {
               <div v-if="isLogin || isSignup" class="field">
                 <label :class="['label', { error: hasError('password') }]">PASSWORD</label>
                 <div class="control">
-                  <input v-model="password" :disabled="loading" type="password" class="input" :class="{ 'is-danger': hasError('password') }" @keypress.enter.prevent="onPasswordKeyEnter" @input="revalidate">
+                  <input v-model="password" :disabled="loading" type="password" class="input" :class="{ 'is-danger': hasError('password') }" @keypress.enter.prevent="onEnter" @input="revalidate">
                 </div>
               </div>
             </div>
