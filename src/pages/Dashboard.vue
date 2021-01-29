@@ -1,6 +1,7 @@
 <script>
 import CreatorProfilePreview from '@/components/Dashboard/CreatorProfilePreview'
 import InviteWidget from '@/components/InviteWidget'
+import Loader from '@/components/Loader'
 import ManageCollectionsPreview from '@/components/Dashboard/ManageCollectionsPreview'
 import ReviewSubmissionsPreview from '@/components/Dashboard/ReviewSubmissionsPreview'
 import YourBookSubmissions from '@/components/Dashboard/YourBookSubmissions'
@@ -8,6 +9,7 @@ import YourBookSubmissions from '@/components/Dashboard/YourBookSubmissions'
 export default {
   components: {
     CreatorProfilePreview,
+    Loader,
     InviteWidget,
     ManageCollectionsPreview,
     ReviewSubmissionsPreview,
@@ -23,6 +25,9 @@ export default {
   computed: {
     bookSubmissions() {
       return this.$store.getters['submissions/books/list']()
+    },
+    loaded() {
+      return this.$store.state.user.user
     },
     username() {
       return this.$store.state.user.user?.profile.name || this.$store.state.user.user?.profile.email
@@ -41,6 +46,10 @@ export default {
 
       <div v-if="!$iam('creator')" class="header-options mr-10">
         <router-link :to="{ name: 'Profile' }" style="color: black;">Edit your profile</router-link>
+      </div>
+
+      <div v-if="!loaded" class="has-text-centered" style="margin-top: 20vh;">
+        <Loader />
       </div>
 
       <section v-if="$iam('creator')" class="section bordered-top">
