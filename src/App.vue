@@ -37,7 +37,7 @@ export default ({
       // $route.name is undefined on initial load
       // window.location.pathname is available immediately
       return (window.location.pathname === '/' || this.$route.name)
-        && !this.$store.state.ui.lastVisited && !this.$route.meta?.access && !this.$route.name === 'LogIn'
+        && !this.$store.state.ui.lastVisited && !this.$route.meta?.access && !this.$route.name === 'Login'
     }
   },
   watch: {

@@ -67,7 +67,7 @@ const module = mergeOne(usersModule, {
       firebase.auth().signOut()
       ctx.commit('setUser', null)
       ctx.commit('ui/setLastVisited', new Date(), { root: true })
-      router.push({ name: 'LogIn' })
+      router.push({ name: 'Login' })
     },
 
     async signup({ commit, dispatch, rootState }, { code, email, name, identities, photo, affiliations, password }) {

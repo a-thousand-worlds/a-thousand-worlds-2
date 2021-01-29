@@ -5,7 +5,7 @@ import Loader from '@/components/Loader'
 import PhotoUpload from '@/components/PhotoUpload'
 
 export default {
-  name: 'LogInPage',
+  name: 'LoginPage',
   components: {
     Loader,
     PhotoUpload,
@@ -260,7 +260,7 @@ export default {
 
       this.$router.push({
         name: this.isSignup ? 'Signup'
-        : this.isLogin ? 'LogIn'
+        : this.isLogin ? 'Login'
         : this.isEditProfile ? 'Profile'
         : null
       })
@@ -352,7 +352,7 @@ export default {
       </div>
       <div v-else class="my-50 has-text-centered">
         <h2>{{ invite?.used ? 'This invitation code has already been used.' : 'Invalid invitation code' }}</h2>
-        <router-link :to="{ name: 'LogIn' }"><button class="button is-primary is-rounded is-uppercase mt-20">Log In</button></router-link>
+        <router-link :to="{ name: 'Login' }"><button class="button is-primary is-rounded is-uppercase mt-20">Log In</button></router-link>
       </div>
     </div>
 

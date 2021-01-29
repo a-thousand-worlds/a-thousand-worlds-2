@@ -49,7 +49,7 @@ export default {
       </div>
 
       <div class="has-text-centered">
-        <p><router-link :to="{name:'LogIn'}">LOG IN</router-link></p>
+        <p><router-link :to="{name:'Login'}">LOG IN</router-link></p>
         <p><router-link :to="{name:'Signup'}">SIGN UP</router-link></p>
       </div>
 

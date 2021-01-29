@@ -51,7 +51,7 @@ export default {
     },
     toggleBookmarks() {
       if (!this.$iam('authorized')) {
-        this.$router.push({ name: 'LogIn' })
+        this.$router.push({ name: 'Login' })
         return
       }
       const state = this.$store.state.ui.bookmarksOpen

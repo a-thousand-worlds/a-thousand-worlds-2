@@ -38,8 +38,8 @@ const routes = [
     component: () => import(/* webpackChunkName: "guest" */ './pages/About.vue')
   }, {
     path: '/login',
-    name: 'LogIn',
-    component: () => import(/* webpackChunkName: "guest" */ './pages/LogIn.vue')
+    name: 'Login',
+    component: () => import(/* webpackChunkName: "guest" */ './pages/Login.vue')
   }, {
     path: '/password-reset',
     name: 'PasswordReset',
@@ -47,7 +47,7 @@ const routes = [
   }, {
     path: '/signup',
     name: 'Signup',
-    component: () => import(/* webpackChunkName: "guest" */ './pages/LogIn.vue')
+    component: () => import(/* webpackChunkName: "guest" */ './pages/Login.vue')
   }, { // User authorized paged
     path: '/dashboard',
     name: 'Dashboard',
@@ -58,7 +58,7 @@ const routes = [
   }, {
     path: '/profile',
     name: 'Profile',
-    component: () => import(/* webpackChunkName: "user" */ './pages/LogIn.vue'),
+    component: () => import(/* webpackChunkName: "user" */ './pages/Login.vue'),
     meta: {
       access: 'authorized'
     }

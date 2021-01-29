@@ -26,7 +26,7 @@ export default {
       <li id="people-filter-menu" />
       <li><router-link :to="{name: 'Support'}">Support</router-link></li>
       <li><router-link :to="{name: 'About'}">About</router-link></li>
-      <li v-if="!$iam('authorized')"><router-link :to="{name: 'LogIn'}">Log In</router-link></li>
+      <li v-if="!$iam('authorized')"><router-link :to="{name: 'Login'}">Log In</router-link></li>
       <li v-if="$iam('authorized')"><router-link :to="{name: 'Dashboard'}">Dashboard</router-link></li>
 
       <li v-if="$iam('authorized')"><a @click.prevent="logout">Log Out</a></li>
