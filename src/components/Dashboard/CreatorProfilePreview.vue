@@ -8,6 +8,9 @@ export default {
     Square,
   },
   computed: {
+    adminEmail() {
+      return process.env.VUE_APP_ADMIN_EMAIL
+    },
     hasOnlyRejected() {
       const userSubmissions = Object.values(this.userSubmissions)
       return userSubmissions.length > 0 && userSubmissions.every(status => status === 'rejected')
@@ -84,7 +87,7 @@ export default {
 
     <!-- new profile -->
     <div v-else>
-      <p v-if="hasOnlyRejected" class="mb-20" style="font-size: 22px">Thank you. Your profile submission was not accepted at this time. You can reach us at <a href="mailto:info@athousandworlds.org">info@athousandworlds.org</a> if you have any questions.</p>
+      <p v-if="hasOnlyRejected" class="mb-20" style="font-size: 22px">Thank you. Your profile submission was not accepted at this time. You can reach us at <a :href="'mailto:' + adminEmail">{{ adminEmail }}</a> if you have any questions.</p>
       <h2 v-else>Please fill our your profile for the People Directory</h2>
       <div class="field is-grouped">
         <div class="control my-20">

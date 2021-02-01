@@ -84,12 +84,25 @@ const module = mergeOne(managed('submits/books'), {
         throw new Error(message)
       }
 
+      const firstName = submitter.profile.name && submitter.profile.name.includes(' ')
+        ? submitter.profile.name.slice(0, submitter.profile.name.indexOf(' '))
+        : submitter.profile.name
+
+      const salutation = firstName
+        ? `Dear ${firstName},`
+        : 'Hello,'
+
       await sendEmail({
         to: submitter.profile.email,
-        subject: 'A Thousand Worlds - Thank you for your submission',
+        subject: 'A Thousand Worlds - Thank you for your Book Submission',
         body: `
-          <p>Thank you for your submission to <b>A Thousand Worlds</b>. Your submission was not accepted for the public directory at this time, but we have retained it in our records and appreciate your contribution.</p>
-          <p>For questions, email <a href="mailto:info@athousandworlds.org">info@athousandworlds.org</a>.
+          <p>${salutation}</p>
+          <p>Thank you for filling out a Book Submission Form and being part of <b>A Thousand Worlds!</b></p>
+          <p>Your submission was not accepted for the public directory at this time, but we have retained it in our records and appreciate your contribution.</p>
+          <p>Should you have any feedback, questions or concerns don't hesitate to reach out: <a href ="mailto:${process.env.VUE_APP_ADMIN_EMAIL}">${process.env.VUE_APP_ADMIN_EMAIL}</a></p>
+          <p>Warm regards,<br>
+            -Cátia Chien & ATW team
+            </p>
         `
       })
     },
@@ -193,17 +206,33 @@ const module = mergeOne(managed('submits/books'), {
         `<br><b>illustrated by</b> ${sub.illustrators}</a>`
         : ''
 
+      const firstName = submitter.profile.name && submitter.profile.name.includes(' ')
+        ? submitter.profile.name.slice(0, submitter.profile.name.indexOf(' '))
+        : submitter.profile.name
+
+      const salutation = firstName
+        ? `Dear ${firstName},`
+        : 'Hello,'
+
       await sendEmail({
         to: submitter.profile.email,
-        subject: 'A Thousand Worlds - Your book has been approved!',
+        subject: 'A Thousand Worlds - Thank you for your Book Submission!',
         body: `
-          <p>Thank you for your submission to <b>A Thousand Worlds</b>. Your book has been approved!</p>
+          <p>${salutation}</p>
+          <p>
+            Thank you for filling out a Book Submission Form and being part of <b>A Thousand Worlds!</b><br>
+            We have reviewed your book submission and we are thrilled to add your recommendations to our free online directory.
           <p>
             <b><a href="${bookDetailUrl}" target="_blank">${sub.title}</a></b><br>
             <b>words by</b> ${sub.authors}
               ${illustratorsHtml}
           </p>
           ${imageHtml}
+          <p>Should you have any feedback, questions or concerns don't hesitate to reach out: <a href ="mailto:${process.env.VUE_APP_ADMIN_EMAIL}">${process.env.VUE_APP_ADMIN_EMAIL}</a></p>
+          <p>We are so thrilled to have you be part of our community. And we thank you for your dedication to readers everywhere and for helping shape a more equitable future within the publishing industry!</p>
+          <p>Warm regards,<br>
+            -Cátia Chien & ATW team
+            </p>
         `
       })
 
