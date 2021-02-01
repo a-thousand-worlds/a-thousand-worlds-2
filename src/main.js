@@ -42,6 +42,10 @@ router.afterEach((to, from) => {
 })
 
 // global error handling
+window.addEventListener('onerror', function(msg, url, line, col, error) {
+  console.error(msg, url, line, col, error)
+  store.dispatch('ui/popup', { text: msg, type: 'error', autoclose: false })
+})
 window.addEventListener('unhandledrejection', function(e) {
   store.dispatch('ui/popup', { text: e.reason, type: 'error', autoclose: false })
 })
