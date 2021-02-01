@@ -7,6 +7,27 @@ import isSame from '@/util/isSame'
 import mergeOne from '@/util/mergeOne'
 import sendEmail from '@/util/sendEmail'
 
+/** Renders a book as a small snippet of HTML for the approval email template. */
+const renderBook = sub => {
+
+  const bookDetailUrl = `${window.location.origin}/book/${slugify(sub.title.replace(/'/g, ''))}-${sub.isbn}`
+  const illustratorsHtml = sub.illustrators ?
+    `<br><b>illustrated by</b> ${sub.illustrators}</a>`
+    : ''
+  const imageHtml = sub.thumbnail ?
+    `<p><a href="${bookDetailUrl}" target="_blank"><img src="${sub.thumbnail}" /></a></p>`
+    : ''
+
+  return `
+    <p>
+      <b><a href="${bookDetailUrl}" target="_blank">${sub.title}</a></b><br>
+      <b>words by</b> ${sub.authors}
+        ${illustratorsHtml}
+    </p>
+    ${imageHtml}
+  `
+}
+
 const module = mergeOne(managed('submits/books'), {
   getters: {
     filtered: state => state.loaded
@@ -107,12 +128,54 @@ const module = mergeOne(managed('submits/books'), {
       })
     },
 
-    /** Approves submissions group. */
-    approve: async (context, list) => {
-      return list.map(sub => context.dispatch('approveBook', sub))
+    /** Approves submissions group. Send email */
+    approve: async (context, subs) => {
+
+      await Promise.all(subs.map(sub => context.dispatch('approveBook', sub)))
+
+      const createdBy = subs[0].createdBy
+
+      // send email
+      const submitter = await context.dispatch('users/loadOne', createdBy, { root: true })
+      if (!submitter) {
+        const message = `Could not find user ${createdBy}`
+        console.error(message, subs)
+        throw new Error(message)
+      }
+      if (!submitter.profile.email) {
+        const message = `No email for user ${createdBy}`
+        console.error(message, subs)
+        throw new Error(message)
+      }
+
+      const firstName = submitter.profile.name && submitter.profile.name.includes(' ')
+        ? submitter.profile.name.slice(0, submitter.profile.name.indexOf(' '))
+        : submitter.profile.name
+
+      const salutation = firstName
+        ? `Dear ${firstName},`
+        : 'Hello,'
+
+      await sendEmail({
+        to: submitter.profile.email,
+        subject: 'A Thousand Worlds - Thank you for your Book Submission!',
+        body: `
+          <p>${salutation}</p>
+          <p>
+            Thank you for filling out a Book Submission Form and being part of <b>A Thousand Worlds!</b><br>
+            We have reviewed your book submission and we are thrilled to add your recommendations to our free online directory.
+          ${subs.map(sub => renderBook(sub)).join('\n')}
+          <p>Should you have any feedback, questions or concerns don't hesitate to reach out: <a href ="mailto:${process.env.VUE_APP_ADMIN_EMAIL}">${process.env.VUE_APP_ADMIN_EMAIL}</a></p>
+          <p>We are so thrilled to have you be part of our community. And we thank you for your dedication to readers everywhere and for helping shape a more equitable future within the publishing industry!</p>
+          <p>Warm regards,<br>
+            -Cátia Chien & ATW team
+            </p>
+        `
+      })
+
     },
 
-    /** Approves a single book submission. */
+    /** Approves a single book submission. Does not send email. */
     approveBook: async (context, sub) => {
 
       // collect creators and create not existing people
@@ -184,56 +247,6 @@ const module = mergeOne(managed('submits/books'), {
           reviewedBy: context.rootState.user.user.uid,
           status: 'approved',
         },
-      })
-
-      // send email
-      const submitter = await context.dispatch('users/loadOne', sub.createdBy, { root: true })
-      if (!submitter) {
-        const message = `Could not find user ${sub.createdBy} for submission ${sub.id}`
-        console.error(message, sub)
-        throw new Error(message)
-      }
-      if (!submitter.profile.email) {
-        const message = `No email for user ${sub.createdBy} of submission ${sub.id}`
-        console.error(message, sub)
-        throw new Error(message)
-      }
-      const bookDetailUrl = `${window.location.origin}/book/${slugify(sub.title.replace(/'/g, ''))}-${sub.isbn}`
-      const imageHtml = sub.thumbnail ?
-        `<p><a href="${bookDetailUrl}" target="_blank"><img src="${sub.thumbnail}" /></a></p>`
-        : ''
-      const illustratorsHtml = sub.illustrators ?
-        `<br><b>illustrated by</b> ${sub.illustrators}</a>`
-        : ''
-
-      const firstName = submitter.profile.name && submitter.profile.name.includes(' ')
-        ? submitter.profile.name.slice(0, submitter.profile.name.indexOf(' '))
-        : submitter.profile.name
-
-      const salutation = firstName
-        ? `Dear ${firstName},`
-        : 'Hello,'
-
-      await sendEmail({
-        to: submitter.profile.email,
-        subject: 'A Thousand Worlds - Thank you for your Book Submission!',
-        body: `
-          <p>${salutation}</p>
-          <p>
-            Thank you for filling out a Book Submission Form and being part of <b>A Thousand Worlds!</b><br>
-            We have reviewed your book submission and we are thrilled to add your recommendations to our free online directory.
-          <p>
-            <b><a href="${bookDetailUrl}" target="_blank">${sub.title}</a></b><br>
-            <b>words by</b> ${sub.authors}
-              ${illustratorsHtml}
-          </p>
-          ${imageHtml}
-          <p>Should you have any feedback, questions or concerns don't hesitate to reach out: <a href ="mailto:${process.env.VUE_APP_ADMIN_EMAIL}">${process.env.VUE_APP_ADMIN_EMAIL}</a></p>
-          <p>We are so thrilled to have you be part of our community. And we thank you for your dedication to readers everywhere and for helping shape a more equitable future within the publishing industry!</p>
-          <p>Warm regards,<br>
-            -Cátia Chien & ATW team
-            </p>
-        `
       })
 
     },
