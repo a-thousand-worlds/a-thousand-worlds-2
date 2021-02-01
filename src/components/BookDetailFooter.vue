@@ -1,10 +1,22 @@
 <script>
+import ISBN from 'isbn3'
 
 export default {
   props: {
     book: {
       required: true
     },
+  },
+  data() {
+    return {
+      amazonAffiliateCode: process.env.VUE_APP_AMAZON_AFFILIATE_CODE,
+      indieboundAffiliateCode: process.env.VUE_APP_INDIEBOUND_AFFILIATE_CODE,
+    }
+  },
+  computed: {
+    isbn10() {
+      return ISBN.asIsbn10(this.book?.isbn || '')
+    }
   },
 }
 
@@ -14,13 +26,21 @@ export default {
   <div class="content-footer">
     <div class="content-footer-inner">
       <div class="link-container">
+
         <button class="button button-unstyled is-primary pl-0">FIND BOOK AT</button>
+
         <button class="button is-rounded is-secondary mx-1 test">
           <i class="fas fa-university mr-1" /> LOCAL LIBRARY
         </button>
-        <a :href="`http://www.indiebound.org/book/${book.isbn}?aff=athousandworlds`" target="_blank"><button class="button is-rounded is-secondary mx-1">
+
+        <a :href="`https://amzn.com/${isbn10}?tag=${amazonAffiliateCode}`" target="_blank"><button class="button is-rounded is-secondary mx-1">
+          <i class="fas fa-shopping-cart mr-1" /> AMAZON
+        </button></a>
+
+        <a :href="`http://www.indiebound.org/book/${book.isbn}?aff=${indieboundAffiliateCode}`" target="_blank"><button class="button is-rounded is-secondary mx-1">
           <i class="fas fa-shopping-cart mr-1" /> INDIE BOOKSELLERS
         </button></a>
+
         <a v-if="book.goodread" :href="`https://www.goodreads.com/book/show/${book.goodread}`" target="_blank"><button class="button is-rounded is-secondary mx-1 mr-20">
           <i class="fas fa-book-open mr-1" /> GOODREADS
         </button></a>
