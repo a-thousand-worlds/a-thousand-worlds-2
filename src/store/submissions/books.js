@@ -1,9 +1,11 @@
+import { v4 as uid } from 'uuid'
+import dayjs from 'dayjs'
+import * as slugify from '@sindresorhus/slugify'
+import managed from '@/store/modules/managed'
 import almostEqual from '@/util/almostEqual'
 import isSame from '@/util/isSame'
 import mergeOne from '@/util/mergeOne'
-import managed from '@/store/modules/managed'
-import { v4 as uid } from 'uuid'
-import dayjs from 'dayjs'
+import sendEmail from '@/util/sendEmail'
 
 const module = mergeOne(managed('submits/books'), {
   getters: {
@@ -58,18 +60,43 @@ const module = mergeOne(managed('submits/books'), {
       sub.reviewedBy = context.rootState.user.user.uid
       sub.reviewedAt = now.format()
       sub.status = 'rejected'
+
+      // update book submission
       await context.dispatch('save', { path: sub.id, value: sub })
       context.commit('setOne', { path: sub.id, value: sub })
 
+      // update user profile
       await context.dispatch('user/save', {
         path: `profile/submissions/${sub.id}`,
         value: 'rejected',
       }, { root: true })
+
+      // send email
+      const submitter = await context.dispatch('users/loadOne', sub.createdBy, { root: true })
+      if (!submitter) {
+        const message = `Could not find user ${sub.createdBy} for submission ${sub.id}`
+        console.error(message, sub)
+        throw new Error(message)
+      }
+      if (!submitter.profile.email) {
+        const message = `No email for user ${sub.createdBy} of submission ${sub.id}`
+        console.error(message, sub)
+        throw new Error(message)
+      }
+
+      await sendEmail({
+        to: submitter.profile.email,
+        subject: 'A Thousand Worlds - Thank you for your submission',
+        body: `
+          <p>Thank you for your submission to <b>A Thousand Worlds</b>. Your submission was not accepted for the public directory at this time, but we have retained it in our records and appreciate your contribution.</p>
+          <p>For questions, email <a href="mailto:info@athousandworlds.org">info@athousandworlds.org</a>.
+        `
+      })
     },
 
     /** Approves submissions group. */
     approve: async (context, list) => {
-      list.forEach(sub => context.dispatch('approveBook', sub))
+      return list.map(sub => context.dispatch('approveBook', sub))
     },
 
     /** Approves a single book submission. */
@@ -144,6 +171,40 @@ const module = mergeOne(managed('submits/books'), {
           reviewedBy: context.rootState.user.user.uid,
           status: 'approved',
         },
+      })
+
+      // send email
+      const submitter = await context.dispatch('users/loadOne', sub.createdBy, { root: true })
+      if (!submitter) {
+        const message = `Could not find user ${sub.createdBy} for submission ${sub.id}`
+        console.error(message, sub)
+        throw new Error(message)
+      }
+      if (!submitter.profile.email) {
+        const message = `No email for user ${sub.createdBy} of submission ${sub.id}`
+        console.error(message, sub)
+        throw new Error(message)
+      }
+      const bookDetailUrl = `${window.location.origin}/book/${slugify(sub.title.replace(/'/g, ''))}-${sub.isbn}`
+      const imageHtml = sub.thumbnail ?
+        `<p><a href="${bookDetailUrl}" target="_blank"><img src="${sub.thumbnail}" /></a></p>`
+        : ''
+      const illustratorsHtml = sub.illustrators ?
+        `<br><b>illustrated by</b> ${sub.illustrators}</a>`
+        : ''
+
+      await sendEmail({
+        to: submitter.profile.email,
+        subject: 'A Thousand Worlds - Your book has been approved!',
+        body: `
+          <p>Thank you for your submission to <b>A Thousand Worlds</b>. Your book has been approved!</p>
+          <p>
+            <b><a href="${bookDetailUrl}" target="_blank">${sub.title}</a></b><br>
+            <b>words by</b> ${sub.authors}
+              ${illustratorsHtml}
+          </p>
+          ${imageHtml}
+        `
       })
 
     },

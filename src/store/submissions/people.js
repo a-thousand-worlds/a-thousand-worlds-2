@@ -1,9 +1,11 @@
 import _ from 'lodash'
 import { v4 as uid } from 'uuid'
 import dayjs from 'dayjs'
+import * as slugify from '@sindresorhus/slugify'
 import managed from '@/store/modules/managed'
 import almostEqual from '@/util/almostEqual'
 import mergeOne from '@/util/mergeOne'
+import sendEmail from '@/util/sendEmail'
 
 const module = mergeOne(managed('submits/people'), {
   actions: {
@@ -69,15 +71,42 @@ const module = mergeOne(managed('submits/people'), {
     },
 
     /** Rejects a submission. */
-    reject(context, sub) {
-      return context.dispatch('updateSubmission', { sub, status: 'rejected' })
+    async reject(context, sub) {
+      await context.dispatch('updateSubmission', { sub, status: 'rejected' })
+
+      // send email
+      const submitter = await context.dispatch('users/loadOne', sub.createdBy, { root: true })
+      if (!submitter) {
+        const message = `Could not find user ${sub.createdBy} for submission ${sub.id}`
+        console.error(message, sub)
+        throw new Error(message)
+      }
+      if (!submitter.profile.email) {
+        const message = `No email for user ${sub.createdBy} of submission ${sub.id}`
+        console.error(message, sub)
+        throw new Error(message)
+      }
+
+      await sendEmail({
+        to: submitter.profile.email,
+        subject: 'A Thousand Worlds - Thank you for your submission',
+        body: `
+          <p>Thank you for your submission to <b>A Thousand Worlds</b>. Your submission was not accepted for the public directory at this time, but we have retained it in our records and appreciate your contribution.</p>
+          <p>For questions, email <a href="mailto:info@athousandworlds.org">info@athousandworlds.org</a>.
+        `
+      })
     },
 
     /** Approves submissions group */
     approve: (context, subs) => {
+      return subs.map(sub => context.dispatch('approvePerson', sub))
+    },
+
+    /** Approves a single person. */
+    approvePerson: async (context, sub) => {
 
       /** Gets the person with an almost equal name. */
-      const person = async sub =>
+      const person = sub =>
         context.rootGetters['people/findBy'](person => almostEqual(person.name, sub.name))
 
       /** Get the creator id if it exists for the given user. */
@@ -102,48 +131,74 @@ const module = mergeOne(managed('submits/people'), {
         return peopleSubmission?.peopleSubmissionId
       }
 
-      return subs.map(async sub => {
+      const personNew = {
+        id: await person(sub),
+        ...await person(sub),
+        ..._.pick(sub, [
+          'awards',
+          'bio',
+          'bonus',
+          'curateInterest',
+          'gender',
+          'identities',
+          'name',
+          'photo',
+          'title',
+        ])
+      }
 
-        const personNew = {
-          id: await person(sub),
-          ...await person(sub),
-          ..._.pick(sub, [
-            'awards',
-            'bio',
-            'bonus',
-            'curateInterest',
-            'gender',
-            'identities',
-            'name',
-            'photo',
-            'title',
-          ])
+      // if submission contains photo - we resaving it to separate file related with creator record
+      // submission photo file may be removed if submission record is removed, and we don't want to lose photo file
+      // we use 'donwloadUrl' field as mark for backend function to resave file from provided url
+      if (sub.photo?.url?.startsWith('http')) {
+        personNew.photo = {
+          downloadUrl: sub.photo.url
         }
+      }
 
-        // if submission contains photo - we resaving it to separate file related with creator record
-        // submission photo file may be removed if submission record is removed, and we don't want to lose photo file
-        // we use 'donwloadUrl' field as mark for backend function to resave file from provided url
-        if (sub.photo?.url?.startsWith('http')) {
-          personNew.photo = {
-            downloadUrl: sub.photo.url
-          }
-        }
-        console.log('personNew', personNew)
-
-        // update user submission and people submission
-        await context.dispatch('updateSubmission', {
-          peopleSubmissionId: await personSubmissionId(sub.createdBy) || uid(),
-          personId: personNew.id,
-          sub,
-          status: 'approved'
-        })
-
-        // save user
-        await context.dispatch('people/save', {
-          path: personNew.id,
-          value: personNew
-        }, { root: true })
+      // update user submission and people submission
+      await context.dispatch('updateSubmission', {
+        peopleSubmissionId: await personSubmissionId(sub.createdBy) || uid(),
+        personId: personNew.id,
+        sub,
+        status: 'approved'
       })
+
+      // save user
+      await context.dispatch('people/save', {
+        path: personNew.id,
+        value: personNew
+      }, { root: true })
+
+      // send email
+      const submitter = await context.dispatch('users/loadOne', sub.createdBy, { root: true })
+      if (!submitter) {
+        const message = `Could not find user ${sub.createdBy} for submission ${sub.id}`
+        console.error(message, sub)
+        throw new Error(message)
+      }
+      if (!submitter.profile.email) {
+        const message = `No email for user ${sub.createdBy} of submission ${sub.id}`
+        console.error(message, sub)
+        throw new Error(message)
+      }
+      const personDetailUrl = `${window.location.origin}/person/${slugify(personNew.name)}`
+      const imageHtml = personNew.photo?.downloadUrl ?
+        `<p><a href="${personDetailUrl}" target="_blank"><img src="${personNew.photo.downloadUrl}" /></a></p>`
+        : ''
+
+      await sendEmail({
+        to: submitter.profile.email,
+        subject: 'A Thousand Worlds - Your book has been approved!',
+        body: `
+          <p>Thank you for your submission to <b>A Thousand Worlds</b>. Your public profile has been approved!</p>
+          <p>
+            <b><a href="${personDetailUrl}" target="_blank">${sub.name}</a></b>
+          </p>
+          ${imageHtml}
+        `
+      })
+
     },
 
   }
