@@ -41,6 +41,11 @@ router.afterEach((to, from) => {
   store.commit('ui/setBookmarksOpen', false)
 })
 
+// global error handling
+window.addEventListener('unhandledrejection', function(e) {
+  store.dispatch('ui/popup', { text: e.reason, type: 'error', autoclose: false })
+})
+
 const app = createApp(App)
   .use(store)
   .use(router)

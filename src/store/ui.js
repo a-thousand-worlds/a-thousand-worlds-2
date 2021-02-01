@@ -57,11 +57,16 @@ const module = {
       const { text, type } = typeof data === 'string'
         ? { text: data, type: 'info' }
         : data
+      const typeClasses = { error: 'danger' }
       const id = uid()
-      context.commit('pushPopup', { id, text, type })
-      setTimeout(() => {
-        context.commit('closePopup', id)
-      }, 3000)
+      context.commit('pushPopup', { id, text, type: typeClasses[type] || type })
+
+      if (data.autoclose !== false) {
+        setTimeout(() => {
+          context.commit('closePopup', id)
+        }, 3000)
+      }
+
       return id
     },
     close(context, id) {
