@@ -4,6 +4,7 @@ import _ from 'lodash'
 // import Jimp from 'jimp'
 import validator from '@/mixins/validator'
 import genders from '@/store/constants/genders'
+import pronouns from '@/store/constants/pronouns'
 import personSubmission from '@/store/constants/personSubmission'
 
 export default {
@@ -19,6 +20,7 @@ export default {
     return {
       draftSaved: null,
       genders,
+      pronouns,
       submission: this.newSubmission(),
     }
   },
@@ -143,8 +145,14 @@ export default {
 
           <!-- preferred pronouns -->
           <div class="field">
-            <label class="label" :class="{ 'has-text-danger': hasError('name') }" style="font-weight: bold; text-transform: uppercase;">Preferred Pronouns</label>
-            <input type="text" class="input" v-model="submission.pronouns" @input="saveDraftAndRevalidate">
+            <label class="label" :class="{ 'has-text-danger': hasError('name') }" style="font-weight: bold;">Please indicate your preferred pronouns</label>
+
+            <div class="sublabel">
+              <div v-for="pronoun of pronouns" :key="pronoun.id" class="control is-flex" style="column-break-inside: avoid;">
+                <input type="radio" name="pronoun" :id="`pronoun-${pronoun.id}`" v-model="submission.pronoun" :value="pronoun.id" class="checkbox mb-3 mt-1">
+                <label class="label pl-2 pb-1 no-user-select" :for="`pronoun-${pronoun.id}`" style="cursor: pointer;">{{ pronoun.text }}</label>
+              </div>
+            </div>
           </div>
 
           <!-- title -->
