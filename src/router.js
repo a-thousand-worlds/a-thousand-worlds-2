@@ -119,6 +119,11 @@ const routes = [
       access: 'owner'
     }
   }, {
+    path: '/book/:slug(.+)?-:isbn/edit',
+    alias: '/book/:slug?/:isbn(.*)/edit',
+    name: 'BookEdit',
+    component: () => import(/* webpackChunkName: "advisor" */ './pages/BookEdit.vue')
+  }, {
     path: '/admin/books',
     name: 'BooksManager',
     component: () => import(/* webpackChunkName: "advisor" */ './pages/BooksManager.vue'),

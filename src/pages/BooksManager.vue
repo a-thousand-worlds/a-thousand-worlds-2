@@ -161,16 +161,16 @@ export default {
 
               <!-- cover -->
               <td>
-                <BookDetailLink :book="book">
+                <BookDetailLink :book="book" edit>
                   <StaticCoverImage :item="book" style="width: 150px; min-width: 50px; min-height: auto;" />
                 </BookDetailLink>
               </td>
 
               <!-- ISBN -->
-              <td>{{ book.isbn }}</td>
+              <td><BookDetailLink :book="book" edit>{{ book.isbn }}</BookDetailLink></td>
 
               <!-- title -->
-              <td>{{ book.title }}</td>
+              <td><BookDetailLink :book="book" edit>{{ book.title }}</BookDetailLink></td>
 
               <!-- author(s) -->
               <td>{{ authors(book.creators) }}</td>
