@@ -74,7 +74,9 @@ export default ({
       <section v-if="$store.state.ui.bookmarksOpen" class="bookmarks column">
         <BookmarksView />
       </section>
-      <div class="rightbar-border" />
+
+      <!-- add the rightbar-border to main instead of rightbar itself in order to get correct z-indexing with welcome banner -->
+      <div class="rightbar-border is-hidden-mobile" />
 
     </div>
 
@@ -173,7 +175,6 @@ body {
   }
 }
 
-// add the rightbar-border to main instead of rightbar itself in order to get correct z-indexing with welcome banner
 .rightbar-border {
   @include primary(border-left-color);
   border-left: solid 1px;
