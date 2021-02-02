@@ -4,9 +4,54 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title><%= htmlWebpackPlugin.options.title %></title>
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-    <title>A Thousand Worlds : Colorful Reads X Colorful People</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
+
+    <!-- twitter, facebook, and open graph data added in vue.config.js -->
+
+    <!-- favicon -->
+    <!-- https://realfavicongenerator.net -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/site.webmanifest">
+    <link rel="mask-icon" href="/favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Google structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "NewsArticle",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "<%= htmlWebpackPlugin.options.url %>"
+      },
+      "headline": "<%= htmlWebpackPlugin.options.title %>",
+      "image": {
+        "@type": "ImageObject",
+        "url": "<%= htmlWebpackPlugin.options.url + htmlWebpackPlugin.options.image %>"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Staff"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "<%= htmlWebpackPlugin.options.title %>",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "<%= htmlWebpackPlugin.options.url + htmlWebpackPlugin.options.logo %>",
+          "width": 2176,
+          "height": 725
+        }
+      },
+      "description": "<%= htmlWebpackPlugin.options.description %>",
+      "datePublished": "<%= new Date().toISOString() %>"
+    }
+    </script>
   </head>
   <body>
     <noscript>
