@@ -32,7 +32,13 @@ export default {
 
 <template>
   <BookDetailLink :book="book">
-    <div :style="{width: '100%', paddingTop: coverRatio+'%', backgroundImage: `url(${bgImage})`, backgroundSize: 'contain'}" class="book-cover-wrapper bg-secondary">
+
+    <div :style="{
+      width: '100%',
+      paddingTop: coverRatio+'%',
+      backgroundImage: `url(${bgImage})`,
+      backgroundSize: 'contain'
+    }" class="book-cover-wrapper bg-secondary">
       <div class="cover-shadow" />
       <div class="cover-data">
         <div class="title">{{ book.title }}</div>
@@ -44,8 +50,8 @@ export default {
         <BookmarkButton :book="book" />
       </div>
     </div>
-    <div class="is-hidden-tablet">
 
+    <div class="is-hidden-tablet">
       <div class="divider-bottom is-flex is-justify-content-space-between">
         <div>
           <h1 class="title">{{ book.title }}</h1>
@@ -53,8 +59,8 @@ export default {
         </div>
         <div style="padding-top: 0px;"><BookmarkButton :book="book" /></div>
       </div>
-
     </div>
+
   </BookDetailLink>
 </template>
 
