@@ -34,9 +34,9 @@ module.exports = {
 
             // facebook
             // 'fb:app_id': '',
-            // 'article:opinion': 'false',
-            // 'article:content_tier': 'free',
-            // 'fb:pages': '',
+            'fb:pages': '102421671707042',
+            'article:opinion': 'false',
+            'article:content_tier': 'free',
 
           },
 
