@@ -3,6 +3,7 @@ import { v4 as uid } from 'uuid'
 import dayjs from 'dayjs'
 import * as slugify from '@sindresorhus/slugify'
 import managed from '@/store/modules/managed'
+import personSubmission from '@/store/constants/personSubmission'
 import almostEqual from '@/util/almostEqual'
 import mergeOne from '@/util/mergeOne'
 import sendEmail from '@/util/sendEmail'
@@ -148,17 +149,7 @@ const module = mergeOne(managed('submits/people'), {
       const personNew = {
         id: await person(sub),
         ...await person(sub),
-        ..._.pick(sub, [
-          'awards',
-          'bio',
-          'bonus',
-          'curateInterest',
-          'gender',
-          'identities',
-          'name',
-          'photo',
-          'title',
-        ])
+        ..._.pick(sub, Object.keys(personSubmission()))
       }
 
       // if submission contains photo - we resaving it to separate file related with creator record

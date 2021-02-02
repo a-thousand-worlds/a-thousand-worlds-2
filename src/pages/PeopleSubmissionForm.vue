@@ -4,6 +4,7 @@ import _ from 'lodash'
 // import Jimp from 'jimp'
 import validator from '@/mixins/validator'
 import genders from '@/store/constants/genders'
+import personSubmission from '@/store/constants/personSubmission'
 
 export default {
   mixins: [
@@ -77,17 +78,8 @@ export default {
 
     /** Creates a new submission object that is either blank or copied from the existing person. */
     newSubmission() {
-      const emptySubmission = {
-        awards: '',
-        bio: '',
-        bonus: '',
-        curateInterest: '',
-        gender: '',
-        identities: {},
-        name: '',
-        title: 'author',
-      }
-      const newPerson = {
+      const emptySubmission = personSubmission()
+      return {
         ...emptySubmission,
         // name from private user profile
         name: this.name,
@@ -96,7 +88,6 @@ export default {
         // copy identities object, otherwise editing the form will update the person identities object by reference
         identities: this.person?.identities ? { ...this.person.identities } : {}
       }
-      return newPerson
     },
 
     saveDraftAndRevalidate: _.debounce(function() {
@@ -148,6 +139,12 @@ export default {
           <div class="field">
             <label class="label" :class="{ 'has-text-danger': hasError('name') }" style="font-weight: bold; text-transform: uppercase;">Your Name</label>
             <input type="text" class="input" v-model="submission.name" @input="saveDraftAndRevalidate">
+          </div>
+
+          <!-- preferred pronouns -->
+          <div class="field">
+            <label class="label" :class="{ 'has-text-danger': hasError('name') }" style="font-weight: bold; text-transform: uppercase;">Preferred Pronouns</label>
+            <input type="text" class="input" v-model="submission.pronouns" @input="saveDraftAndRevalidate">
           </div>
 
           <!-- title -->
