@@ -45,7 +45,7 @@ const module = mergeOne(managed('submits/people'), {
       // update person submission
       await context.dispatch('update', {
         path: sub.id,
-        values: {
+        value: {
           reviewedBy: context.rootState.user.user.uid,
           reviewedAt: dayjs().format(),
           status,

@@ -110,11 +110,11 @@ const collectionModule = name => ({
       await ref.remove()
     },
     /** Updates a record in the collection in Firebase. */
-    async update(context, { path, values }) {
+    async update(context, { path, value }) {
       if (!path) throw new Error('path required')
-      if (values === undefined) throw new Error('values may not be undefined')
+      if (value === undefined) throw new Error('value may not be undefined')
       const ref = firebase.database().ref(`${name}/${path}`)
-      await ref.update(values)
+      await ref.update(value)
     },
   },
 })

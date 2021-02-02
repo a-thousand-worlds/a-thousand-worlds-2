@@ -48,6 +48,16 @@ export default {
   mounted() {
     new Clipboard('#copy-link') // eslint-disable-line no-new
   },
+  methods: {
+    removeTag(tag) {
+      this.$store.dispatch('books/update', {
+        path: `${this.book.id}/tags`,
+        value: {
+          [tag.id]: null
+        },
+      })
+    }
+  }
 }
 
 </script>
@@ -66,7 +76,7 @@ export default {
         <router-link :to="{ name: 'BooksManager' }" class="is-uppercase is-primary">&lt; Back to Books Manager</router-link>
       </div>
 
-      <BookDetailLink :book="book" class="button is-rounded is-primary">View</BookDetailLink>
+      <BookDetailLink v-if="book" :book="book" class="button is-rounded is-primary">View</BookDetailLink>
 
     </div>
 
@@ -78,7 +88,7 @@ export default {
             <LazyImage class="cover" :src="book.cover" />
           </div>
           <div class="tags">
-            <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="books" closeable />
+            <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="books" @remove="removeTag" editable nolink />
           </div>
         </div>
       </div>
