@@ -33,25 +33,25 @@ export default {
 </script>
 
 <template>
-  <div class="creators-widget is-uppercase">
+  <div class="creators-widget is-uppercase" style="margin-right: -5px;">
 
-    <div class="person-block is-flex is-flex-direction-row is-justify-content-flex-start">
-      <b class="comma mr-2" style="white-space: nowrap;">{{ illustratorsSame ? '' : 'words ' }}by</b>
+    <div class="mb-10">
+      <b class="mr-2" style="white-space: nowrap;">{{ illustratorsSame ? '' : 'words ' }}by</b>
       <!-- allow long names to push a few pixels into the padding before wrapping -->
-      <span v-for="(person, i) of authors" :key="i" style="margin-right: -5px;">
+      <span v-for="(person, i) of authors" :key="i">
         <PersonDetailLink v-if="person.person && linked" :person="person.person" class="name linked">{{ person.person.name }}</PersonDetailLink>
         <span v-if="person.person && !linked" class="name">{{ person.person?.name }}</span>
-        <span v-if="authors?.length > 1 && i !== authors?.length - 1" class="comma mr-2">,</span>
+        <span v-if="authors?.length > 1 && i !== authors?.length - 1" class="mr-2">,</span>
       </span>
     </div>
 
-    <div v-if="!illustratorsSame && illustrators.length" class="person-block is-flex is-flex-direction-row is-justify-content-flex-start">
-      <b class="comma mr-2" style="white-space: nowrap;">pictures by</b>
+    <div v-if="!illustratorsSame && illustrators.length" class="mb-10">
+      <b class="mr-2" style="white-space: nowrap;">pictures by</b>
       <!-- allow long names to push a few pixels into the padding before wrapping -->
-      <span v-for="(person, i) of illustrators" :key="i" style="margin-right: -5px;">
+      <span v-for="(person, i) of illustrators" :key="i">
         <PersonDetailLink v-if="person.person && linked" :person="person.person" class="name linked">{{ person.person.name }}</PersonDetailLink>
         <span v-if="person.person && !linked" class="name">{{ person.person.name }}</span>
-        <span v-if="illustrators.length > 1 && i !== illustrators?.length - 1" class="comma mr-2">,</span>
+        <span v-if="illustrators.length > 1 && i !== illustrators?.length - 1" class="mr-2">,</span>
       </span>
     </div>
 
@@ -72,12 +72,6 @@ export default {
       @include primary(color);
     }
   }
-}
-
-.person-block {
-  width: 100%;
-  margin-bottom: 20px;
-  margin-right: -5px;
 }
 
 </style>
