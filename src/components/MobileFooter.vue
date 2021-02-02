@@ -75,28 +75,28 @@ export default {
             <option v-for="tag in tags" :key="tag.id" :selected="isFiltered(tag.id)" :value="tag.id">{{ tag.tag }}</option>
           </select>
           <FilterIcon />
-          <div class="icon-label mt-2">Filter</div>
+          <div class="mt-2">Filter</div>
           <span v-if="filters?.length > 0" class="badge">{{ filters?.length }}</span>
         </li>
 
         <li>
           <router-link :to="{ name: 'Home' }">
             <BooksIcon />
-            <div class="icon-label mt-2">Books</div>
+            <div class="mt-2">Books</div>
           </router-link>
         </li>
 
         <li>
           <router-link :to="{ name: 'Bundles' }">
             <BundlesIcon />
-            <div class="icon-label mt-2">Bundles</div>
+            <div class="mt-2">Bundles</div>
           </router-link>
         </li>
 
         <li>
           <a class="bookmark-toggler" href="#" @click.prevent="toggleBookmarks">
             <BookmarkIcon class="fill-secondary" />
-            <div class="icon-label mt-2">Saved Items</div>
+            <div class="mt-2">Saved Items</div>
             <span v-if="$iam('authorized')" class="badge">{{ bookmarksCount }}</span>
           </a>
         </li>
