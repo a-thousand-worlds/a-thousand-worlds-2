@@ -1,6 +1,13 @@
 import firebase from '@/firebase'
-import { firebaseGet } from '@/utils'
 import { get, set } from '@/util/get-set'
+
+/** Gets the value of a Firebase reference. */
+export const firebaseGet = refString => new Promise((resolve, reject) => {
+  const ref = firebase.database().ref(refString)
+  ref.once('value', snap => {
+    resolve(snap.val())
+  })
+})
 
 /** Wraps a Firebase collection in vuex module. */
 const collectionModule = name => ({

@@ -1,7 +1,7 @@
 <script>
 // import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 
-import { isbnSearch } from '@/utils'
+import isbnSearch from '@/util/isbnSearch'
 import CreatorsWidget from '@/components/CreatorsWidget'
 
 export default {
