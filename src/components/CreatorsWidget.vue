@@ -8,6 +8,8 @@ export default {
   props: {
     creators: {},
     linked: Boolean,
+    // link to admin edit pages instead of public detail pages
+    edit: Boolean,
   },
   data() {
     return {
@@ -39,7 +41,7 @@ export default {
       <b class="mr-2" style="white-space: nowrap;">{{ illustratorsSame ? '' : 'words ' }}by</b>
       <!-- allow long names to push a few pixels into the padding before wrapping -->
       <span v-for="(person, i) of authors" :key="i">
-        <PersonDetailLink v-if="person.person && linked" :person="person.person" class="name linked">{{ person.person.name }}</PersonDetailLink>
+        <PersonDetailLink v-if="person.person && linked" :person="person.person" :edit="edit" class="name linked">{{ person.person.name }}</PersonDetailLink>
         <span v-if="person.person && !linked" class="name">{{ person.person?.name }}</span>
         <span v-if="authors?.length > 1 && i !== authors?.length - 1" class="mr-2">,</span>
       </span>
@@ -49,7 +51,7 @@ export default {
       <b class="mr-2" style="white-space: nowrap;">pictures by</b>
       <!-- allow long names to push a few pixels into the padding before wrapping -->
       <span v-for="(person, i) of illustrators" :key="i">
-        <PersonDetailLink v-if="person.person && linked" :person="person.person" class="name linked">{{ person.person.name }}</PersonDetailLink>
+        <PersonDetailLink v-if="person.person && linked" :person="person.person" :edit="edit" class="name linked">{{ person.person.name }}</PersonDetailLink>
         <span v-if="person.person && !linked" class="name">{{ person.person.name }}</span>
         <span v-if="illustrators.length > 1 && i !== illustrators?.length - 1" class="mr-2">,</span>
       </span>

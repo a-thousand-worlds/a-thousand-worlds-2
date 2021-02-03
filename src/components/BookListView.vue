@@ -10,7 +10,11 @@ export default {
     BookmarkButton,
     BookDetailLink,
   },
-  props: ['book'],
+  props: {
+    book: {},
+    // link to admin edit pages instead of public detail pages
+    edit: Boolean,
+  },
   computed: {
     coverRatio() {
       if (this.updatedCover) return this.book.cover.height / this.book.cover.width * 100
@@ -37,7 +41,7 @@ export default {
   <!-- doing v-if check because this component used for bookmarks bar also, and it may happen, that bookmarked (by some user) book may be removed from database (by admin), so book to display will be undefined -->
   <div v-if="book" class="columns m-0">
     <div class="column is-one-half p-0 mb-20">
-      <BookDetailLink :book="book" class="cover-data">
+      <BookDetailLink :book="book" :edit="edit" class="cover-data">
         <div class="img-cover bg-secondary" :style="{ width: '100%', minWidth: '100px', paddingTop: coverRatio+'%', backgroundImage: `url(${bgImage})`, backgroundSize: 'contain' }" />
       </BookDetailLink>
     </div>
@@ -48,11 +52,11 @@ export default {
 
           <div class="is-flex is-justify-content-space-between mb-20">
             <div>
-              <BookDetailLink :book="book" class="cover-data">
+              <BookDetailLink :book="book" class="cover-data" :edit="edit">
                 <h3 class="link mb-10" style="margin-right: 15px;">{{ book.title }}</h3>
               </BookDetailLink>
               <div class="authors">
-                <CreatorsWidget :creators="book.creators" linked />
+                <CreatorsWidget :creators="book.creators" linked :edit="edit" />
               </div>
             </div>
 

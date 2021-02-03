@@ -213,7 +213,7 @@ export default {
         </div>
 
         <div class="column-books" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
-          <BookListView v-for="book of books" :key="book.id" :book="book" />
+          <BookListView v-for="book of books" :key="book.id" :book="book" edit />
         </div>
 
       </div>
