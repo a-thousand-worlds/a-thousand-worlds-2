@@ -173,6 +173,12 @@ button.is-selected {
 .stroke-secondary { @include secondary(stroke); }
 
 a, a.is-primary, i.is-primary, .is-primary-text { @include primary(color); }
+a.primary-hover {
+  color: black;
+  &:hover {
+    @include primary(color);
+  }
+}
 a.is-secondary, i.is-secondary, .is-secondary-text, { @include secondary(color); }
 .bg-primary, .button.is-primary:not(.is-outlined) {
   @include primary(background-color);

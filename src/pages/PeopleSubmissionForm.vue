@@ -4,6 +4,7 @@ import _ from 'lodash'
 // import Jimp from 'jimp'
 import validator from '@/mixins/validator'
 import genders from '@/store/constants/genders'
+import creatorTitles from '@/store/constants/creatorTitles'
 import pronouns from '@/store/constants/pronouns'
 import personSubmission from '@/store/constants/personSubmission'
 
@@ -19,6 +20,7 @@ export default {
   data() {
     return {
       draftSaved: null,
+      creatorTitles,
       genders,
       pronouns,
       submission: this.newSubmission(),
@@ -159,24 +161,10 @@ export default {
           <div class="field">
             <label class="label" :class="{ 'has-text-danger': hasError('title') }" style="font-weight: bold; text-transform: uppercase;">Your Title</label>
 
-            <div class="control is-flex">
+            <div v-for="title of creatorTitles" :key="title.id" class="control is-flex">
               <label style="cursor: pointer;">
-                <input type="radio" name="title" v-model="submission.title" value="author" class="checkbox mb-3 mt-1">
-                <span class="no-user-select ml-1">Author</span>
-              </label>
-            </div>
-
-            <div class="control is-flex">
-              <label style="cursor: pointer;">
-                <input type="radio" name="title" v-model="submission.title" value="illustrator" class="checkbox mb-3 mt-1">
-                <span class="no-user-select ml-1">Illustrator</span>
-              </label>
-            </div>
-
-            <div class="control is-flex">
-              <label style="cursor: pointer;">
-                <input type="radio" name="title" v-model="submission.title" value="author-illustrator" class="checkbox mb-3 mt-1">
-                <span class="no-user-select ml-1">Author/Illustrator</span>
+                <input type="radio" name="title" v-model="submission.title" :value="title.id" class="checkbox mb-3 mt-1">
+                <span class="no-user-select ml-1">{{ title.text }}</span>
               </label>
             </div>
 

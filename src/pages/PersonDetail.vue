@@ -1,5 +1,6 @@
 <script>
 import * as slugify from '@sindresorhus/slugify'
+import creatorTitles from '@/store/constants/creatorTitles'
 import BookListView from '@/components/BookListView'
 import Filter from '@/components/Filter'
 import PrevNext from '@/components/PrevNext'
@@ -22,7 +23,7 @@ export default {
   },
   data() {
     return {
-      pageUrl: window.location.href,
+      creatorTitles,
     }
   },
   computed: {
@@ -41,9 +42,6 @@ export default {
         Object.keys(book.creators || {}).includes(this.person.id)
       ) : []
     },
-    isAuthor() {
-      return this.person ? this.person.role === 'author' : true
-    },
     name() {
       return this.$route.params.name
     },
@@ -57,7 +55,12 @@ export default {
       return Object.keys(this.person?.identities || [])
         .map(id => peopleTags[id])
         .filter(x => x)
-    }
+    },
+    /** Get the person's creatorTitle. */
+    title() {
+      if (!this.person) return null
+      return this.creatorTitles.find(creatorTitle => creatorTitle.id === this.person.title)
+    },
   },
   watch: {
     '$store.state.people.data'(next, prev) {
@@ -99,7 +102,7 @@ export default {
           </div>
 
           <div class="title-container divider-30">
-            <div class="name">{{ isAuthor ? 'Author' : 'Illustrator' }}</div>
+            <div class="name">{{ title.text }}</div>
             <h1 class="title mt-5">{{ person.name }}</h1>
             <div v-if="tags" class="tags mt-20">
               <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="people" />

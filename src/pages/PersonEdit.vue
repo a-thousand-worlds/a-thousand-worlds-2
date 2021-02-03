@@ -1,5 +1,6 @@
 <script>
 import * as slugify from '@sindresorhus/slugify'
+import creatorTitles from '@/store/constants/creatorTitles'
 import BookListView from '@/components/BookListView'
 import Filter from '@/components/Filter'
 import PersonDetailLink from '@/components/PersonDetailLink'
@@ -22,7 +23,9 @@ export default {
   },
   data() {
     return {
+      creatorTitles,
       tagsDropdownActive: false,
+      titleDropdownActive: false,
       pageUrl: window.location.href,
     }
   },
@@ -42,9 +45,6 @@ export default {
         Object.keys(book.creators || {}).includes(this.person.id)
       ) : []
     },
-    isAuthor() {
-      return this.person ? this.person.role === 'author' : true
-    },
     name() {
       return this.$route.params.name
     },
@@ -62,6 +62,10 @@ export default {
     tagOptions() {
       return this.$store.getters['tags/people/listSorted']()
     },
+    title() {
+      if (!this.person) return null
+      return this.creatorTitles.find(creatorTitle => creatorTitle.id === this.person.title)
+    },
   },
   watch: {
     '$store.state.people.data'(next, prev) {
@@ -78,6 +82,10 @@ export default {
 
     closeTagsDropdown() {
       this.tagsDropdownActive = false
+    },
+
+    closeTitleDropdown() {
+      this.titleDropdownActive = false
     },
 
     addTag(tag) {
@@ -98,6 +106,17 @@ export default {
         },
       })
     },
+
+    setTitle(creatorTitle) {
+      this.closeTagsDropdown()
+      this.$store.dispatch('people/update', {
+        path: `${this.person.id}`,
+        value: {
+          title: creatorTitle.id
+        },
+      })
+    },
+
   },
 }
 
@@ -131,7 +150,22 @@ export default {
           </div>
 
           <div class="title-container divider-30">
-            <div class="name">{{ isAuthor ? 'Author' : 'Illustrator' }}</div>
+
+            <!-- title dropdown -->
+            <div class="dropdown mt-4" :class="{ 'is-active': titleDropdownActive }">
+              <div id="dropdown-menu" class="dropdown-menu" role="menu">
+                <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
+                  <a v-for="title in creatorTitles" :key="title.id" class="dropdown-item is-capitalized" @click.prevent="setTitle(title)">
+                    {{ title.text }}
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- title -->
+            <a @click.prevent.stop="titleDropdownActive = !titleDropdownActive" v-click-outside="closeTitleDropdown" class="primary-hover" :class="{ 'is-primary': titleDropdownActive }">{{ title.text }}</a>
+
+            <!-- name -->
             <h1 class="title mt-5">{{ person.name }}</h1>
 
             <!-- tags -->
