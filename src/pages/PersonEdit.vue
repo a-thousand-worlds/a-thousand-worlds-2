@@ -5,12 +5,14 @@ import BookListView from '@/components/BookListView'
 import Filter from '@/components/Filter'
 import PersonDetailLink from '@/components/PersonDetailLink'
 import Tag from '@/components/Tag'
+import SimpleInput from '@/components/fields/SimpleInput'
 
 export default {
   components: {
     BookListView,
     Filter,
     PersonDetailLink,
+    SimpleInput,
     Tag,
   },
   beforeRouteLeave(to, from, next) {
@@ -107,6 +109,15 @@ export default {
       })
     },
 
+    saveName(name) {
+      this.$store.dispatch('people/update', {
+        path: `${this.person.id}`,
+        value: {
+          name,
+        },
+      })
+    },
+
     setTitle(creatorTitle) {
       this.closeTagsDropdown()
       this.$store.dispatch('people/update', {
@@ -166,7 +177,9 @@ export default {
             <a @click.prevent.stop="titleDropdownActive = !titleDropdownActive" v-click-outside="closeTitleDropdown" class="primary-hover no-user-select" :class="{ 'is-primary': titleDropdownActive }">{{ title.text }}</a>
 
             <!-- name -->
-            <h1 class="title mt-5">{{ person.name }}</h1>
+            <h1 class="title mt-5">
+              <SimpleInput @update:modelValue="saveName" v-model="person.name" placeholder="Enter Name" unstyled />
+            </h1>
 
             <!-- tags -->
             <div class="tags mt-20">

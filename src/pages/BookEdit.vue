@@ -235,12 +235,15 @@ export default {
           <Loader />
         </div>
         <div v-else-if="book">
+
+          <!-- title -->
           <div class="title-container divider-bottom is-flex is-justify-content-space-between">
             <h1 class="title">
               <SimpleInput @update:modelValue="saveTitle" v-model="book.title" placeholder="Enter Title" unstyled />
             </h1>
           </div>
 
+          <!-- creators -->
           <div class="authors divider-bottom">
             <CreatorsWidget v-if="book.creators" class="mb-2" :creators="book.creators" linked />
           </div>
