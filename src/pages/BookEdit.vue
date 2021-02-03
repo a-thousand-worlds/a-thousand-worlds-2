@@ -40,7 +40,7 @@ export default {
       ckConfig: {
         toolbar: [],
       },
-      dropdownActive: false,
+      tagsDropdownActive: false,
       editor: BalloonEditor,
     }
   },
@@ -63,7 +63,7 @@ export default {
     },
     tagOptions() {
       return this.$store.getters['tags/books/listSorted']()
-    }
+    },
   },
   mounted() {
     new Clipboard('#copy-link') // eslint-disable-line no-new
@@ -72,12 +72,12 @@ export default {
 
     formatDate,
 
-    closeDropdown() {
-      this.dropdownActive = false
+    closeTagsDropdown() {
+      this.tagsDropdownActive = false
     },
 
     addTag(tag) {
-      this.closeDropdown()
+      this.closeTagsDropdown()
       this.$store.dispatch('books/update', {
         path: `${this.book.id}/tags`,
         value: {
@@ -189,7 +189,7 @@ export default {
             <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="books" @remove="removeTag" editable nolink />
 
             <!-- add tag -->
-            <div class="dropdown mt-4" :class="{ 'is-active': dropdownActive }">
+            <div class="dropdown mt-4" :class="{ 'is-active': tagsDropdownActive }">
               <div id="dropdown-menu" class="dropdown-menu" role="menu">
                 <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
                   <a v-for="tag in tagOptions" :key="tag.id" class="dropdown-item is-capitalized" @click.prevent="addTag(tag)">
@@ -198,8 +198,7 @@ export default {
                 </div>
               </div>
             </div>
-
-            <Tag :tag="{ tag: 'ADD' }" nolink tagStyle="background-color: #999; cursor: pointer" v-click-outside="closeDropdown" @click.prevent.stop="dropdownActive = !dropdownActive" />
+            <Tag :tag="{ tag: 'ADD' }" nolink tagStyle="background-color: #999; cursor: pointer" v-click-outside="closeTagsDropdown" @click.prevent.stop="tagsDropdownActive = !tagsDropdownActive" />
 
           </div>
 
@@ -264,6 +263,7 @@ export default {
 @import "bulma/sass/utilities/_all.sass";
 @import "bulma/sass/components/dropdown.sass";
 @import '@/assets/style/vars.scss';
+
 .book-detail {
   margin: 0 20px;
   max-width: $widescreen;

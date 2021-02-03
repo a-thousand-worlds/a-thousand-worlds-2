@@ -105,6 +105,13 @@ const routes = [
       access: 'owner'
     }
   }, {
+    path: '/person/:name/edit',
+    name: 'PersonEdit',
+    component: () => import(/* webpackChunkName: "advisor" */ './pages/PersonEdit.vue'),
+    meta: {
+      access: 'owner'
+    }
+  }, {
     path: '/admin/people/add',
     name: 'PeopleManagerAddForm',
     component: () => import(/* webpackChunkName: "advisor" */ './pages/PeopleManagerForm.vue'),
@@ -122,7 +129,10 @@ const routes = [
     path: '/book/:slug(.+)?-:isbn/edit',
     alias: '/book/:slug?/:isbn(.*)/edit',
     name: 'BookEdit',
-    component: () => import(/* webpackChunkName: "advisor" */ './pages/BookEdit.vue')
+    component: () => import(/* webpackChunkName: "advisor" */ './pages/BookEdit.vue'),
+    meta: {
+      access: 'owner'
+    }
   }, {
     path: '/admin/books',
     name: 'BooksManager',
