@@ -154,8 +154,8 @@ export default {
             <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': titleDropdownActive }">
               <div id="dropdown-menu" class="dropdown-menu" role="menu">
                 <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
-                  <a v-for="title in creatorTitles" :key="title.id" class="dropdown-item is-capitalized" @click.prevent="updatePerson({ title: title.id })">
-                    {{ title.text }}
+                  <a v-for="creatorTitle in creatorTitles" :key="creatorTitle.id" class="dropdown-item is-capitalized" @click.prevent="updatePerson({ title: creatorTitle.id })">
+                    {{ creatorTitle.text }}
                   </a>
                 </div>
               </div>
