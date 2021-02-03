@@ -145,7 +145,7 @@ export default {
 
           <!-- preferred pronouns -->
           <div class="field">
-            <label class="label" :class="{ 'has-text-danger': hasError('name') }" style="font-weight: bold;">Please indicate your preferred pronouns</label>
+            <label class="label" :class="{ 'has-text-danger': hasError('name') }" style="font-weight: bold; text-transform: uppercase;">Pronouns</label>
 
             <div class="sublabel">
               <div v-for="pronoun of pronouns" :key="pronoun.id" class="control is-flex" style="column-break-inside: avoid;">
