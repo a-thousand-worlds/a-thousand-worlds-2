@@ -152,7 +152,7 @@ export default {
           <div class="title-container divider-30">
 
             <!-- title dropdown -->
-            <div class="dropdown mt-4" :class="{ 'is-active': titleDropdownActive }">
+            <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': titleDropdownActive }">
               <div id="dropdown-menu" class="dropdown-menu" role="menu">
                 <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
                   <a v-for="title in creatorTitles" :key="title.id" class="dropdown-item is-capitalized" @click.prevent="setTitle(title)">
@@ -163,7 +163,7 @@ export default {
             </div>
 
             <!-- title -->
-            <a @click.prevent.stop="titleDropdownActive = !titleDropdownActive" v-click-outside="closeTitleDropdown" class="primary-hover" :class="{ 'is-primary': titleDropdownActive }">{{ title.text }}</a>
+            <a @click.prevent.stop="titleDropdownActive = !titleDropdownActive" v-click-outside="closeTitleDropdown" class="primary-hover no-user-select" :class="{ 'is-primary': titleDropdownActive }">{{ title.text }}</a>
 
             <!-- name -->
             <h1 class="title mt-5">{{ person.name }}</h1>
@@ -173,7 +173,7 @@ export default {
               <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="people" @remove="removeTag" editable nolink />
 
               <!-- add tag -->
-              <div class="dropdown mt-4" :class="{ 'is-active': tagsDropdownActive }">
+              <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': tagsDropdownActive }">
                 <div id="dropdown-menu" class="dropdown-menu" role="menu">
                   <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
                     <a v-for="tag in tagOptions" :key="tag.id" class="dropdown-item is-capitalized" @click.prevent="addTag(tag)">
@@ -182,6 +182,8 @@ export default {
                   </div>
                 </div>
               </div>
+
+              <!-- tag -->
               <Tag :tag="{ tag: 'ADD' }" nolink tagStyle="background-color: #999; cursor: pointer" v-click-outside="closeTagsDropdown" @click.prevent.stop="tagsDropdownActive = !tagsDropdownActive" />
 
             </div>
