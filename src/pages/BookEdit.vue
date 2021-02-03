@@ -113,6 +113,15 @@ export default {
       })
     },
 
+    saveTitle(title) {
+      this.$store.dispatch('books/update', {
+        path: `${this.book.id}`,
+        value: {
+          title,
+        },
+      })
+    },
+
     saveYear(year) {
       this.$store.dispatch('books/update', {
         path: `${this.book.id}`,
@@ -226,7 +235,9 @@ export default {
         </div>
         <div v-else-if="book">
           <div class="title-container divider-bottom is-flex is-justify-content-space-between">
-            <h1 class="title">{{ book.title }}</h1>
+            <h1 class="title">
+              <SimpleInput @update:modelValue="saveTitle" v-model="book.title" placeholder="Enter Title" unstyled />
+            </h1>
           </div>
 
           <div class="authors divider-bottom">
