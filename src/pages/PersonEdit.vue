@@ -3,6 +3,8 @@ import * as slugify from '@sindresorhus/slugify'
 import creatorTitles from '@/store/constants/creatorTitles'
 import BookListView from '@/components/BookListView'
 import Filter from '@/components/Filter'
+import Loader from '@/components/Loader'
+import NotFound from '@/pages/NotFound'
 import PersonDetailLink from '@/components/PersonDetailLink'
 import Tag from '@/components/Tag'
 import SimpleInput from '@/components/fields/SimpleInput'
@@ -11,6 +13,8 @@ export default {
   components: {
     BookListView,
     Filter,
+    Loader,
+    NotFound,
     PersonDetailLink,
     SimpleInput,
     Tag,
@@ -74,17 +78,6 @@ export default {
       return title || this.creatorTitles.find(creatorTitle => creatorTitle.text === 'Author')
     },
   },
-  watch: {
-    '$store.state.people.data'(next, prev) {
-      if (next && Object.keys(next).length && !next[this.person.id]) {
-        // person not found! drop to 404
-        // timeout to make router finish any his current work, if doing any
-        setTimeout(() => {
-          this.$router.push('/404')
-        }, 0)
-      }
-    }
-  },
   methods: {
 
     closeTagsDropdown() {
@@ -131,7 +124,10 @@ export default {
     <Filter type="people" />
   </teleport>
 
-  <div v-if="person" class="mx-5" :data-person-id="person.id">
+  <div v-if="!$store.state.people.loaded" class="my-50">
+    <Loader />
+  </div>
+  <div v-else-if="person" class="mx-5" :data-person-id="person.id">
 
     <div class="wide-page">
 
@@ -206,6 +202,11 @@ export default {
       </div>
 
     </div>
+  </div>
+
+  <!-- no person -->
+  <div v-else>
+    <NotFound />
   </div>
 
   <!-- Add a bottom spacer so that fixed position footer clears content when scrolled to the bottom. -->

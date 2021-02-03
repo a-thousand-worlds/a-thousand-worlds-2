@@ -7,8 +7,8 @@ import Clipboard from 'clipboard'
 import CreatorsWidget from '@/components/CreatorsWidget'
 import LazyImage from '@/components/LazyImage'
 import Loader from '@/components/Loader'
-import SimpleInput from '@/components/fields/SimpleInput'
 import NotFound from '@/pages/NotFound'
+import SimpleInput from '@/components/fields/SimpleInput'
 import Tag from '@/components/Tag'
 
 const formatDate = d => {
