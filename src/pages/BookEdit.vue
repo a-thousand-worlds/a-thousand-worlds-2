@@ -202,7 +202,7 @@ export default {
 
           <!-- creators -->
           <div class="authors divider-bottom">
-            <CreatorsWidget v-if="book.creators" class="mb-2" :creators="book.creators" linked />
+            <CreatorsWidget v-if="book.creators" class="mb-2" :creators="book.creators" linked edit />
           </div>
 
           <!-- summary/description is edited with ckeditor and may contain html -->
