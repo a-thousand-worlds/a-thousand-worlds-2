@@ -6,6 +6,7 @@ import Clipboard from 'clipboard'
 import CreatorsWidget from '@/components/CreatorsWidget'
 import LazyImage from '@/components/LazyImage'
 import Loader from '@/components/Loader'
+import SimpleInput from '@/components/fields/SimpleInput'
 import NotFound from '@/pages/NotFound'
 import Tag from '@/components/Tag'
 
@@ -18,6 +19,7 @@ export default {
     LazyImage,
     Loader,
     NotFound,
+    SimpleInput,
     Tag,
   },
   data() {
@@ -90,7 +92,27 @@ export default {
       this.$store.dispatch('books/update', {
         path: `${this.book.id}`,
         value: {
-          summary: summary
+          summary,
+        },
+      })
+    },
+
+    saveIsbn(isbn) {
+
+      // save isbn
+      this.$store.dispatch('books/update', {
+        path: `${this.book.id}`,
+        value: {
+          isbn,
+        },
+      })
+
+      // update route since it is based on isbn
+      this.$router.replace({
+        name: this.$route.name,
+        params: {
+          isbn,
+          slug: this.$route.params.slug,
         },
       })
     },
@@ -122,9 +144,13 @@ export default {
 
       <div class="column mr-0 is-two-fifths">
         <div v-if="book">
+
+          <!-- cover image -->
           <div class="book-cover-wrappertext-centered mb-20">
             <LazyImage class="cover" :src="book.cover" />
           </div>
+
+          <!-- tags -->
           <div class="tags">
             <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="books" @remove="removeTag" editable nolink />
 
@@ -142,6 +168,21 @@ export default {
             <Tag :tag="{ tag: 'ADD' }" nolink tagStyle="background-color: #999; cursor: pointer" v-click-outside="closeDropdown" @click.prevent.stop="dropdownActive = !dropdownActive" />
 
           </div>
+
+          <div class="my-20">
+
+            <!-- ISBN -->
+            <div class="is-flex">
+              <b class="mr-1">isbn</b>
+              <SimpleInput v-if="book"
+                @update:modelValue="saveIsbn"
+                v-model="book.isbn"
+                placeholder="Enter ISBN"
+              />
+            </div>
+
+          </div>
+
         </div>
       </div>
 
