@@ -95,40 +95,27 @@ export default {
       this.titleDropdownActive = false
     },
 
-    addTag(tag) {
+    updatePerson(field, value) {
+      if (value === undefined) {
+        value = field
+        field = ''
+      }
       this.closeTagsDropdown()
       this.$store.dispatch('people/update', {
-        path: `${this.person.id}/identities`,
-        value: {
-          [tag.id]: true
-        },
-      })
-    },
-
-    removeTag(tag) {
-      this.$store.dispatch('people/update', {
-        path: `${this.person.id}/identities`,
-        value: {
-          [tag.id]: null
-        },
+        path: `${this.person.id}/${field}`,
+        value,
       })
     },
 
     saveName(name) {
-      this.$store.dispatch('people/update', {
-        path: `${this.person.id}`,
-        value: {
-          name,
-        },
-      })
-    },
 
-    setTitle(creatorTitle) {
-      this.closeTagsDropdown()
-      this.$store.dispatch('people/update', {
-        path: `${this.person.id}`,
-        value: {
-          title: creatorTitle.id
+      this.updatePerson({ name })
+
+      // update route since it is includes the person's name
+      this.$router.replace({
+        name: this.$route.name,
+        params: {
+          name: slugify(name),
         },
       })
     },
@@ -171,7 +158,7 @@ export default {
             <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': titleDropdownActive }">
               <div id="dropdown-menu" class="dropdown-menu" role="menu">
                 <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
-                  <a v-for="title in creatorTitles" :key="title.id" class="dropdown-item is-capitalized" @click.prevent="setTitle(title)">
+                  <a v-for="title in creatorTitles" :key="title.id" class="dropdown-item is-capitalized" @click.prevent="updatePerson({ title: title.id })">
                     {{ title.text }}
                   </a>
                 </div>
@@ -183,18 +170,18 @@ export default {
 
             <!-- name -->
             <h1 class="title mt-5">
-              <SimpleInput @update:modelValue="saveName" v-model="person.name" placeholder="Enter Name" unstyled />
+              <SimpleInput v-if="person" @update:modelValue="saveName" v-model="person.name" placeholder="Enter Name" unstyled />
             </h1>
 
             <!-- tags -->
             <div class="tags mt-20">
-              <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="people" @remove="removeTag" editable nolink />
+              <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="people" @remove="updatePerson('identities', { [tag.id]: null })" editable nolink />
 
               <!-- add tag -->
               <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': tagsDropdownActive }">
                 <div id="dropdown-menu" class="dropdown-menu" role="menu">
                   <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
-                    <a v-for="tag in tagOptions" :key="tag.id" class="dropdown-item is-capitalized" @click.prevent="addTag(tag)">
+                    <a v-for="tag in tagOptions" :key="tag.id" class="dropdown-item is-capitalized" @click.prevent="updatePerson('identities', { [tag.id]: true })">
                       {{ tag.tag }}
                     </a>
                   </div>

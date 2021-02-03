@@ -76,61 +76,6 @@ export default {
       this.tagsDropdownActive = false
     },
 
-    addTag(tag) {
-      this.closeTagsDropdown()
-      this.$store.dispatch('books/update', {
-        path: `${this.book.id}/tags`,
-        value: {
-          [tag.id]: true
-        },
-      })
-    },
-
-    removeTag(tag) {
-      this.$store.dispatch('books/update', {
-        path: `${this.book.id}/tags`,
-        value: {
-          [tag.id]: null
-        },
-      })
-    },
-
-    saveSummary(summary) {
-      this.$store.dispatch('books/update', {
-        path: `${this.book.id}`,
-        value: {
-          summary,
-        },
-      })
-    },
-
-    saveGoodreads(goodread) {
-      this.$store.dispatch('books/update', {
-        path: `${this.book.id}`,
-        value: {
-          goodread,
-        },
-      })
-    },
-
-    saveTitle(title) {
-      this.$store.dispatch('books/update', {
-        path: `${this.book.id}`,
-        value: {
-          title,
-        },
-      })
-    },
-
-    saveYear(year) {
-      this.$store.dispatch('books/update', {
-        path: `${this.book.id}`,
-        value: {
-          year,
-        },
-      })
-    },
-
     saveIsbn(isbn) {
 
       // save isbn
@@ -148,6 +93,18 @@ export default {
           isbn,
           slug: this.$route.params.slug,
         },
+      })
+    },
+
+    updateBook(field, value) {
+      if (value === undefined) {
+        value = field
+        field = ''
+      }
+      this.closeTagsDropdown()
+      this.$store.dispatch('books/update', {
+        path: `${this.book.id}/${field}`,
+        value,
       })
     },
 
@@ -186,13 +143,13 @@ export default {
 
           <!-- tags -->
           <div class="tags">
-            <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="books" @remove="removeTag" editable nolink />
+            <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="books" @remove="updateBook('tags', { [tag.id]: null })" editable nolink />
 
             <!-- add tag -->
             <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': tagsDropdownActive }">
               <div id="dropdown-menu" class="dropdown-menu" role="menu">
                 <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
-                  <a v-for="tag in tagOptions" :key="tag.id" class="dropdown-item is-capitalized" @click.prevent="addTag(tag)">
+                  <a v-for="tag in tagOptions" :key="tag.id" class="dropdown-item is-capitalized" @click.prevent="updateBook('tags', { [tag.id]: true })">
                     {{ tag.tag }}
                   </a>
                 </div>
@@ -215,13 +172,13 @@ export default {
             <!-- year -->
             <div class="is-flex">
               <b class="mr-1">year</b>
-              <SimpleInput v-if="book" @update:modelValue="saveYear" v-model="book.year" placeholder="Enter Year" />
+              <SimpleInput v-if="book" @update:modelValue="updateBook({ year: $event })" v-model="book.year" placeholder="Enter Year" />
             </div>
 
             <!-- goodreads -->
             <div class="is-flex">
               <b class="mr-1">goodreads</b>
-              <SimpleInput v-if="book" @update:modelValue="saveGoodreads" v-model="book.goodread" placeholder="No value" />
+              <SimpleInput v-if="book" @update:modelValue="updateBook({ goodread: $event })" v-model="book.goodread" placeholder="No value" />
             </div>
 
           </div>
@@ -239,7 +196,7 @@ export default {
           <!-- title -->
           <div class="title-container divider-bottom is-flex is-justify-content-space-between">
             <h1 class="title">
-              <SimpleInput @update:modelValue="saveTitle" v-model="book.title" placeholder="Enter Title" unstyled />
+              <SimpleInput @update:modelValue="updateBook({ title: $event })" v-model="book.title" placeholder="Enter Title" unstyled />
             </h1>
           </div>
 
@@ -249,7 +206,7 @@ export default {
           </div>
 
           <!-- summary/description is edited with ckeditor and may contain html -->
-          <ckeditor @update:modelValue="saveSummary" v-model="book.summary" :editor="editor" :config="ckConfig" class="summary" style="padding: 0;" />
+          <ckeditor @update:modelValue="updateBook({ summary: $event })" v-model="book.summary" :editor="editor" :config="ckConfig" class="summary" style="padding: 0;" />
 
         </div>
         <div v-else>
@@ -307,4 +264,3 @@ export default {
   margin-left: -1px;
 }
 </style>
-      formatDate,
