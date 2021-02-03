@@ -1,4 +1,5 @@
 <script>
+import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import BookDetailLink from '@/components/BookDetailLink'
 import Filter from '@/components/Filter'
 import Clipboard from 'clipboard'
@@ -21,7 +22,11 @@ export default {
   },
   data() {
     return {
+      ckConfig: {
+        toolbar: [],
+      },
       dropdownActive: false,
+      editor: BalloonEditor,
     }
   },
   beforeRouteLeave(to, from, next) {
@@ -77,6 +82,15 @@ export default {
         path: `${this.book.id}/tags`,
         value: {
           [tag.id]: null
+        },
+      })
+    },
+
+    saveSummary(summary) {
+      this.$store.dispatch('books/update', {
+        path: `${this.book.id}`,
+        value: {
+          summary: summary
         },
       })
     },
@@ -146,7 +160,7 @@ export default {
           </div>
 
           <!-- summary/description is edited with ckeditor and may contain html -->
-          <p class="summary" :innerHTML="book.summary || book.description" />
+          <ckeditor @update:modelValue="saveSummary" v-model="book.summary" :editor="editor" :config="ckConfig" class="summary" style="padding: 0;" />
 
         </div>
         <div v-else>
@@ -189,10 +203,17 @@ export default {
 }
 
 .summary {
-  font-size: 18px;
+  font-size: 18px !important;
   @include from($widescreen) {
-    font-size: 22px;
+    font-size: 22px !important;
   }
 }
 
+</style>
+
+<style lang="scss">
+.summary.ck.ck-editor__editable_inline>:first-child {
+  margin-top: -1px;
+  margin-left: -1px;
+}
 </style>
