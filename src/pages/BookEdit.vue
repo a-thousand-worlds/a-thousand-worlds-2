@@ -1,4 +1,5 @@
 <script>
+import dayjs from 'dayjs'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import BookDetailLink from '@/components/BookDetailLink'
 import Filter from '@/components/Filter'
@@ -9,6 +10,10 @@ import Loader from '@/components/Loader'
 import SimpleInput from '@/components/fields/SimpleInput'
 import NotFound from '@/pages/NotFound'
 import Tag from '@/components/Tag'
+
+const formatDate = d => {
+  return dayjs(d).format('M/D/YYYY hh:mm')
+}
 
 export default {
   name: 'BookDetail',
@@ -22,6 +27,14 @@ export default {
     SimpleInput,
     Tag,
   },
+  beforeRouteLeave(to, from, next) {
+    // mark the user's visit once they navigate to any other page
+    // used to show the one-time welcome messagein App.vue
+    if (!this.$store.state.ui.lastVisited) {
+      this.$store.commit('ui/setLastVisited', new Date())
+    }
+    next()
+  },
   data() {
     return {
       ckConfig: {
@@ -30,14 +43,6 @@ export default {
       dropdownActive: false,
       editor: BalloonEditor,
     }
-  },
-  beforeRouteLeave(to, from, next) {
-    // mark the user's visit once they navigate to any other page
-    // used to show the one-time welcome messagein App.vue
-    if (!this.$store.state.ui.lastVisited) {
-      this.$store.commit('ui/setLastVisited', new Date())
-    }
-    next()
   },
   computed: {
     book() {
@@ -64,6 +69,8 @@ export default {
     new Clipboard('#copy-link') // eslint-disable-line no-new
   },
   methods: {
+
+    formatDate,
 
     closeDropdown() {
       this.dropdownActive = false
@@ -93,6 +100,24 @@ export default {
         path: `${this.book.id}`,
         value: {
           summary,
+        },
+      })
+    },
+
+    saveGoodreads(goodread) {
+      this.$store.dispatch('books/update', {
+        path: `${this.book.id}`,
+        value: {
+          goodread,
+        },
+      })
+    },
+
+    saveYear(year) {
+      this.$store.dispatch('books/update', {
+        path: `${this.book.id}`,
+        value: {
+          year,
         },
       })
     },
@@ -171,14 +196,22 @@ export default {
 
           <div class="my-20">
 
-            <!-- ISBN -->
+            <!-- isbn -->
             <div class="is-flex">
               <b class="mr-1">isbn</b>
-              <SimpleInput v-if="book"
-                @update:modelValue="saveIsbn"
-                v-model="book.isbn"
-                placeholder="Enter ISBN"
-              />
+              <SimpleInput v-if="book" @update:modelValue="saveIsbn" v-model="book.isbn" placeholder="Enter ISBN" />
+            </div>
+
+            <!-- year -->
+            <div class="is-flex">
+              <b class="mr-1">year</b>
+              <SimpleInput v-if="book" @update:modelValue="saveYear" v-model="book.year" placeholder="Enter Year" />
+            </div>
+
+            <!-- goodreads -->
+            <div class="is-flex">
+              <b class="mr-1">goodreads</b>
+              <SimpleInput v-if="book" @update:modelValue="saveGoodreads" v-model="book.goodread" placeholder="No value" />
             </div>
 
           </div>
@@ -258,3 +291,4 @@ export default {
   margin-left: -1px;
 }
 </style>
+      formatDate,
