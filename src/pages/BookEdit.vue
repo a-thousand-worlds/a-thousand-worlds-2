@@ -19,6 +19,11 @@ export default {
     NotFound,
     Tag,
   },
+  data() {
+    return {
+      dropdownActive: false,
+    }
+  },
   beforeRouteLeave(to, from, next) {
     // mark the user's visit once they navigate to any other page
     // used to show the one-time welcome messagein App.vue
@@ -43,12 +48,30 @@ export default {
       return Object.keys(this.book?.tags || [])
         .map(id => bookTags[id])
         .filter(x => x)
+    },
+    tagOptions() {
+      return this.$store.getters['tags/books/listSorted']()
     }
   },
   mounted() {
     new Clipboard('#copy-link') // eslint-disable-line no-new
   },
   methods: {
+
+    closeDropdown() {
+      this.dropdownActive = false
+    },
+
+    addTag(tag) {
+      this.closeDropdown()
+      this.$store.dispatch('books/update', {
+        path: `${this.book.id}/tags`,
+        value: {
+          [tag.id]: true
+        },
+      })
+    },
+
     removeTag(tag) {
       this.$store.dispatch('books/update', {
         path: `${this.book.id}/tags`,
@@ -56,7 +79,8 @@ export default {
           [tag.id]: null
         },
       })
-    }
+    },
+
   }
 }
 
@@ -76,7 +100,7 @@ export default {
         <router-link :to="{ name: 'BooksManager' }" class="is-uppercase is-primary">&lt; Back to Books Manager</router-link>
       </div>
 
-      <BookDetailLink v-if="book" :book="book" class="button is-rounded is-primary">View</BookDetailLink>
+      <BookDetailLink v-if="book" :book="book" class="button is-rounded is-primary">View Book</BookDetailLink>
 
     </div>
 
@@ -89,6 +113,20 @@ export default {
           </div>
           <div class="tags">
             <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="books" @remove="removeTag" editable nolink />
+
+            <!-- add tag -->
+            <div class="dropdown mt-4" :class="{ 'is-active': dropdownActive }">
+              <div id="dropdown-menu" class="dropdown-menu" role="menu">
+                <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
+                  <a v-for="tag in tagOptions" :key="tag.id" class="dropdown-item is-capitalized" @click.prevent="addTag(tag)">
+                    {{ tag.tag }}
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <Tag :tag="{ tag: 'ADD' }" nolink tagStyle="background-color: #999; cursor: pointer" v-click-outside="closeDropdown" @click.prevent.stop="dropdownActive = !dropdownActive" />
+
           </div>
         </div>
       </div>
@@ -125,8 +163,8 @@ export default {
 
 <style lang="scss" scoped>
 @import "bulma/sass/utilities/_all.sass";
+@import "bulma/sass/components/dropdown.sass";
 @import '@/assets/style/vars.scss';
-
 .book-detail {
   margin: 0 20px;
   max-width: $widescreen;

@@ -9,6 +9,7 @@ export default {
     tag: {
       required: true,
     },
+    tagStyle: String,
     type: {
       type: String,
       validator: value => ['books', 'bundles', 'people'].indexOf(value) !== -1,
@@ -47,15 +48,19 @@ export default {
 
 <template>
   <div v-if="tag" class="mr-1" style="display: inline-block;">
-    <span v-if="nolink" class="button is-primary is-rounded is-mini" style="cursor: default;">
+
+    <span v-if="nolink" class="button is-primary is-rounded is-mini" style="cursor: default;" :style="tagStyle">
       <span>{{ tag.tag }}</span>
       <span v-if="editable" class="close" v-tippy="{ content: 'Remove tag from book' }" @click.prevent="removeTag">✕</span>
     </span>
+
     <a v-else-if="linkToManager" @click.prevent="goToManager" class="button is-primary is-rounded is-mini">{{ tag.tag }}</a>
-    <button v-else class="button is-primary is-rounded is-mini mr-1 mb-1" style="display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis;">
-        <span @click.prevent="goToFilter">{{ tag.tag }}</span>
-        <span v-if="editable" class="close" v-tippy="{ content: 'Remove tag from book' }" @click.prevent="removeTag">✕</span>
+
+    <button v-else class="button is-primary is-rounded is-mini mr-1 mb-1" style="display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis;" :style="tagStyle">
+      <span @click.prevent="goToFilter">{{ tag.tag }}</span>
+      <span v-if="editable" class="close" v-tippy="{ content: 'Remove tag from book' }" @click.prevent="removeTag">✕</span>
     </button>
+
   </div>
 </template>
 
