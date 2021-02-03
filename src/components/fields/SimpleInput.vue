@@ -1,7 +1,13 @@
 <script>
 
 export default {
-  props: ['modelValue', 'disabled', 'placeholder', 'controlStyle'],
+  props: {
+    modelValue: {},
+    disabled: Boolean,
+    placeholder: String,
+    controlStyle: {},
+    unstyled: Boolean,
+  },
   emits: ['update:modelValue'],
   data() {
     return {
@@ -51,9 +57,9 @@ export default {
 
 <template>
 
-  <div class="control">
+  <div :class="{ control: !unstyled }">
     <div class="field">
-      <div class="control w-50" :style="controlStyle">
+      <div :class="{ control: !unstyled, 'w-50': true }" :style="controlStyle">
         <div
           v-if="mode === 'view' && !hasValue && placeholder?.length"
           :class="{disabled:disabled}"
@@ -71,6 +77,7 @@ export default {
           v-model="value"
           type="text"
           class="input"
+          :style="unstyled ? 'font-size: inherit; font-weight: inherit; height: auto;' : ''"
           @blur="onInputBlur"
           @keyup.enter="onEnter"
           @keyup.escape="onEsc"
