@@ -64,9 +64,14 @@ export default {
     tagOptions() {
       return this.$store.getters['tags/people/listSorted']()
     },
+    /** Get the person's creatorTitle. */
     title() {
       if (!this.person) return null
-      return this.creatorTitles.find(creatorTitle => creatorTitle.id === this.person.title)
+      const title = this.creatorTitles.find(creatorTitle => creatorTitle.id === this.person.title)
+      if (!title) {
+        console.warn(`Missing titles. Defaulting to Author.`)
+      }
+      return title || this.creatorTitles.find(creatorTitle => creatorTitle.text === 'Author')
     },
   },
   watch: {
@@ -174,7 +179,7 @@ export default {
             </div>
 
             <!-- title -->
-            <a @click.prevent.stop="titleDropdownActive = !titleDropdownActive" v-click-outside="closeTitleDropdown" class="primary-hover no-user-select" :class="{ 'is-primary': titleDropdownActive }">{{ title.text }}</a>
+            <a v-if="title" @click.prevent.stop="titleDropdownActive = !titleDropdownActive" v-click-outside="closeTitleDropdown" class="primary-hover no-user-select" :class="{ 'is-primary': titleDropdownActive }">{{ title.text }}</a>
 
             <!-- name -->
             <h1 class="title mt-5">

@@ -59,7 +59,11 @@ export default {
     /** Get the person's creatorTitle. */
     title() {
       if (!this.person) return null
-      return this.creatorTitles.find(creatorTitle => creatorTitle.id === this.person.title)
+      const title = this.creatorTitles.find(creatorTitle => creatorTitle.id === this.person.title)
+      if (!title) {
+        console.warn(`Missing titles. Defaulting to Author.`)
+      }
+      return title || this.creatorTitles.find(creatorTitle => creatorTitle.text === 'Author')
     },
   },
   watch: {
