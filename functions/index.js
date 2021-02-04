@@ -3,6 +3,7 @@ const coverImageByISBN = require('./coverImageByISBNServer')
 const email = require('./email')
 const metadataByISBN = require('./metadataByISBN')
 const searchISBN = require('./searchISBN')
+const amazonSearchBook = require('./amazonSearchBook')
 
 const watchBookSubmissions = require('./watchBookSubmissions')
 
@@ -28,6 +29,13 @@ exports.email = functions
 
 exports.metadataByISBN = functions
   .https.onRequest(metadataByISBN())
+
+exports.amazonSearchBook = functions
+  .runWith({
+    timeoutSeconds: 300,
+    memory: '1GB'
+  })
+  .https.onRequest(amazonSearchBook())
 
 // increase function memory since we are doing image processing
 // https://firebase.google.com/docs/functions/manage-functions#set_timeout_and_memory_allocation
