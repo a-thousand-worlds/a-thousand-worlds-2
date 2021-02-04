@@ -26,6 +26,7 @@ export default {
       disableResetPassword: false,
       error: null,
       loading: false,
+      otherIdentity: '',
       password: '',
       affiliations: {
         organization: '',
@@ -208,6 +209,7 @@ export default {
         password: this.password,
         identities: this.identities,
         affiliations: this.affiliations,
+        otherIdentity: this.otherIdentity,
       }))
     },
 
@@ -240,6 +242,7 @@ export default {
           photo: this.photo,
           identities: this.identities,
           affiliations: this.affiliations,
+          otherIdentity: this.otherIdentity,
         })
           .then(() => {
             if (!this.error) {
@@ -423,8 +426,13 @@ export default {
 
             <div class="sublabel tablet-columns-2">
               <div v-for="identity of contributorIdentities" :key="identity.id" class="control is-flex" style="column-break-inside: avoid;">
-                <input v-model="identities[identity.id]" :id="`identity-${identity.id}`" :false-value="null" type="checkbox" class="checkbox mb-3 mt-1" @input="saveDraftAndRevalidate">
+                <input v-model="identities[identity.id]" :id="`identity-${identity.id}`" type="checkbox" :false-value="null" class="checkbox mb-3 mt-1" @input="saveDraftAndRevalidate">
                 <label class="label pl-2 pb-1" :for="`identity-${identity.id}`" style="cursor: pointer;">{{ identity.tag }}</label>
+              </div>
+              <div>
+                <input v-model="identities.other" id="identity-other" type="checkbox" :false-value="null" @input="saveDraftandRevalidate" class="checkbox mr-2 mb-3">
+                <label for="identity-other" class="label is-inline">Other</label>
+                <input v-model="otherIdentity" @input="revalidate" class="input" style="max-width: 200px;" type="text">
               </div>
             </div>
           </div>
@@ -434,14 +442,14 @@ export default {
             <label class="label is-uppercase" :class="{ error: hasError('engagements') }">How do you engage with books?</label>
             <div class="sublabel tablet-columns-2">
               <div v-for="engagement of engagements" :key="engagement.id" class="control columns-2">
-                <input :id="engagement.id" v-model="affiliations.selectedEngagementCategories[engagement.id]" :disabled="loading" :name="engagement.id" @input="revalidate" type="checkbox" :false-value="null" class="checkbox mr-3 mb-3">
-                <label class="label is-inline" style="word-wrap: nobreak;" :for="engagement.id">
+                <input :id="`engagement-${engagement.id}`" v-model="affiliations.selectedEngagementCategories[engagement.id]" :disabled="loading" :name="engagement.id" @input="revalidate" type="checkbox" :false-value="null" class="checkbox mr-2 mb-3">
+                <label class="label is-inline" style="word-wrap: nobreak;" :for="`engagement-${engagement.id}`">
                   {{ engagement.text }}
                 </label>
               </div>
               <div>
-                <input v-model="affiliations.selectedEngagementCategories.other" :disabled="loading" type="checkbox" class="checkbox mr-3 mb-3">
-                <label class="label is-inline mr-2">Other</label>
+                <input v-model="affiliations.selectedEngagementCategories.other" id="engagement-other" :disabled="loading" type="checkbox" class="checkbox mr-2 mb-3">
+                <label for="engagement-other" class="label is-inline">Other</label>
                 <input v-model="affiliations.otherEngagementCategory" :disabled="loading" @input="revalidate" class="input" style="max-width: 200px;" type="text">
               </div>
             </div>
