@@ -205,7 +205,7 @@ export default {
             <CreatorsWidget v-if="book.creators" class="mb-2" :creators="book.creators" linked edit />
           </div>
 
-          <!-- summary/description is edited with ckeditor and may contain html -->
+          <!-- summary -->
           <ckeditor @update:modelValue="updateBook({ summary: $event })" v-model="book.summary" :editor="editor" :config="ckConfig" class="summary" style="padding: 0;" />
 
         </div>

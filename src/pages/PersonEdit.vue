@@ -1,5 +1,6 @@
 <script>
 import * as slugify from '@sindresorhus/slugify'
+import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import creatorTitles from '@/store/constants/creatorTitles'
 import BookListView from '@/components/BookListView'
 import Filter from '@/components/Filter'
@@ -29,7 +30,12 @@ export default {
   },
   data() {
     return {
+      ckConfig: {
+        placeholder: 'Enter bio',
+        toolbar: [],
+      },
       creatorTitles,
+      editor: BalloonEditor,
       tagsDropdownActive: false,
       titleDropdownActive: false,
       pageUrl: window.location.href,
@@ -191,7 +197,8 @@ export default {
 
           </div>
 
-          <p v-if="person.bio" class="person-bio" :innerHTML="person.bio" />
+          <!-- bio -->
+          <ckeditor @update:modelValue="updatePerson({ bio: $event })" v-model="person.bio" :editor="editor" :config="ckConfig" class="person-bio" style="padding: 0;" />
 
         </div>
 
@@ -288,6 +295,7 @@ export default {
 }
 
 .person-bio {
+  border: none;
   @include primary(border-color);
   font-size: 22px;
   text-align: justify;

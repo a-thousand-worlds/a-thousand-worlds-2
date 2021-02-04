@@ -219,3 +219,10 @@ export default {
   }
 }
 </style>
+
+<style lang="scss">
+.person-bio.ck.ck-editor__editable_inline>:first-child {
+  margin-top: 0px;
+  margin-left: 0px;
+}
+</style>
