@@ -69,8 +69,9 @@ export default {
     invite() {
       return this.$store.getters['invites/get'](this.code)
     },
-    peopleTags() {
+    contributorIdentities() {
       return this.$store.getters[`tags/people/listSorted`]()
+        .filter(tag => tag.showOnContributorSignup)
     },
     title() {
       return this.isSignup ?
@@ -409,7 +410,7 @@ export default {
           <div v-if="isContributor && (isSignup || isEditProfile)" class="field">
             <label class="label" :class="{ 'has-text-danger': hasError('identities') }" style="font-weight: bold; text-transform: uppercase;">Identity</label>
             <div class="sublabel tablet-columns-2">
-              <div v-for="identity of peopleTags" :key="identity.id" class="control is-flex" style="column-break-inside: avoid;">
+              <div v-for="identity of contributorIdentities" :key="identity.id" class="control is-flex" style="column-break-inside: avoid;">
                 <input v-model="identities[identity.id]" :id="`identity-${identity.id}`" :false-value="null" type="checkbox" class="checkbox mb-3 mt-1" @input="saveDraftAndRevalidate">
                 <label class="label pl-2 pb-1" :for="`identity-${identity.id}`" style="cursor: pointer;">{{ identity.tag }}</label>
               </div>

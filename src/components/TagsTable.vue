@@ -34,15 +34,18 @@ export default {
     this.resetNewTag()
   },
   methods: {
+
     async addTag() {
       const id = uid()
       await this.$store.dispatch(`tags/${this.type}/save`, { path: id, value: { id, ...this.newTag } })
       this.resetNewTag()
     },
+
     async remove(id) {
       await this.$store.dispatch(`tags/${this.type}/remove`, id)
       this.resetNewTag()
     },
+
     resetNewTag() {
       this.newTag = {
         tag: '',
@@ -52,24 +55,37 @@ export default {
           : 1,
       }
     },
+
     toggleEditTag(id, state) {
       this.edits[id] = state
     },
+
+    async toggleShowOnContributorSignup(id) {
+      const tag = this.$store.state.tags[this.type].data[id]
+      tag.showOnContributorSignup = !tag.showOnContributorSignup || null
+      await this.$store.dispatch(`tags/${this.type}/save`, {
+        path: `${id}/showOnContributorSignup`,
+        value: tag.showOnContributorSignup
+      })
+    },
+
     async toggleShowOnFront(id) {
       const tag = this.$store.state.tags[this.type].data[id]
-      tag.showOnFront = !tag.showOnFront
+      tag.showOnFront = !tag.showOnFront || null
       await this.$store.dispatch(`tags/${this.type}/save`, {
         path: `${id}/showOnFront`,
         value: tag.showOnFront
       })
     },
+
     async updateTag(tagid) {
       const tag = { ...this.edits[tagid] }
       this.$store.commit('ui/setBusy', true)
       await this.$store.dispatch(`tags/${this.type}/save`, { path: tagid, value: tag })
       this.edits[tagid] = null
       this.$store.commit('ui/setBusy', false)
-    }
+    },
+
   },
 }
 
@@ -83,6 +99,7 @@ export default {
         <th style="width: 100%;">Tag</th>
         <th class="has-text-right" v-tippy="{ content: `Set the sort order of the tags in the filter menu. Tags with lower numbers show up above tags with higher numbers.` }" style="white-space: nowrap;">Sort <i class="far fa-question-circle" /></th>
         <th class="has-text-centered" v-tippy="{ content: `Adjust the likelihood of ${type} being sorted to the top. For example, a person that has a tag with weight 10 means the person is 10 times more likely to be sorted to the top than a person that has a tag with weight 1` }" style="white-space: nowrap;">Weight <i class="far fa-question-circle" /></th>
+        <th v-if="type === 'people'" class="has-text-centered" v-tippy="{ content: `Show this tag as one of the identity options when contributors sign up.` }" style="white-space: nowrap;">Contributor <i class="far fa-question-circle" /></th>
         <th class="has-text-centered" v-tippy="{ content: `Show this tag in the ${type} filter menu` }" style="white-space: nowrap;">Show <i class="far fa-question-circle" /></th>
         <th>Edit/Delete</th>
       </tr>
@@ -99,6 +116,7 @@ export default {
         <td />
         <td />
         <td />
+        <td v-if="type === 'people'" />
         <td />
       </tr>
 
@@ -133,6 +151,14 @@ export default {
           <span v-if="edits[tag.id]">
             <input v-model.number="edits[tag.id].weight" type="number" class="input" style="min-width: 50px;padding-right: calc(0.75rem - 8px);" required>
           </span>
+        </td>
+
+        <!-- contributor -->
+        <td v-if="type === 'people'" class="has-text-centered">
+          <a @click.prevent="toggleShowOnContributorSignup(tag.id)">
+            <i v-if="tag.showOnContributorSignup" class="fas fa-check has-text-primary" />
+            <i v-else class="fas fa-minus has-text-secondary" />
+          </a>
         </td>
 
         <!-- show in book filters -->
