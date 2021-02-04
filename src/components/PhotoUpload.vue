@@ -81,9 +81,15 @@ export default {
       <input id="photo-field" ref="fileInput" type="file" @change="fileChange($event)" style="position: absolute; height: 100%; width: 100%; cursor: pointer; top: 0; opacity: 0; border-radius: 999px;">
     </div>
 
-    <div v-if="!noremove" class="has-text-centered">
-      <a :class="{ 'is-invisible': !modelValue }" @click.prevent="clearPhoto">Remove photo</a>
-    </div>
+    <template v-if="!noremove">
+      <div class="has-text-centered">
+        <a :class="{ 'is-invisible': !modelValue }" @click.prevent="clearPhoto">Remove photo</a>
+      </div>
+
+      <div class="is-flex is-justify-content-center" :style="!modelValue ? { marginTop: '-1.2em' } : null">
+        <p style="position: absolute;">Minimum size: 800x800px</p>
+      </div>
+    </template>
 
   </div>
 
