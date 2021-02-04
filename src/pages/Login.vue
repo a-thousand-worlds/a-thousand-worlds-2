@@ -301,9 +301,17 @@ export default {
       // contributor fields
       if (this.isContributor && (this.isSignup || this.isEditProfile)) {
 
+        // identities
+        const hasIdentities = Object.values(this.identities).length
+        if (!hasIdentities && !this.otherIdentity) {
+          this.error = {
+            message: 'Please check required fields',
+            fields: { ...this.error?.fields, identities: true },
+          }
+        }
+
         // engagements
-        const hasSelectedEngagements = Object.values(this.affiliations.selectedEngagementCategories)
-          .some(x => x)
+        const hasSelectedEngagements = Object.values(this.affiliations.selectedEngagementCategories).length
         if (!hasSelectedEngagements && !this.affiliations.otherEngagementCategory) {
           this.error = {
             message: 'Please check required fields',
@@ -408,7 +416,11 @@ export default {
 
           <!-- identities -->
           <div v-if="isContributor && (isSignup || isEditProfile)" class="field">
-            <label class="label" :class="{ 'has-text-danger': hasError('identities') }" style="font-weight: bold; text-transform: uppercase;">Identity</label>
+            <label class="label">
+              <span :class="{ 'has-text-danger': hasError('identities') }" style="text-transform: uppercase;">Identity</span>
+              <div style="font-weight: normal;">Please select all that apply</div>
+            </label>
+
             <div class="sublabel tablet-columns-2">
               <div v-for="identity of contributorIdentities" :key="identity.id" class="control is-flex" style="column-break-inside: avoid;">
                 <input v-model="identities[identity.id]" :id="`identity-${identity.id}`" :false-value="null" type="checkbox" class="checkbox mb-3 mt-1" @input="saveDraftAndRevalidate">
@@ -417,11 +429,12 @@ export default {
             </div>
           </div>
 
+          <!-- engagement -->
           <div v-if="isContributor && (isSignup || isEditProfile)" class="field">
             <label class="label is-uppercase" :class="{ error: hasError('engagements') }">How do you engage with books?</label>
             <div class="sublabel tablet-columns-2">
               <div v-for="engagement of engagements" :key="engagement.id" class="control columns-2">
-                <input :id="engagement.id" v-model="affiliations.selectedEngagementCategories[engagement.id]" :disabled="loading" :name="engagement.id" @input="revalidate" type="checkbox" class="checkbox mr-3 mb-3">
+                <input :id="engagement.id" v-model="affiliations.selectedEngagementCategories[engagement.id]" :disabled="loading" :name="engagement.id" @input="revalidate" type="checkbox" :false-value="null" class="checkbox mr-3 mb-3">
                 <label class="label is-inline" style="word-wrap: nobreak;" :for="engagement.id">
                   {{ engagement.text }}
                 </label>
@@ -435,11 +448,13 @@ export default {
 
           </div>
 
+          <!-- organization -->
           <div v-if="isContributor && (isSignup || isEditProfile)" class="field" :class="{ 'divider-30': !showOrgLink }">
             <label class="label is-uppercase" :class="{ error: hasError('organizationName') }">Are you affiliated with an organization?</label>
             <input v-model="affiliations.organization" :disabled="loading" @input="revalidate" class="input" type="text">
           </div>
 
+          <!-- organization link -->
           <div v-if="showOrgLink" class="field divider-30">
             <label class="label is-uppercase" :class="{ error: hasError('organizationLink') }">Link to organization:</label>
             <input v-model="affiliations.organizationLink" :disabled="loading" @input="revalidate" class="input" type="text">
