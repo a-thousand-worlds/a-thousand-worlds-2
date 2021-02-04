@@ -28,7 +28,7 @@ export default {
 @import '@/assets/style/vars.scss';
 @import '@/assets/style/mixins.scss';
 
-.notification {
+.notification:not(.is-danger) {
   @include primary('background-color');
 }
 

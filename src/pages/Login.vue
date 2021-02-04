@@ -1,31 +1,38 @@
 <script>
 import _ from 'lodash'
+import engagements from '@/store/constants/engagements'
 import Loader from '@/components/Loader'
-import Engagements from '@/store/userEngagements'
+import PhotoUpload from '@/components/PhotoUpload'
 
 export default {
-  name: 'LogInPage',
+  name: 'LoginPage',
   components: {
     Loader,
+    PhotoUpload,
   },
   data() {
+    const profile = this.$store.state.user.user?.profile
     return {
       // the active tab (login or signup)
       active: this.getActiveFromUrl(),
-      email: this.$store.state.user.user?.profile?.email || '',
-      name: this.$store.state.user.user?.profile?.name || '',
-      // all options for enagement checkboxes
-      engagementCategories: Engagements,
+      email: profile?.email || '',
+      name: profile?.name || '',
+      photo: profile?.photo || null,
+      // copy engagements and identities objects
+      // otherwise editing the form will update the objects by reference
+      engagements,
+      identities: profile?.identities ? { ...profile.identities } : {},
       disableAfterSave: false,
       disableResetPassword: false,
       error: null,
       loading: false,
       password: '',
-      affiliations: this.$store.state.user.user?.profile?.affiliations || {
+      affiliations: {
         organization: '',
         organizationLink: '',
         otherEngagementCategory: '',
         selectedEngagementCategories: {},
+        ...profile?.affiliations,
       },
       // only show errors after a submit has been attempted
       submitAttempt: false,
@@ -34,6 +41,25 @@ export default {
   },
 
   computed: {
+
+    // boolean role and page aliases
+    isEditProfile() {
+      return this.active === 'profile'
+    },
+    isLogin() {
+      return this.active === 'login'
+    },
+    isSignup() {
+      return this.active === 'signup'
+    },
+    isContributor() {
+      return this.$store.state.user.user?.roles?.contributor || this.invite?.role === 'contributor'
+    },
+    isCreator() {
+      return this.$store.state.user.user?.roles?.creator || this.invite?.role === 'creator'
+    },
+
+    // other computed properties
     code() {
       return this.$route.query.code
     },
@@ -43,16 +69,21 @@ export default {
     invite() {
       return this.$store.getters['invites/get'](this.code)
     },
+    peopleTags() {
+      return this.$store.getters[`tags/people/listSorted`]()
+    },
     title() {
-      return this.active === 'signup' ?
+      return this.isSignup ?
         this.invite?.role ? `You have been invited to join as a ${this.invite.role}!` : 'Sign up for an account'
-        : this.active === 'login' ? 'Log In'
-        : this.active === 'profile' ? 'Profile'
+        : this.isLogin ? 'Log In'
+        : this.isEditProfile ? this.$iam('creator')
+          ? 'Your Account'
+          : 'Edit Profile'
         : null
     },
     showOrgLink() {
-      return (this.active === 'signup' || this.active === 'profile') &&
-        (this.invite?.role === 'contributor' || this.$can('submitBookOrBundle'))
+      return (this.isSignup || this.isEditProfile) &&
+        (this.isContributor || this.$can('submitBookOrBundle'))
     }
   },
 
@@ -79,6 +110,8 @@ export default {
 
       this.email = next?.profile?.email || ''
       this.name = next?.profile?.name || ''
+      this.photo = next?.profile?.photo || ''
+      this.identities = { ...next?.profile?.identities }
     }
   },
 
@@ -134,20 +167,20 @@ export default {
         : null
     },
 
-    async onPasswordKeyEnter() {
-      if (this.active === 'login') {
+    async onEnter() {
+      if (this.isLogin) {
         await this.login()
       }
     },
 
     async submit() {
-      if (this.active === 'signup') {
+      if (this.isSignup) {
         await this.signup()
       }
-      else if (this.active === 'login') {
+      else if (this.isLogin) {
         await this.login()
       }
-      else if (this.active === 'profile') {
+      else if (this.isEditProfile) {
         await this.saveProfile()
       }
     },
@@ -159,11 +192,7 @@ export default {
       return this.handleResponse(this.$store.dispatch('user/login', {
         email: this.email,
         password: this.password
-      })
-        .then(() => {
-          this.$router.push({ name: 'Dashboard' })
-        })
-      )
+      }))
     },
 
     async signup() {
@@ -174,13 +203,11 @@ export default {
         code: this.code,
         email: this.email,
         name: this.name,
+        photo: this.photo,
         password: this.password,
+        identities: this.identities,
         affiliations: this.affiliations,
-      })
-        .then(() => {
-          this.$router.push({ name: 'Dashboard' })
-        })
-      )
+      }))
     },
 
     async saveProfile() {
@@ -206,9 +233,11 @@ export default {
         })
 
       if (!this.error) {
-        await this.handleResponse(this.$store.dispatch('user/saveProfile', {
+        await this.handleResponse(this.$store.dispatch('user/updateProfile', {
           name: this.name,
           email: this.email,
+          photo: this.photo,
+          identities: this.identities,
           affiliations: this.affiliations,
         })
           .then(() => {
@@ -232,9 +261,9 @@ export default {
       this.error = null
 
       this.$router.push({
-        name: active === 'signup' ? 'Signup'
-        : active === 'login' ? 'LogIn'
-        : active === 'profile' ? 'Profile'
+        name: this.isSignup ? 'Signup'
+        : this.isLogin ? 'Login'
+        : this.isEditProfile ? 'Profile'
         : null
       })
     },
@@ -244,21 +273,24 @@ export default {
 
       this.error = null
 
-      if ((this.active === 'signup' || this.active === 'profile') && !this.name.length) {
+      // name
+      if ((this.isSignup || this.isEditProfile) && !this.name.length) {
         this.error = {
           message: 'Please check required fields',
           fields: { ...this.error?.fields, name: true },
         }
       }
 
-      if ((this.active === 'signup' || this.active === 'login' || this.active === 'profile') && !this.email.length) {
+      // email
+      if ((this.isSignup || this.isLogin || this.isEditProfile) && !this.email.length) {
         this.error = {
           message: 'Please check required fields',
           fields: { ...this.error?.fields, email: true },
         }
       }
 
-      if ((this.active === 'signup' || this.active === 'login') && !this.password.length) {
+      // password
+      if ((this.isSignup || this.isLogin) && !this.password.length) {
         this.error = {
           message: 'Please check required fields',
           fields: { ...this.error?.fields, password: true },
@@ -266,7 +298,7 @@ export default {
       }
 
       // contributor fields
-      if ((this.active === 'signup' && this.invite?.role === 'contributor') || this.active === 'profile') {
+      if (this.isContributor && (this.isSignup || this.isEditProfile)) {
 
         // engagements
         const hasSelectedEngagements = Object.values(this.affiliations.selectedEngagementCategories)
@@ -312,7 +344,7 @@ export default {
 
   <div class="mx-6">
 
-    <div v-if="active === 'profile'" class="mb-5">
+    <div v-if="isEditProfile" class="mb-5">
       <router-link :to="{ name: 'Dashboard' }" class="is-uppercase is-primary">&lt; Back to Dashboard</router-link>
     </div>
 
@@ -322,62 +354,87 @@ export default {
       </div>
       <div v-else class="my-50 has-text-centered">
         <h2>{{ invite?.used ? 'This invitation code has already been used.' : 'Invalid invitation code' }}</h2>
-        <router-link :to="{ name: 'LogIn' }"><button class="button is-primary is-rounded is-uppercase mt-20">Log In</button></router-link>
+        <router-link :to="{ name: 'Login' }"><button class="button is-primary is-rounded is-uppercase mt-20">Log In</button></router-link>
       </div>
     </div>
 
     <div v-else class="is-flex is-justify-content-center">
-      <form class="is-flex-grow-1" style="max-width: 480px;" @submit.prevent="submit">
+
+      <!-- TODO: width affects PhotoUpload aspect ratio -->
+      <form class="is-flex-grow-1" style="max-width: 490px;" @submit.prevent="submit">
 
         <!-- Cannot use are-small and is-rounded until #3208 is merged. See https://github.com/jgthms/bulma/pull/3208. -->
-        <div v-if="active === 'login' || (active === 'signup' && !code)" class="buttons is-centered has-addons">
-          <button :class="['button', 'is-small', 'is-rounded', ...[active === 'signup' ? ['is-selected'] : null]]" style="width: 50%; max-width: 240px;" @click.prevent="setActive('signup')">Sign Up</button>
-          <button :class="['button', 'is-small', 'is-rounded', ...[active === 'login' ? ['is-selected'] : null]]" style="width: 50%; max-width: 240px;" @click.prevent="setActive('login')">Log In</button>
+        <div v-if="isLogin || (isSignup && !code)" class="buttons is-centered has-addons">
+          <button :class="['button', 'is-small', 'is-rounded', ...[isSignup ? ['is-selected'] : null]]" style="width: 50%; max-width: 240px;" @click.prevent="setActive('signup')">Sign Up</button>
+          <button :class="['button', 'is-small', 'is-rounded', ...[isLogin ? ['is-selected'] : null]]" style="width: 50%; max-width: 240px;" @click.prevent="setActive('login')">Log In</button>
         </div>
 
         <div>
-          <h1 v-if="!invite || invite.role" class="title page-title divider-bottom">{{ title }}</h1>
+          <h1 class="title page-title divider-bottom">{{ title }}</h1>
 
-          <div v-if="active === 'signup' || active === 'profile'" class="field">
-            <label :class="['label', { error: hasError('name') }]">NAME</label>
-            <div class="control">
-              <input v-model="name" :disabled="loading" type="text" class="input" :class="{ 'is-danger': hasError('name') }" @input="revalidate">
+          <!-- name -->
+          <div class="is-flex field">
+
+            <PhotoUpload v-if="(isContributor || isCreator) && (isSignup || isEditProfile)" v-model="photo" class="mr-30 my-40" style="width: 40%" />
+
+            <!-- vertically center name, email, and password since height is variable (password is not shown on Edit Profile page) -->
+            <div class="is-flex-grow-1 is-flex is-justify-content-center is-flex-direction-column">
+              <div v-if="isSignup || isEditProfile" class="field">
+                <label :class="['label', { error: hasError('name') }]">NAME</label>
+                <div class="control">
+                  <input v-model="name" :disabled="loading" type="text" class="input" :class="{ 'is-danger': hasError('name') }" @input="revalidate">
+                </div>
+              </div>
+
+              <!-- email -->
+              <div v-if="isLogin || isSignup || isEditProfile" class="field">
+                <label :class="['label', { error: hasError('email') }]">EMAIL</label>
+                <div class="control">
+                  <input v-model="email" @keypress.enter.prevent="onEnter" :disabled="loading" type="email" class="input" :class="{ 'is-danger': hasError('email') }" @input="revalidate">
+                </div>
+              </div>
+
+              <!-- password -->
+              <div v-if="isLogin || isSignup" class="field">
+                <label :class="['label', { error: hasError('password') }]">PASSWORD</label>
+                <div class="control">
+                  <input v-model="password" :disabled="loading" type="password" class="input" :class="{ 'is-danger': hasError('password') }" @keypress.enter.prevent="onEnter" @input="revalidate">
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- identities -->
+          <div v-if="isSignup || isEditProfile" class="field">
+            <label class="label" :class="{ 'has-text-danger': hasError('identities') }" style="font-weight: bold; text-transform: uppercase;">Identity</label>
+            <div class="sublabel tablet-columns-2">
+              <div v-for="identity of peopleTags" :key="identity.id" class="control is-flex" style="column-break-inside: avoid;">
+                <input v-model="identities[identity.id]" :id="`identity-${identity.id}`" :false-value="null" type="checkbox" class="checkbox mb-3 mt-1" @input="saveDraftAndRevalidate">
+                <label class="label pl-2 pb-1" :for="`identity-${identity.id}`" style="cursor: pointer;">{{ identity.tag }}</label>
+              </div>
             </div>
           </div>
 
-          <div v-if="active ==='login' || active === 'signup' || active === 'profile'" class="field">
-            <label :class="['label', { error: hasError('email') }]">EMAIL</label>
-            <div class="control">
-              <input v-model="email" :disabled="loading" type="email" class="input" :class="{ 'is-danger': hasError('email') }" @input="revalidate">
-            </div>
-          </div>
-
-          <div v-if="active === 'login' || active === 'signup'" class="field">
-            <label :class="['label', { error: hasError('password') }]">PASSWORD</label>
-            <div class="control">
-              <input v-model="password" :disabled="loading" type="password" class="input" :class="{ 'is-danger': hasError('password') }" @keypress.enter.prevent="onPasswordKeyEnter" @input="revalidate">
-            </div>
-          </div>
-
-          <div v-if="(active === 'signup' && invite?.role === 'contributor') || active === 'profile'" class="field">
+          <div v-if="(isSignup && isContributor) || isEditProfile" class="field">
             <label class="label is-uppercase" :class="{ error: hasError('engagements') }">How do you engage with books?</label>
-            <div style="column-count: 2;">
-              <div v-for="category of engagementCategories" :key="category.id" class="control columns-2">
-                <input :id="category.id" v-model="affiliations.selectedEngagementCategories[category.id]" :disabled="loading" :name="category.id" @input="revalidate" type="checkbox" class="checkbox mr-3 mb-3">
-                <label class="label is-inline is-uppercase no-user-select" style="word-wrap: nobreak;" :for="category.id">
-                  {{ category.text }}
+            <div class="sublabel tablet-columns-2">
+              <div v-for="engagement of engagements" :key="engagement.id" class="control columns-2">
+                <input :id="engagement.id" v-model="affiliations.selectedEngagementCategories[engagement.id]" :disabled="loading" :name="engagement.id" @input="revalidate" type="checkbox" class="checkbox mr-3 mb-3">
+                <label class="label is-inline" style="word-wrap: nobreak;" :for="engagement.id">
+                  {{ engagement.text }}
                 </label>
               </div>
               <div>
                 <input v-model="affiliations.selectedEngagementCategories.other" :disabled="loading" type="checkbox" class="checkbox mr-3 mb-3">
-                <label class="label is-inline mr-2">OTHER</label>
+                <label class="label is-inline mr-2">Other</label>
                 <input v-model="affiliations.otherEngagementCategory" :disabled="loading" @input="revalidate" class="input" style="max-width: 200px;" type="text">
               </div>
             </div>
 
           </div>
 
-          <div v-if="(active === 'signup' && invite?.role === 'contributor') || active === 'profile'" class="field" :class="{ 'divider-30': !showOrgLink }">
+          <div v-if="isContributor && (isSignup || isEditProfile)" class="field" :class="{ 'divider-30': !showOrgLink }">
             <label class="label is-uppercase" :class="{ error: hasError('organizationName') }">Are you affiliated with an organization?</label>
             <input v-model="affiliations.organization" :disabled="loading" @input="revalidate" class="input" type="text">
           </div>
@@ -388,18 +445,18 @@ export default {
           </div>
 
           <div class="field my-4">
-            <input :disabled="loading || hasFieldErrors || disableAfterSave" type="submit" class="button is-primary is-rounded is-fullwidth is-uppercase" :class="{'is-loading':loading}" :value="active === 'login' ? 'Log In' : active === 'signup' ? 'Create Account' : active === 'profile' ? 'Save' : null">
+            <input :disabled="loading || hasFieldErrors || disableAfterSave" type="submit" class="button is-primary is-rounded is-fullwidth is-uppercase" :class="{'is-loading':loading}" :value="isLogin ? 'Log In' : isSignup ? 'Create Account' : isEditProfile ? 'Save' : null">
           </div>
 
           <div v-if="error" class="field">
             <p class="error has-text-centered is-uppercase">{{ error.message }}</p>
           </div>
 
-          <p v-if="active === 'login'" class="has-text-centered">
+          <p v-if="isLogin" class="has-text-centered">
             <router-link :to="{name:'PasswordReset'}">FORGOT PASSWORD?</router-link>
           </p>
 
-          <p v-if="active === 'profile'" class="has-text-centered">
+          <p v-if="isEditProfile" class="has-text-centered">
             <button class="button is-flat" :disabled="disableResetPassword" @click.prevent="resetPassword">Reset Password</button>
           </p>
 

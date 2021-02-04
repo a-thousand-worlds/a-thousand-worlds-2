@@ -38,8 +38,8 @@ const routes = [
     component: () => import(/* webpackChunkName: "guest" */ './pages/About.vue')
   }, {
     path: '/login',
-    name: 'LogIn',
-    component: () => import(/* webpackChunkName: "guest" */ './pages/LogIn.vue')
+    name: 'Login',
+    component: () => import(/* webpackChunkName: "guest" */ './pages/Login.vue')
   }, {
     path: '/password-reset',
     name: 'PasswordReset',
@@ -47,7 +47,7 @@ const routes = [
   }, {
     path: '/signup',
     name: 'Signup',
-    component: () => import(/* webpackChunkName: "guest" */ './pages/LogIn.vue')
+    component: () => import(/* webpackChunkName: "guest" */ './pages/Login.vue')
   }, { // User authorized paged
     path: '/dashboard',
     name: 'Dashboard',
@@ -58,7 +58,7 @@ const routes = [
   }, {
     path: '/profile',
     name: 'Profile',
-    component: () => import(/* webpackChunkName: "user" */ './pages/LogIn.vue'),
+    component: () => import(/* webpackChunkName: "user" */ './pages/Login.vue'),
     meta: {
       access: 'authorized'
     }
@@ -105,6 +105,13 @@ const routes = [
       access: 'owner'
     }
   }, {
+    path: '/person/:name/edit',
+    name: 'PersonEdit',
+    component: () => import(/* webpackChunkName: "advisor" */ './pages/PersonEdit.vue'),
+    meta: {
+      access: 'owner'
+    }
+  }, {
     path: '/admin/people/add',
     name: 'PeopleManagerAddForm',
     component: () => import(/* webpackChunkName: "advisor" */ './pages/PeopleManagerForm.vue'),
@@ -115,6 +122,14 @@ const routes = [
     path: '/admin/people/update/:uid',
     name: 'PeopleManagerUpdateForm',
     component: () => import(/* webpackChunkName: "advisor" */ './pages/PeopleManagerForm.vue'),
+    meta: {
+      access: 'owner'
+    }
+  }, {
+    path: '/book/:slug(.+)?-:isbn/edit',
+    alias: '/book/:slug?/:isbn(.*)/edit',
+    name: 'BookEdit',
+    component: () => import(/* webpackChunkName: "advisor" */ './pages/BookEdit.vue'),
     meta: {
       access: 'owner'
     }

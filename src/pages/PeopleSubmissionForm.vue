@@ -3,7 +3,10 @@ import _ from 'lodash'
 // Jimp required if dimensions checks needs to be done on file upload
 // import Jimp from 'jimp'
 import validator from '@/mixins/validator'
-import genderOptions from '@/store/genderOptions'
+import genders from '@/store/constants/genders'
+import creatorTitles from '@/store/constants/creatorTitles'
+import pronouns from '@/store/constants/pronouns'
+import personSubmission from '@/store/constants/personSubmission'
 
 export default {
   mixins: [
@@ -17,7 +20,9 @@ export default {
   data() {
     return {
       draftSaved: null,
-      genderOptions,
+      creatorTitles,
+      genders,
+      pronouns,
       submission: this.newSubmission(),
     }
   },
@@ -28,9 +33,6 @@ export default {
     draftPerson() {
       return this.$store.state.user.user?.profile.draftPerson
     },
-    identityOptions() {
-      return this.$store.getters[`tags/people/listSorted`]()
-    },
     person() {
       const peopleSubmissions = this.$store.state.submissions.people.data || {}
       const userSubmissions = this.$store.state.user.user.profile.submissions || {}
@@ -40,11 +42,6 @@ export default {
       const person = this.$store.state.people.data[peopleId]
       return person
     },
-    bgPhoto() {
-      return this.submission.photo.base64?.length
-        ? this.submission.photo.base64
-        : null
-    }
   },
   watch: {
     // update submission when draftPerson is first loaded
@@ -85,20 +82,8 @@ export default {
 
     /** Creates a new submission object that is either blank or copied from the existing person. */
     newSubmission() {
-      const emptySubmission = {
-        awards: '',
-        bio: '',
-        bonus: '',
-        curateInterest: '',
-        gender: '',
-        identities: {},
-        name: '',
-        photo: {
-          base64: ''
-        },
-        title: 'author',
-      }
-      const newPerson = {
+      const emptySubmission = personSubmission()
+      return {
         ...emptySubmission,
         // name from private user profile
         name: this.name,
@@ -107,7 +92,6 @@ export default {
         // copy identities object, otherwise editing the form will update the person identities object by reference
         identities: this.person?.identities ? { ...this.person.identities } : {}
       }
-      return newPerson
     },
 
     saveDraftAndRevalidate: _.debounce(function() {
@@ -136,41 +120,6 @@ export default {
       }
     },
 
-    fileChange(e) {
-      const file = e.target.files[0]
-      const reader = new FileReader()
-      this.submission.photo.base64 = ''
-      reader.onload = () => {
-        this.submission.photo.base64 = reader.result
-        // any additional checks on file size or type, using file.size, file.type
-        // can be done here
-        // if additional checks on file dimensions required - jimp is required
-        /*
-        Jimp.read(reader.result, (err, img) => {
-          if (err) {
-            console.error('jimp error', err)
-          }
-          if (img) {
-            if (img.bitmap.width !== img.bitmap.height) {
-              alert('recommended to use square images')
-            }
-            this.saveDraftAndRevalidate()
-          }
-        })
-        */
-        this.saveDraftAndRevalidate()
-      }
-      reader.onerror = err => {
-        console.error('FileReader error', err)
-      }
-      reader.readAsDataURL(file)
-    },
-
-    clearPhoto() {
-      this.submission.photo.base64 = ''
-      this.saveDraftAndRevalidate()
-    },
-
   },
 }
 </script>
@@ -190,48 +139,32 @@ export default {
 
         <section class="basic-information">
 
-          <!-- photo -->
-          <div class="field">
-            <label class="label" :class="{ 'has-text-danger': hasError('photo') }" style="font-weight: bold; text-transform: uppercase;">Your Photo</label>
-            <div>
-              <img v-if="bgPhoto" :src="bgPhoto">
-              <label for="photo-field" class="upload-label">
-                <span v-if="bgPhoto">Upload other photo (replace)</span>
-                <span v-else>Upload</span>
-              </label>
-              <label v-if="bgPhoto" class="upload-label ml-5" @click.prevent="clearPhoto()">Remove photo</label>
-              <input id="photo-field" type="file" class="is-invisible" @change.prevent="fileChange($event)">
-            </div>
-          </div>
-
           <!-- name -->
           <div class="field">
             <label class="label" :class="{ 'has-text-danger': hasError('name') }" style="font-weight: bold; text-transform: uppercase;">Your Name</label>
             <input type="text" class="input" v-model="submission.name" @input="saveDraftAndRevalidate">
           </div>
 
+          <!-- preferred pronouns -->
+          <div class="field">
+            <label class="label" :class="{ 'has-text-danger': hasError('name') }" style="font-weight: bold; text-transform: uppercase;">Pronouns</label>
+
+            <div class="sublabel">
+              <div v-for="pronoun of pronouns" :key="pronoun.id" class="control is-flex" style="column-break-inside: avoid;">
+                <input type="radio" name="pronoun" :id="`pronoun-${pronoun.id}`" v-model="submission.pronoun" :value="pronoun.id" class="checkbox mb-3 mt-1">
+                <label class="label pl-2 pb-1 no-user-select" :for="`pronoun-${pronoun.id}`" style="cursor: pointer;">{{ pronoun.text }}</label>
+              </div>
+            </div>
+          </div>
+
           <!-- title -->
           <div class="field">
             <label class="label" :class="{ 'has-text-danger': hasError('title') }" style="font-weight: bold; text-transform: uppercase;">Your Title</label>
 
-            <div class="control is-flex">
+            <div v-for="title of creatorTitles" :key="title.id" class="control is-flex">
               <label style="cursor: pointer;">
-                <input type="radio" name="title" v-model="submission.title" value="author" class="checkbox mb-3 mt-1">
-                <span class="no-user-select ml-1">Author</span>
-              </label>
-            </div>
-
-            <div class="control is-flex">
-              <label style="cursor: pointer;">
-                <input type="radio" name="title" v-model="submission.title" value="illustrator" class="checkbox mb-3 mt-1">
-                <span class="no-user-select ml-1">Illustrator</span>
-              </label>
-            </div>
-
-            <div class="control is-flex">
-              <label style="cursor: pointer;">
-                <input type="radio" name="title" v-model="submission.title" value="author-illustrator" class="checkbox mb-3 mt-1">
-                <span class="no-user-select ml-1">Author/Illustrator</span>
+                <input type="radio" name="title" v-model="submission.title" :value="title.id" class="checkbox mb-3 mt-1">
+                <span class="no-user-select ml-1">{{ title.text }}</span>
               </label>
             </div>
 
@@ -242,20 +175,9 @@ export default {
             <label class="label" :class="{ 'has-text-danger': hasError('gender') }" style="font-weight: bold; text-transform: uppercase;">Gender</label>
 
             <div class="sublabel tablet-columns-2">
-              <div v-for="(gender, key) of genderOptions" :key="key" class="control is-flex" style="column-break-inside: avoid;">
-                <input type="radio" name="gender" :id="`gender-${key}`" v-model="submission.gender" :value="key" class="checkbox mb-3 mt-1">
-                <label class="label pl-2 pb-1 no-user-select" :for="`gender-${key}`" style="cursor: pointer;">{{ gender }}</label>
-              </div>
-            </div>
-          </div>
-
-          <!-- identity -->
-          <div class="field">
-            <label class="label" :class="{ 'has-text-danger': hasError('identities') }" style="font-weight: bold; text-transform: uppercase;">Identity</label>
-            <div class="sublabel tablet-columns-2">
-              <div v-for="identity of identityOptions" :key="identity.id" class="control is-flex" style="column-break-inside: avoid;">
-                <input v-model="submission.identities[identity.id]" :id="`identity-${identity.id}`" :false-value="null" type="checkbox" class="checkbox mb-3 mt-1" @input="saveDraftAndRevalidate">
-                <label class="label pl-2 pb-1 no-user-select" :for="`identity-${identity.id}`" style="cursor: pointer;">{{ identity.tag }}</label>
+              <div v-for="gender of genders" :key="gender.id" class="control is-flex" style="column-break-inside: avoid;">
+                <input type="radio" name="gender" :id="`gender-${gender.id}`" v-model="submission.gender" :value="gender.id" class="checkbox mb-3 mt-1">
+                <label class="label pl-2 pb-1 no-user-select" :for="`gender-${gender.id}`" style="cursor: pointer;">{{ gender.text }}</label>
               </div>
             </div>
           </div>
@@ -328,10 +250,6 @@ export default {
   cursor: pointer;
 }
 
-.sublabel .label {
-  font-size: 14px;
-}
-
 .basic-information > .field {
   margin-bottom: 30px;
 }
@@ -339,14 +257,6 @@ export default {
 .label {
   font-size: 18px;
   font-weight: normal;
-}
-
-.tablet-columns-2 {
-  column-count: 1;
-
-  @include from($tablet) {
-    column-count: 2;
-  }
 }
 
 .w-100 {

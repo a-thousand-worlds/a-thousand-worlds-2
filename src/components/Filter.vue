@@ -1,5 +1,6 @@
 <script>
 import * as slugify from '@sindresorhus/slugify'
+import specialFilters from '@/store/constants/special-filters'
 
 export default {
   props: {
@@ -10,6 +11,9 @@ export default {
     }
   },
   computed: {
+    specialFilters() {
+      return specialFilters[this.type]
+    },
     filters() {
       return Object.values(this.$store.state[this.type]?.filters || {})
     },
@@ -41,14 +45,17 @@ export default {
         ? { marginLeft: '6px', top: '11px' }
         : null
     },
-    toggleFilter(fid) {
+    toggleFilter(filter) {
+      const fid = filter.id
       this.$store.commit(`${this.type}/toggleFilter`, fid)
       const tags = this.$store.state.tags[this.type].data
+      // handle hardcoded special filters
+      const tagLabel = (this.specialFilters?.find(({ id }) => id === fid) || tags[fid]).tag
       const filters = this.$store.state[this.type].filters
       this.$router.replace({
         name: this.routerType,
         query: filters.length > 0 ? {
-          filters: filters.map(fid => slugify(tags[fid].tag)).join(',')
+          filters: filters.map(fid => slugify(tagLabel)).join(',')
         } : null
       })
     },
@@ -66,11 +73,21 @@ export default {
 <template>
   <aside v-if="tags.length" class="menu mb-5">
     <ul class="menu-list submenu">
-      <li v-for="filter in tags" :key="filter.id" @click="toggleFilter(filter.id)">
+
+      <!-- special filters -->
+      <li v-for="filter in specialFilters" :key="filter.id" @click="toggleFilter(filter)">
+        <button :class="{ active: isFiltered(filter)}" class="pb-2" style="padding-left: 2px;">
+          <span style="display: inline-block;" :innerHTML="formatTag(filter.tag)" />
+          <span v-if="isFiltered(filter.id)" class="remove-tag" :style="selectedIconStyle(filter.tag)">{{ '—' }}</span></button>
+      </li>
+
+      <!-- filters -->
+      <li v-for="filter in tags" :key="filter.id" @click="toggleFilter(filter)">
         <button v-if="filter.showOnFront" :class="{ active: isFiltered(filter.id)}" class="pb-2" style="padding-left: 2px;">
           <span style="display: inline-block;" :innerHTML="formatTag(filter.tag)" />
           <span v-if="isFiltered(filter.id)" class="remove-tag" :style="selectedIconStyle(filter.tag)">{{ '—' }}</span></button>
       </li>
+
     </ul>
     <button v-if="filters.length > 0" class="button is-rounded is-primary" @click.prevent="resetFilters">Reset Filter</button>
   </aside>

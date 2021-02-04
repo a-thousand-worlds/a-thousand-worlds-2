@@ -51,7 +51,7 @@ export default {
     },
     toggleBookmarks() {
       if (!this.$iam('authorized')) {
-        this.$router.push({ name: 'LogIn' })
+        this.$router.push({ name: 'Login' })
         return
       }
       const state = this.$store.state.ui.bookmarksOpen
@@ -62,50 +62,48 @@ export default {
 </script>
 
 <template>
-  <div>
-    <!-- <button class="button is-rounded is-small mt-10" @click.prevent="resetFilters">Reset Filter</button> -->
 
-    <section class="mobile-bottom-nav has-text-centered is-uppercase">
-      <ul class="menu-list my-10">
+  <!-- place bookmarksOpen class on container to allow router-link-active to be disabled for all links. -->
+  <section class="mobile-bottom-nav has-text-centered is-uppercase" :class="{ bookmarksOpen: $store.state.ui.bookmarksOpen }">
+    <ul class="menu-list my-10">
 
-        <li v-if="showFilters && !$store.state.ui.bookmarksOpen" style="position: relative;">
-          <select @change="setFilters" multiple style="position: absolute; overflow: hidden; left: 0: top: 0; overflow: hidden; min-width: 60px; max-width: 100px; width: 70px; height: 100%; font-size: 20px; cursor: pointer; opacity: 0; text-transform: uppercase;">
-            <!-- <option @click="resetFilters" value="_reset">Reset Filter</option> -->
-            <optgroup disabled hidden />
-            <option v-for="tag in tags" :key="tag.id" :selected="isFiltered(tag.id)" :value="tag.id">{{ tag.tag }}</option>
-          </select>
-          <FilterIcon />
-          <div class="icon-label mt-2">Filter</div>
-          <span v-if="filters?.length > 0" class="badge">{{ filters?.length }}</span>
-        </li>
+      <li v-if="showFilters && !$store.state.ui.bookmarksOpen" style="position: relative;">
+        <select @change="setFilters" multiple style="position: absolute; overflow: hidden; left: 0: top: 0; overflow: hidden; min-width: 60px; max-width: 100px; width: 70px; height: 100%; font-size: 20px; cursor: pointer; opacity: 0; text-transform: uppercase;">
+          <!-- <option @click="resetFilters" value="_reset">Reset Filter</option> -->
+          <optgroup disabled hidden />
+          <option v-for="tag in tags" :key="tag.id" :selected="isFiltered(tag.id)" :value="tag.id">{{ tag.tag }}</option>
+        </select>
+        <FilterIcon />
+        <label class="mt-2">Filter</label>
+        <span v-if="filters?.length > 0" class="badge">{{ filters?.length }}</span>
+      </li>
 
-        <li>
-          <router-link :to="{ name: 'Home' }">
-            <BooksIcon />
-            <div class="icon-label mt-2">Books</div>
-          </router-link>
-        </li>
+      <li>
+        <router-link :to="{ name: 'Home' }" :class="{ 'router-link-active': $route.name === 'PersonDetail' }">
+          <BooksIcon />
+          <label class="mt-2">Books</label>
+        </router-link>
+      </li>
 
-        <li>
-          <router-link :to="{ name: 'Bundles' }">
-            <BundlesIcon />
-            <div class="icon-label mt-2">Bundles</div>
-          </router-link>
-        </li>
+      <li>
+        <router-link :to="{ name: 'Bundles' }" :class="{ 'router-link-active': $route.name === 'PersonDetail' }">
+          <BundlesIcon />
+          <label class="mt-2">Bundles</label>
+        </router-link>
+      </li>
 
-        <li>
-          <a class="bookmark-toggler" href="#" @click.prevent="toggleBookmarks">
-            <BookmarkIcon class="fill-secondary" />
-            <div class="icon-label mt-2">Saved Items</div>
-            <span v-if="$iam('authorized')" class="badge">{{ bookmarksCount }}</span>
-          </a>
-        </li>
+      <li>
+        <a class="bookmarks-toggler" href="#" @click.prevent="toggleBookmarks" :class="{ 'router-link-active': $store.state.ui.bookmarksOpen }">
+          <BookmarkIcon class="fill-secondary" />
+          <label class="mt-2">Saved Items</label>
+          <span v-if="$iam('authorized')" class="badge">{{ bookmarksCount }}</span>
+        </a>
+      </li>
 
-      </ul>
+    </ul>
 
-    </section>
+  </section>
 
-  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -153,7 +151,7 @@ export default {
 
   .menu-list {
 
-    // margin: auto better than justify-content: center here
+    // margin: auto is better than justify-content: center here
     // https://stackoverflow.com/a/34455253/480608
     margin: auto;
 
@@ -164,13 +162,26 @@ export default {
       max-width: 100px;
     }
 
-    a:hover, a:active, a:focus {
+    a, a:hover, a:active, a:focus {
       background-color: transparent;
+      color: black;
     }
+
+    label {
+      display: block;
+    }
+  }
+
+  // do not highlight non-bookmark links when bookmarks are open
+  // add .menu-list for greater specificity than default .menu-list a
+  // must go after .menu-list for Saved Items to have more specificity than default .menu-list a
+  &:not(.bookmarksOpen) .menu-list .router-link-active,
+  a.bookmarks-toggler.router-link-active {
+    @include primary(color)
   }
 }
 
-.bookmark-toggler {
+.bookmarks-toggler {
   position: relative;
 }
 

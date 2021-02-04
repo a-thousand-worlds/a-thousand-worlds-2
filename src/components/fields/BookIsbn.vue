@@ -1,6 +1,6 @@
 <script>
 
-import { metadataByISBN } from '@/utils'
+import metadataByISBN from '@/util/metadataByISBN'
 
 // const isValidIsbn = code => typeof code === 'string' && (code.length === 10 || code.length === 13)
 

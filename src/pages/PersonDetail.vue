@@ -1,7 +1,10 @@
 <script>
 import * as slugify from '@sindresorhus/slugify'
+import creatorTitles from '@/store/constants/creatorTitles'
 import BookListView from '@/components/BookListView'
 import Filter from '@/components/Filter'
+import Loader from '@/components/Loader'
+import NotFound from '@/pages/NotFound'
 import PrevNext from '@/components/PrevNext'
 import Tag from '@/components/Tag'
 
@@ -9,6 +12,8 @@ export default {
   components: {
     BookListView,
     Filter,
+    Loader,
+    NotFound,
     PrevNext,
     Tag,
   },
@@ -22,7 +27,7 @@ export default {
   },
   data() {
     return {
-      pageUrl: window.location.href,
+      creatorTitles,
     }
   },
   computed: {
@@ -41,32 +46,29 @@ export default {
         Object.keys(book.creators || {}).includes(this.person.id)
       ) : []
     },
-    isAuthor() {
-      return this.person ? this.person.role === 'author' : true
-    },
     name() {
       return this.$route.params.name
     },
     person() {
-      return this.$store.getters['people/findBy']('name', name => slugify(name) === this.name)
+      const person = this.$store.getters['people/findBy']('name', name => slugify(name) === this.name)
+      this.$store.dispatch('debug', { person })
+      return person
     },
     tags() {
       const peopleTags = this.$store.state.tags.people.data || {}
       return Object.keys(this.person?.identities || [])
         .map(id => peopleTags[id])
         .filter(x => x)
-    }
-  },
-  watch: {
-    '$store.state.people.data'(next, prev) {
-      if (next && Object.keys(next).length && !next[this.person.id]) {
-        // person not found! drop to 404
-        // timeout to make router finish any his current work, if doing any
-        setTimeout(() => {
-          this.$router.push('/404')
-        }, 0)
+    },
+    /** Get the person's creatorTitle. */
+    title() {
+      if (!this.person) return null
+      const title = this.creatorTitles.find(creatorTitle => creatorTitle.id === this.person.title)
+      if (!title) {
+        console.warn(`Missing titles. Defaulting to Author.`)
       }
-    }
+      return title || this.creatorTitles.find(creatorTitle => creatorTitle.text === 'Author')
+    },
   },
 }
 
@@ -78,6 +80,9 @@ export default {
     <Filter type="people" />
   </teleport>
 
+  <div v-if="!$store.state.people.loaded" class="my-50">
+    <Loader />
+  </div>
   <div v-if="person" class="mx-5" :data-person-id="person.id">
 
     <div class="wide-page">
@@ -97,7 +102,7 @@ export default {
           </div>
 
           <div class="title-container divider-30">
-            <div class="name">{{ isAuthor ? 'Author' : 'Illustrator' }}</div>
+            <div class="name">{{ title.text }}</div>
             <h1 class="title mt-5">{{ person.name }}</h1>
             <div v-if="tags" class="tags mt-20">
               <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="people" />
@@ -115,6 +120,11 @@ export default {
       </div>
 
     </div>
+  </div>
+
+  <!-- no person -->
+  <div v-else>
+    <NotFound />
   </div>
 
   <!-- Add a bottom spacer so that fixed position footer clears content when scrolled to the bottom. -->
@@ -207,5 +217,12 @@ export default {
     border-bottom: none;
     padding-bottom: 0.5rem;
   }
+}
+</style>
+
+<style lang="scss">
+.person-bio.ck.ck-editor__editable_inline>:first-child {
+  margin-top: 0px;
+  margin-left: 0px;
 }
 </style>

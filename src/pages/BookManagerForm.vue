@@ -1,7 +1,7 @@
 <script>
 
-// import dayjs from 'dayjs'
-import { coverImageByISBN, metadataByISBN } from '@/utils'
+import coverImageByISBN from '@/util/coverImageByISBN'
+import metadataByISBN from '@/util/metadataByISBN'
 import PersonField from '@/components/PersonField'
 
 export default {

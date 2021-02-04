@@ -143,13 +143,17 @@ export default {
 
               <!-- photo -->
               <td>
-                <PersonDetailLink :person="person">
+                <PersonDetailLink :person="person" edit>
                   <StaticCoverImage :item="person" style="width: 150px; min-width: 50px; min-height: auto;" />
                 </PersonDetailLink>
               </td>
 
               <!-- name -->
-              <td>{{ person.name }}</td>
+              <td>
+                <PersonDetailLink :person="person" edit>
+                  {{ person.name }}
+                </PersonDetailLink>
+              </td>
 
               <!-- title -->
               <td>{{ person.title || person.role }}</td>

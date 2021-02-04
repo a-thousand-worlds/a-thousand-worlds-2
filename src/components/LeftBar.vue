@@ -2,6 +2,11 @@
 import MainMenu from '@/components/MainMenu.vue'
 import Logo from '../assets/logo.svg'
 
+const menuOffset = -100
+const menuRate = 1.2
+const fadeStart = 60
+const fadeEnd = 200
+
 export default {
   components: {
     Logo,
@@ -12,8 +17,8 @@ export default {
   },
   data() {
     return {
-      menuOffset: this.animateLogo ? -50 : 0,
-      opacity: 0,
+      menuOffset: this.animateLogo ? menuOffset * menuRate : 0,
+      opacity: this.animateLogo ? 0 : 1,
     }
   },
   watch: {
@@ -31,8 +36,8 @@ export default {
     // once the banner is scrolled completely out of view, hide the welcome banner
     onScroll() {
       if (this.animateLogo) {
-        this.menuOffset = Math.min(window.scrollY - 100, 0) / 2
-        this.opacity = Math.min(Math.max(0, window.scrollY - 80), 90) / 90
+        this.menuOffset = Math.min((window.scrollY + menuOffset) * menuRate, 0)
+        this.opacity = Math.min(Math.max(0, window.scrollY - fadeStart), fadeEnd - fadeStart) / (fadeEnd - fadeStart)
       }
       else {
         this.menuOffset = 0

@@ -7,11 +7,15 @@ export default {
     book: {
       required: true,
     },
+    // if true, links to BookEdit
+    edit: {
+      type: Boolean,
+    }
   },
   computed: {
     route() {
       return {
-        name: 'BookDetail',
+        name: this.edit ? 'BookEdit' : 'BookDetail',
         params: {
           isbn: this.book.isbn,
           slug: slugify(this.book.title.replace(/'/g, ''))

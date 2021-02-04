@@ -239,7 +239,7 @@ export default {
           </div>
           <div id="dropdown-menu" class="dropdown-menu" :class="{ 'is-danger': hasError('role') }" role="menu">
             <div class="dropdown-content">
-              <a v-for="userRole in $allowedInviteeRoles" :key="userRole" class="dropdown-item is-capitalized" :class="{ 'is-active': role === userRole }" @click.prevent="setInviteRole(userRole)">
+              <a v-for="userRole in $allowedInviteeRoles()" :key="userRole" class="dropdown-item is-capitalized" :class="{ 'is-active': role === userRole }" @click.prevent="setInviteRole(userRole)">
                 {{ userRole }}
               </a>
             </div>

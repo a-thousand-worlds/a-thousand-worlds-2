@@ -1,4 +1,5 @@
 import * as slugify from '@sindresorhus/slugify'
+import specialFilters from '@/store/constants/special-filters'
 
 const module = () => ({
   state: {
@@ -25,8 +26,11 @@ const module = () => ({
 
       return items.filter(item =>
         state.filters.every(tag => {
-          const list = Array.isArray(item[tagName]) ? item[tagName] :
-            typeof item[tagName] === 'object' ? Object.keys(item[tagName]) :
+          // handle hardcoded special filters
+          const key = specialFilters.people.find(({ id }) => id === tag) ? 'role' : tagName
+          const value = item[key]
+          const list = Array.isArray(value) || typeof value === 'string' ? value :
+            typeof value === 'object' ? Object.keys(value) :
             []
           return list.includes(tag)
         })

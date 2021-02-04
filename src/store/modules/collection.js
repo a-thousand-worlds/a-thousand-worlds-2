@@ -1,6 +1,13 @@
 import firebase from '@/firebase'
-import { firebaseGet } from '@/utils'
 import { get, set } from '@/util/get-set'
+
+/** Gets the value of a Firebase reference. */
+export const firebaseGet = refString => new Promise((resolve, reject) => {
+  const ref = firebase.database().ref(refString)
+  ref.once('value', snap => {
+    resolve(snap.val())
+  })
+})
 
 /** Wraps a Firebase collection in vuex module. */
 const collectionModule = name => ({
@@ -103,11 +110,11 @@ const collectionModule = name => ({
       await ref.remove()
     },
     /** Updates a record in the collection in Firebase. */
-    async update(context, { path, values }) {
+    async update(context, { path, value }) {
       if (!path) throw new Error('path required')
-      if (values === undefined) throw new Error('values may not be undefined')
+      if (value === undefined) throw new Error('value may not be undefined')
       const ref = firebase.database().ref(`${name}/${path}`)
-      await ref.update(values)
+      await ref.update(value)
     },
   },
 })

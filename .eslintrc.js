@@ -29,7 +29,7 @@ module.exports = {
     // use fork to allow MemberExpressions
     // https://github.com/jfmengels/eslint-plugin-fp/pull/54
     "fp/no-mutating-methods": [2, {
-      "allowedObjects": ["$router", "_"]
+      "allowedObjects": ["$router", "router", "_"]
     }]
 
   }

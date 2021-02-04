@@ -8,4 +8,5 @@ export const get = (obj, path) => !path || path === '/'
   : _.get(obj, normalizePath(path))
 
 /** _.set with support for "/" */
-export const set = (obj, path) => _.set(obj, normalizePath(path))
+export const set = (obj, path, value) =>
+  _.set(obj, normalizePath(path), value)

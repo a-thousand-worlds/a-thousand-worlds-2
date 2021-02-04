@@ -90,4 +90,11 @@ export default {
     }
   }
 }
+
+.masonry-item {
+  // limit to max scaled width of actual cover image
+  max-width: 400px;
+  margin: 0 auto 20px auto;
+}
+
 </style>

@@ -172,8 +172,14 @@ button.is-selected {
 .stroke-primary { @include primary(stroke); }
 .stroke-secondary { @include secondary(stroke); }
 
-a, a.is-primary, .is-primary-text { @include primary(color); }
-a.is-secondary, .is-secondary-text, { @include secondary(color); }
+a, a.is-primary, i.is-primary, .is-primary-text { @include primary(color); }
+a.primary-hover {
+  color: black;
+  &:hover {
+    @include primary(color);
+  }
+}
+a.is-secondary, i.is-secondary, .is-secondary-text, { @include secondary(color); }
 .bg-primary, .button.is-primary:not(.is-outlined) {
   @include primary(background-color);
   color: $primary-invert !important; // override a.is-primary since primary mixin increases specificity
@@ -236,5 +242,20 @@ a.button.is-secondary.is-outlined:hover,
 // increase specificy above bulma table
 .table.table.table td {
   vertical-align: middle;
+}
+
+.tablet-columns-2 {
+  column-count: 1;
+
+  @include from($tablet) {
+    column-count: 2;
+  }
+}
+
+.sublabel .label {
+  font-size: 14px;
+  font-weight: normal;
+  user-select: none;
+  cursor: pointer;
 }
 

@@ -7,12 +7,14 @@ export default {
     person: {
       required: true,
     },
+    // if true, links to BookEdit
+    edit: Boolean,
   },
   computed: {
     route() {
       if (!this.person.name) return { name: 'People' }
       return {
-        name: 'PersonDetail',
+        name: this.edit ? 'PersonEdit' : 'PersonDetail',
         params: {
           name: slugify(this.person.name)
         }

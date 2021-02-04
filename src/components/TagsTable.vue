@@ -1,5 +1,6 @@
 <script>
 import { v4 as uid } from 'uuid'
+import specialFilters from '@/store/constants/special-filters'
 
 export default {
   name: 'TagsTable',
@@ -17,9 +18,12 @@ export default {
     }
   },
   computed: {
+    specialFilters() {
+      return specialFilters[this.type]
+    },
     tags() {
       return this.$store.getters[`tags/${this.type}/listSorted`]()
-    }
+    },
   },
   watch: {
     type(next) {
@@ -84,6 +88,21 @@ export default {
       </tr>
     </thead>
     <tbody>
+
+      <!-- special filters -->
+      <tr v-for="filter of specialFilters" :key="filter.id">
+        <td>
+          <div class="field">
+            <div class="control" style="opacity: 0.5;">{{ filter.tag }}</div>
+          </div>
+        </td>
+        <td />
+        <td />
+        <td />
+        <td />
+      </tr>
+
+      <!-- filters -->
       <tr v-for="tag of tags" :key="tag.id">
 
         <!-- tag -->

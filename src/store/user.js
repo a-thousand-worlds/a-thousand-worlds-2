@@ -3,6 +3,7 @@ import _ from 'lodash'
 import firebase from '@/firebase'
 import mergeOne from '@/util/mergeOne'
 import collection from '@/store/modules/collection'
+import router from '../router'
 
 function defaultProfile(user, profile = {}) {
   const def = {
@@ -62,15 +63,24 @@ const module = mergeOne(usersModule, {
       return firebase.auth().signInWithEmailAndPassword(data.email, data.password)
     },
 
-    async signup({ commit, dispatch, rootState }, { code, email, name, affiliations, password }) {
+    logout(ctx) {
+      firebase.auth().signOut()
+      ctx.commit('setUser', null)
+      ctx.commit('ui/setLastVisited', new Date(), { root: true })
+      router.push({ name: 'Login' })
+    },
+
+    async signup({ commit, dispatch, rootState }, { code, email, name, identities, photo, affiliations, password }) {
       const { user } = await firebase.auth().createUserWithEmailAndPassword(email, password)
 
       commit('setUser', auth2user(user))
       // save profile to user record
       await dispatch('saveProfile', {
-        email,
         name,
+        email,
         ...code ? { code } : null,
+        ...identities ? { identities } : null,
+        ...photo ? { photo } : null,
         ...affiliations?.organization ? { affiliations } : null,
       })
 
@@ -103,7 +113,7 @@ const module = mergeOne(usersModule, {
       const ref = firebase.database().ref(`users/${ctx.state.user.uid}/profile`)
       await ref.update(values)
       ctx.commit('setProfile', {
-        ...ctx.user.profile,
+        ...ctx.state.user.profile,
         ...values,
       })
     },

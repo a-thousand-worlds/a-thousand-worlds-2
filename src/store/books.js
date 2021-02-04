@@ -6,7 +6,7 @@ import shuffleable from '@/store/modules/shuffleable'
 const moduleFilterable = filterable()
 const module = mergeOne(
   managed('books'),
-  filterable(),
+  moduleFilterable,
   shuffleable(),
   {
     getters: {

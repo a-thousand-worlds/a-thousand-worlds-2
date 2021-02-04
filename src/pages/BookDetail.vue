@@ -33,9 +33,11 @@ export default {
   },
   computed: {
     book() {
-      return this.$store.state.books.loaded
+      const book = this.$store.state.books.loaded
         ? Object.values(this.$store.state.books.data).find(book => book.isbn === this.isbn)
         : null
+      this.$store.dispatch('debug', { book })
+      return book
     },
     isbn() {
       return this.$route.params.isbn
