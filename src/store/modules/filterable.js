@@ -25,14 +25,14 @@ const module = () => ({
       if (!Array.isArray(state.filters) || state.filters.length === 0) return items
 
       return items.filter(item =>
-        state.filters.every(tag => {
+        state.filters.every(filter => {
           // handle hardcoded special filters
-          const key = specialFilters.people.find(({ id }) => id === tag) ? 'role' : tagName
+          const key = specialFilters.people.some(({ id }) => id === filter) ? 'title' : tagName
           const value = item[key]
           const list = Array.isArray(value) || typeof value === 'string' ? value :
             typeof value === 'object' ? Object.keys(value) :
             []
-          return list.includes(tag)
+          return list.includes(filter)
         })
       )
     }
