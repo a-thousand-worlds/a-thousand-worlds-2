@@ -406,7 +406,7 @@ export default {
           </div>
 
           <!-- identities -->
-          <div v-if="isSignup || isEditProfile" class="field">
+          <div v-if="isContributor && (isSignup || isEditProfile)" class="field">
             <label class="label" :class="{ 'has-text-danger': hasError('identities') }" style="font-weight: bold; text-transform: uppercase;">Identity</label>
             <div class="sublabel tablet-columns-2">
               <div v-for="identity of peopleTags" :key="identity.id" class="control is-flex" style="column-break-inside: avoid;">
@@ -416,7 +416,7 @@ export default {
             </div>
           </div>
 
-          <div v-if="(isSignup && isContributor) || isEditProfile" class="field">
+          <div v-if="isContributor && (isSignup || isEditProfile)" class="field">
             <label class="label is-uppercase" :class="{ error: hasError('engagements') }">How do you engage with books?</label>
             <div class="sublabel tablet-columns-2">
               <div v-for="engagement of engagements" :key="engagement.id" class="control columns-2">
