@@ -27,11 +27,14 @@ export default {
     }
   },
   computed: {
+    draftPerson() {
+      return this.$store.state.user.user?.profile.draftPerson
+    },
     name() {
       return this.$store.state.user.user?.profile.name
     },
-    draftPerson() {
-      return this.$store.state.user.user?.profile.draftPerson
+    peopleTags() {
+      return this.$store.getters[`tags/people/listSorted`]()
     },
     person() {
       const peopleSubmissions = this.$store.state.submissions.people.data || {}
@@ -170,6 +173,21 @@ export default {
 
           </div>
 
+          <!-- identities -->
+          <div class="field">
+            <label class="label">
+              <b :class="{ 'has-text-danger': hasError('identities') }" style="text-transform: uppercase;">Identity</b>
+              <div style="font-weight: normal;">Please select all that apply.</div>
+            </label>
+
+            <div class="sublabel tablet-columns-2">
+              <div v-for="identity of peopleTags" :key="identity.id" class="control is-flex" style="column-break-inside: avoid;">
+                <input v-model="submission.identities[identity.id]" :id="`identity-${identity.id}`" :false-value="null" type="checkbox" class="checkbox mb-3 mt-1" @input="saveDraftAndRevalidate">
+                <label class="label pl-2 pb-1" :for="`identity-${identity.id}`" style="cursor: pointer;">{{ identity.tag }}</label>
+              </div>
+            </div>
+          </div>
+
           <!-- gender -->
           <div class="field">
             <label class="label" :class="{ 'has-text-danger': hasError('gender') }" style="font-weight: bold; text-transform: uppercase;">Gender</label>
@@ -255,7 +273,6 @@ export default {
 }
 
 .label {
-  font-size: 18px;
   font-weight: normal;
 }
 
