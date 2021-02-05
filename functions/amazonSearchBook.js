@@ -1,10 +1,22 @@
-// const _ = require('lodash')
 const express = require('express')
 const puppeteer = require('puppeteer')
 const cheerio = require('cheerio')
 
+// amazon uses '+' char to separate keywords in url, not %20 encoded 'space'
 const amazonSearchUrl = keywords =>
-  `https://www.amazon.com/s?k=${keywords.replace(/ /g, '+')}&i=stripbooks&s=relevanceexprank&unfiltered=1&ref=sr_adv_b`
+  `https://www.amazon.com/s?k=${keywords.split(' ').map(el => encodeURIComponent(el)).join('+')}&i=stripbooks&s=relevanceexprank&unfiltered=1&ref=sr_adv_b`
+
+// search book url if  puppeteer element contains it
+const getBookUrl = async element => {
+  const prop = await element.getProperty('innerHTML')
+  const html = await prop.jsonValue()
+  const $ = cheerio.load(html)
+  const $span = $('span.rush-component')
+  if (!$span) return null
+  const $a = $('a.a-link-normal', $span)
+  if (!$a) return null
+  return $a.attr('href')
+}
 
 module.exports = () => {
   const app = express()
@@ -29,34 +41,17 @@ module.exports = () => {
       await page.goto(amazonSearchUrl(keywords), {
         waitUntil: 'networkidle2'
       })
-      // const pageContent = await page.content()
       const widgets = await page.$$('.celwidget')
 
-      const urls = []
-
+      let bookUrl = null
       if (Array.isArray(widgets)) {
-        // `for of` to use await
-        for (const wgt of widgets) {
-          const wgtp = await wgt.getProperty('innerHTML')
-          const wgtv = await wgtp.jsonValue()
-          const wgtHtml = wgtv.toLowerCase()
-          const $ = cheerio.load(wgtv)
-          const $span = $('span.rush-component')
-          if ($span) {
-            const $a = $('a.a-link-normal', $span)
-            if ($a) {
-              const aUrl = $a.attr('href')
-              if (aUrl)
-                urls.push(aUrl)
-            }
-          }
-        }
+        const urls = await Promise.all(widgets.map(wgt => getBookUrl(wgt)))
+        bookUrl = urls.filter(url => !!url)[0]
       }
 
-      if (urls.length) {
-        // going to 1st books page
-        console.log('checking book page', urls[0])
-        await page.goto(`https://amazon.com${urls[0]}`, {
+      if (bookUrl) {
+        console.log('checking book page', bookUrl)
+        await page.goto(`https://amazon.com${bookUrl}`, {
           waitUntil: 'networkidle2'
         })
 
@@ -67,40 +62,34 @@ module.exports = () => {
 
         let isbn10 = null
         let isbn13 = null
-        let thumb = null
-        // doing for loop, cuz $attributes is not a real array, but has similar way of iteration
-        for (let i = 0; i< $attributes.length; i++) {
-          let $at = $attributes[`${i}`]
-          const $lbl = $book('.rpi-attribute-label',$at)
-          const $val = $book('.rpi-attribute-value',$at)
-          if ($lbl.text().trim() === 'ISBN-10')
-            isbn10 = $val.text().trim()
-          if ($lbl.text().trim() === 'ISBN-13')
-            isbn13 = $val.text().trim()
-        }
+
+        $attributes.each((i, $attribute) => {
+          const $lbl = $book('.rpi-attribute-label', $attribute)
+          const $val = $book('.rpi-attribute-value', $attribute)
+          if ($lbl.text().trim() === 'ISBN-10') isbn10 = $val.text().trim()
+          if ($lbl.text().trim() === 'ISBN-13') isbn13 = $val.text().trim()
+        })
 
         if (isbn10 || isbn13) {
-          const $img = $book('#img-canvas img')
-          thumb = $img.attr('src')
           result = {
+            title: $book('#productTitle').text().trim(),
+            url: `https://amazon.com${bookUrl.split('?')[0]}`,
             isbn: isbn10 || isbn13,
             isbn10: isbn10,
             isbn13: isbn13,
-            thumbnail: thumb
+            thumbnail: $book('#img-canvas img').attr('src')
           }
         }
       }
     }
     catch (err) {
-      console.log('error happens', err)
+      console.error('error on amazon scraping', err)
       result = null
     }
     await browser.close()
     console.log('search result', result)
     res.json(result)
-
   })
 
   return app
-
 }
