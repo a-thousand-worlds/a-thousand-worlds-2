@@ -1,6 +1,4 @@
 <script>
-// Jimp required if dimensions checks needs to be done on file upload
-// import Jimp from 'jimp'
 
 export default {
   props: {
@@ -25,22 +23,15 @@ export default {
         const photo = {
           base64: reader.result
         }
-        // any additional checks on file size or type, using file.size, file.type
-        // can be done here
-        // if additional checks on file dimensions required - jimp is required
-        /*
-        Jimp.read(reader.result, (err, img) => {
-          if (err) {
-            console.error('jimp error', err)
-          }
-          if (img) {
-            if (img.bitmap.width !== img.bitmap.height) {
-              alert('recommended to use square images')
-            }
-            this.saveDraftAndRevalidate()
-          }
-        })
-        */
+
+        // load width and height
+        const image = new Image()
+        image.onload = function() {
+          photo.width = this.width
+          photo.height = this.height
+        }
+        image.src = reader.result
+
         this.$emit('update:modelValue', photo)
       }
       reader.onerror = err => {
@@ -86,8 +77,8 @@ export default {
         <a :class="{ 'is-invisible': !modelValue }" @click.prevent="clearPhoto">Remove photo</a>
       </div>
 
-      <div class="is-flex is-justify-content-center" :style="!modelValue ? { marginTop: '-1.2em' } : null">
-        <p style="position: absolute;">Minimum size: 800x800px</p>
+      <div v-if="!modelValue || modelValue.width < 750" class="is-flex is-justify-content-center" :style="!modelValue ? { marginTop: '-1.2em' } : null">
+        <p :class="{ 'has-text-danger': modelValue?.width < 750 }" style="position: absolute;">Minimum size: 800x800px</p>
       </div>
     </template>
 
