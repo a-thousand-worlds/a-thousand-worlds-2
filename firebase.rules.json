@@ -2,17 +2,20 @@
 {
   "rules": {
     "users": {
-      ".read": "root.child('users/'+auth.uid+'/roles/owner').val() === true",
+      ".read": "auth && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )",
       ".write": "root.child('users/'+auth.uid+'/roles/owner').val() === true",
       "$uid": {
-        ".read": true,
-          // TODO: secure
-        ".write": "$uid === auth.uid"
+        ".read": "auth && ($uid === auth.uid || root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true)",
+        ".write": "$uid === auth.uid",
+        "roles": {
+          ".read": "$uid === auth.uid",
+          ".write": "auth && root.child('users/'+auth.uid+'/roles/owner').val() === true"
+        }
       }
     },
     "books": {
       ".read": true,
-      ".write": "root.child('users/'+auth.uid+'/roles/owner').val() === true"
+      ".write": "auth && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )"
     },
     "content": {
       ".read": true,
@@ -20,25 +23,25 @@
     },
     "invites": {
       ".read": true,
-      ".write": "root.child('users/'+auth.uid+'/roles/owner').val() === true",
+      ".write": "auth && ($uid === auth.uid || root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true || root.child('users/'+auth.uid+'/roles/creator').val() === true)",
       "$code": {
         "used": {
           ".read": true,
-            // TODO: secure
+            // TODO: think more
           ".write": true
         }
       }
     },
     "people": {
       ".read": true,
-      ".write": "root.child('users/'+auth.uid+'/roles/owner').val() === true"
+      ".write": "auth && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )"
     },
     "tags": {
       ".read": true,
       ".write": "root.child('users/'+auth.uid+'/roles/owner').val() === true"
     },
     "submits": {
-      ".read": true,
+      ".read": "auth && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )",
       ".write": true
     }
   }
