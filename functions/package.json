@@ -5,6 +5,7 @@
     "axios": "^0.21.0",
     "bookcovers": "https://github.com/abrakadobr/bookcovers.git#dev",
     "cheerio": "^1.0.0-rc.5",
+    "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "firebase-admin": "^9.4.2",
