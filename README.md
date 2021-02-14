@@ -44,22 +44,27 @@
 
 Server must be restarted if `.env` changes
 
-```
+```sh
 npm run serve
 ```
 
 ### Lint and fix files
-```
+```sh
 npm run lint
 ```
 
 ### Run locally
-```
-npm run build && firebase emulators:start
+```sh
+# pull remote config down to be used by emulator
+firebase functions:config:get > functions/.runtimeconfig.json
+
+# build and run emulators
+npm run build
+firebase emulators:start
 ```
 
 ### Deploy
-```
+```sh
 npm run deploy
 ```
 
