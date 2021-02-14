@@ -31,7 +31,7 @@ const metadataByISBN = async isbn => {
   const d = dayjs(src.publishedDate)
   const ret = {
     authors: src.authors || [],
-    goodread: data.goodread || '',
+    goodreads: data.goodreads || '',
     illustrators: src.illustrators || [],
     isbn: data.isbn,
     publisher: src.publisher || '',

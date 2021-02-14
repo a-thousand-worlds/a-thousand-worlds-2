@@ -178,7 +178,7 @@ export default {
             <!-- goodreads -->
             <div class="is-flex">
               <b class="mr-1">goodreads</b>
-              <SimpleInput v-if="book" @update:modelValue="updateBook({ goodread: $event })" v-model="book.goodread" placeholder="No value" />
+              <SimpleInput v-if="book" @update:modelValue="updateBook({ goodreads: $event })" v-model="book.goodreads" placeholder="No value" />
             </div>
 
           </div>

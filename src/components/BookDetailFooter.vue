@@ -41,7 +41,7 @@ export default {
           <i class="fas fa-shopping-cart mr-1" /> INDIE BOOKSELLERS
         </button></a>
 
-        <a v-if="book.goodread" :href="`https://www.goodreads.com/book/show/${book.goodread}`" target="_blank"><button class="button is-rounded is-secondary mx-1 mr-20">
+        <a v-if="book.goodreads" :href="`https://www.goodreads.com/book/show/${book.goodreads}`" target="_blank"><button class="button is-rounded is-secondary mx-1 mr-20">
           <i class="fas fa-book-open mr-1" /> GOODREADS
         </button></a>
       </div>
