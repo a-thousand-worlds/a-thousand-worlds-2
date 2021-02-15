@@ -43,11 +43,11 @@ const module = mergeOne(usersModule, {
         state.nextPromise = null
       }
     },
-    setProfile: (ctx, p) => {
-      if (ctx.user) ctx.user.profile = p
+    setProfile: (state, profile) => {
+      if (state.user) state.user.profile = profile
     },
-    setRoles: (ctx, list) => {
-      if (ctx.user) ctx.user.roles = list
+    setRoles: (state, roles) => {
+      if (state.user) state.user.roles = roles
     }
   },
   actions: {
@@ -161,30 +161,37 @@ const module = mergeOne(usersModule, {
       await ctx.dispatch('saveProfile', profile)
     },
 
-    subscribe: store => {
+    subscribe: ctx => {
 
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
           // User is signed in.
           const u = auth2user(user)
           const userRef = firebase.database().ref(`users/${u.uid}`)
+
+          // subscribe to user
           userRef.on('value', snap => {
             const val = snap.val() || { profile: {}, roles: {} }
-            u.profile = defaultProfile(u, val.profile)
-            u.roles = val.roles || {}
-            if (!u.roles.authorized) {
-              u.roles.authorized = true
-            }
-            store.commit('setUser', u)
+            ctx.commit('setUser', {
+              ...u,
+              profile: defaultProfile(u, val.profile || {}),
+              roles: {
+                authorized: true,
+                ...val.roles
+              },
+            })
           })
+
+          // subscribe to profile
           const profileRef = firebase.database().ref(`users/${u.uid}/profile`)
           profileRef.on('value', snap => {
             const profile = defaultProfile(u, snap.val())
-            store.commit('setProfile', profile)
+            ctx.commit('setProfile', profile)
           })
+
         }
         else {
-          store.commit('setUser', null)
+          ctx.commit('setUser', null)
         }
       })
 

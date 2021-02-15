@@ -22,7 +22,7 @@ router.beforeEach((to, from, next) => {
     store.dispatch('user/next')
       .then(user => {
         store.commit('ui/setPageLoading', false)
-        if (access.reduce((acc, x) => store.state.user.user.roles[x] || acc, false)) next()
+        if (access.some(mixins.methods.$iam)) next()
         else next('/404')
       })
       .catch(err => {
@@ -34,7 +34,7 @@ router.beforeEach((to, from, next) => {
   // when a user signs up with an invite code, they are directed to the dashboard, but their role is updated asynchronously, to this logic may incorrectly trigger an authentication failure
   // do not redirect to 404 in this case since it breaks the signup process
   else {
-    // if (access.reduce((acc, x) => store.state.user.user.roles[x] || acc, false)) next()
+    // if (access.some(mixins.methods.$iam)) next()
     // else next('/404')
     next()
   }
