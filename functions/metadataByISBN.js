@@ -3,27 +3,27 @@ const axios = require('axios').default
 const express = require('express')
 const isbn = require('node-isbn')
 
-async function getGoodReadsBookIDByISBN(isbn) {
-  let res = null
+async function getGoodreadsBookIDByISBN(isbn) {
+
+  console.log(`Searching ID for "${isbn}"`)
+
   try {
-    res = await axios({
+    const { data: id } = await axios({
       url: `https://www.goodreads.com/book/isbn_to_id/`,
       method: 'get',
       params: {
         key: functions.config().goodreads.api_key,
-        isbn: isbn
+        isbn: isbn,
       },
       responseType: 'text',
     })
+    console.log(`  ID: ${id}`)
+    return id
   }
-  catch (e) {
-    console.error('axios error', e)
-    res = ''
+  catch (err) {
+    console.log(`Unable to find ID for ${isbn}.`, err.message)
+    return null
   }
-  if (!res || !res.data) {
-    return ''
-  }
-  return res.data || ''
 }
 
 function _isbn(code, provider) {
@@ -65,7 +65,7 @@ module.exports = () => {
       res.json(null)
       return
     }
-    book.goodread = await getGoodReadsBookIDByISBN(req.query.isbn)
+    book.goodreads = await getGoodreadsBookIDByISBN(req.query.isbn)
     const ttl = book.google ? book.google.title : book.openlib.title
     console.log(`[${req.query.isbn}] found - ${ttl}`)
     console.log(book)

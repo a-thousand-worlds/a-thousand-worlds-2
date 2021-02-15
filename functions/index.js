@@ -1,6 +1,7 @@
 const functions = require('firebase-functions')
 const coverImageByISBN = require('./coverImageByISBNServer')
 const email = require('./email')
+const getGoodreadsBookIDByISBN = require('./getGoodreadsBookIDByISBN')
 const metadataByISBN = require('./metadataByISBN')
 const searchISBN = require('./searchISBN')
 const amazonSearchBook = require('./amazonSearchBook')
@@ -21,14 +22,12 @@ const watchPeopleDelete = require('./watchPeople/onDelete')
 
 const watchUsers = require('./watchUsers')
 
-exports.coverImageByISBN = functions
-  .https.onRequest(coverImageByISBN())
+/** HTTP Services */
 
-exports.email = functions
-  .https.onRequest(email())
-
-exports.metadataByISBN = functions
-  .https.onRequest(metadataByISBN())
+exports.coverImageByISBN = functions.https.onRequest(coverImageByISBN())
+exports.email = functions.https.onRequest(email())
+exports.getGoodreadsBookIDByISBN = functions.https.onRequest(getGoodreadsBookIDByISBN())
+exports.metadataByISBN = functions.https.onRequest(metadataByISBN())
 
 exports.amazonSearchBook = functions
   .runWith({
@@ -39,10 +38,11 @@ exports.amazonSearchBook = functions
 
 // increase function memory since we are doing image processing
 // https://firebase.google.com/docs/functions/manage-functions#set_timeout_and_memory_allocation
-
 exports.searchISBN = functions
   .runWith({ memory: '1GB' })
   .https.onRequest(searchISBN())
+
+/** Watch functions */
 
 exports.watchBookSubmissions = watchBookSubmissions
 

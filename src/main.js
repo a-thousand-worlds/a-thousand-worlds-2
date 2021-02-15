@@ -27,13 +27,16 @@ router.beforeEach((to, from, next) => {
       })
       .catch(err => {
         store.commit('ui/setPageLoading', false)
-        console.log('user/next error', err)
+        console.error('user/next error', err)
         next('/404')
       })
   }
+  // when a user signs up with an invite code, they are directed to the dashboard, but their role is updated asynchronously, to this logic may incorrectly trigger an authentication failure
+  // do not redirect to 404 in this case since it breaks the signup process
   else {
-    if (access.reduce((acc, x) => store.state.user.user.roles[x] || acc, false)) next()
-    else next('/404')
+    // if (access.reduce((acc, x) => store.state.user.user.roles[x] || acc, false)) next()
+    // else next('/404')
+    next()
   }
 })
 

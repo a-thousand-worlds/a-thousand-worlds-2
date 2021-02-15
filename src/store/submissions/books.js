@@ -216,7 +216,7 @@ const module = mergeOne(managed('submits/books'), {
       await context.dispatch('books/save', { path: bookId, value: {
         createdBy: sub.createdBy,
         creators: creators,
-        goodread: sub.goodread || '',
+        goodreads: sub.goodreads || '',
         id: bookId,
         isbn: sub.isbn,
         cover: sub.cover?.base64 ? sub.cover : null,

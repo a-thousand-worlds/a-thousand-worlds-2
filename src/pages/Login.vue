@@ -68,7 +68,7 @@ export default {
       return Object.keys(this.error?.fields || {}).length > 0
     },
     invite() {
-      return this.$store.getters['invites/get'](this.code)
+      return this.code ? this.$store.getters['invites/get'](this.code) : null
     },
     contributorIdentities() {
       return this.$store.getters[`tags/people/listSorted`]()
@@ -103,8 +103,10 @@ export default {
       this.active = this.getActiveFromUrl()
     },
     '$store.state.user.user'(next, prev) {
-      // redirect to Dashboard on login (or Home for regular users)
-      if (next && !prev) {
+
+      // redirect regular users to Home and authorized users to Dashboard
+      // do not redirect on invite, which needs to redirect when roles are set
+      if (!this.invite && next) {
         this.$router.push({
           name: this.$can('viewDashboard') ? 'Dashboard' : 'Home'
         })
@@ -114,6 +116,14 @@ export default {
       this.name = next?.profile?.name || ''
       this.photo = next?.profile?.photo || ''
       this.identities = { ...next?.profile?.identities }
+    },
+    '$store.state.user.user.roles'(next, prev) {
+      // redirect invited users to Dashboard
+      if (this.invite && next && Object.keys(next || {}).length) {
+        this.$router.push({
+          name: 'Dashboard'
+        })
+      }
     }
   },
 
@@ -402,7 +412,9 @@ export default {
               <div v-if="isLogin || isSignup || isEditProfile" class="field">
                 <label :class="['label', { error: hasError('email') }]">EMAIL</label>
                 <div class="control">
-                  <input v-model="email" @keypress.enter.prevent="onEnter" :disabled="loading" type="email" class="input" :class="{ 'is-danger': hasError('email') }" @input="revalidate">
+                  <span v-tippy="invite ? { content: `You have to use this email to sign up as a ${invite.role}, but you can change it after logging in.` } : null">
+                    <input v-model="email" @keypress.enter.prevent="onEnter" :disabled="invite" type="email" class="input" :class="{ 'is-danger': hasError('email') }" @input="revalidate">
+                  </span>
                 </div>
               </div>
 

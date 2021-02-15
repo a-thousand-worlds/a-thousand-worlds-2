@@ -216,7 +216,7 @@ export default {
       if (!meta) return
       this.suggested = meta
       if (meta.summary && !sub.summary) sub.summary = meta.summary
-      if (meta.goodread && !sub.goodread) sub.goodread = meta.goodread
+      if (meta.goodreads && !sub.goodreads) sub.goodreads = meta.goodreads
       if (meta.publisher && !sub.publisher) sub.publisher = meta.publisher
       if (meta.year && !sub.year) sub.year = meta.year
 

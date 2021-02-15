@@ -18,7 +18,7 @@ export default {
         authors: [],
         cover: '',
         // file: null,
-        goodread: '',
+        goodreads: '',
         goodReads: null,
         google: null,
         isbn: '',
@@ -205,7 +205,7 @@ export default {
           <div class="field">
             <label class="label">Book ID on Good Read</label>
             <div class="control">
-              <input v-model="book.goodread" type="text" class="input">
+              <input v-model="book.goodreads" type="text" class="input">
             </div>
           </div>
 
