@@ -1,9 +1,10 @@
 <script>
+import _ from 'lodash'
 import BookDetailFooter from '@/components/BookDetailFooter'
 import BookmarkButton from '@/components/BookmarkButton'
 import Filter from '@/components/Filter'
 import Clipboard from 'clipboard'
-import CreatorsWidget from '@/components/CreatorsWidget'
+import CreatorCard from '@/components/CreatorCard'
 import LazyImage from '@/components/LazyImage'
 import Loader from '@/components/Loader'
 import NotFound from '@/pages/NotFound'
@@ -16,7 +17,7 @@ export default {
     BookDetailFooter,
     BookmarkButton,
     Filter,
-    CreatorsWidget,
+    CreatorCard,
     LazyImage,
     Loader,
     NotFound,
@@ -38,6 +39,10 @@ export default {
         : null
       this.$store.dispatch('debug', { book })
       return book
+    },
+    // creators id array sorted by authors then illustrators
+    creators() {
+      return _.sortBy(Object.keys(this.book.creators), id => this.book.creators[id])
     },
     isbn() {
       return this.$route.params.isbn
@@ -97,8 +102,9 @@ export default {
             <div style="padding-top: 0px;"><BookmarkButton :book="book" /></div>
           </div>
 
-          <div class="authors divider-bottom">
-            <CreatorsWidget v-if="book.creators" class="mb-2" :creators="book.creators" linked />
+          <!-- use negative right margin to avoid wrapping creators until margin is used up -->
+          <div class="creators divider-bottom is-flex is-flex-wrap-wrap" style="margin-right: -30px;">
+            <CreatorCard v-for="id in creators" :key="id" :id="id" :role="book.creators[id]" class="mb-20 mr-30" style="min-width: 33%;" />
           </div>
 
           <!-- summary/description is edited with ckeditor and may contain html -->
@@ -145,7 +151,7 @@ export default {
   margin-bottom: 0;
 }
 
-.authors {
+.creators {
   font-size: 14px;
 }
 

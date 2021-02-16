@@ -28,7 +28,7 @@ export default {
       return this.peopleList.filter(info => info.role === 'both' || info.role === 'illustrator')
     },
     illustratorsSame() {
-      return this.illustrators.every(creator => creator.role === 'both')
+      return this.authors.every(creator => creator.role === 'both')
     },
   }
 }
