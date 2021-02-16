@@ -81,7 +81,7 @@ const module = mergeOne(usersModule, {
         ...code ? { code } : null,
         ...identities ? { identities } : null,
         ...photo ? { photo } : null,
-        ...affiliations?.organization ? { affiliations } : null,
+        ...affiliations ? { affiliations } : null,
       })
 
       return user

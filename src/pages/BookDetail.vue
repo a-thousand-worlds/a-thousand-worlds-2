@@ -1,9 +1,10 @@
 <script>
 import _ from 'lodash'
+import Clipboard from 'clipboard'
+import engagements from '@/store/constants/engagements'
 import BookDetailFooter from '@/components/BookDetailFooter'
 import BookmarkButton from '@/components/BookmarkButton'
 import Filter from '@/components/Filter'
-import Clipboard from 'clipboard'
 import CreatorCard from '@/components/CreatorCard'
 import LazyImage from '@/components/LazyImage'
 import Loader from '@/components/Loader'
@@ -47,12 +48,32 @@ export default {
     isbn() {
       return this.$route.params.isbn
     },
+    recommender() {
+      const profile = this.book.createdBy && this.$store.state.users.loaded
+        ? this.$store.state.users.data[this.book.createdBy]?.profile
+        : null
+      const name = profile.name || (profile.firstName ? `${profile.firstName || ''} ${profile.lastName || ''}` : 'anonymous')
+      const recommenderEngagements = profile.affiliations.selectedEngagementCategories
+        ? Object.keys(profile.affiliations.selectedEngagementCategories)
+          .map(id => engagements.find(engagement => engagement.id === id))
+          .filter(x => x)
+        : null
+      const title = recommenderEngagements
+        ? recommenderEngagements.map(engagement => engagement.text).join(', ')
+        : null
+      const organization = profile.affiliations.organization
+      return {
+        name,
+        title,
+        organization,
+      }
+    },
     tags() {
       const bookTags = this.$store.state.tags.books.data || {}
       return Object.keys(this.book?.tags || [])
         .map(id => bookTags[id])
         .filter(x => x)
-    }
+    },
   },
   mounted() {
     new Clipboard('#copy-link') // eslint-disable-line no-new
@@ -107,8 +128,10 @@ export default {
             <CreatorCard v-for="id in creators" :key="id" :id="id" :role="book.creators[id]" class="mb-20 mr-30" style="min-width: 33%;" />
           </div>
 
-          <!-- summary/description is edited with ckeditor and may contain html -->
+          <!-- summary is edited with ckeditor and may contain html -->
           <p class="summary" :innerHTML="book.summary || book.description" />
+
+          <p v-if="recommender" class="mt-10"><b>– RECOMMENDED BY</b> <u>{{ recommender.name }}</u>{{ recommender.title ? `, ${recommender.title}` : '' }}<i>{{ recommender.organization ? `, ${recommender.organization}` : '' }}</i></p>
 
         </div>
         <div v-else>
