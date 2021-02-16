@@ -80,7 +80,7 @@ export default {
 
     <div class="columns">
 
-      <div class="column mr-0 is-two-fifths">
+      <div class="column column1 mr-0 is-two-fifths">
         <div v-if="book">
           <div class="book-cover-wrappertext-centered mb-20">
             <LazyImage class="cover" :src="book.cover" />
@@ -140,6 +140,13 @@ export default {
   }
   @include from($desktop) {
     margin: 0 60px;
+  }
+}
+
+.column1 {
+  text-align: center;
+  @include from($tablet) {
+    text-align: left;
   }
 }
 
