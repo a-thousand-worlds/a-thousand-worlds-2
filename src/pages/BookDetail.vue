@@ -135,6 +135,9 @@ export default {
 .book-detail {
   margin: 0 20px;
   max-width: $widescreen;
+  @include from($tablet) {
+    margin: 0 30px;
+  }
   @include from($desktop) {
     margin: 0 60px;
   }
