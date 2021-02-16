@@ -1,7 +1,6 @@
 <script>
 import _ from 'lodash'
 import Clipboard from 'clipboard'
-import engagements from '@/store/constants/engagements'
 import BookDetailFooter from '@/components/BookDetailFooter'
 import BookmarkButton from '@/components/BookmarkButton'
 import Filter from '@/components/Filter'
@@ -10,6 +9,7 @@ import LazyImage from '@/components/LazyImage'
 import Loader from '@/components/Loader'
 import NotFound from '@/pages/NotFound'
 import PrevNext from '@/components/PrevNext'
+import RecommendedBy from '@/components/RecommendedBy'
 import Tag from '@/components/Tag'
 
 export default {
@@ -23,6 +23,7 @@ export default {
     Loader,
     NotFound,
     PrevNext,
+    RecommendedBy,
     Tag,
   },
   beforeRouteLeave(to, from, next) {
@@ -47,26 +48,6 @@ export default {
     },
     isbn() {
       return this.$route.params.isbn
-    },
-    recommender() {
-      const profile = this.book.createdBy && this.$store.state.users.loaded
-        ? this.$store.state.users.data[this.book.createdBy]?.profile
-        : null
-      const name = profile.name || (profile.firstName ? `${profile.firstName || ''} ${profile.lastName || ''}` : 'anonymous')
-      const recommenderEngagements = profile.affiliations.selectedEngagementCategories
-        ? Object.keys(profile.affiliations.selectedEngagementCategories)
-          .map(id => engagements.find(engagement => engagement.id === id))
-          .filter(x => x)
-        : null
-      const title = recommenderEngagements
-        ? recommenderEngagements.map(engagement => engagement.text).join(', ')
-        : null
-      const organization = profile.affiliations.organization
-      return {
-        name,
-        title,
-        organization,
-      }
     },
     tags() {
       const bookTags = this.$store.state.tags.books.data || {}
@@ -131,7 +112,7 @@ export default {
           <!-- summary is edited with ckeditor and may contain html -->
           <p class="summary" :innerHTML="book.summary || book.description" />
 
-          <p v-if="recommender" class="mt-10"><b>– RECOMMENDED BY</b> <u>{{ recommender.name }}</u>{{ recommender.title ? `, ${recommender.title}` : '' }}<i>{{ recommender.organization ? `, ${recommender.organization}` : '' }}</i></p>
+          <RecommendedBy v-if="book.createdBy" :id="book.createdBy" class="mt-10" />
 
         </div>
         <div v-else>
