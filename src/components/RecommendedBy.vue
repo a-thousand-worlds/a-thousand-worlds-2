@@ -40,17 +40,32 @@ export default {
       return this.profile?.affiliations?.organizationLink
     },
 
+    url() {
+      return this.profile?.url
+    }
+
   }
 }
 </script>
 
 <template>
   <p>
-    <b>– RECOMMENDED BY</b> <u>{{ name }}</u>
+    <b>– RECOMMENDED BY </b>
+
+    <!-- name -->
+    <u>
+      <a v-if="url" :href="url" target="_blank" class="primary-hover">{{ name }}</a>
+      <span v-else>{{ name }}</span>
+    </u>
+
+    <!-- title -->
     <span v-if="title">, {{ title }}</span>
+
+    <!-- organization -->
     <span v-if="organization">
       <a v-if="organizationLink" :href="organizationLink" target="_blank" class="primary-hover"><i>, {{ organization }}</i></a>
       <i v-else>, {{ organization }}</i>
     </span>
+
   </p>
 </template>
