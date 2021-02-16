@@ -143,7 +143,7 @@ export default {
 
           <!-- tags -->
           <div class="tags">
-            <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="books" @remove="updateBook('tags', { [tag.id]: null })" editable nolink />
+            <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="books" @remove="updateBook('tags', { [tag.id]: null })" button-class="is-outlined" editable nolink />
 
             <!-- add tag -->
             <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': tagsDropdownActive }">

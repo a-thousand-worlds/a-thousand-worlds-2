@@ -190,6 +190,7 @@ a.is-secondary, i.is-secondary, .is-secondary-text, { @include secondary(color);
   color: $primary-invert !important; // override a.is-primary since primary mixin increases specificity
 }
 .bg-secondary, .button.is-secondary{ @include secondary(background-color); }
+.button.is-primary.is-outlined,
 a.button.is-primary.is-outlined {
   @include primary(border-color);
   @include primary(color);
