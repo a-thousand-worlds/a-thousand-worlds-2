@@ -65,6 +65,10 @@ $devices: (
   }
 }
 
+body {
+  font-size: 15px;
+}
+
 hr {
   @include primary(background-color);
   height: 1px;

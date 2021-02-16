@@ -156,10 +156,7 @@ export default {
 }
 
 .summary {
-  font-size: 18px;
-  @include from($widescreen) {
-    font-size: 22px;
-  }
+  line-height: 1.75;
 }
 
 </style>

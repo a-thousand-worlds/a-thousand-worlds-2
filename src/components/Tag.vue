@@ -57,7 +57,7 @@ export default {
 
     <a v-else-if="linkToManager" @click.prevent="goToManager" class="button is-primary is-rounded is-mini">{{ tag.tag }}</a>
 
-    <button v-else :class="buttonClass" class="button is-primary is-rounded is-mini mr-1 mb-1" style="display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis;" :style="tagStyle">
+    <button v-else :class="buttonClass" class="button is-primary is-rounded is-mini mb-1" style="display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; font-size: 10px;" :style="tagStyle">
       <span @click.prevent="goToFilter">{{ tag.tag }}</span>
       <span v-if="editable" class="close" v-tippy="{ content: 'Remove tag from book' }" @click.prevent="removeTag">✕</span>
     </button>

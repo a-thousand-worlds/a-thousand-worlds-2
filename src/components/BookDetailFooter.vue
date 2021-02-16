@@ -71,6 +71,7 @@ export default {
 
   .button, input {
     border: solid 1px #666;
+    font-size: 14px;
   }
 }
 
