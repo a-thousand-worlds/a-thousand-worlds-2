@@ -105,7 +105,7 @@ export default {
             <div class="name">{{ title.text }}</div>
             <h1 class="title mt-5">{{ person.name }}</h1>
             <div v-if="tags" class="tags mt-20">
-              <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="people" />
+              <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="people" button-class="is-outlined" />
             </div>
           </div>
 

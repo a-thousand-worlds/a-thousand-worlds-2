@@ -143,9 +143,10 @@ export default {
 
           <!-- tags -->
           <div class="tags">
-            <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="books" @remove="updateBook('tags', { [tag.id]: null })" button-class="is-outlined" editable nolink />
 
-            <!-- add tag -->
+            <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="books" @remove="updateBook('tags', { [tag.id]: null })" button-class="is-outlined" editable />
+
+            <!-- add tag dropdown -->
             <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': tagsDropdownActive }">
               <div id="dropdown-menu" class="dropdown-menu" role="menu">
                 <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
@@ -156,8 +157,8 @@ export default {
               </div>
             </div>
 
-            <!-- tag -->
-            <Tag :tag="{ tag: 'ADD TAG' }" nolink tagStyle="background-color: #999; cursor: pointer" v-click-outside="closeTagsDropdown" @click.prevent.stop="tagsDropdownActive = !tagsDropdownActive" />
+            <!-- add tag -->
+            <Tag :tag="{ tag: 'ADD TAG' }" nolink tagStyle="background-color: #fff; border-color: #000; color: #000 !important; cursor: pointer" v-click-outside="closeTagsDropdown" @click.prevent.stop="tagsDropdownActive = !tagsDropdownActive" />
 
           </div>
 
