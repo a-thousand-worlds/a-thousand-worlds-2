@@ -1,8 +1,9 @@
 const admin = require('firebase-admin')
+const functions = require('firebase-functions')
 const express = require('express')
 // cors module automatically handles OPTIONS requests
 const cors = require('cors')({ origin: true })
-const uid = require('uuid/v4')
+const mailgunjs = require('mailgun-js')
 const serviceAccount = require('./serviceAccountKey.json')
 
 /** Wraps a route handler in a try-catch statement that sends an error as a 500 response. */
@@ -25,15 +26,11 @@ module.exports = () => {
     credential: admin.credential.cert(serviceAccount),
   }
   admin.initializeApp(adminConfig)
-  // generates error 9 FAILED_PRECONDITION: The Cloud Firestore API is not available for Datastore Mode projects
-  // const db = admin.firestore()
   const app = express()
   app.use(cors)
 
-  // TODO: Secure this endpoint
   app.get('/', handleError(async (req, res) => {
 
-    console.log('GET header authorization: ', req.headers.authorization)
     if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
       res.status(401).send('Not authorized.')
       return
@@ -71,20 +68,28 @@ module.exports = () => {
         return
       }
 
-      const id = uid()
-      // generates error 9 FAILED_PRECONDITION: The Cloud Firestore API is not available for Datastore Mode projects
-      /*
-      await db.collection('mail').add({
-        to,
-        message: {
-          subject,
-          html,
-        }
-      })
-      */
+      const mgConfig = functions.config().mailgun
 
-      console.log(`Email sent to ${to}: "${subject}"`)
-      res.status(200).json({ id })
+      const mailgun = mailgunjs({
+        domain: mgConfig.domain,
+        apiKey: mgConfig.apiKey
+      })
+
+      mailgun.messages().send({
+        from: mgConfig.sender,
+        to,
+        subject,
+        html: html
+      }, (err, result) => {
+        if (err) {
+          console.log('Email sending error', err)
+          res.status(501).json({ err })
+          return
+        }
+        console.log(`Email sent to ${to}: "${subject}"`)
+        res.status(200).json({ id: result.id })
+      })
+
     })
 
   }))

@@ -36,6 +36,10 @@
 1. Generate service account key
     - Firebase Project -> Settings -> Service Accounts -> Generate new private key
     - Save to `/functions/serviceAccountKey.json`
+1. Add mailgun config for firebase functions:
+    - `firebase functions:config:set mailgun.domain="MAILGUN_DOMAIN"`
+    - `firebase functions:config:set mailgun.apiKey="MAILGUN_API_KEY"`
+    - `firebase functions:config:set mailgun.apiKey="sender-email@your.mailgun.domain"`
 1. `npm run deploy:functions`
 
 ## Scripts
