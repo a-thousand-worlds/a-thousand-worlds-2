@@ -25,12 +25,6 @@ export default ({
     RightBar,
     WelcomeDismissable,
   },
-  data() {
-    const hour = Math.floor(Date.now() / 1000 / 60 / 60)
-    return {
-      theme: `theme${hour % 4 + 1}`
-    }
-  },
   computed: {
     showWelcome() {
       // do not show welcome banner until route is loaded
@@ -52,7 +46,7 @@ export default ({
 </script>
 
 <template>
-  <div :class="theme">
+  <div :class="`theme${$store.state.theme}`">
 
     <MobileHeader class="is-hidden-tablet" />
 

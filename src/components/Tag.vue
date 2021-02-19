@@ -3,9 +3,9 @@ import * as slugify from '@sindresorhus/slugify'
 
 export default {
   props: {
+    buttonClass: String,
     editable: Boolean,
     nolink: Boolean,
-    linkToManager: Boolean,
     tag: {
       required: true,
     },
@@ -24,6 +24,12 @@ export default {
         : this.type === 'bundles' ? 'Bundles'
         : null
     },
+    singleType() {
+      return this.type === 'books' ? 'book'
+        : this.type === 'people' ? 'person'
+        : this.type === 'bundles' ? 'bundle'
+        : null
+    }
   },
   created() {
     if (!this.nolink && !this.type) {
@@ -49,14 +55,18 @@ export default {
 <template>
   <div v-if="tag" class="mr-1" style="display: inline-block;">
 
-    <span v-if="nolink" class="button is-primary is-rounded is-mini" style="cursor: default;" :style="tagStyle">
+    <span v-if="nolink" :class="buttonClass" class="button is-primary is-rounded is-mini" style="cursor: default; font-size: 10px;" :style="tagStyle">
       <span>{{ tag.tag }}</span>
-      <span v-if="editable" class="close" v-tippy="{ content: 'Remove tag from book' }" @click.prevent="removeTag">✕</span>
+      <span v-if="editable" class="close" v-tippy="{ content: `Remove tag from ${singleType}` }" @click.prevent="removeTag">✕</span>
     </span>
 
-    <a v-else-if="linkToManager" @click.prevent="goToManager" class="button is-primary is-rounded is-mini">{{ tag.tag }}</a>
+    <button v-else-if="editable" :class="buttonClass" class="button is-primary is-rounded is-mini" style="cursor: default; font-size: 10px;" :style="tagStyle">
+      <!-- reset color to inherit, otherwise it will become the primary color on hover and disappear on the primary colored background -->
+      <a @click.prevent="goToManager" style="color: inherit;">{{ tag.tag }}</a>
+      <span v-if="editable" class="close" v-tippy="{ content: `Remove tag from ${singleType}` }" @click.prevent="removeTag">✕</span>
+    </button>
 
-    <button v-else class="button is-primary is-rounded is-mini mr-1 mb-1" style="display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis;" :style="tagStyle">
+    <button v-else :class="buttonClass" class="button is-primary is-rounded is-mini mb-1" style="display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; font-size: 10px;" :style="tagStyle">
       <span @click.prevent="goToFilter">{{ tag.tag }}</span>
       <span v-if="editable" class="close" v-tippy="{ content: 'Remove tag from book' }" @click.prevent="removeTag">✕</span>
     </button>
@@ -79,5 +89,9 @@ export default {
   margin: 0 -4px 0 5px;
   vertical-align: middle;
   width: 13px;
+
+  .is-outlined & {
+    background-color: transparent;
+  }
 }
 </style>

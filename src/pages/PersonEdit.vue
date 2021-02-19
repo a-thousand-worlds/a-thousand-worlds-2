@@ -177,7 +177,7 @@ export default {
 
             <!-- tags -->
             <div class="tags mt-20">
-              <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="people" @remove="updatePerson('identities', { [tag.id]: null })" editable nolink />
+              <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="people" @remove="updatePerson('identities', { [tag.id]: null })" button-class="is-outlined" editable />
 
               <!-- add tag -->
               <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': tagsDropdownActive }">
@@ -191,7 +191,7 @@ export default {
               </div>
 
               <!-- tag -->
-              <Tag :tag="{ tag: 'ADD TAG' }" nolink tagStyle="background-color: #999; cursor: pointer" v-click-outside="closeTagsDropdown" @click.prevent.stop="tagsDropdownActive = !tagsDropdownActive" />
+              <Tag :tag="{ tag: 'ADD TAG' }" nolink tagStyle="background-color: #fff; border-color: #000; color: #000 !important; cursor: pointer;" v-click-outside="closeTagsDropdown" @click.prevent.stop="tagsDropdownActive = !tagsDropdownActive" />
 
             </div>
 

@@ -1,29 +1,31 @@
 <script>
 import Content from '@/components/Content'
-import LogoStacked from '../assets/logo-stacked.svg'
 
 export default {
   components: {
     Content,
-    LogoStacked,
   },
 }
 </script>
 
 <template>
   <div class="welcome-banner" ref="welcome">
-    <div class="columns px-20 my-50" style="max-width: 1400px; margin: auto;">
+    <!-- account for 10px column padding and 10px whitespace on bottom of stacked logo -->
+    <div class="columns px-20 mt-50 mb-40" style="max-width: 1400px; margin: auto;">
 
-      <div class="column left align-items-center">
+      <!-- use a small bottom margin to bump up slightly from center to match the spec -->
+      <div class="column left is-flex is-justify-content-center is-align-items-center" style="margin-top: -25px;">
         <Content name="welcome/left" placeholder="Colorful Reads x Colorful People" />
       </div>
 
       <div class="column">
-        <LogoStacked class="logo" title="A Thousand Worlds" />
+        <img :src="require(`@/assets/logo/${$store.state.theme}/stacked.png`)" class="logo" title="A Thousand Worlds">
       </div>
 
-      <div class="column">
-        <div class="subtitle is-flex is-align-items-center" style="height: 100%; max-width: 320px; margin: auto;">
+      <!-- use a small bottom margin to bump up slightly from center to match the spec -->
+      <div class="column" style="margin-top: -25px;">
+        <!-- set max-width to achieve desired line breaks while maintaining responsiveness -->
+        <div class="subtitle is-flex is-align-items-center" style="height: 100%; max-width: 12em; margin: auto;">
           <Content name="welcome/right" placeholder="Picture books curated by BIPOC leaders in the industry" style="text-align: center;" />
         </div>
       </div>
@@ -43,9 +45,14 @@ export default {
   width: 100%;
   top: 0;
   text-align: center;
+  font-family: "GT Walsheim", Sen, sans-serif;
   font-size: 20px;
 
-  @include from($widescreen) { font-size: 26px; }
+  @include from($widescreen) { font-size: 20px; }
+
+  .column {
+    padding: 10px;
+  }
 
   .ck p {
     text-align: center;
@@ -58,7 +65,7 @@ export default {
 
   .logo {
     width: 100%;
-    max-height: 150px;
+    max-width: 344px;
   }
 }
 

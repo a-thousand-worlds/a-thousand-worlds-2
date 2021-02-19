@@ -71,17 +71,18 @@ export default {
 
   .button, input {
     border: solid 1px #666;
+    font-size: 14px;
   }
 }
 
 .content-footer-inner {
   display: flex;
   justify-content: flex-start;
-  margin: 10px 20px;
+  margin: 14.5px 20px;
 
   // use custom breakpoint between tablet and desktop to preserve centering when there is room
   @include from(900px) {
-    margin: 20px 60px;
+    margin: 14.5px 60px;
     justify-content: center;
   }
   @include from($widescreen) {

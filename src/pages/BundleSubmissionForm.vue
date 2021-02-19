@@ -20,15 +20,13 @@ export default {
   computed: {
     draftable() {
       return this.books
-        .map(x => x.title || x.author || x.illustrator || x.isbn)
-        .reduce((acc, x) => x || acc, false)
+        .some(x => x.title || x.author || x.illustrator || x.isbn)
         || this.name.length
         || this.description.length
     },
     submitable() {
       return this.books
-        .map(x => x.title.length && x.author.length)
-        .reduce((acc, x) => x && acc, true)
+        .every(x => x.title.length && x.author.length)
         && this.name.length
         && this.description.length
     }

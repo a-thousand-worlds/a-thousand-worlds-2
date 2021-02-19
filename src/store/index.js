@@ -11,6 +11,8 @@ import ui from '@/store/ui'
 import user from '@/store/user'
 import users from '@/store/users'
 
+const hour = Math.floor(Date.now() / 1000 / 60 / 60)
+
 const store = createStore({
   modules: {
     books,
@@ -27,6 +29,7 @@ const store = createStore({
   },
   state: {
     auth: false,
+    theme: hour % 4 + 1
   },
   actions: {
 

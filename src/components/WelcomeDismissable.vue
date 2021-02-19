@@ -9,11 +9,11 @@ export default {
   },
   data() {
     return {
+      height: 0,
       show: true,
     }
   },
   mounted() {
-    this.height = this.$refs.welcomeFixed?.$refs.welcome?.clientHeight || 250
     window.addEventListener('scroll', this.onScroll)
   },
   unmounted() {
@@ -22,6 +22,13 @@ export default {
   methods: {
     // once the banner is scrolled completely out of view, hide the welcome banner
     onScroll() {
+
+      // wait till initial scroll to set height
+      // logo is not loaded in mounted so height is incorrect then
+      if (!this.height) {
+        this.height = this.$refs.welcomeFixed?.$refs.welcome?.clientHeight || 250
+      }
+
       if (this.show && window.scrollY > this.height) {
         this.show = false
         this.$store.commit('ui/setLastVisited', new Date())

@@ -3,6 +3,11 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Sen:wght@400;700&display=swap');
 
+@font-face {
+  font-family: "GT Walsheim";
+  src: url("/fonts/GT Walsheim/GT-Walsheim-Medium.ttf");
+}
+
 // set font-family before importing Bulma
 $family-sans-serif: Sen, sans-serif;
 $family-primary: $family-sans-serif;
@@ -58,6 +63,10 @@ $devices: (
       display: none;
     }
   }
+}
+
+body {
+  font-size: 15px;
 }
 
 hr {
@@ -185,6 +194,7 @@ a.is-secondary, i.is-secondary, .is-secondary-text, { @include secondary(color);
   color: $primary-invert !important; // override a.is-primary since primary mixin increases specificity
 }
 .bg-secondary, .button.is-secondary{ @include secondary(background-color); }
+.button.is-primary.is-outlined,
 a.button.is-primary.is-outlined {
   @include primary(border-color);
   @include primary(color);

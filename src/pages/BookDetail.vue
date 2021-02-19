@@ -1,13 +1,15 @@
 <script>
+import _ from 'lodash'
+import Clipboard from 'clipboard'
 import BookDetailFooter from '@/components/BookDetailFooter'
 import BookmarkButton from '@/components/BookmarkButton'
 import Filter from '@/components/Filter'
-import Clipboard from 'clipboard'
-import CreatorsWidget from '@/components/CreatorsWidget'
+import CreatorCard from '@/components/CreatorCard'
 import LazyImage from '@/components/LazyImage'
 import Loader from '@/components/Loader'
 import NotFound from '@/pages/NotFound'
 import PrevNext from '@/components/PrevNext'
+import RecommendedBy from '@/components/RecommendedBy'
 import Tag from '@/components/Tag'
 
 export default {
@@ -16,11 +18,12 @@ export default {
     BookDetailFooter,
     BookmarkButton,
     Filter,
-    CreatorsWidget,
+    CreatorCard,
     LazyImage,
     Loader,
     NotFound,
     PrevNext,
+    RecommendedBy,
     Tag,
   },
   beforeRouteLeave(to, from, next) {
@@ -39,6 +42,10 @@ export default {
       this.$store.dispatch('debug', { book })
       return book
     },
+    // creators id array sorted by authors then illustrators
+    creators() {
+      return _.sortBy(Object.keys(this.book.creators), id => this.book.creators[id])
+    },
     isbn() {
       return this.$route.params.isbn
     },
@@ -47,7 +54,7 @@ export default {
       return Object.keys(this.book?.tags || [])
         .map(id => bookTags[id])
         .filter(x => x)
-    }
+    },
   },
   mounted() {
     new Clipboard('#copy-link') // eslint-disable-line no-new
@@ -75,13 +82,13 @@ export default {
 
     <div class="columns">
 
-      <div class="column mr-0 is-two-fifths">
+      <div class="column column1 mr-0 is-two-fifths">
         <div v-if="book">
           <div class="book-cover-wrappertext-centered mb-20">
             <LazyImage class="cover" :src="book.cover" />
           </div>
           <div class="tags">
-            <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="books" />
+            <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="books" button-class="is-outlined" />
           </div>
         </div>
       </div>
@@ -97,12 +104,15 @@ export default {
             <div style="padding-top: 0px;"><BookmarkButton :book="book" /></div>
           </div>
 
-          <div class="authors divider-bottom">
-            <CreatorsWidget v-if="book.creators" class="mb-2" :creators="book.creators" linked />
+          <!-- use negative right margin to avoid wrapping creators until margin is used up -->
+          <div class="creators divider-bottom is-flex is-flex-wrap-wrap" style="margin-right: -30px;">
+            <CreatorCard v-for="id in creators" :key="id" :id="id" :role="book.creators[id]" class="mb-20 mr-30" style="min-width: 33%;" />
           </div>
 
-          <!-- summary/description is edited with ckeditor and may contain html -->
+          <!-- summary is edited with ckeditor and may contain html -->
           <p class="summary" :innerHTML="book.summary || book.description" />
+
+          <RecommendedBy v-if="book.createdBy" :id="book.createdBy" class="mt-10" />
 
         </div>
         <div v-else>
@@ -129,8 +139,18 @@ export default {
 .book-detail {
   margin: 0 20px;
   max-width: $widescreen;
+  @include from($tablet) {
+    margin: 0 30px;
+  }
   @include from($desktop) {
     margin: 0 60px;
+  }
+}
+
+.column1 {
+  text-align: center;
+  @include from($tablet) {
+    text-align: left;
   }
 }
 
@@ -145,15 +165,12 @@ export default {
   margin-bottom: 0;
 }
 
-.authors {
+.creators {
   font-size: 14px;
 }
 
 .summary {
-  font-size: 18px;
-  @include from($widescreen) {
-    font-size: 22px;
-  }
+  line-height: 1.75;
 }
 
 </style>

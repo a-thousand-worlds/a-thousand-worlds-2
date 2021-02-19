@@ -13,11 +13,11 @@ export default {
   },
   watch: {
     name(next, prev) {
-      const u = this.$store.state.people.reduce((acc, x) => x.name.toLowerCase() === this.name.toLowerCase() ? x : acc, null)
-      if (u) {
-        this.personDB = u
+      const user = this.$store.state.people.find(x => x.name.toLowerCase() === this.name.toLowerCase())
+      if (user) {
+        this.personDB = user
         this.exists = true
-        this.role = u.role
+        this.role = user.role
         this.$emit('changed-role', this.role)
       }
       else {
@@ -34,11 +34,11 @@ export default {
     }
   },
   created() {
-    const u = this.$store.state.peopleList.reduce((acc, x) => x.name.toLowerCase() === this.name.toLowerCase() ? x : acc, null)
-    if (u) {
-      this.personDB = u
+    const user = this.$store.state.people.find(x => x.name.toLowerCase() === this.name.toLowerCase())
+    if (user) {
+      this.personDB = user
       this.exists = true
-      this.role = u.role
+      this.role = user.role
       // this.$emit('changed-role', this.role)
     }
     else {
