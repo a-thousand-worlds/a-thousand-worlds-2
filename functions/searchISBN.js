@@ -1,9 +1,10 @@
 const functions = require('firebase-functions')
 const express = require('express')
-const bookcovers = require('bookcovers')
+// const bookcovers = require('bookcovers')
 const isbn = require('node-isbn')
 const axios = require('axios').default
 const sharp = require('sharp')
+const coverImageByISBN = require('./util/coverImageByISBN')
 
 async function getGoodReadsBookIDByISBN(isbn) {
   let res = null
@@ -77,7 +78,7 @@ async function isbnSearch(code) {
   }
   // console.log('found book', book)
   // console.log('searching covers', code)
-  const covers = await bookcovers.withIsbn(code)
+  const covers = await coverImageByISBN(code)
   console.log('covers', covers)
   let url = null
   if (covers.amazon) {

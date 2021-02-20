@@ -32,15 +32,19 @@
 
 ### Email
 1. Create and configure mailgun account
-1. Update DNS MX records
+1. Update DNS sending (TXT) and optionally receiving (MX) records
+1. Generate sending SMTP credentials for domain
+    - Maingun dashboard -> Sending -> Domain settings -> SMTP credentials
+    - For `postmater@DOMAIN` click `Reset password` -> on appeared popup click `Copy` button -> temporary save password for later use
 1. Generate service account key
     - Firebase Project -> Settings -> Service Accounts -> Generate new private key
     - Save to `/functions/serviceAccountKey.json`
-1. Add mailgun config for firebase functions:
-    - `firebase functions:config:set mailgun.domain="MAILGUN_DOMAIN"`
-    - `firebase functions:config:set mailgun.apiKey="MAILGUN_API_KEY"`
-    - `firebase functions:config:set mailgun.apiKey="sender-email@your.mailgun.domain"`
-1. `npm run deploy:functions`
+1. Enable Firebase Cloudstore
+    - Firebase project -> Cloud Firestore
+1. Add `Trigger Email` firebase extension with next configuraton:
+    - SMTP connection URI: `smtp://postmaster@DOMAIN:POSTMASTER_PASSWORD@smtp.mailgun.org:2525`
+    - Email document collection: `mail`
+    - Default FROM address: set sender addres, ex: bot@DOMAIN
 
 ## Scripts
 

@@ -1,10 +1,10 @@
 const admin = require('firebase-admin')
-const functions = require('firebase-functions')
+// const functions = require('firebase-functions')
 const express = require('express')
-// cors module automatically handles OPTIONS requests
 const cors = require('cors')({ origin: true })
-const mailgunjs = require('mailgun-js')
+const uid = require('uuid').v4
 const serviceAccount = require('./serviceAccountKey.json')
+// const nodemailer = require('nodemailer')
 
 /** Wraps a route handler in a try-catch statement that sends an error as a 500 response. */
 const handleError = routeHandler => async (req, res) => {
@@ -26,6 +26,7 @@ module.exports = () => {
     credential: admin.credential.cert(serviceAccount),
   }
   admin.initializeApp(adminConfig)
+  const db = admin.firestore()
   const app = express()
   app.use(cors)
 
@@ -51,7 +52,7 @@ module.exports = () => {
       return
     }
 
-    admin.database().ref(`users/${user.uid}/roles`).once('value', rolesSnap => {
+    admin.database().ref(`users/${user.uid}/roles`).once('value', async rolesSnap => {
       const roles = rolesSnap.val()
 
       // here is a point we testing user permission to send emails
@@ -68,28 +69,48 @@ module.exports = () => {
         return
       }
 
-      const mgConfig = functions.config().mailgun
-
-      const mailgun = mailgunjs({
-        domain: mgConfig.domain,
-        apiKey: mgConfig.apiKey
-      })
-
-      mailgun.messages().send({
-        from: mgConfig.sender,
+      /*
+      */
+      await db.collection('mail').add({
         to,
-        subject,
-        html: html
-      }, (err, result) => {
-        if (err) {
-          console.log('Email sending error', err)
-          res.status(501).json({ err })
-          return
+        message: {
+          subject,
+          html,
         }
-        console.log(`Email sent to ${to}: "${subject}"`)
-        res.status(200).json({ id: result.id })
       })
 
+      /*
+      const mg = functions.config().mailgun
+      console.log('mg', JSON.stringify(mg) )
+      const transporter = nodemailer.createTransport(`smpt://${encodeURIComponent(mg.user)}:${encodeURIComponent(mg.password)}@smtp.mailgun.org:2525`)
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.mailgun.org',
+        port: 2525,
+        auth: {
+          user: mg.user,
+          pass: mg.password
+        }
+      })
+
+      let info = null
+      try {
+        info = await transporter.sendMail({
+          from: mg.sender,
+          to,
+          subject,
+          html
+        })
+      }
+      catch (error) {
+        info = null
+        console.log(`Sending email to <${to}> error: ${JSON.stringify(error)}`)
+        res.status(500).send(error)
+        return
+      }
+      */
+      const id = uid()
+      console.log(`Email sended: <${to}> ${subject} [${id}]`)
+      res.status(200).json({ id })
     })
 
   }))
