@@ -36,15 +36,12 @@
 1. Generate sending SMTP credentials for domain
     - Maingun dashboard -> Sending -> Domain settings -> SMTP credentials
     - For `postmater@DOMAIN` click `Reset password` -> on appeared popup click `Copy` button -> temporary save password for later use
+    - Or generate new SMTP user and use this user later replacing postmaster@DOMAIN
+1. Set firebase function configuration to send emails:
+    - `firebase functions:config:set mailgun.user="postmaster@DOMAIN" mailgun.password="POSTMASTER_PASSWORD" mailgun.sender="sender-email@DOMAIN"` (sender email can be any at your domain, for example: bot@DOMAIN)
 1. Generate service account key
     - Firebase Project -> Settings -> Service Accounts -> Generate new private key
     - Save to `/functions/serviceAccountKey.json`
-1. Enable Firebase Cloudstore
-    - Firebase project -> Cloud Firestore
-1. Add `Trigger Email` firebase extension with next configuraton:
-    - SMTP connection URI: `smtp://postmaster@DOMAIN:POSTMASTER_PASSWORD@smtp.mailgun.org:2525`
-    - Email document collection: `mail`
-    - Default FROM address: set sender addres, ex: bot@DOMAIN
 
 ## Scripts
 

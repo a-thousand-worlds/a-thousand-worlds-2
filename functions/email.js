@@ -1,10 +1,9 @@
 const admin = require('firebase-admin')
-// const functions = require('firebase-functions')
+const functions = require('firebase-functions')
 const express = require('express')
 const cors = require('cors')({ origin: true })
-const uid = require('uuid').v4
 const serviceAccount = require('./serviceAccountKey.json')
-// const nodemailer = require('nodemailer')
+const nodemailer = require('nodemailer')
 
 /** Wraps a route handler in a try-catch statement that sends an error as a 500 response. */
 const handleError = routeHandler => async (req, res) => {
@@ -26,7 +25,6 @@ module.exports = () => {
     credential: admin.credential.cert(serviceAccount),
   }
   admin.initializeApp(adminConfig)
-  const db = admin.firestore()
   const app = express()
   app.use(cors)
 
@@ -69,20 +67,7 @@ module.exports = () => {
         return
       }
 
-      /*
-      */
-      await db.collection('mail').add({
-        to,
-        message: {
-          subject,
-          html,
-        }
-      })
-
-      /*
       const mg = functions.config().mailgun
-      console.log('mg', JSON.stringify(mg) )
-      const transporter = nodemailer.createTransport(`smpt://${encodeURIComponent(mg.user)}:${encodeURIComponent(mg.password)}@smtp.mailgun.org:2525`)
       const transporter = nodemailer.createTransport({
         host: 'smtp.mailgun.org',
         port: 2525,
@@ -107,8 +92,7 @@ module.exports = () => {
         res.status(500).send(error)
         return
       }
-      */
-      const id = uid()
+      const id = info.messageId
       console.log(`Email sended: <${to}> ${subject} [${id}]`)
       res.status(200).json({ id })
     })
