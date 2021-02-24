@@ -73,6 +73,8 @@ export default {
 </template>
 
 <style scoped lang="scss">
+@import "bulma/sass/utilities/_all.sass";
+@import '@/assets/style/mixins.scss';
 
 .bookmark-toggler {
   position: relative;
@@ -99,6 +101,7 @@ export default {
 
 .menu-list a {
 
+  color: black;
   padding: 0;
 
   .icon-label {
@@ -108,13 +111,14 @@ export default {
   }
 
   &:hover {
+    @include primary(color);
     background-color: transparent;
   }
 
   &.active {
+    @include primary(color);
     pointer-events: none;
     cursor: default;
-    color: black;
 
     &.icon-label {
       color: #ccc;
