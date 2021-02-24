@@ -66,7 +66,7 @@ export default {
       <span v-if="editable" class="close" v-tippy="{ content: `Remove tag from ${singleType}` }" @click.prevent="removeTag">✕</span>
     </button>
 
-    <button v-else :class="buttonClass" class="button is-primary is-rounded is-mini mb-1" style="display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; font-size: 10px;" :style="tagStyle">
+    <button v-else :class="buttonClass" class="button is-primary is-rounded is-mini mb-1" style="display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; font-size: 11px;" :style="tagStyle">
       <span @click.prevent="goToFilter">{{ tag.tag }}</span>
       <span v-if="editable" class="close" v-tippy="{ content: 'Remove tag from book' }" @click.prevent="removeTag">✕</span>
     </button>

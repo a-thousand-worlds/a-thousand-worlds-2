@@ -5,7 +5,7 @@ export default {
   components: {
     BookmarkIcon,
   },
-  props: ['book'],
+  props: ['book', 'iconStyle'],
   computed: {
     isMarked() {
       return this.$store.state.user.user?.profile?.bookmarks?.[this.book.id]
@@ -31,6 +31,6 @@ export default {
 
 <template>
   <div style="cursor: pointer;" @click.prevent="toggleBookmark">
-    <BookmarkIcon :class="{ 'fill-primary': isMarked }" />
+    <BookmarkIcon :class="{ 'fill-primary': isMarked }" :style="iconStyle" />
   </div>
 </template>

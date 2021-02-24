@@ -101,7 +101,8 @@ export default {
         <div v-else-if="book">
           <div class="title-container divider-bottom is-flex is-justify-content-space-between">
             <h1 class="title">{{ book.title }}</h1>
-            <div style="padding-top: 0px;"><BookmarkButton :book="book" /></div>
+            <!-- set padding-top and height so that the icon lines up with the top of the title text and the bottom of its baseline -->
+            <BookmarkButton :book="book" iconStyle="margin-top: 6.5px; height: 27px;" />
           </div>
 
           <!-- use negative right margin to avoid wrapping creators until margin is used up -->
@@ -112,7 +113,7 @@ export default {
           <!-- summary is edited with ckeditor and may contain html -->
           <p class="summary" :innerHTML="book.summary || book.description" />
 
-          <RecommendedBy v-if="book.createdBy" :id="book.createdBy" class="mt-10" />
+          <RecommendedBy v-if="book.createdBy" :id="book.createdBy" class="mt-10" style="font-size: 16px;" />
 
         </div>
         <div v-else>
@@ -170,6 +171,7 @@ export default {
 }
 
 .summary {
+  font-size: 16px;
   line-height: 1.75;
 }
 

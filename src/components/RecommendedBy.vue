@@ -63,7 +63,7 @@ export default {
 
     <!-- organization -->
     <span v-if="organization">
-      <a v-if="organizationLink" :href="organizationLink" target="_blank" class="primary-hover"><i>, {{ organization }}</i></a>
+      <a v-if="organizationLink" :href="organizationLink" target="_blank" class="primary-hover">, <u>{{ organization }}</u></a>
       <i v-else>, {{ organization }}</i>
     </span>
 
