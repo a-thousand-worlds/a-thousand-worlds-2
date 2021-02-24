@@ -48,7 +48,7 @@ export default {
     <div>
       <ul v-if="!hideBookmarks" class="menu-list">
         <li><a :href="null" class="bookmark-toggler" @click.prevent="toggleBookmarks">
-          <BookmarkIcon class="fill-secondary" />
+          <BookmarkIcon class="fill-secondary" v-tippy="{ content: `You have ${bookmarksCount} saved book${bookmarksCount !== 1 ? 's' : ''}` }" />
           <span v-if="$iam('authorized')" class="badge">{{ bookmarksCount }}</span>
         </a></li>
       </ul>
@@ -76,6 +76,11 @@ export default {
 
 .bookmark-toggler {
   position: relative;
+  user-select: none;
+
+  &:focus, svg:focus {
+    outline: none;
+  }
 
   .badge {
     position: absolute;

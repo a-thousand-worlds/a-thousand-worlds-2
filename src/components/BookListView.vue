@@ -60,7 +60,7 @@ export default {
               </div>
             </div>
 
-            <BookmarkButton :book="book" />
+            <BookmarkButton :book="book" iconStyle="margin-top: 6.5px; height: 27px;" />
 
           </div>
         </div>
