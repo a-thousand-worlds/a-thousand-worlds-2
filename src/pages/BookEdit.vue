@@ -1,10 +1,11 @@
 <script>
+import _ from 'lodash'
 import dayjs from 'dayjs'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import BookDetailLink from '@/components/BookDetailLink'
 import Filter from '@/components/Filter'
 import Clipboard from 'clipboard'
-import CreatorsWidget from '@/components/CreatorsWidget'
+import CreatorCard from '@/components/CreatorCard'
 import LazyImage from '@/components/LazyImage'
 import Loader from '@/components/Loader'
 import NotFound from '@/pages/NotFound'
@@ -19,8 +20,8 @@ export default {
   name: 'BookDetail',
   components: {
     BookDetailLink,
+    CreatorCard,
     Filter,
-    CreatorsWidget,
     LazyImage,
     Loader,
     NotFound,
@@ -51,6 +52,10 @@ export default {
         : null
       this.$store.dispatch('debug', { book })
       return book
+    },
+    // creators id array sorted by authors then illustrators
+    creators() {
+      return _.sortBy(Object.keys(this.book.creators), id => this.book.creators[id])
     },
     isbn() {
       return this.$route.params.isbn
@@ -203,7 +208,7 @@ export default {
 
           <!-- creators -->
           <div class="authors divider-bottom">
-            <CreatorsWidget v-if="book.creators" class="mb-2" :creators="book.creators" linked edit />
+            <CreatorCard v-for="id in creators" :key="id" :id="id" :role="book.creators[id]" class="mb-20 mr-30" style="min-width: 33%;" edit />
           </div>
 
           <!-- summary -->
