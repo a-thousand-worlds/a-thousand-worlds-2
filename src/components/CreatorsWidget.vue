@@ -1,35 +1,78 @@
 <script>
 import PersonDetailLink from '@/components/PersonDetailLink'
+import creatorTitles from '@/store/constants/creatorTitles'
 
 export default {
   components: {
     PersonDetailLink,
   },
   props: {
-    creators: {},
+    book: {},
     linked: Boolean,
     // link to admin edit pages instead of public detail pages
     edit: Boolean,
   },
+  emits: ['updateTitle'],
   data() {
     return {
-      people: []
+      creatorTitles,
+      authorDropdownActive: false,
+      illustratorDropdownActive: false,
     }
   },
   computed: {
     peopleList() {
-      return Object.keys(this.creators || {})
-        .map(creatorId => ({ person: this.$store.state.people.data?.[creatorId] || null, role: this.creators[creatorId] }))
+      return Object.keys(this.book.creators || {})
+        .map(creatorId => ({ person: this.$store.state.people.data?.[creatorId] || null, role: this.book.creators[creatorId] }))
     },
     authors() {
-      return this.peopleList.filter(info => info.role === 'both' || info.role === 'author')
+      return this.peopleList.filter(creator => creator.role === 'both' || creator.role === 'author')
     },
     illustrators() {
-      return this.peopleList.filter(info => info.role === 'both' || info.role === 'illustrator')
+      return this.peopleList.filter(creator => creator.role === 'both' || creator.role === 'illustrator')
     },
     illustratorsSame() {
       return this.authors.every(creator => creator.role === 'both')
     },
+  },
+
+  methods: {
+
+    // function declaration needed for v-click-outside
+    closeTitleDropdown() {
+      this.authorDropdownActive = false
+      this.illustratorDropdownActive = false
+    },
+
+    // update all creators of the given title to the new title
+    // since the CreatorsWidget displays multiple creators of the same title in a comma-separated list, there isn't a good way to make a separate dropdown for each creator when there are multiple
+    // so in order to update individual creators, you have to go to BookEdit
+    updateTitle(titleIdOld, titleIdNew) {
+
+      this.closeTitleDropdown()
+
+      if (titleIdOld === titleIdNew) return
+
+      const creatorsOld = this[titleIdOld + 's'] || this.peopleList
+      const creatorsNew = creatorsOld.reduce((accum, creator) => ({
+        ...accum,
+        [creator.person.id]: titleIdNew === 'author-illustrator' ? 'both' : titleIdNew
+      }), {})
+
+      this.updateBook(`creators`, creatorsNew)
+    },
+
+    updateBook(field, value) {
+      if (value === undefined) {
+        value = field
+        field = ''
+      }
+      this.$store.dispatch('books/update', {
+        path: `${this.book.id}/${field}`,
+        value,
+      })
+    },
+
   }
 }
 </script>
@@ -37,8 +80,24 @@ export default {
 <template>
   <div class="creators-widget is-uppercase" style="margin-right: -5px;">
 
-    <div class="mb-10">
-      <b class="mr-2" style="white-space: nowrap;">{{ illustratorsSame ? '' : 'words ' }}by</b>
+    <div v-if="authors.length" class="mb-10">
+
+      <!-- author title dropdown -->
+      <div v-if="edit" class="dropdown mt-4 no-user-select" :class="{ 'is-active': authorDropdownActive }">
+        <div id="dropdown-menu" class="dropdown-menu" role="menu">
+          <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
+            <a v-for="title in creatorTitles" :key="title.id" class="dropdown-item is-capitalized" @click.prevent="updateTitle(illustratorsSame ? 'author-illustrator' : 'author', title.id)">
+              {{ title.text }}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <b class="mr-2" style="white-space: nowrap;">
+        <a v-if="edit" v-click-outside="closeTitleDropdown" @click.prevent.stop="authorDropdownActive = !authorDropdownActive" class="primary-hover" :class="{ 'is-primary': authorDropdownActive }" style="user-select: none;">{{ illustratorsSame ? '' : 'words ' }}by</a>
+        <span v-else>{{ illustratorsSame ? '' : 'words ' }}by</span>
+      </b>
+
       <!-- allow long names to push a few pixels into the padding before wrapping -->
       <span v-for="(person, i) of authors" :key="i">
         <PersonDetailLink v-if="person.person && linked" :person="person.person" :edit="edit" class="name linked">{{ person.person.name }}</PersonDetailLink>
@@ -47,8 +106,24 @@ export default {
       </span>
     </div>
 
-    <div v-if="!illustratorsSame && illustrators.length" class="mb-10">
-      <b class="mr-2" style="white-space: nowrap;">pictures by</b>
+    <div v-if="illustrators.length && (!illustratorsSame || authors.length === 0)" class="mb-10">
+
+      <!-- illustrator title dropdown -->
+      <div v-if="edit" class="dropdown mt-4 no-user-select" :class="{ 'is-active': illustratorDropdownActive }">
+        <div id="dropdown-menu" class="dropdown-menu" role="menu">
+          <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
+            <a v-for="title in creatorTitles" :key="title.id" class="dropdown-item is-capitalized" @click.prevent="updateTitle('illustrator', title.id)">
+              {{ title.text }}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <b class="mr-2" style="white-space: nowrap;">
+        <a v-if="edit" v-click-outside="closeTitleDropdown" @click.prevent.stop="illustratorDropdownActive = !illustratorDropdownActive" class="primary-hover" :class="{ 'is-primary': illustratorDropdownActive }" style="user-select: none;">pictures by</a>
+        <span v-else>pictures by</span>
+      </b>
+
       <!-- allow long names to push a few pixels into the padding before wrapping -->
       <span v-for="(person, i) of illustrators" :key="i">
         <PersonDetailLink v-if="person.person && linked" :person="person.person" :edit="edit" class="name linked">{{ person.person.name }}</PersonDetailLink>
@@ -62,6 +137,7 @@ export default {
 
 <style scoped lang="scss">
 @import "bulma/sass/utilities/_all.sass";
+@import "bulma/sass/components/dropdown.sass";
 @import '@/assets/style/mixins.scss';
 
 .creators-widget {

@@ -101,6 +101,13 @@ export default {
       })
     },
 
+    updateTitle(creatorId, titleId) {
+      // map titleId from creatorTitles to book creator titles
+      this.updateBook(`creators`, {
+        [creatorId]: titleId === 'author-illustrator' ? 'both' : titleId
+      })
+    },
+
     updateBook(field, value) {
       if (value === undefined) {
         value = field
@@ -208,7 +215,7 @@ export default {
 
           <!-- creators -->
           <div class="authors divider-bottom">
-            <CreatorCard v-for="id in creators" :key="id" :id="id" :role="book.creators[id]" class="mb-20 mr-30" style="min-width: 33%;" edit />
+            <CreatorCard v-for="id in creators" :key="id" :id="id" :role="book.creators[id]" class="mb-20 mr-30" style="min-width: 33%;" @updateTitle="titleId => updateTitle(id, titleId)" edit />
           </div>
 
           <!-- summary -->

@@ -180,7 +180,7 @@ export default {
               <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="people" @remove="updatePerson('identities', { [tag.id]: null })" button-class="is-outlined" editable />
 
               <!-- add tag -->
-              <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': tagsDropdownActive }">
+              <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': tagsDropdownActive }" style="text-align: left;">
                 <div id="dropdown-menu" class="dropdown-menu" role="menu">
                   <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
                     <a v-for="tag in tagOptions" :key="tag.id" class="dropdown-item is-capitalized" @click.prevent="updatePerson('identities', { [tag.id]: true })">

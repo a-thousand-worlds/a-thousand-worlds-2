@@ -1,5 +1,6 @@
 <script>
 import PersonDetailLink from '@/components/PersonDetailLink'
+import creatorTitles from '@/store/constants/creatorTitles'
 
 export default {
   components: {
@@ -17,29 +18,40 @@ export default {
       type: String,
     },
   },
+  emits: ['updateTitle'],
   data() {
     return {
-      people: []
+      creatorTitles,
+      titleDropdownActive: false,
     }
   },
   computed: {
     creator() {
-      const person = this.$store.state.people.data?.[this.id]
-      return person ? {
-        ...person,
-        role: this.role
-      } : null
+      return this.$store.state.people.data?.[this.id]
     },
     photoUrl() {
       return this.creator?.photo?.url || this.creator?.photo
     },
-    roleIntro() {
+    titleIntro() {
       const intro = this.role === 'author' ? 'words '
         : this.role === 'illustrator' ? 'pictures '
         : ''
       return `${intro}by`
     },
-  }
+  },
+  methods: {
+
+    // function declaration needed for v-click-outside
+    closeTitleDropdown() {
+      this.titleDropdownActive = false
+    },
+
+    updateTitle(titleId) {
+      this.closeTitleDropdown()
+      this.$emit('updateTitle', titleId)
+    },
+
+  },
 }
 </script>
 
@@ -65,7 +77,23 @@ export default {
     </div></PersonDetailLink>
 
     <div class="mt-20">
-      <div class="mr-2" style="font-weight: bold; white-space: nowrap;">{{ roleIntro }}</div>
+      <div class="mr-2">
+        <div style="font-weight: bold; white-space: nowrap;">
+          <a v-if="edit" v-click-outside="closeTitleDropdown" @click.prevent.stop="titleDropdownActive = !titleDropdownActive" style="user-select: none;" :class="{ 'primary-hover': edit, 'is-primary': titleDropdownActive }">{{ titleIntro }}</a>
+          <span v-else>{{ titleIntro }}</span>
+        </div>
+
+        <!-- title dropdown -->
+        <div v-if="edit" class="dropdown no-user-select" :class="{ 'is-active': titleDropdownActive }" style="position: absolute;">
+          <div id="dropdown-menu" class="dropdown-menu" role="menu">
+            <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
+              <a v-for="title in creatorTitles" :key="title.id" class="dropdown-item is-capitalized" @click.prevent="updateTitle(title.id)">
+                {{ title.text }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <PersonDetailLink v-if="creator" :person="creator" :edit="edit" class="primary-hover">{{ creator.name }}</PersonDetailLink>
     </div>
@@ -73,3 +101,9 @@ export default {
   </div>
 
 </template>
+
+<style lang="scss" scoped>
+@import "bulma/sass/utilities/_all.sass";
+@import "bulma/sass/components/dropdown.sass";
+@import '@/assets/style/vars.scss';
+</style>

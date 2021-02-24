@@ -43,7 +43,7 @@ export default {
       <div class="cover-data">
         <div class="title">{{ book.title }}</div>
         <div class="authors">
-          <CreatorsWidget :creators="book.creators" />
+          <CreatorsWidget :book="book" />
         </div>
       </div>
       <div class="bookmark">
@@ -55,7 +55,7 @@ export default {
       <div class="divider-bottom is-flex is-justify-content-space-between">
         <div>
           <h1 class="title">{{ book.title }}</h1>
-          <CreatorsWidget :creators="book.creators" />
+          <CreatorsWidget :book="book" />
         </div>
         <div style="padding-top: 0px;"><BookmarkButton :book="book" /></div>
       </div>
