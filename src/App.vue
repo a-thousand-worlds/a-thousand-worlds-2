@@ -66,7 +66,9 @@ export default ({
         <router-view />
       </section>
       <section v-if="$store.state.ui.bookmarksOpen" class="bookmarks column">
-        <BookmarksView />
+        <div class="bookmarks-inner">
+          <BookmarksView />
+        </div>
       </section>
 
       <!-- add the rightbar-border to main instead of rightbar itself in order to get correct z-indexing with welcome banner -->
@@ -123,14 +125,23 @@ body {
 }
 
 .bookmarks {
-  margin-right: $rightbar-width;
-  height: 100%;
 
-  @include until($tablet) {
-    margin-left: 0px;
-    margin-right: 0px;
-    margin-top: 40px;
-    margin-bottom: $mobile-footer-height;
+  & .bookmarks-inner {
+    padding-bottom: $mobile-footer-height;
+
+    @include from($tablet) {
+      @include primary(border-left-color);
+      position: fixed;
+      top: 0;
+      right: $rightbar-width;
+      height: 100%;
+      max-width: 45%;
+      overflow: scroll;
+      border-left: solid 1px;
+      background-color: #fff;
+      padding: 0 20px;
+    }
+
   }
 }
 
