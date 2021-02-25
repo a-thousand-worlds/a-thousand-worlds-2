@@ -2,46 +2,45 @@
 {
   "rules": {
     "users": {
-      ".read": "auth && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )",
+      ".read": "auth != null && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )",
       ".write": "root.child('users/'+auth.uid+'/roles/owner').val() === true",
       "$uid": {
-        ".read": "auth && ($uid === auth.uid || root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true)",
-        ".write": "$uid === auth.uid",
+        ".read": "auth != null && ($uid === auth.uid || root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true)",
+        ".write": "auth != null && $uid === auth.uid",
         "roles": {
-          ".read": "$uid === auth.uid",
-          ".write": "auth && root.child('users/'+auth.uid+'/roles/owner').val() === true"
+          ".read": "auth != null && $uid === auth.uid",
+          ".write": "auth != null && root.child('users/'+auth.uid+'/roles/owner').val() === true"
         }
       }
     },
     "books": {
       ".read": true,
-      ".write": "auth && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )"
+      ".write": "auth != null && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )"
     },
     "content": {
       ".read": true,
-      ".write": "root.child('users/'+auth.uid+'/roles/owner').val() === true"
+      ".write": "auth != null && root.child('users/'+auth.uid+'/roles/owner').val() === true"
     },
     "invites": {
       ".read": true,
-      ".write": "auth && ($uid === auth.uid || root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true || root.child('users/'+auth.uid+'/roles/creator').val() === true)",
+      ".write": "auth != null && (auth.$uid === auth.uid || root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true || root.child('users/'+auth.uid+'/roles/creator').val() === true)",
       "$code": {
         "used": {
           ".read": true,
-            // TODO: think more
-          ".write": true
+          ".write": "auth != null && root.child('users/'+auth.uid+'/profile/email').val() === root.child('invites/'+$code+'/email').val()"
         }
       }
     },
     "people": {
       ".read": true,
-      ".write": "auth && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )"
+      ".write": "auth != null && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )"
     },
     "tags": {
       ".read": true,
-      ".write": "root.child('users/'+auth.uid+'/roles/owner').val() === true"
+      ".write": "auth != null && root.child('users/'+auth.uid+'/roles/owner').val() === true"
     },
     "submits": {
-      ".read": "auth && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )",
+      ".read": "auth != null && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )",
       ".write": true
     }
   }
