@@ -270,6 +270,7 @@ export default {
       return [
         !sub.title ? { name: 'title', message: 'Title is required' } : null,
         !sub.authors ? { name: 'authors', message: 'Author is required' } : null,
+        !sub.illustrators ? { name: 'illustrators', message: 'Illustrator is required (or "same")' } : null,
         !sub.isbn ? { name: 'isbn', message: 'ISBN is required' } : null,
         Object.values(sub.tags).filter(x => x).length === 0 ? { name: 'tags', message: 'Tags are required' } : null,
       ].filter(x => x)
@@ -304,11 +305,13 @@ export default {
         <div v-for="(sub, si) of submissions" :key="si">
           <section class="basic-information">
 
+            <!-- title -->
             <div class="field">
               <label class="label" :class="{ 'has-text-danger': hasError('title') }" :for="titleId">Title</label>
               <BookTitleField v-model="sub.title" :disabled="$uiBusy || (books[si]?.id)" :inputClass="{ 'is-danger': hasError('title') }" :inputId="titleId" :searchable="false" @book-selected="fillBook($event, si)" @input="metadataInputsChanged(si)" />
             </div>
 
+            <!-- authors -->
             <div class="field">
               <label class="label" :class="{ 'has-text-danger': hasError('authors') }" for="authors">Author(s)</label>
               <div class="control">
@@ -316,8 +319,9 @@ export default {
               </div>
             </div>
 
+            <!-- illustrators -->
             <div class="field">
-              <label class="label" for="illustrators">Illustrator(s)<p style="font-weight: normal; text-transform: none;">If same as author type "same"</p></label>
+              <label class="label" :class="{ 'has-text-danger': hasError('illustrators') }" for="illustrators">Illustrator(s)<p style="font-weight: normal; text-transform: none;">If same as author type "same"</p></label>
               <div class="control">
                 <input id="illustrators" v-model="sub.illustrators" class="input" type="text" :disabled="$uiBusy || (books[si]?.id)" @input="metadataInputsChanged(si)">
               </div>
