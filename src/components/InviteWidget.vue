@@ -86,7 +86,7 @@ export default {
 
     async send() {
 
-      this.setInviteDropdown(false)
+      this.closeInviteDropdown()
 
       clearTimeout(this.disableSend)
       this.disableSend = setTimeout(() => {
@@ -116,8 +116,9 @@ export default {
       }
     },
 
-    setInviteDropdown(value) {
-      this.dropdownActive = value
+    // must be declared function for v-click-outside
+    closeInviteDropdown() {
+      this.dropdownActive = false
     },
 
     /** Toggles the expanded state and sets an initial height while expanded. */
@@ -196,7 +197,7 @@ export default {
 </script>
 
 <template>
-  <div @click.prevent="setInviteDropdown(false)">
+  <div v-click-outside="closeInviteDropdown">
 
     <p v-if="expanded" class="mb-10">Enter a list of names and emails (one per line)</p>
 

@@ -84,8 +84,7 @@ export default {
         : null
     },
     showOrgLink() {
-      return (this.isSignup || this.isEditProfile) &&
-        (this.isContributor || this.$can('submitBookOrBundle'))
+      return this.isEditProfile && (this.isContributor || this.$can('submitBookOrBundle'))
     }
   },
 
@@ -312,10 +311,10 @@ export default {
       }
 
       // contributor fields
-      if (this.isContributor && (this.isSignup || this.isEditProfile)) {
+      if (this.isContributor && this.isEditProfile) {
 
         // identities
-        const hasIdentities = Object.values(this.identities).length
+        const hasIdentities = Object.values(this.identities).some(x => x)
         if (!hasIdentities && !this.otherIdentity) {
           this.error = {
             message: 'Please check required fields',
@@ -324,7 +323,7 @@ export default {
         }
 
         // engagements
-        const hasSelectedEngagements = Object.values(this.affiliations.selectedEngagementCategories).length
+        const hasSelectedEngagements = Object.values(this.affiliations.selectedEngagementCategories).some(x => x)
         if (!hasSelectedEngagements && !this.affiliations.otherEngagementCategory) {
           this.error = {
             message: 'Please check required fields',
@@ -430,9 +429,9 @@ export default {
           </div>
 
           <!-- identities -->
-          <div v-if="isContributor && (isSignup || isEditProfile)" class="field">
+          <div v-if="isContributor && isEditProfile" class="field">
             <label class="label">
-              <span :class="{ 'has-text-danger': hasError('identities') }" style="text-transform: uppercase;">Identity</span>
+              <span :class="{ 'has-text-danger': hasError('identities') }" style="text-transform: uppercase;">Identity<sup class="required">*</sup></span>
               <div style="font-weight: normal;">Please select all that apply</div>
             </label>
 
@@ -450,8 +449,8 @@ export default {
           </div>
 
           <!-- engagement -->
-          <div v-if="isContributor && (isSignup || isEditProfile)" class="field">
-            <label class="label is-uppercase" :class="{ error: hasError('engagements') }">How do you engage with books?</label>
+          <div v-if="isContributor && isEditProfile" class="field">
+            <label class="label is-uppercase" :class="{ error: hasError('engagements') }">How do you engage with books?<sup class="required">*</sup></label>
             <div class="sublabel tablet-columns-2">
               <div v-for="engagement of engagements" :key="engagement.id" class="control columns-2">
                 <input :id="`engagement-${engagement.id}`" v-model="affiliations.selectedEngagementCategories[engagement.id]" :disabled="loading" :name="engagement.id" @input="revalidate" type="checkbox" :false-value="null" class="checkbox mr-2 mb-3">
@@ -469,8 +468,8 @@ export default {
           </div>
 
           <!-- organization -->
-          <div v-if="isContributor && (isSignup || isEditProfile)" class="field" :class="{ 'divider-30': !showOrgLink }">
-            <label class="label is-uppercase" :class="{ error: hasError('organizationName') }">Are you affiliated with an organization?</label>
+          <div v-if="isContributor && isEditProfile" class="field" :class="{ 'divider-30': !showOrgLink }">
+            <label class="label is-uppercase" :class="{ error: hasError('organizationName') }">Are you affiliated with an organization?<sup class="required">*</sup></label>
             <input v-model="affiliations.organization" :disabled="loading" @input="revalidate" class="input" type="text">
           </div>
 
@@ -505,6 +504,10 @@ export default {
 </template>
 
 <style scoped lang="scss">
+
+.required {
+  position: absolute;
+}
 
 .field:not(:last-child) {
   margin-bottom: 30px;
