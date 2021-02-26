@@ -45,6 +45,10 @@ export default {
         .filter(line => line && line.length)
         .join(', ')
     },
+    submitterPersonalWebsite() {
+      if (this.submitterLoading || !this.submitter.affiliations?.organization?.length) return null
+      return this.submitter.affiliations.personalWebsite
+    },
     submitterOrganization() {
       if (this.submitterLoading || !this.submitter.affiliations?.organization?.length) return null
       return this.submitter.affiliations.organization
@@ -98,7 +102,7 @@ export default {
       <!-- submitter -->
       <div v-if="type !== 'people'" class="has-text-right mt-20">
         <span v-tippy="{ content: `Submitted by` }">
-          {{ submitterName }}{{ submitterRoles ? `, ${submitterRoles}` : '' }}
+          <a v-if="submitterPersonalWebsite" target="_blank" :href="submitterPersonalWebsite">{{ submitterName }}</a><span v-else>{{ submitterName }}</span>{{ submitterRoles ? `, ${submitterRoles}` : '' }}
           <span v-if="submitterOrganization">
             <span class="ml-1">at</span>
             <a target="_blank" class="ml-1" v-if="submitterOrganizationLink" :href="submitterOrganizationLink">{{ submitterOrganization }}</a>

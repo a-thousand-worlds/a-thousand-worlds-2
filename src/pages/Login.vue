@@ -32,6 +32,7 @@ export default {
         organization: '',
         organizationLink: '',
         otherEngagementCategory: '',
+        personalWebsite: null,
         selectedEngagementCategories: {},
         ...profile?.affiliations,
       },
@@ -111,10 +112,12 @@ export default {
         })
       }
 
-      this.email = next?.profile?.email || ''
-      this.name = next?.profile?.name || ''
-      this.photo = next?.profile?.photo || ''
-      this.identities = { ...next?.profile?.identities }
+      this.affiliations = next?.profile?.affiliations || this.affiliations
+      this.email = next?.profile?.email || this.email
+      this.name = next?.profile?.name || this.name
+      this.photo = next?.profile?.photo || this.photo
+      this.identities = next?.profile?.identities || this.identities
+      this.otherIdentity = next?.profile?.otherIdentity || this.otherIdentity
     },
     '$store.state.user.user.roles'(next, prev) {
       // redirect invited users to Dashboard
@@ -286,19 +289,19 @@ export default {
 
       this.error = null
 
+      // email
+      if (!this.email.length) {
+        this.error = {
+          message: 'Please check required fields',
+          fields: { ...this.error?.fields, email: true },
+        }
+      }
+
       // name
       if ((this.isSignup || this.isEditProfile) && !this.name.length) {
         this.error = {
           message: 'Please check required fields',
           fields: { ...this.error?.fields, name: true },
-        }
-      }
-
-      // email
-      if ((this.isSignup || this.isLogin || this.isEditProfile) && !this.email.length) {
-        this.error = {
-          message: 'Please check required fields',
-          fields: { ...this.error?.fields, email: true },
         }
       }
 
@@ -312,6 +315,14 @@ export default {
 
       // contributor fields
       if (this.isContributor && this.isEditProfile) {
+
+        // personal website (not required)
+        // if (!this.affiliations.personalWebsite) {
+        //   this.error = {
+        //     message: 'Please check required fields',
+        //     fields: { ...this.error?.fields, personalWebsite: true },
+        //   }
+        // }
 
         // identities
         const hasIdentities = Object.values(this.identities).some(x => x)
@@ -401,7 +412,7 @@ export default {
             <!-- vertically center name, email, and password since height is variable (password is not shown on Edit Profile page) -->
             <div class="is-flex-grow-1 is-flex is-justify-content-center is-flex-direction-column">
               <div v-if="isSignup || isEditProfile" class="field">
-                <label :class="['label', { error: hasError('name') }]">NAME</label>
+                <label :class="['label', { error: hasError('name') }]">NAME<sup class="required">*</sup></label>
                 <div class="control">
                   <input v-model="name" :disabled="loading" type="text" class="input" :class="{ 'is-danger': hasError('name') }" @input="revalidate">
                 </div>
@@ -409,7 +420,7 @@ export default {
 
               <!-- email -->
               <div v-if="isLogin || isSignup || isEditProfile" class="field">
-                <label :class="['label', { error: hasError('email') }]">EMAIL</label>
+                <label :class="['label', { error: hasError('email') }]">EMAIL<sup class="required">*</sup></label>
                 <div class="control">
                   <span v-tippy="invite ? { content: `You have to use this email to sign up as a ${invite.role}, but you can change it after logging in.` } : null">
                     <input v-model="email" @keypress.enter.prevent="onEnter" :disabled="invite" type="email" class="input" :class="{ 'is-danger': hasError('email') }" @input="revalidate">
@@ -419,13 +430,19 @@ export default {
 
               <!-- password -->
               <div v-if="isLogin || isSignup" class="field">
-                <label :class="['label', { error: hasError('password') }]">PASSWORD</label>
+                <label :class="['label', { error: hasError('password') }]">PASSWORD<sup class="required">*</sup></label>
                 <div class="control">
                   <input v-model="password" :disabled="loading" type="password" class="input" :class="{ 'is-danger': hasError('password') }" @keypress.enter.prevent="onEnter" @input="revalidate">
                 </div>
               </div>
             </div>
 
+          </div>
+
+          <!-- personal website -->
+          <div v-if="isContributor && isEditProfile" class="field">
+            <label class="label is-uppercase" :class="{ error: hasError('personalWebsite') }">Personal website or social media URL</label>
+            <input v-model="affiliations.personalWebsite" class="input" type="text">
           </div>
 
           <!-- identities -->
@@ -475,7 +492,7 @@ export default {
 
           <!-- organization link -->
           <div v-if="showOrgLink" class="field divider-30">
-            <label class="label is-uppercase" :class="{ error: hasError('organizationLink') }">Link to organization:</label>
+            <label class="label is-uppercase" :class="{ error: hasError('organizationLink') }">Link to organization<sup class="required">*</sup></label>
             <input v-model="affiliations.organizationLink" :disabled="loading" @input="revalidate" class="input" type="text">
           </div>
 

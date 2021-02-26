@@ -16,6 +16,10 @@ export default {
           name: 'organizationName',
           message: 'Organization is required'
         }] : [],
+        ...!this.affiliations.organizationLink ? [{
+          name: 'organizationLink',
+          message: 'Organization link is required'
+        }] : [],
         ...!hasIdentity && !this.otherIdentity ? [{
           name: 'identity',
           message: 'Identity is required'
@@ -30,6 +34,7 @@ export default {
         organization: '',
         organizationLink: '',
         otherEngagementCategory: '',
+        personalWebsite: null,
         selectedEngagementCategories: {},
         ...profile?.affiliations,
       },
@@ -93,6 +98,12 @@ export default {
 
     <form class="is-flex-grow-1" @submit.prevent="saveProfile">
 
+      <!-- personal website -->
+      <div class="field">
+        <label class="label is-uppercase" :class="{ error: hasError('personalWebsite') }">Personal website or social media URL</label>
+        <input v-model="affiliations.personalWebsite" class="input" type="text">
+      </div>
+
       <!-- engagement -->
       <div class="field">
         <label class="label is-uppercase" :class="{ error: hasError('engagements') }">How do you engage with books?<sup class="required">*</sup></label>
@@ -122,7 +133,7 @@ export default {
 
       <!-- organization link -->
       <div class="field">
-        <label class="label is-uppercase" :class="{ error: hasError('organizationLink') }">Link to organization:</label>
+        <label class="label is-uppercase" :class="{ error: hasError('organizationLink') }">Link to organization<sup class="required">*</sup></label>
         <input v-model="affiliations.organizationLink" @input="revalidate" class="input" type="text">
       </div>
 

@@ -40,8 +40,8 @@ export default {
       return this.profile?.affiliations?.organizationLink
     },
 
-    url() {
-      return this.profile?.url
+    personalWebsite() {
+      return this.profile?.affiliations?.personalWebsite
     }
 
   }
@@ -54,7 +54,7 @@ export default {
 
     <!-- name -->
     <u>
-      <a v-if="url" :href="url" target="_blank" class="primary-hover">{{ name }}</a>
+      <a v-if="personalWebsite" :href="personalWebsite" target="_blank" class="primary-hover">{{ name }}</a>
       <span v-else>{{ name }}</span>
     </u>
 
