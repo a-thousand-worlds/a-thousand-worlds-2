@@ -272,7 +272,7 @@ export default {
         !sub.authors ? { name: 'authors', message: 'Author is required' } : null,
         !sub.illustrators ? { name: 'illustrators', message: 'Illustrator is required (or "same")' } : null,
         !sub.isbn ? { name: 'isbn', message: 'ISBN is required' } : null,
-        Object.values(sub.tags).filter(x => x).length === 0 ? { name: 'tags', message: 'Tags are required' } : null,
+        !Object.values(sub.tags).some(x => x) ? { name: 'tags', message: 'Tags are required' } : null,
       ].filter(x => x)
     },
 
@@ -307,13 +307,13 @@ export default {
 
             <!-- title -->
             <div class="field">
-              <label class="label" :class="{ 'has-text-danger': hasError('title') }" :for="titleId">Title</label>
+              <label class="label" :class="{ 'has-text-danger': hasError('title') }" :for="titleId">Title<sup class="required">*</sup></label>
               <BookTitleField v-model="sub.title" :disabled="$uiBusy || (books[si]?.id)" :inputClass="{ 'is-danger': hasError('title') }" :inputId="titleId" :searchable="false" @book-selected="fillBook($event, si)" @input="metadataInputsChanged(si)" />
             </div>
 
             <!-- authors -->
             <div class="field">
-              <label class="label" :class="{ 'has-text-danger': hasError('authors') }" for="authors">Author(s)</label>
+              <label class="label" :class="{ 'has-text-danger': hasError('authors') }" for="authors">Author(s)<sup class="required">*</sup></label>
               <div class="control">
                 <input id="authors" v-model="sub.authors" class="input" :class="{ 'is-danger': hasError('authors') }" type="text" :disabled="$uiBusy || (books[si]?.id)" @input="metadataInputsChanged(si)">
               </div>
@@ -321,7 +321,9 @@ export default {
 
             <!-- illustrators -->
             <div class="field">
-              <label class="label" :class="{ 'has-text-danger': hasError('illustrators') }" for="illustrators">Illustrator(s)<p style="font-weight: normal; text-transform: none;">If same as author type "same"</p></label>
+              <label class="label" :class="{ 'has-text-danger': hasError('illustrators') }" for="illustrators">Illustrator(s)<sup class="required">*</sup>
+                <p style="font-weight: normal; text-transform: none;">If same as author type "same"</p>
+              </label>
               <div class="control">
                 <input id="illustrators" v-model="sub.illustrators" class="input" type="text" :disabled="$uiBusy || (books[si]?.id)" @input="metadataInputsChanged(si)">
               </div>
@@ -403,7 +405,7 @@ export default {
 
             <!-- tags -->
             <div v-if="!books[si] || (books[si] && !books[si].id)" class="field">
-              <label class="label" :class="{ 'has-text-danger': hasError('tags') }">How would you categorize this book? Select all that apply</label>
+              <label class="label" :class="{ 'has-text-danger': hasError('tags') }">How would you categorize this book? Select all that apply<sup class="required">*</sup></label>
               <div class="text-14 tablet-columns-2">
                 <div v-for="tag of $store.getters['tags/books/listSorted']()" :key="tag.id" class="control is-flex" style="column-break-inside: avoid;">
                   <input :id="`${tag.id}-${si}`" v-model="sub.tags[tag.id]" :name="tag.id" type="checkbox" class="checkbox mr-3 mb-3 mt-1" @input="revalidateDelayed">
@@ -454,6 +456,10 @@ export default {
 <style scoped lang="scss">
 @import "bulma/sass/utilities/_all.sass";
 @import '@/assets/style/vars.scss';
+
+.required {
+  position: absolute;
+}
 
 .text-14 .label {
   font-size: 14px;

@@ -144,7 +144,7 @@ export default {
 
           <!-- name -->
           <div class="field">
-            <label class="label" :class="{ 'has-text-danger': hasError('name') }" style="font-weight: bold; text-transform: uppercase;">Your Name</label>
+            <label class="label" :class="{ 'has-text-danger': hasError('name') }" style="font-weight: bold; text-transform: uppercase;">Your Name<sup class="required">*</sup></label>
             <input type="text" class="input" v-model="submission.name" @input="saveDraftAndRevalidate">
           </div>
 
@@ -162,7 +162,7 @@ export default {
 
           <!-- title -->
           <div class="field">
-            <label class="label" :class="{ 'has-text-danger': hasError('title') }" style="font-weight: bold; text-transform: uppercase;">Your Title</label>
+            <label class="label" :class="{ 'has-text-danger': hasError('title') }" style="font-weight: bold; text-transform: uppercase;">Your Title<sup class="required">*</sup></label>
 
             <div v-for="title of creatorTitles" :key="title.id" class="control is-flex">
               <label style="cursor: pointer;">
@@ -263,6 +263,10 @@ export default {
 <style scoped lang="scss">
 @import "bulma/sass/utilities/_all.sass";
 @import '@/assets/style/vars.scss';
+
+.required {
+  position: absolute;
+}
 
 .upload-label {
   cursor: pointer;
