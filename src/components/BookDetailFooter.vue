@@ -29,9 +29,9 @@ export default {
 
         <button class="button button-unstyled is-primary pl-0">FIND BOOK AT</button>
 
-        <button class="button is-rounded is-secondary mx-1 test">
+        <a :href="`https://worldcat.org/isbn/${book.isbn}`" target="_blank"><button class="button is-rounded is-secondary mx-1 test">
           <i class="fas fa-university mr-1" /> LOCAL LIBRARY
-        </button>
+        </button></a>
 
         <a :href="`https://amzn.com/${isbn10}?tag=${amazonAffiliateCode}`" target="_blank"><button class="button is-rounded is-secondary mx-1">
           <i class="fas fa-shopping-cart mr-1" /> AMAZON
