@@ -4,16 +4,33 @@ import engagements from '@/store/constants/engagements'
 export default {
 
   props: {
-    id: {
-      required: true,
+    // contributor id
+    modelValue: {
       type: String,
+    },
+    edit: {
+      type: Boolean,
+    },
+  },
+  emits: ['update:modelValue'],
+  data() {
+    return {
+      dropdownActive: false,
     }
   },
   computed: {
 
+    contributors() {
+      return this.$store.state.users.loaded
+        ? Object.entries(this.$store.state.users.data)
+          .filter(([id, user]) => user.roles?.contributor)
+          .map(([id, user]) => ({ id, ...user }))
+        : []
+    },
+
     profile() {
-      return this.id && this.$store.state.users.loaded
-        ? this.$store.state.users.data[this.id]?.profile
+      return this.modelValue && this.$store.state.users.loaded
+        ? this.$store.state.users.data[this.modelValue]?.profile
         : null
     },
 
@@ -44,13 +61,45 @@ export default {
       return this.profile?.affiliations?.personalWebsite
     }
 
-  }
+  },
+  methods: {
+
+    // function declaration needed for v-click-outside
+    closeDropdown() {
+      this.dropdownActive = false
+    },
+
+    update(contributor) {
+      this.closeDropdown()
+      this.$emit('update:modelValue', contributor.id)
+    },
+
+  },
 }
 </script>
 
 <template>
-  <p>
-    <b>– RECOMMENDED BY </b>
+
+  <!-- ensure there is enough room below Recommended By for the dropdown -->
+  <div :style="edit ? 'margin-bottom: 150px;' : null">
+
+    <b>
+      <a v-if="edit" v-click-outside="closeDropdown" @click.prevent.stop="dropdownActive = !dropdownActive" style="user-select: none;" :class="{ 'primary-hover': edit, 'is-primary': dropdownActive }">– RECOMMENDED BY </a>
+      <span v-else>– RECOMMENDED BY </span>
+    </b>
+
+    <!-- dropdown -->
+    <div v-if="edit" class="dropdown no-user-select" :class="{ 'is-active': dropdownActive }" style="position: absolute;">
+      <div id="dropdown-menu" class="dropdown-menu" role="menu">
+        <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
+          <!-- <a class="dropdown-item is-capitalized" @click.prevent="showNewContributor = true"><b>NEW CONTRIBUTOR</b></a>
+          <hr class="dropdown-divider"> -->
+          <a v-for="contributor in contributors" :key="contributor.id" class="dropdown-item is-capitalized" :class="{ 'is-active': contributor.id === modelValue }" @click.prevent="update(contributor)">
+            {{ contributor.profile.name }}
+          </a>
+        </div>
+      </div>
+    </div>
 
     <!-- name -->
     <u>
@@ -67,5 +116,11 @@ export default {
       <i v-else>, {{ organization }}</i>
     </span>
 
-  </p>
+  </div>
 </template>
+
+<style lang="scss" scoped>
+@import "bulma/sass/utilities/_all.sass";
+@import "bulma/sass/components/dropdown.sass";
+@import '@/assets/style/vars.scss';
+</style>

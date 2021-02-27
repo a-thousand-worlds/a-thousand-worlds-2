@@ -37,7 +37,7 @@ const module = name => {
       },
 
       async update(ctx, { path, value }) {
-        ctx.dispatch('save', { path, value: value, method: 'update' })
+        ctx.dispatch('save', { path, value, method: 'update' })
       }
 
     }

@@ -9,6 +9,7 @@ import CreatorCard from '@/components/CreatorCard'
 import LazyImage from '@/components/LazyImage'
 import Loader from '@/components/Loader'
 import NotFound from '@/pages/NotFound'
+import RecommendedBy from '@/components/RecommendedBy'
 import SimpleInput from '@/components/fields/SimpleInput'
 import Tag from '@/components/Tag'
 
@@ -26,6 +27,7 @@ export default {
     Loader,
     NotFound,
     SimpleInput,
+    RecommendedBy,
     Tag,
   },
   beforeRouteLeave(to, from, next) {
@@ -101,9 +103,18 @@ export default {
       })
     },
 
+    updateRecommendedBy(contributorId) {
+      this.$store.dispatch('books/update', {
+        path: `${this.book.id}`,
+        value: {
+          createdBy: contributorId
+        },
+      })
+    },
+
     updateTitle(creatorId, titleId) {
       // map titleId from creatorTitles to book creator titles
-      this.updateBook(`creators`, {
+      this.updateBook('creators', {
         [creatorId]: titleId === 'author-illustrator' ? 'both' : titleId
       })
     },
@@ -220,6 +231,8 @@ export default {
 
           <!-- summary -->
           <ckeditor @update:modelValue="updateBook({ summary: $event })" v-model="book.summary" :editor="editor" :config="ckConfig" class="summary" style="padding: 0;" />
+
+          <RecommendedBy v-if="book.createdBy" v-model="book.createdBy" @update:modelValue="updateRecommendedBy" edit class="mt-10" style="font-size: 16px;" />
 
         </div>
         <div v-else>

@@ -113,7 +113,7 @@ export default {
           <!-- summary is edited with ckeditor and may contain html -->
           <p class="summary" :innerHTML="book.summary || book.description" />
 
-          <RecommendedBy v-if="book.createdBy" :id="book.createdBy" class="mt-10" style="font-size: 16px;" />
+          <RecommendedBy v-if="book.createdBy" v-model="book.createdBy" class="mt-10" style="font-size: 16px;" />
 
         </div>
         <div v-else>
