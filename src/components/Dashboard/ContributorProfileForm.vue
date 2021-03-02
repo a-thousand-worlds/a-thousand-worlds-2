@@ -2,12 +2,24 @@
 import validator from '@/mixins/validator'
 import engagementOptions from '@/store/constants/engagements'
 
+const newAffiliations = () => ({
+  organization: '',
+  organizationLink: '',
+  otherEngagementCategory: '',
+  personalWebsite: null,
+  selectedEngagementCategories: {},
+})
+
 export default {
   mixins: [
     validator(function() {
       const hasIdentity = Object.values(this.identities).some(x => x)
       const hasSelectedEngagements = Object.values(this.affiliations.selectedEngagementCategories).some(x => x)
       return [
+        ...this.admin && !this.name ? [{
+          name: 'name',
+          message: 'Name is required'
+        }] : [],
         ...!hasSelectedEngagements && !this.affiliations.otherEngagementCategory ? [{
           name: 'engagements',
           message: 'How you engage with books is required'
@@ -27,21 +39,24 @@ export default {
       ]
     })
   ],
+  props: {
+    admin: {
+      type: Boolean,
+    }
+  },
+  emits: ['cancel', 'save'],
   data() {
     const profile = this.$store.state.user.user?.profile
     return {
       affiliations: {
-        organization: '',
-        organizationLink: '',
-        otherEngagementCategory: '',
-        personalWebsite: null,
-        selectedEngagementCategories: {},
+        ...newAffiliations(),
         ...profile?.affiliations,
       },
       disableAfterSave: false,
       engagementOptions,
       identities: profile?.identities ? { ...profile.identities } : {},
       loading: false,
+      name: '', // admin only
       otherIdentity: null,
     }
   },
@@ -70,23 +85,48 @@ export default {
 
       this.loading = true
 
-      await this.$store.dispatch('user/updateProfile', {
-        identities: this.identities,
+      const profile = {
         affiliations: this.affiliations,
+        identities: this.identities,
         otherIdentity: this.otherIdentity,
-      })
-        .then(() => {
+        ...this.admin ? { name: this.name } : null,
+      }
+
+      // do not await so we can emit save with a promise
+      const updated = this.$store.dispatch(this.admin ? 'users/saveContributor' : 'user/updateProfile', profile)
+        .then(uid => {
+          this.loading = false
           this.$store.dispatch('ui/popup', {
-            text: 'Profile saved',
+            text: `${this.admin ? 'Contributor' : 'Profile'} saved`,
             type: 'success'
           })
+          return uid
+        })
+        .catch(e => {
+          this.loading = false
+          throw new Error(e)
         })
 
       this.disableAfterSaveTimeout = setTimeout(() => {
         this.disableAfterSave = false
       }, 1000)
 
+      this.$emit('save', updated.then(uid => ({
+        ...profile,
+        id: uid,
+      })))
+
     },
+
+    // admin only
+    cancel() {
+      this.affiliations = newAffiliations()
+      this.identities = {}
+      this.otherIdentity = null
+      this.name = ''
+      this.$emit('cancel')
+    }
+
   },
 
 }
@@ -94,9 +134,15 @@ export default {
 
 <template>
   <div>
-    <h2 class="field">Welcome! Let's start by getting the information that will be displayed with your book recommendations.</h2>
+    <h2 v-if="!admin" class="field">Welcome! Let's start by getting the information that will be displayed with your book recommendations.</h2>
 
     <form class="is-flex-grow-1" @submit.prevent="saveProfile">
+
+      <!-- name (admin only) -->
+      <div v-if="admin" class="field">
+        <label class="label is-uppercase" :class="{ error: hasError('name') }">Name<sup class="required">*</sup></label>
+        <input v-model="name" class="input" type="text">
+      </div>
 
       <!-- personal website -->
       <div class="field">
@@ -137,7 +183,7 @@ export default {
         <input v-model="affiliations.organizationLink" @input="revalidate" class="input" type="text">
       </div>
 
-      <h2 class="mt-50">This information will not be made public:</h2>
+      <h2 v-if="!admin" class="mt-50">This information will not be made public:</h2>
 
       <!-- identities -->
       <div class="field" divider-30>
@@ -163,7 +209,12 @@ export default {
 
       <!-- save button -->
       <div class="field my-4">
-        <input type="submit" :disabled="errors.length > 0" class="button is-primary is-rounded is-fullwidth is-uppercase" :class="{'is-loading':loading}" value="Save">
+        <input type="submit" :disabled="!loading && errors.length > 0" class="button is-primary is-rounded is-fullwidth is-uppercase" :class="{'is-loading':loading}" value="Save">
+      </div>
+
+      <!-- cancel button (admin only) -->
+      <div class="field my-4">
+        <input type="button" value="Cancel" @click.prevent="cancel" class="button is-rounded is-fullwidth is-uppercase">
       </div>
 
       <!-- errors -->

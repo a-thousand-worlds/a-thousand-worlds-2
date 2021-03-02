@@ -85,7 +85,7 @@ export default {
         : null
     },
     showOrgLink() {
-      return this.isEditProfile && (this.isContributor || this.$can('submitBookOrBundle'))
+      return this.isEditProfile && this.isContributor
     }
   },
 
