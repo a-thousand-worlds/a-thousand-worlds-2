@@ -95,6 +95,11 @@ export default {
       this.showNewContributor = false
     },
 
+    remove() {
+      this.closeDropdown()
+      this.$emit('update:modelValue', null)
+    },
+
     update(contributor) {
       this.closeDropdown()
       this.$emit('update:modelValue', contributor.id)
@@ -119,7 +124,8 @@ export default {
       <div v-if="edit" class="dropdown no-user-select" :class="{ 'is-active': dropdownActive }" style="position: absolute;">
         <div id="dropdown-menu" class="dropdown-menu" role="menu">
           <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
-            <a class="dropdown-item is-capitalized" @click.prevent="showNewContributor = true"><b>NEW CONTRIBUTOR</b></a>
+            <a class="dropdown-item is-capitalized is-uppercase" @click.prevent="showNewContributor = true"><b>New Contributor</b></a>
+            <a class="dropdown-item is-capitalized is-uppercase" @click.prevent="remove">None</a>
             <hr class="dropdown-divider">
             <a v-for="contributor in contributors" :key="contributor.id" class="dropdown-item is-capitalized" :class="{ 'is-active': contributor.id === modelValue }" @click.prevent="update(contributor)">
               {{ contributor.profile.name }}
@@ -129,10 +135,10 @@ export default {
       </div>
 
       <!-- name -->
-      <u>
-        <a v-if="personalWebsite" :href="personalWebsite" target="_blank" class="primary-hover">{{ name }}</a>
-        <span v-else>{{ name }}</span>
+      <u v-if="name">
+        <a :href="name" target="_blank" class="primary-hover">{{ name }}</a>
       </u>
+      <i v-else style="opacity: 0.5;">None</i>
 
       <!-- title -->
       <span v-if="title">, {{ title }}</span>

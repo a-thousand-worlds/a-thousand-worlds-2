@@ -232,7 +232,7 @@ export default {
           <!-- summary -->
           <ckeditor @update:modelValue="updateBook({ summary: $event })" v-model="book.summary" :editor="editor" :config="ckConfig" class="summary" style="padding: 0;" />
 
-          <RecommendedBy v-if="book.createdBy" v-model="book.createdBy" @update:modelValue="updateRecommendedBy" edit class="mt-10" style="font-size: 16px;" />
+          <RecommendedBy v-model="book.createdBy" @update:modelValue="updateRecommendedBy" edit class="mt-10" style="font-size: 16px;" />
 
         </div>
         <div v-else>
