@@ -1,23 +1,54 @@
 <script>
 import engagements from '@/store/constants/engagements'
+import ContributorProfileForm from '@/components/Dashboard/ContributorProfileForm'
+
+const newContributor = () => ({
+  engagements: {},
+  name: '',
+  organization: '',
+  organizationLink: '',
+  personalWebsite: '',
+})
 
 export default {
-
+  components: {
+    ContributorProfileForm,
+  },
   props: {
-    id: {
-      required: true,
+    // contributor id
+    modelValue: {
       type: String,
+    },
+    edit: {
+      type: Boolean,
+    },
+  },
+  emits: ['update:modelValue'],
+  data() {
+    return {
+      dropdownActive: false,
+      newContributor: newContributor(),
+      showNewContributor: false,
     }
   },
   computed: {
 
+    contributors() {
+      return this.$store.state.users.loaded
+        ? Object.entries(this.$store.state.users.data)
+          .filter(([id, user]) => user.roles?.contributor)
+          .map(([id, user]) => ({ id, ...user }))
+        : []
+    },
+
     profile() {
-      return this.id && this.$store.state.users.loaded
-        ? this.$store.state.users.data[this.id]?.profile
+      return this.modelValue && this.$store.state.users.loaded
+        ? this.$store.state.users.data[this.modelValue]?.profile
         : null
     },
 
     name() {
+      if (!this.profile) return ''
       return this.profile.name || (this.profile.firstName ? `${this.profile.firstName || ''} ${this.profile.lastName || ''}` : 'anonymous')
     },
 
@@ -40,32 +71,109 @@ export default {
       return this.profile?.affiliations?.organizationLink
     },
 
-    url() {
-      return this.profile?.url
+    personalWebsite() {
+      return this.profile?.affiliations?.personalWebsite
     }
 
-  }
+  },
+  methods: {
+
+    createNewContributor(newContributor) {
+      newContributor.then(contributor => {
+        this.update(contributor)
+        this.resetNewContributorForm()
+      })
+    },
+
+    // function declaration needed for v-click-outside
+    closeDropdown() {
+      this.dropdownActive = false
+    },
+
+    resetNewContributorForm() {
+      this.newContributor = newContributor()
+      this.showNewContributor = false
+    },
+
+    remove() {
+      this.closeDropdown()
+      this.$emit('update:modelValue', null)
+    },
+
+    update(contributor) {
+      this.closeDropdown()
+      this.$emit('update:modelValue', contributor.id)
+    },
+
+  },
 }
 </script>
 
 <template>
-  <p>
-    <b>– RECOMMENDED BY </b>
 
-    <!-- name -->
-    <u>
-      <a v-if="url" :href="url" target="_blank" class="primary-hover">{{ name }}</a>
-      <span v-else>{{ name }}</span>
-    </u>
+  <!-- ensure there is enough room below Recommended By for the dropdown -->
+  <div :style="edit ? 'margin-bottom: 150px;' : null">
 
-    <!-- title -->
-    <span v-if="title">, {{ title }}</span>
+    <div v-if="!showNewContributor">
+      <b>
+        <a v-if="edit" v-click-outside="closeDropdown" @click.prevent.stop="dropdownActive = !dropdownActive" style="user-select: none;" :class="{ 'primary-hover': edit, 'is-primary': dropdownActive }">– RECOMMENDED BY </a>
+        <span v-else>– RECOMMENDED BY </span>
+      </b>
 
-    <!-- organization -->
-    <span v-if="organization">
-      <a v-if="organizationLink" :href="organizationLink" target="_blank" class="primary-hover">, <u>{{ organization }}</u></a>
-      <i v-else>, {{ organization }}</i>
-    </span>
+      <!-- dropdown -->
+      <div v-if="edit" class="dropdown no-user-select" :class="{ 'is-active': dropdownActive }" style="position: absolute;">
+        <div id="dropdown-menu" class="dropdown-menu" role="menu">
+          <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
+            <a class="dropdown-item is-capitalized is-uppercase" @click.prevent="showNewContributor = true"><b>New Contributor</b></a>
+            <a class="dropdown-item is-capitalized is-uppercase" @click.prevent="remove">None</a>
+            <hr class="dropdown-divider">
+            <a v-for="contributor in contributors" :key="contributor.id" class="dropdown-item is-capitalized" :class="{ 'is-active': contributor.id === modelValue }" @click.prevent="update(contributor)">
+              {{ contributor.profile.name }}
+            </a>
+          </div>
+        </div>
+      </div>
 
-  </p>
+      <!-- name -->
+      <u v-if="name">
+        <a :href="name" target="_blank" class="primary-hover">{{ name }}</a>
+      </u>
+      <i v-else style="opacity: 0.5;">None</i>
+
+      <!-- title -->
+      <span v-if="title">, {{ title }}</span>
+
+      <!-- organization -->
+      <span v-if="organization">
+        <a v-if="organizationLink" :href="organizationLink" target="_blank" class="primary-hover">, <u>{{ organization }}</u></a>
+        <i v-else>, {{ organization }}</i>
+      </span>
+    </div>
+
+    <!-- New Contributor -->
+    <div v-else style="max-width: 450px;">
+      <h2 class="divider-bottom">New Contributor</h2>
+      <ContributorProfileForm admin @cancel="resetNewContributorForm" @save="createNewContributor" />
+    </div>
+
+  </div>
 </template>
+
+<style lang="scss" scoped>
+@import "bulma/sass/utilities/_all.sass";
+@import "bulma/sass/components/dropdown.sass";
+@import '@/assets/style/vars.scss';
+
+.required {
+  position: absolute;
+}
+
+.field {
+  margin-bottom: 30px;
+}
+
+label {
+  text-transform: uppercase;
+}
+
+</style>

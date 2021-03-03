@@ -1,4 +1,5 @@
 <script>
+import * as slugify from '@sindresorhus/slugify'
 import PersonDetailLink from '@/components/PersonDetailLink'
 import creatorTitles from '@/store/constants/creatorTitles'
 
@@ -62,6 +63,11 @@ export default {
       this.updateBook(`creators`, creatorsNew)
     },
 
+    /** Returns true if we are on the person page for the given person. */
+    personPageActive(personObject) {
+      return this.$route.name === 'PersonDetail' && this.$route.params?.name === slugify(personObject?.person?.name)
+    },
+
     updateBook(field, value) {
       if (value === undefined) {
         value = field
@@ -93,15 +99,15 @@ export default {
         </div>
       </div>
 
-      <b class="mr-2" style="white-space: nowrap;">
-        <a v-if="edit" v-click-outside="closeTitleDropdown" @click.prevent.stop="authorDropdownActive = !authorDropdownActive" class="primary-hover" :class="{ 'is-primary': authorDropdownActive }" style="user-select: none;">{{ illustratorsSame ? '' : 'words ' }}by</a>
+      <b class="mr-2" style="user-select: none; white-space: nowrap;">
+        <a v-if="edit" v-click-outside="closeTitleDropdown" @click.prevent.stop="authorDropdownActive = !authorDropdownActive" class="primary-hover" :class="{ 'is-primary': authorDropdownActive }">{{ illustratorsSame ? '' : 'words ' }}by</a>
         <span v-else>{{ illustratorsSame ? '' : 'words ' }}by</span>
       </b>
 
       <!-- allow long names to push a few pixels into the padding before wrapping -->
       <span v-for="(person, i) of authors" :key="i">
-        <PersonDetailLink v-if="person.person && linked" :person="person.person" :edit="edit" class="name linked">{{ person.person.name }}</PersonDetailLink>
-        <span v-if="person.person && !linked" class="name">{{ person.person?.name }}</span>
+        <PersonDetailLink v-if="person.person && linked && !personPageActive(person)" :person="person.person" :edit="edit" class="name linked">{{ person.person.name }}</PersonDetailLink>
+        <span v-else class="name">{{ person.person?.name }}</span>
         <span v-if="authors?.length > 1 && i !== authors?.length - 1" class="mr-2">,</span>
       </span>
     </div>
@@ -119,15 +125,15 @@ export default {
         </div>
       </div>
 
-      <b class="mr-2" style="white-space: nowrap;">
-        <a v-if="edit" v-click-outside="closeTitleDropdown" @click.prevent.stop="illustratorDropdownActive = !illustratorDropdownActive" class="primary-hover" :class="{ 'is-primary': illustratorDropdownActive }" style="user-select: none;">pictures by</a>
+      <b class="mr-2" style="user-select: none; white-space: nowrap;">
+        <a v-if="edit" v-click-outside="closeTitleDropdown" @click.prevent.stop="illustratorDropdownActive = !illustratorDropdownActive" class="primary-hover" :class="{ 'is-primary': illustratorDropdownActive }">pictures by</a>
         <span v-else>pictures by</span>
       </b>
 
       <!-- allow long names to push a few pixels into the padding before wrapping -->
       <span v-for="(person, i) of illustrators" :key="i">
-        <PersonDetailLink v-if="person.person && linked" :person="person.person" :edit="edit" class="name linked">{{ person.person.name }}</PersonDetailLink>
-        <span v-if="person.person && !linked" class="name">{{ person.person.name }}</span>
+        <PersonDetailLink v-if="person.person && linked && !personPageActive(person)" :person="person.person" :edit="edit" class="name linked">{{ person.person.name }}</PersonDetailLink>
+        <span v-else class="name">{{ person.person.name }}</span>
         <span v-if="illustrators.length > 1 && i !== illustrators?.length - 1" class="mr-2">,</span>
       </span>
     </div>

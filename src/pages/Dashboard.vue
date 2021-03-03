@@ -1,4 +1,5 @@
 <script>
+import ContributorProfileForm from '@/components/Dashboard/ContributorProfileForm'
 import CreatorProfilePreview from '@/components/Dashboard/CreatorProfilePreview'
 import InviteWidget from '@/components/InviteWidget'
 import Loader from '@/components/Loader'
@@ -8,6 +9,7 @@ import YourBookSubmissions from '@/components/Dashboard/YourBookSubmissions'
 
 export default {
   components: {
+    ContributorProfileForm,
     CreatorProfilePreview,
     Loader,
     InviteWidget,
@@ -32,6 +34,11 @@ export default {
     username() {
       return this.$store.state.user.user?.profile.name || this.$store.state.user.user?.profile.email
     },
+    hasPendingContributorProfile() {
+      // if affiliations are set, we know the user completed the ContributorProfileForm
+      // returns true for non-contributors
+      return this.$iam('contributor') && !this.$store.state.user.user?.profile.affiliations
+    },
   },
 }
 
@@ -39,7 +46,7 @@ export default {
 
 <template>
 
-  <div class="is-flex is-justify-content-center" @click.prevent="$refs.invite?.setInviteDropdown(false)">
+  <div class="is-flex is-justify-content-center">
     <div class="is-flex-grow-1 mx-20" style="max-width: 1080px; position: relative">
 
       <h1 class="title page-title">Your Dashboard</h1>
@@ -57,22 +64,29 @@ export default {
       </section>
 
       <section v-if="$can('submitBookOrBundle')" class="section bordered-top">
-        <h2 v-if="$can('submitPerson')">Submission Forms</h2>
-        <h2 v-else>Suggest a book or bundle</h2>
-        <div class="field is-grouped">
-          <div class="control">
-            <router-link class="button is-outlined is-primary" :to="{name:'BookSubmissionForm'}">Book</router-link>
+
+        <ContributorProfileForm v-if="hasPendingContributorProfile" />
+
+        <div v-else>
+          <h2 v-if="$can('submitPerson')">Submission Forms</h2>
+          <h2 v-else>Suggest a book or bundle</h2>
+          <div class="field is-grouped">
+            <div class="control">
+              <router-link class="button is-outlined is-primary" :to="{name:'BookSubmissionForm'}">Book</router-link>
+            </div>
+            <div v-if="$can('submitPerson')" class="control">
+              <router-link class="button is-outlined is-primary" :to="{name:'PersonSubmissionForm'}">Person</router-link>
+            </div>
+            <div class="control">
+              <router-link class="button is-outlined is-primary" :to="{name:'BundleSubmissionForm'}">Bundle</router-link>
+            </div>
           </div>
-          <div v-if="$can('submitPerson')" class="control">
-            <router-link class="button is-outlined is-primary" :to="{name:'PersonSubmissionForm'}">Person</router-link>
-          </div>
-          <div class="control">
-            <router-link class="button is-outlined is-primary" :to="{name:'BundleSubmissionForm'}">Bundle</router-link>
-          </div>
+
         </div>
+
       </section>
 
-      <section v-if="$can('invite')" class="section bordered-top">
+      <section v-if="$can('invite') && !hasPendingContributorProfile" class="section bordered-top">
         <h2>Invite Users</h2>
         <InviteWidget ref="invite" />
         <ul class="my-20">
