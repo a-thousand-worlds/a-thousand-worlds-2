@@ -23,11 +23,15 @@
     - Realtime Database → Rules
 1. `firebase login`
 1. Set active Firebase app: `firebase use --add`
+1. Install Firebase function dependencies: `cd functions && npm i`
+1. Generate service account key
+    - Firebase Project -> Settings -> Service Accounts -> Generate new private key
+    - Save to `/functions/serviceAccountKey.json`
+1. Add Goodreads API key for firebase function
+    - `firebase functions:config:set goodreads.api_key="YOUR_API_KEY"`
 1. Deploy Firebase functions: `firebase deploy --only functions`
 1. Add Request URL from Firebase Functions dashboard to `VUE_APP_SEARCH_SERVICE_URL` in .env.local
     - https://console.firebase.google.com/u/0/project/PROJECT_NAME/functions/list
-1. Add Goodreads API key for firebase function
-    - `firebase functions:config:set goodreads.api_key="YOUR_API_KEY"`
 1. Redeploy Firebase functions: `firebase deploy --only functions`
 
 ### Email
@@ -39,9 +43,6 @@
     - Or generate new SMTP user and use this user later replacing postmaster@DOMAIN
 1. Set firebase function configuration to send emails:
     - `firebase functions:config:set mailgun.user="postmaster@DOMAIN" mailgun.password="POSTMASTER_PASSWORD" mailgun.sender="sender-email@DOMAIN"` (sender email can be any at your domain, for example: bot@DOMAIN)
-1. Generate service account key
-    - Firebase Project -> Settings -> Service Accounts -> Generate new private key
-    - Save to `/functions/serviceAccountKey.json`
 
 ## Scripts
 
