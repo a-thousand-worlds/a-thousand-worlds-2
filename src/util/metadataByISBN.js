@@ -18,7 +18,7 @@ function _isbn(code, provider) {
 
 /** Loads book metadata, excluting cover image. */
 const metadataByISBN = async isbn => {
-  const req = await axios.get(process.env.VUE_APP_METADATA_SERVICE_URL + '?isbn=' + isbn)
+  const req = await axios.get(process.env.VUE_APP_METADATA_BY_ISBN_URL + '?isbn=' + isbn)
   const data = req.data || {}
   // it's so happens, that sometime google data is not accessible
   // from backend, so trying to reload it on frontend
