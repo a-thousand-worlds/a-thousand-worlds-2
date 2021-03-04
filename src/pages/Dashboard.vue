@@ -40,6 +40,15 @@ export default {
       return this.$iam('contributor') && !this.$store.state.user.user?.profile.affiliations
     },
   },
+  created() {
+    // cuz submissions collection is readable only per element for non owners
+    // we need to preload them
+    const submissions = this.$store.state.user.user.profile.submissions || {}
+    const preloads = Object.keys(submissions).map(submissionId => {
+      return this.$store.dispatch('submissions/books/loadOne', submissionId)
+    })
+    Promise.all(preloads)
+  },
 }
 
 </script>

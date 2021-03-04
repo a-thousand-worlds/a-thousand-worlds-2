@@ -41,7 +41,12 @@
     },
     "submits": {
       ".read": "auth != null && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )",
-      ".write": true
+      ".write": "auth != null && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true || root.child('users/'+auth.uid+'/roles/contributor').val() === true )",
+      "$category": {
+        "$sub": {
+          ".read": "auth != null && root.child('users/'+auth.uid+'/profile/submissions/'+$sub).val() != null"
+        }
+      }
     }
   }
 }

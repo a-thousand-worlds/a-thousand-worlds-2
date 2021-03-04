@@ -23,6 +23,8 @@ const collectionModule = name => ({
     },
     setOne(state, { path, value }) {
       set(state.data, path, value)
+      // marking collection as loaded cuz we have at least one record
+      state.loaded = true
     }
   },
   getters: {
