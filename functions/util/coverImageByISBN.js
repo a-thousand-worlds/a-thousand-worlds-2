@@ -1,5 +1,6 @@
 const loadImage = require('./loadImage')
 const puppeteer = require('puppeteer')
+// const bookcovers = require('bookcovers')
 
 const amazonIsbnSearchUrl = isbn =>
   `https://www.amazon.com/gp/search/ref=sr_adv_b/?search-alias=stripbooks&unfiltered=1&field-isbn=${isbn}&sort=relevanceexprank`
@@ -45,9 +46,13 @@ async function scrape(isbn) {
 async function coverImageByISBN(isbn, scaleToMaxWidth = 0) {
 
   console.log('Searching covers')
-  const covers = await scrape(isbn)
 
-  console.log('Retrieved covers', covers)
+  const covers = { amazon: {} }
+  covers.amazon = await scrape(isbn)
+  // to use with bookcovers module if required
+  // const covers = await bookcovers.withIsbn(isbn, { type: 'amazon', amazon: { args: ['--no-sandbox'] } })
+
+  console.log('Retrieved covers', JSON.stringify(covers))
   let url = null
   if (covers.amazon && !covers.amazon.error) {
     const amazonSizes = Object.keys(covers.amazon)
