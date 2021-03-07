@@ -276,17 +276,15 @@ export default {
 }
 
 .summary {
-  font-size: 18px !important;
-  @include from($widescreen) {
-    font-size: 22px !important;
-  }
+  font-size: 16px;
+  line-height: 1.75;
 }
 
 </style>
 
 <style lang="scss">
+// compensate for CKEditor paragraph so that it exactly matches normal paragraph spacing
 .summary.ck.ck-editor__editable_inline>:first-child {
-  margin-top: -1px;
-  margin-left: -1px;
+  margin: -1px -1px -1px -1px;
 }
 </style>
