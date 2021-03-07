@@ -75,8 +75,8 @@ export default {
   methods: {
 
     authors(creators) {
-      const people = this.$store.state.people.data
-      return Object.entries(creators)
+      const people = this.$store.state.people.data || {}
+      return Object.entries(creators || {})
         .filter(([id, value]) => value === 'author')
         .map(([id, value]) => people[id]?.name)
         .join(', ')
@@ -87,8 +87,8 @@ export default {
     },
 
     illustrators(creators) {
-      const people = this.$store.state.people.data
-      return Object.entries(creators)
+      const people = this.$store.state.people.data || {}
+      return Object.entries(creators || {})
         .filter(([id, value]) => value === 'illustrator')
         .map(([id, value]) => people[id]?.name)
         .join(', ')
