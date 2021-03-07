@@ -225,8 +225,10 @@ export default {
           </div>
 
           <!-- creators -->
-          <div class="authors divider-bottom">
-            <CreatorCard v-for="id in creators" :key="id" :id="id" :role="book.creators[id]" class="mb-20 mr-30" style="min-width: 33%;" @updateTitle="titleId => updateTitle(id, titleId)" edit />
+          <div class="creators divider-bottom">
+            <div class=" is-flex is-flex-wrap-wrap" style="margin-right: -30px;">
+              <CreatorCard v-for="id in creators" :key="id" :id="id" :role="book.creators[id]" class="mb-20 mr-30" style="min-width: 33%;" @updateTitle="titleId => updateTitle(id, titleId)" edit />
+            </div>
           </div>
 
           <!-- summary -->
@@ -271,7 +273,7 @@ export default {
   margin-bottom: 0;
 }
 
-.authors {
+.creators {
   font-size: 14px;
 }
 

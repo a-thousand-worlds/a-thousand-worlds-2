@@ -106,8 +106,10 @@ export default {
           </div>
 
           <!-- use negative right margin to avoid wrapping creators until margin is used up -->
-          <div class="creators divider-bottom is-flex is-flex-wrap-wrap" style="margin-right: -30px;">
-            <CreatorCard v-for="id in creators" :key="id" :id="id" :role="book.creators[id]" class="mb-20 mr-30" style="min-width: 33%;" />
+          <div class="creators divider-bottom">
+            <div class=" is-flex is-flex-wrap-wrap" style="margin-right: -30px;">
+              <CreatorCard v-for="id in creators" :key="id" :id="id" :role="book.creators[id]" class="mb-20 mr-30" style="min-width: 33%;" />
+            </div>
           </div>
 
           <!-- summary is edited with ckeditor and may contain html -->
