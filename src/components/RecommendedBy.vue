@@ -7,7 +7,7 @@ const newContributor = () => ({
   name: '',
   organization: '',
   organizationLink: '',
-  personalWebsite: '',
+  website: '',
 })
 
 export default {
@@ -71,8 +71,8 @@ export default {
       return this.profile?.affiliations?.organizationLink
     },
 
-    personalWebsite() {
-      return this.profile?.affiliations?.personalWebsite
+    website() {
+      return this.profile?.affiliations?.website
     }
 
   },

@@ -6,7 +6,7 @@ const newAffiliations = () => ({
   organization: '',
   organizationLink: '',
   otherEngagementCategory: '',
-  personalWebsite: null,
+  website: null,
   selectedEngagementCategories: {},
 })
 
@@ -144,10 +144,10 @@ export default {
         <input v-model="name" class="input" type="text">
       </div>
 
-      <!-- personal website -->
+      <!-- website -->
       <div class="field">
-        <label class="label is-uppercase" :class="{ error: hasError('personalWebsite') }">Personal website or social media URL</label>
-        <input v-model="affiliations.personalWebsite" class="input" type="text">
+        <label class="label is-uppercase" :class="{ error: hasError('website') }">Your website or social media URL</label>
+        <input v-model="affiliations.website" class="input" type="text">
       </div>
 
       <!-- engagement -->

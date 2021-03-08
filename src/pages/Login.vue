@@ -32,7 +32,7 @@ export default {
         organization: '',
         organizationLink: '',
         otherEngagementCategory: '',
-        personalWebsite: null,
+        website: null,
         selectedEngagementCategories: {},
         ...profile?.affiliations,
       },
@@ -316,11 +316,11 @@ export default {
       // contributor fields
       if (this.isContributor && this.isEditProfile) {
 
-        // personal website (not required)
-        // if (!this.affiliations.personalWebsite) {
+        // website (not required)
+        // if (!this.affiliations.website) {
         //   this.error = {
         //     message: 'Please check required fields',
-        //     fields: { ...this.error?.fields, personalWebsite: true },
+        //     fields: { ...this.error?.fields, website: true },
         //   }
         // }
 
@@ -439,10 +439,10 @@ export default {
 
           </div>
 
-          <!-- personal website -->
+          <!-- website -->
           <div v-if="isContributor && isEditProfile" class="field">
-            <label class="label is-uppercase" :class="{ error: hasError('personalWebsite') }">Personal website or social media URL</label>
-            <input v-model="affiliations.personalWebsite" class="input" type="text">
+            <label class="label is-uppercase" :class="{ error: hasError('website') }">Your website or social media URL</label>
+            <input v-model="affiliations.website" class="input" type="text">
           </div>
 
           <!-- identities -->
