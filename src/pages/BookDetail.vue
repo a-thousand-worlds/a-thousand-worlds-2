@@ -34,6 +34,11 @@ export default {
     }
     next()
   },
+  data() {
+    return {
+      editOnClick: false,
+    }
+  },
   computed: {
     book() {
       const book = this.$store.state.books.loaded
@@ -47,6 +52,10 @@ export default {
       if (!this.book || !this.book.creators) return []
       return _.sortBy(Object.keys(this.book.creators), id => this.book.creators[id])
     },
+    editUrl() {
+      const url = window.location.href
+      return url.replace(/\/$/, '') + '/edit'
+    },
     isbn() {
       return this.$route.params.isbn
     },
@@ -57,8 +66,33 @@ export default {
         .filter(x => x)
     },
   },
+  created() {
+    window.addEventListener('keydown', this.keydown)
+    window.addEventListener('keyup', this.keyup)
+  },
   mounted() {
     new Clipboard('#copy-link') // eslint-disable-line no-new
+  },
+  unmounted() {
+    window.removeEventListener('keydown', this.keydown)
+    window.removeEventListener('keyup', this.keyup)
+  },
+  methods: {
+    adminEditClick(e) {
+      // use e.shiftKey instead of editOnClick in case shift key is held down from previous page
+      if (!this.$iam('owner') || !e.shiftKey) return
+      this.$router.push({ name: 'BookEdit', params: { name: this.$route.params.name } })
+    },
+    keydown(e) {
+      if (this.$iam('owner') && e.key === 'Shift') {
+        this.editOnClick = true
+      }
+    },
+    keyup(e) {
+      if (this.$iam('owner') && e.key === 'Shift') {
+        this.editOnClick = false
+      }
+    },
   },
 }
 
@@ -86,7 +120,7 @@ export default {
       <div class="column column1 mr-0 is-two-fifths">
         <div v-if="book">
           <div class="book-cover-wrappertext-centered mb-20">
-            <LazyImage class="cover" :src="book.cover" />
+            <a @click.prevent="adminEditClick" :style="{ cursor: editOnClick ? 'context-menu' : 'default' }"><LazyImage class="cover" :src="book.cover" /></a>
           </div>
           <div class="tags">
             <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="books" button-class="is-outlined" />
@@ -101,7 +135,9 @@ export default {
         </div>
         <div v-else-if="book">
           <div class="title-container divider-bottom is-flex is-justify-content-space-between">
-            <h1 class="title">{{ book.title }}</h1>
+            <h1 class="title">
+              <a @click.prevent="adminEditClick" style="color: inherit;" :style="{ cursor: editOnClick ? 'context-menu' : 'default', 'user-select': editOnClick ? 'none' : null }">{{ book.title }}</a>
+            </h1>
             <!-- set padding-top and height so that the icon lines up with the top of the title text and the bottom of its baseline -->
             <BookmarkButton :book="book" iconStyle="margin-top: 6.5px; height: 27px;" />
           </div>

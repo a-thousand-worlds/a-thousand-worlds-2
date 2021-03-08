@@ -36,6 +36,7 @@ export default {
       },
       creatorTitles,
       editor: BalloonEditor,
+      editOnClick: false,
       tagsDropdownActive: false,
       titleDropdownActive: false,
       pageUrl: window.location.href,
@@ -84,7 +85,21 @@ export default {
       return title || this.creatorTitles.find(creatorTitle => creatorTitle.text === 'Author')
     },
   },
+  created() {
+    window.addEventListener('keydown', this.keydown)
+    window.addEventListener('keyup', this.keyup)
+  },
+  unmounted() {
+    window.removeEventListener('keydown', this.keydown)
+    window.removeEventListener('keyup', this.keyup)
+  },
   methods: {
+
+    adminEditClick(e) {
+      // use e.shiftKey instead of editOnClick in case shift key is held down from previous page
+      if (!this.$iam('owner') || !e.shiftKey) return
+      this.$router.push({ name: 'PersonDetail', params: { name: this.$route.params.name } })
+    },
 
     closeTagsDropdown() {
       this.tagsDropdownActive = false
@@ -92,6 +107,18 @@ export default {
 
     closeTitleDropdown() {
       this.titleDropdownActive = false
+    },
+
+    keydown(e) {
+      if (this.$iam('owner') && e.key === 'Shift') {
+        this.editOnClick = true
+      }
+    },
+
+    keyup(e) {
+      if (this.$iam('owner') && e.key === 'Shift') {
+        this.editOnClick = false
+      }
     },
 
     updatePerson(field, value) {
@@ -172,7 +199,9 @@ export default {
 
             <!-- name -->
             <h1 class="title mt-5">
-              <SimpleInput v-if="person" @update:modelValue="saveName" v-model="person.name" placeholder="Enter Name" unstyled />
+              <a @click.prevent="adminEditClick" style="color: inherit;" :style="{ cursor: editOnClick ? 'context-menu' : 'default', 'user-select': editOnClick ? 'none' : null }">
+                <SimpleInput v-if="person" @update:modelValue="saveName" v-model="person.name" placeholder="Enter Name" unstyled />
+              </a>
             </h1>
 
             <!-- tags -->

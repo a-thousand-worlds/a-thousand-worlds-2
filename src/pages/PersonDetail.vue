@@ -28,6 +28,7 @@ export default {
   data() {
     return {
       creatorTitles,
+      editOnClick: false,
     }
   },
   computed: {
@@ -70,6 +71,31 @@ export default {
       return title || this.creatorTitles.find(creatorTitle => creatorTitle.text === 'Author')
     },
   },
+  created() {
+    window.addEventListener('keydown', this.keydown)
+    window.addEventListener('keyup', this.keyup)
+  },
+  unmounted() {
+    window.removeEventListener('keydown', this.keydown)
+    window.removeEventListener('keyup', this.keyup)
+  },
+  methods: {
+    adminEditClick(e) {
+      // use e.shiftKey instead of editOnClick in case shift key is held down from previous page
+      if (!this.$iam('owner') || !e.shiftKey) return
+      this.$router.push({ name: 'PersonEdit', params: { name: this.$route.params.name } })
+    },
+    keydown(e) {
+      if (this.$iam('owner') && e.key === 'Shift') {
+        this.editOnClick = true
+      }
+    },
+    keyup(e) {
+      if (this.$iam('owner') && e.key === 'Shift') {
+        this.editOnClick = false
+      }
+    },
+  },
 }
 
 </script>
@@ -83,7 +109,7 @@ export default {
   <div v-if="!$store.state.people.loaded" class="my-50">
     <Loader />
   </div>
-  <div v-if="person" class="mx-5" :data-person-id="person.id">
+  <div v-else-if="person" class="mx-5" :data-person-id="person.id">
 
     <div class="wide-page">
       <div class="columns mb-5">
@@ -103,7 +129,9 @@ export default {
 
           <div class="title-container divider-30">
             <div class="name">{{ title.text }}</div>
-            <h1 class="title mt-5">{{ person.name }}</h1>
+            <h1 class="title mt-5">
+              <a @click.prevent="adminEditClick" style="color: inherit;" :style="{ cursor: editOnClick ? 'context-menu' : 'default', 'user-select': editOnClick ? 'none' : null }">{{ person.name }}</a>
+            </h1>
             <div v-if="tags" class="tags mt-20">
               <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="people" button-class="is-outlined" />
             </div>

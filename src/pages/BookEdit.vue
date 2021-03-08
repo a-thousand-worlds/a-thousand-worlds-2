@@ -43,8 +43,9 @@ export default {
       ckConfig: {
         toolbar: [],
       },
-      tagsDropdownActive: false,
+      editOnClick: false,
       editor: BalloonEditor,
+      tagsDropdownActive: false,
     }
   },
   computed: {
@@ -73,15 +74,41 @@ export default {
       return this.$store.getters['tags/books/listSorted']()
     },
   },
+  created() {
+    window.addEventListener('keydown', this.keydown)
+    window.addEventListener('keyup', this.keyup)
+  },
   mounted() {
     new Clipboard('#copy-link') // eslint-disable-line no-new
   },
+  unmounted() {
+    window.removeEventListener('keydown', this.keydown)
+    window.removeEventListener('keyup', this.keyup)
+  },
   methods: {
 
-    formatDate,
+    adminEditClick(e) {
+      // use e.shiftKey instead of editOnClick in case shift key is held down from previous page
+      if (!e.shiftKey) return
+      this.$router.push({ name: 'BookDetail', params: { name: this.$route.params.name } })
+    },
 
     closeTagsDropdown() {
       this.tagsDropdownActive = false
+    },
+
+    formatDate,
+
+    keydown(e) {
+      if (e.key === 'Shift') {
+        this.editOnClick = true
+      }
+    },
+
+    keyup(e) {
+      if (e.key === 'Shift') {
+        this.editOnClick = false
+      }
     },
 
     saveIsbn(isbn) {
@@ -162,7 +189,7 @@ export default {
 
           <!-- cover image -->
           <div class="book-cover-wrappertext-centered mb-20">
-            <LazyImage class="cover" :src="book.cover" />
+            <a @click.prevent="adminEditClick" :style="{ cursor: editOnClick ? 'context-menu' : 'default' }"><LazyImage class="cover" :src="book.cover" /></a>
           </div>
 
           <!-- tags -->
@@ -221,7 +248,9 @@ export default {
           <!-- title -->
           <div class="title-container divider-bottom is-flex is-justify-content-space-between">
             <h1 class="title">
-              <SimpleInput @update:modelValue="updateBook({ title: $event })" v-model="book.title" placeholder="Enter Title" unstyled />
+              <a @click.stop="adminEditClick" style="color: inherit;" :style="{ cursor: editOnClick ? 'context-menu' : 'default', 'user-select': editOnClick ? 'none' : null }">
+                <SimpleInput @update:modelValue="updateBook({ title: $event })" v-model="book.title" placeholder="Enter Title" unstyled />
+              </a>
             </h1>
           </div>
 
