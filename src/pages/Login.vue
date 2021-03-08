@@ -302,13 +302,13 @@ export default {
       // contributor fields
       if (this.isContributor && this.isEditProfile) {
 
-        // website (not required)
-        // if (!this.affiliations.website) {
-        //   this.error = {
-        //     message: 'Please check required fields',
-        //     fields: { ...this.error?.fields, website: true },
-        //   }
-        // }
+        // website
+        if (!this.affiliations.website) {
+          this.error = {
+            message: 'Please check required fields',
+            fields: { ...this.error?.fields, website: true },
+          }
+        }
 
         // engagements
         const hasSelectedEngagements = Object.values(this.affiliations.selectedEngagementCategories).some(x => x)
@@ -418,7 +418,7 @@ export default {
 
           <!-- website -->
           <div v-if="isContributor && isEditProfile" class="field">
-            <label class="label is-uppercase" :class="{ error: hasError('website') }">Your website or social media URL</label>
+            <label class="label is-uppercase" :class="{ error: hasError('website') }">Your website or social media URL<sup class="required">*</sup></label>
             <input v-model="affiliations.website" class="input" type="text">
           </div>
 
