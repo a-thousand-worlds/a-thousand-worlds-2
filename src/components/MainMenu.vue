@@ -28,8 +28,9 @@ export default {
 
     <ul class="menu-list mt-30">
       <li>
-        <a href="https://www.instagram.com/_athousandworlds_/" target="_blank" class="social-icon is-inline pr-20"><i class="fab fa-instagram is-primary" /></a>
-        <a href="https://www.facebook.com/A-Thousand-Worlds-102421671707042/?view_public_for=102421671707042" target="_blank" class="social-icon is-inline"><i class="fab fa-facebook-f is-primary" /></a>
+        <a href="https://www.instagram.com/_athousandworlds_/" target="_blank" class="social-icon is-inline mr-20"><i class="fab fa-instagram is-primary" /></a>
+        <a href="https://www.facebook.com/A-Thousand-Worlds-102421671707042/?view_public_for=102421671707042" target="_blank" class="social-icon is-inline mr-20"><i class="fab fa-facebook-f is-primary" /></a>
+        <a href="https://twitter.com/worlds_thousand" target="_blank" class="social-icon is-inline"><i class="fab fa-twitter is-primary" /></a>
       </li>
     </ul>
   </div>
