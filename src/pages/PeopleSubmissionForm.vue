@@ -135,7 +135,7 @@ export default {
       <form class="is-flex-grow-1" style="max-width: 540px;" @submit.prevent="submitForReview">
 
         <div class="mb-5">
-          <router-link :to="{ name: 'Dashboard' }" class="is-uppercase is-primary">&lt; Back to Dashboard</router-link>
+          <a @click.prevent="$router.back" class="is-uppercase is-primary">&lt; Back</a>
         </div>
 
         <h1 class="title page-title divider-bottom">{{ person ? 'Edit public profile' : 'Create a profile' }}</h1>

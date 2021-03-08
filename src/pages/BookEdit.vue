@@ -175,7 +175,7 @@ export default {
     <div class="is-flex is-justify-content-space-between mb-3">
 
       <div class="mb-5 is-narrow">
-        <router-link :to="{ name: 'BooksManager' }" class="is-uppercase is-primary">&lt; Back to Books Manager</router-link>
+        <a @click.prevent="$router.back" class="is-uppercase is-primary">&lt; Back</a>
       </div>
 
       <BookDetailLink v-if="book" :book="book" class="button is-rounded is-primary">View Book</BookDetailLink>

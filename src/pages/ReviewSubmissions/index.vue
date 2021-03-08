@@ -27,7 +27,7 @@ export default {
     <div class="is-flex-grow-1 mx-20" style="max-width: 760px;">
 
       <div class="mb-5">
-        <router-link :to="{ name: 'Dashboard' }" class="is-uppercase is-primary">&lt; Back to Dashboard</router-link>
+        <a @click.prevent="$router.back" class="is-uppercase is-primary">&lt; Back</a>
       </div>
 
       <h1 class="divider-bottom is-capitalized is-flex is-justify-content-space-between is-align-items-center">

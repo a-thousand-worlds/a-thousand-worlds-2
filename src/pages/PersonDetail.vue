@@ -115,7 +115,7 @@ export default {
       <div class="columns mb-5">
 
         <div class="column is-narrow">
-          <router-link :to="{ name: 'People' }" class="is-uppercase is-primary">&lt; Back to People</router-link>
+          <a @click.prevent="$router.back" class="is-uppercase is-primary">&lt; Back</a>
         </div>
 
         <PrevNext v-if="person" type="people" :item="person" class="column" />

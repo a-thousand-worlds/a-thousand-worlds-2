@@ -354,7 +354,7 @@ export default {
   <div class="mx-6">
 
     <div v-if="isEditProfile" class="mb-5">
-      <router-link :to="{ name: 'Dashboard' }" class="is-uppercase is-primary">&lt; Back to Dashboard</router-link>
+      <a @click.prevent="$router.back" class="is-uppercase is-primary">&lt; Back</a>
     </div>
 
     <div v-if="(code && !invite) || (invite?.used)" class="is-flex is-justify-content-center mt-20">

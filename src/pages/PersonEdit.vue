@@ -168,7 +168,7 @@ export default {
       <div class="is-flex is-justify-content-space-between mb-3">
 
         <div class="mb-5 is-narrow">
-          <router-link :to="{ name: 'PeopleManager' }" class="is-uppercase is-primary">&lt; Back to People Manager</router-link>
+          <a @click.prevent="$router.back" class="is-uppercase is-primary">&lt; Back</a>
         </div>
 
         <PersonDetailLink v-if="person" :person="person" class="button is-rounded is-primary">View Person</PersonDetailLink>
