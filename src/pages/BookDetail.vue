@@ -44,6 +44,7 @@ export default {
     },
     // creators id array sorted by authors then illustrators
     creators() {
+      if (!this.book || !this.book.creators) return []
       return _.sortBy(Object.keys(this.book.creators), id => this.book.creators[id])
     },
     isbn() {
