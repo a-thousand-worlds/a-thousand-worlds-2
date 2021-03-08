@@ -18,15 +18,11 @@ export default {
       email: profile?.email || '',
       name: profile?.name || '',
       photo: profile?.photo || null,
-      // copy engagements and identities objects
-      // otherwise editing the form will update the objects by reference
       engagements,
-      identities: profile?.identities ? { ...profile.identities } : {},
       disableAfterSave: false,
       disableResetPassword: false,
       error: null,
       loading: false,
-      otherIdentity: '',
       password: '',
       affiliations: {
         organization: '',
@@ -71,10 +67,6 @@ export default {
     invite() {
       return this.code ? this.$store.getters['invites/get'](this.code) : null
     },
-    contributorIdentities() {
-      return this.$store.getters[`tags/people/listSorted`]()
-        .filter(tag => tag.showOnContributorSignup)
-    },
     title() {
       return this.isSignup ?
         this.invite?.role ? `You have been invited to join as a ${this.invite.role}!` : 'Sign up for an account'
@@ -116,8 +108,6 @@ export default {
       this.email = next?.profile?.email || this.email
       this.name = next?.profile?.name || this.name
       this.photo = next?.profile?.photo || this.photo
-      this.identities = next?.profile?.identities || this.identities
-      this.otherIdentity = next?.profile?.otherIdentity || this.otherIdentity
     },
     '$store.state.user.user.roles'(next, prev) {
       // redirect invited users to Dashboard
@@ -219,9 +209,7 @@ export default {
         name: this.name,
         photo: this.photo,
         password: this.password,
-        identities: this.identities,
         affiliations: this.affiliations,
-        otherIdentity: this.otherIdentity,
       }))
     },
 
@@ -252,9 +240,7 @@ export default {
           name: this.name,
           email: this.email,
           photo: this.photo,
-          identities: this.identities,
           affiliations: this.affiliations,
-          otherIdentity: this.otherIdentity,
         })
           .then(() => {
             if (!this.error) {
@@ -323,15 +309,6 @@ export default {
         //     fields: { ...this.error?.fields, website: true },
         //   }
         // }
-
-        // identities
-        const hasIdentities = Object.values(this.identities).some(x => x)
-        if (!hasIdentities && !this.otherIdentity) {
-          this.error = {
-            message: 'Please check required fields',
-            fields: { ...this.error?.fields, identities: true },
-          }
-        }
 
         // engagements
         const hasSelectedEngagements = Object.values(this.affiliations.selectedEngagementCategories).some(x => x)
@@ -443,26 +420,6 @@ export default {
           <div v-if="isContributor && isEditProfile" class="field">
             <label class="label is-uppercase" :class="{ error: hasError('website') }">Your website or social media URL</label>
             <input v-model="affiliations.website" class="input" type="text">
-          </div>
-
-          <!-- identities -->
-          <div v-if="isContributor && isEditProfile" class="field">
-            <label class="label">
-              <span :class="{ 'has-text-danger': hasError('identities') }" style="text-transform: uppercase;">Identity<sup class="required">*</sup></span>
-              <div style="font-weight: normal;">Please select all that apply</div>
-            </label>
-
-            <div class="sublabel tablet-columns-2">
-              <div v-for="identity of contributorIdentities" :key="identity.id" class="control is-flex" style="column-break-inside: avoid;">
-                <input v-model="identities[identity.id]" :id="`identity-${identity.id}`" type="checkbox" :false-value="null" class="checkbox mb-3 mt-1" @input="saveDraftAndRevalidate">
-                <label class="label pl-2 pb-1" :for="`identity-${identity.id}`" style="cursor: pointer;">{{ identity.tag }}</label>
-              </div>
-              <div>
-                <input v-model="identities.other" id="identity-other" type="checkbox" :false-value="null" @input="saveDraftandRevalidate" class="checkbox mr-2 mb-3">
-                <label for="identity-other" class="label is-inline">Other</label>
-                <input v-model="otherIdentity" @input="revalidate" class="input" style="max-width: 200px;" type="text">
-              </div>
-            </div>
           </div>
 
           <!-- engagement -->
