@@ -109,11 +109,17 @@ export default {
       this.$router.push({ name: 'SubmissionThankYou', params: { type: 'book' } })
     },
     clearDraft() {
+      // user should be defined for all normal use
+      // it may be undefined in unit tests
+      if (!this.$store.state.user.user) return
       this.$store.dispatch('user/saveBookSubmissionsDraft', [])
       clearTimeout(this.draftSaved)
       this.draftSaved = null
     },
     saveDraft: _.debounce(function() {
+      // user should be defined for all normal use
+      // it may be undefined in unit tests
+      if (!this.$store.state.user.user) return
       clearTimeout(this.draftSaved)
       this.$store.dispatch('user/saveBookSubmissionsDraft', this.submissions)
       this.draftSaved = setTimeout(() => {
