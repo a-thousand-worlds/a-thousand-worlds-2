@@ -77,7 +77,7 @@ export default {
     authors(creators) {
       const people = this.$store.state.people.data || {}
       return Object.entries(creators || {})
-        .filter(([id, value]) => value === 'author')
+        .filter(([id, value]) => value === 'author' || value === 'both')
         .map(([id, value]) => people[id]?.name)
         .join(', ')
     },
