@@ -7,6 +7,7 @@ import Filter from '@/components/Filter'
 import Loader from '@/components/Loader'
 import NotFound from '@/pages/NotFound'
 import PersonDetailLink from '@/components/PersonDetailLink'
+import PhotoUpload from '@/components/PhotoUpload'
 import Tag from '@/components/Tag'
 import SimpleInput from '@/components/fields/SimpleInput'
 
@@ -17,6 +18,7 @@ export default {
     Loader,
     NotFound,
     PersonDetailLink,
+    PhotoUpload,
     SimpleInput,
     Tag,
   },
@@ -40,6 +42,7 @@ export default {
       tagsDropdownActive: false,
       titleDropdownActive: false,
       pageUrl: window.location.href,
+      uploadingPhoto: false,
     }
   },
   computed: {
@@ -121,13 +124,24 @@ export default {
       }
     },
 
+    updatePhoto(photo) {
+      this.uploadingPhoto = true
+      return this.updatePerson('photo', photo)
+        .then(() => {
+          this.uploadingPhoto = false
+        })
+        .catch(() => {
+          this.uploadingPhoto = false
+        })
+    },
+
     updatePerson(field, value) {
       if (value === undefined) {
         value = field
         field = ''
       }
       this.closeTagsDropdown()
-      this.$store.dispatch('people/update', {
+      return this.$store.dispatch('people/update', {
         path: `${this.person.id}/${field}`,
         value,
       })
@@ -178,7 +192,7 @@ export default {
       <div class="is-flex is-flex-direction-row is-flex-wrap-wrap">
         <div class="column-person" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
           <div class="cover-wrapper mb-20">
-            <div v-if="bgImage.length" :style="{backgroundImage: `url(${bgImage})`}" class="cover-photo bg-secondary" />
+            <PhotoUpload v-model="person.photo" @update:modelValue="updatePhoto" noremove noMinimumSize :style="{ opacity: uploadingPhoto ? 0.5 : null }" />
           </div>
 
           <div class="title-container divider-30">
@@ -307,15 +321,6 @@ export default {
     text-align: left;
     margin: 0;
   }
-}
-
-.cover-photo {
-  @include primary(border-color);
-  padding-top: 100%;
-  width: 100%;
-  border: 1px solid;
-  border-radius: 50%;
-  background-size: cover;
 }
 
 .title {

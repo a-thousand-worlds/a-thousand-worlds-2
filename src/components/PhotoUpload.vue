@@ -7,6 +7,7 @@ export default {
     modelValue: {
       required: true,
     },
+    noMinimumSize: Boolean,
     noremove: Boolean,
     // TODO: fix dynamic height and remove photoHeight
     photoHeight: String,
@@ -21,7 +22,8 @@ export default {
 
       reader.onload = () => {
         const photo = {
-          base64: reader.result
+          base64: reader.result,
+          url: null,
         }
 
         // load width and height
@@ -61,8 +63,10 @@ export default {
         <div class="photo" v-if="modelValue" :style="{
           width: '100%',
           height: photoHeight || '100%',
+          minHeight: '100px',
+          minWidth: '100px',
           borderRadius: '999px',
-          backgroundImage: `url(${modelValue.base64})`,
+          backgroundImage: `url(${modelValue.base64 || modelValue.url || modelValue})`,
           backgroundSize: 'cover',
           backgroundPosition: '50%',
         }" />
@@ -77,7 +81,7 @@ export default {
         <a :class="{ 'is-invisible': !modelValue }" @click.prevent="clearPhoto">Remove photo</a>
       </div>
 
-      <div v-if="!modelValue || modelValue.width < 750" class="is-flex is-justify-content-center" :style="!modelValue ? { marginTop: '-1.2em' } : null">
+      <div v-if="!noMinimumSize && (!modelValue || modelValue.width < 750)" class="is-flex is-justify-content-center" :style="!modelValue ? { marginTop: '-1.2em' } : null">
         <p :class="{ 'has-text-danger': modelValue?.width < 750 }" style="position: absolute;">Minimum size: 800x800px</p>
       </div>
     </template>
