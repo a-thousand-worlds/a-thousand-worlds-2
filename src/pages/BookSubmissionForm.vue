@@ -167,7 +167,7 @@ export default {
       const { authors, illustrators, title } = this.submissions[si]
       this.setConfirmed(si, null)
       this.submissions[si].attempts = 0
-      if (!title || (!authors && !illustrators)) {
+      if (!title || !authors || !illustrators) {
         this.submissions[si].isbn = null
         this.submissions[si].confirmed = null
         this.submissions[si].thumbnail = ''
