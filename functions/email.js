@@ -54,7 +54,7 @@ module.exports = () => {
       const roles = rolesSnap.val()
 
       // here is a point we testing user permission to send emails
-      if (!roles.owner && !roles.advisor && !roles.contributor && !roles.creator) {
+      if (!roles || (!roles.owner && !roles.advisor && !roles.contributor && !roles.creator)) {
         console.log('user attempt to send email without permission!', user)
         res.status(403).send('Not authorized.')
         return
