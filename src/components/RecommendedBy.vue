@@ -113,7 +113,7 @@ export default {
 <template>
 
   <!-- ensure there is enough room below Recommended By for the dropdown -->
-  <div :style="edit ? 'margin-bottom: 150px;' : null">
+  <div v-if="edit || name" :style="edit ? 'margin-bottom: 150px;' : null">
 
     <div v-if="!showNewContributor">
       <b>
