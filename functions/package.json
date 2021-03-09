@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "axios": "^0.21.0",
+    "bookcovers": "https://github.com/raineorshine/bookcovers",
     "cheerio": "^1.0.0-rc.5",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
