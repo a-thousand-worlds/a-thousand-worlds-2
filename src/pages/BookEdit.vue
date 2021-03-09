@@ -188,7 +188,7 @@ export default {
         <div v-if="book">
 
           <!-- cover image -->
-          <div class="book-cover-wrappertext-centered mb-20">
+          <div class="book-cover-wrapper text-centered mb-20">
             <a @click.prevent="adminEditClick" :style="{ cursor: editOnClick ? 'context-menu' : 'default' }"><LazyImage class="cover" :src="book.cover" /></a>
           </div>
 
