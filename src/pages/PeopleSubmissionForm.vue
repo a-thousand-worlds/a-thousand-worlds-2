@@ -1,14 +1,16 @@
 <script>
 import _ from 'lodash'
-// Jimp required if dimensions checks needs to be done on file upload
-// import Jimp from 'jimp'
 import validator from '@/mixins/validator'
 import genders from '@/store/constants/genders'
 import creatorTitles from '@/store/constants/creatorTitles'
 import pronouns from '@/store/constants/pronouns'
 import personSubmission from '@/store/constants/personSubmission'
+import PhotoUpload from '@/components/PhotoUpload'
 
 export default {
+  components: {
+    PhotoUpload,
+  },
   mixins: [
     validator(function() {
       return [
@@ -146,35 +148,45 @@ export default {
 
         <section class="basic-information">
 
-          <!-- name -->
-          <div class="field">
-            <label class="label" :class="{ 'has-text-danger': hasError('name') }" style="font-weight: bold; text-transform: uppercase;">Your Name<sup class="required">*</sup></label>
-            <input type="text" class="input" v-model="submission.name" @input="saveDraftAndRevalidate">
-          </div>
+          <div class="is-flex field">
 
-          <!-- preferred pronouns -->
-          <div class="field">
-            <label class="label" :class="{ 'has-text-danger': hasError('name') }" style="font-weight: bold; text-transform: uppercase;">Pronouns</label>
+            <!-- photo -->
+            <PhotoUpload v-model="submission.photo" class="mr-30 my-40" style="width: 50%" />
 
-            <div class="sublabel">
-              <div v-for="pronoun of pronouns" :key="pronoun.id" class="control is-flex" style="column-break-inside: avoid;">
-                <input type="radio" name="pronoun" :id="`pronoun-${pronoun.id}`" v-model="submission.pronouns" :value="pronoun.id" class="checkbox mb-3 mt-1">
-                <label class="label pl-2 pb-1 no-user-select" :for="`pronoun-${pronoun.id}`" style="cursor: pointer;">{{ pronoun.text }}</label>
+            <div class="is-flex-grow-1 is-flex is-justify-content-center is-flex-direction-column">
+
+              <!-- name -->
+              <div class="field">
+                <label class="label" :class="{ 'has-text-danger': hasError('name') }" style="font-weight: bold; text-transform: uppercase;">Your Name<sup class="required">*</sup></label>
+                <input type="text" class="input" v-model="submission.name" @input="saveDraftAndRevalidate">
               </div>
+
+              <!-- preferred pronouns -->
+              <div class="field">
+                <label class="label" :class="{ 'has-text-danger': hasError('name') }" style="font-weight: bold; text-transform: uppercase;">Pronouns</label>
+
+                <div class="sublabel">
+                  <div v-for="pronoun of pronouns" :key="pronoun.id" class="control is-flex" style="column-break-inside: avoid;">
+                    <input type="radio" name="pronoun" :id="`pronoun-${pronoun.id}`" v-model="submission.pronouns" :value="pronoun.id" class="checkbox mb-3 mt-1">
+                    <label class="label pl-2 pb-1 no-user-select" :for="`pronoun-${pronoun.id}`" style="cursor: pointer;">{{ pronoun.text }}</label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- title -->
+              <div class="field">
+                <label class="label" :class="{ 'has-text-danger': hasError('title') }" style="font-weight: bold; text-transform: uppercase;">Your Title<sup class="required">*</sup></label>
+
+                <div v-for="title of creatorTitles" :key="title.id" class="control is-flex">
+                  <label style="cursor: pointer;">
+                    <input type="radio" name="title" v-model="submission.title" :value="title.id" class="checkbox mb-3 mt-1">
+                    <span class="no-user-select ml-1">{{ title.text }}</span>
+                  </label>
+                </div>
+
+              </div>
+
             </div>
-          </div>
-
-          <!-- title -->
-          <div class="field">
-            <label class="label" :class="{ 'has-text-danger': hasError('title') }" style="font-weight: bold; text-transform: uppercase;">Your Title<sup class="required">*</sup></label>
-
-            <div v-for="title of creatorTitles" :key="title.id" class="control is-flex">
-              <label style="cursor: pointer;">
-                <input type="radio" name="title" v-model="submission.title" :value="title.id" class="checkbox mb-3 mt-1">
-                <span class="no-user-select ml-1">{{ title.text }}</span>
-              </label>
-            </div>
-
           </div>
 
           <!-- identities -->

@@ -2,13 +2,11 @@
 import _ from 'lodash'
 import engagements from '@/store/constants/engagements'
 import Loader from '@/components/Loader'
-import PhotoUpload from '@/components/PhotoUpload'
 
 export default {
   name: 'LoginPage',
   components: {
     Loader,
-    PhotoUpload,
   },
   data() {
     const profile = this.$store.state.user.user?.profile
@@ -17,7 +15,6 @@ export default {
       active: this.getActiveFromUrl(),
       email: profile?.email || '',
       name: profile?.name || '',
-      photo: profile?.photo || null,
       engagements,
       disableAfterSave: false,
       disableResetPassword: false,
@@ -107,7 +104,6 @@ export default {
       this.affiliations = next?.profile?.affiliations || this.affiliations
       this.email = next?.profile?.email || this.email
       this.name = next?.profile?.name || this.name
-      this.photo = next?.profile?.photo || this.photo
     },
     '$store.state.user.user.roles'(next, prev) {
       // redirect invited users to Dashboard
@@ -207,7 +203,6 @@ export default {
         code: this.code,
         email: this.email,
         name: this.name,
-        photo: this.photo,
         password: this.password,
         affiliations: this.affiliations,
       }))
@@ -239,7 +234,6 @@ export default {
         await this.handleResponse(this.$store.dispatch('user/updateProfile', {
           name: this.name,
           email: this.email,
-          photo: this.photo,
           affiliations: this.affiliations,
         })
           .then(() => {
@@ -369,7 +363,6 @@ export default {
 
     <div v-else class="is-flex is-justify-content-center">
 
-      <!-- TODO: width affects PhotoUpload aspect ratio -->
       <form class="is-flex-grow-1" style="max-width: 490px;" @submit.prevent="submit">
 
         <!-- Cannot use are-small and is-rounded until #3208 is merged. See https://github.com/jgthms/bulma/pull/3208. -->
@@ -381,12 +374,9 @@ export default {
         <div>
           <h1 class="title page-title divider-bottom">{{ title }}</h1>
 
-          <!-- name -->
           <div class="is-flex field">
 
-            <PhotoUpload v-if="(isContributor || isCreator) && (isSignup || isEditProfile)" v-model="photo" class="mr-30 my-40" style="width: 40%" />
-
-            <!-- vertically center name, email, and password since height is variable (password is not shown on Edit Profile page) -->
+            <!-- name -->
             <div class="is-flex-grow-1 is-flex is-justify-content-center is-flex-direction-column">
               <div v-if="isSignup || isEditProfile" class="field">
                 <label :class="['label', { error: hasError('name') }]">NAME<sup class="required">*</sup></label>
