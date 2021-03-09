@@ -37,12 +37,16 @@ export default {
       return this.$store.getters[`tags/people/listSorted`]()
     },
     person() {
-      const peopleSubmissions = this.$store.state.submissions.people.data || {}
-      const userSubmissions = this.$store.state.user.user?.profile.submissions || {}
-      const peopleSubmissionId = Object.keys(userSubmissions)
-        .find(sid => peopleSubmissions[sid]?.type === 'people' && peopleSubmissions[sid]?.status === 'approved')
-      const peopleId = peopleSubmissions[peopleSubmissionId]?.peopleSubmissionId
-      const person = this.$store.state.people.data[peopleId]
+      /* We used to get the creator through an old person submission.
+         See: commit 47ad155450f2e564ae266724a006086f395f7a46
+         This was probably before personId was added to the user profile. */
+      // const peopleSubmissions = this.$store.state.submissions.people.data || {}
+      // const userSubmissions = this.$store.state.user.user?.profile.submissions || {}
+      // const peopleSubmissionId = Object.keys(userSubmissions)
+      //   .find(sid => peopleSubmissions[sid]?.type === 'people' && peopleSubmissions[sid]?.status === 'approved')
+      // const personId = peopleSubmissions[peopleSubmissionId]?.peopleSubmissionId
+      const personId = this.$store.state.user.user?.profile.personId
+      const person = this.$store.state.people.data[personId]
       return person
     },
   },
