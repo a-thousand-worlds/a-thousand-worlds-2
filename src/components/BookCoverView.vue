@@ -37,7 +37,8 @@ export default {
       width: '100%',
       paddingTop: coverRatio+'%',
       backgroundImage: `url(${bgImage})`,
-      backgroundSize: 'contain'
+      backgroundSize: 'contain',
+      minHeight: !bgImage ? '200px' : null,
     }" class="book-cover-wrapper bg-secondary">
       <div class="cover-shadow" />
       <div class="cover-data">
