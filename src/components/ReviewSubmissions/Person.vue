@@ -1,6 +1,5 @@
 <script>
 import _ from 'lodash'
-import Jimp from 'jimp'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import PhotoUpload from '@/components/PhotoUpload'
 import SimpleInput from '@/components/fields/SimpleInput'
@@ -13,13 +12,12 @@ export default {
     SimpleInput,
     Tag,
   },
-  props: ['submission', 'modelValue', 'checked'],
+  props: ['submission', 'checked'],
   data() {
     return {
       busy: false,
       editor: BalloonEditor,
       image: null,
-      photo: this.user?.profile.photo,
       sub: this.submission || {},
     }
   },
@@ -57,11 +55,6 @@ export default {
     submission(next) {
       this.sub = next
     },
-    user(next) {
-      if (next?.profile.photo) {
-        this.photo = next.profile.photo
-      }
-    },
   },
   methods: {
 
@@ -78,30 +71,6 @@ export default {
         value: { ...this.sub }
       })
     }, 500),
-
-    fileChange(e) {
-      const file = e.target.files[0]
-      const reader = new FileReader()
-      reader.onload = () => {
-        Jimp.read(reader.result, (err, img) => {
-          if (err) {
-            console.error('jimp error', err)
-          }
-          if (img) {
-            this.sub.photo = {
-              base64: reader.result,
-              height: img.bitmap.width,
-              width: img.bitmap.height,
-            }
-            this.save()
-          }
-        })
-      }
-      reader.onerror = err => {
-        console.error('FileReader error', err)
-      }
-      reader.readAsDataURL(file)
-    }
   }
 }
 </script>
@@ -112,7 +81,8 @@ export default {
 
       <!-- image -->
       <div class="column is-2 is-offset-1">
-        <PhotoUpload v-model="photo" photoHeight="88px" noremove />
+        <!-- eslint-disable-next-line vue/no-mutating-props -->
+        <PhotoUpload v-model="submission.photo" photoHeight="88px" noremove @update:modelValue="save" />
       </div>
 
       <!-- name -->
