@@ -62,7 +62,7 @@ export default {
       this.$store.commit('ui/setBusy', true)
       await this.$store.dispatch('submissions/people/reject', this.sub)
       this.$store.commit('ui/setBusy', false)
-      this.$store.dispatch('ui/popup', 'Person submission rejected')
+      this.$store.dispatch('ui/popup', 'Submission rejected')
     },
 
     save: _.debounce(async function() {

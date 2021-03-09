@@ -46,6 +46,7 @@ export default {
       this.$store.commit('ui/setBusy', true)
       await this.$store.dispatch(`submissions/${this.type}/approve`, this.submissions)
       this.$store.commit('ui/setBusy', false)
+      this.$store.dispatch('ui/popup', 'All submissions approved')
     }
   }
 }
@@ -59,7 +60,7 @@ export default {
       <div><button :disabled="$uiBusy" class="button is-rounded" @click="approveAll">Approve all ({{ submissions.length }})</button></div>
     </div>
 
-    <p v-if="!submissionsGroups.length" style="font-size: 20px;">No Submissions to review</p>
+    <p v-if="!submissionsGroups.length" style="font-size: 20px;">No submissions to review</p>
 
     <div v-else>
       <div v-for="(group, gid) of submissionsGroups" :key="gid" class="sub-group py-20">

@@ -70,6 +70,7 @@ export default {
       this.$store.commit('ui/setBusy', true)
       await this.$store.dispatch(`submissions/${this.type}/approve`, this.group[this.type])
       this.$store.commit('ui/setBusy', false)
+      this.$store.dispatch('ui/popup', 'Submission approved')
     },
   }
 }
@@ -79,7 +80,7 @@ export default {
 
   <div>
 
-    <p v-if="!group?.[type]?.length" style="font-size: 20px;">No Submissions to review</p>
+    <p v-if="!group?.[type]?.length" style="font-size: 20px;">No submissions to review</p>
 
     <div v-else>
 
