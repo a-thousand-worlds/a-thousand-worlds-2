@@ -1,5 +1,6 @@
 <script>
 import engagements from '@/store/constants/engagements'
+import normalizeLink from '@/util/normalizeLink'
 import ContributorProfileForm from '@/components/Dashboard/ContributorProfileForm'
 
 const newContributor = () => ({
@@ -68,11 +69,11 @@ export default {
     },
 
     organizationLink() {
-      return this.profile?.affiliations?.organizationLink
+      return normalizeLink(this.profile?.affiliations?.organizationLink || '')
     },
 
     website() {
-      return this.profile?.affiliations?.website
+      return normalizeLink(this.profile?.affiliations?.website || '')
     }
 
   },
@@ -135,9 +136,10 @@ export default {
       </div>
 
       <!-- name -->
-      <u v-if="name">
-        <a :href="name" target="_blank" class="primary-hover">{{ name }}</a>
-      </u>
+      <span v-if="name">
+        <a v-if="website" :href="website" target="_blank" class="primary-hover"><u>{{ name }}</u></a>
+        <span v-else>{{ name }}</span>
+      </span>
       <i v-else style="opacity: 0.5;">None</i>
 
       <!-- title -->
