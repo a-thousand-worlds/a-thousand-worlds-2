@@ -21,14 +21,16 @@ export default {
       error: null,
       loading: false,
       password: '',
-      affiliations: {
-        organization: '',
-        organizationLink: '',
-        otherEngagementCategory: '',
-        website: null,
-        selectedEngagementCategories: {},
-        ...profile?.affiliations,
-      },
+      ...this.isEditProfile ? {
+        affiliations: {
+          organization: '',
+          organizationLink: '',
+          otherEngagementCategory: '',
+          website: null,
+          selectedEngagementCategories: {},
+          ...profile?.affiliations,
+        }
+      } : null,
       // only show errors after a submit has been attempted
       submitAttempt: false,
 
@@ -101,9 +103,12 @@ export default {
         })
       }
 
-      this.affiliations = next?.profile?.affiliations || this.affiliations
       this.email = next?.profile?.email || this.email
       this.name = next?.profile?.name || this.name
+
+      if (this.isEditProfile) {
+        this.affiliations = next?.profile?.affiliations || this.affiliations
+      }
     },
     '$store.state.user.user.roles'(next, prev) {
       // redirect invited users to Dashboard
@@ -204,7 +209,6 @@ export default {
         email: this.email,
         name: this.name,
         password: this.password,
-        affiliations: this.affiliations,
       }))
     },
 
