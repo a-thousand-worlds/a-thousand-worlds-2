@@ -65,7 +65,8 @@ export default {
 
     /** Returns true if we are on the person page for the given person. */
     personPageActive(personObject) {
-      return this.$route.name === 'PersonDetail' && this.$route.params?.name === slugify(personObject?.person?.name)
+      return (this.$route.name === 'PersonDetail' || this.$route.name === 'PersonEdit')
+        && this.$route.params?.name === slugify(personObject?.person?.name)
     },
 
     updateBook(field, value) {
