@@ -42,19 +42,28 @@ const module = mergeOne(managed('submits/people'), {
     /** Update submission status */
     updateSubmission: async (context, { peopleSubmissionId, personId, sub, status }) => {
 
-      // update person submission
-      await context.dispatch('update', {
+      const submissionUpdates = {
+        reviewedBy: context.rootState.user.user.uid,
+        reviewedAt: dayjs().format(),
+        status,
+        ...peopleSubmissionId ? { peopleSubmissionId } : null,
+        ...personId ? { personId } : null,
+      }
+
+      // commit local person submission update so we don't have to wait for server
+      context.commit('setOne', {
         path: sub.id,
         value: {
-          reviewedBy: context.rootState.user.user.uid,
-          reviewedAt: dayjs().format(),
-          status,
-          ...peopleSubmissionId ? { peopleSubmissionId } : null,
-          ...personId ? { personId } : null,
+          ...sub,
+          ...submissionUpdates,
         },
       })
 
-      context.commit('setOne', { path: sub.id, value: sub })
+      // update person submission
+      await context.dispatch('update', {
+        path: sub.id,
+        value: submissionUpdates,
+      })
 
       // update user profile submission
       await context.dispatch('users/save', {
