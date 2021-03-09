@@ -10,13 +10,17 @@ export default {
   data() {
     return {
       amazonAffiliateCode: process.env.VUE_APP_AMAZON_AFFILIATE_CODE,
+      bookshopAffiliateCode: process.env.VUE_APP_BOOKSHOP_AFFILIATE_CODE,
       indieboundAffiliateCode: process.env.VUE_APP_INDIEBOUND_AFFILIATE_CODE,
     }
   },
   computed: {
     isbn10() {
       return ISBN.asIsbn10(this.book?.isbn || '')
-    }
+    },
+    isbn13() {
+      return ISBN.asIsbn13(this.book?.isbn || '')
+    },
   },
 }
 
@@ -33,13 +37,17 @@ export default {
           <i class="fas fa-university mr-1" /> LOCAL LIBRARY
         </button></a>
 
-        <a :href="`https://amzn.com/${isbn10}?tag=${amazonAffiliateCode}`" target="_blank"><button class="button is-rounded is-secondary mx-1">
+        <a v-if="amazonAffiliateCode" :href="`https://amzn.com/${isbn10}?tag=${amazonAffiliateCode}`" target="_blank"><button class="button is-rounded is-secondary mx-1">
           <i class="fas fa-shopping-cart mr-1" /> AMAZON
         </button></a>
 
-        <a :href="`http://www.indiebound.org/book/${book.isbn}?aff=${indieboundAffiliateCode}`" target="_blank"><button class="button is-rounded is-secondary mx-1">
-          <i class="fas fa-shopping-cart mr-1" /> INDIE BOOKSELLERS
+        <a v-if="bookshopAffiliateCode" :href="`https://www.bookshop.org/a/${bookshopAffiliateCode}/${isbn13}`" target="_blank"><button class="button is-rounded is-secondary mx-1">
+          <i class="fas fa-shopping-cart mr-1" /> BOOKSHOP
         </button></a>
+
+        <!-- <a :href="`http://www.indiebound.org/book/${book.isbn}?aff=${indieboundAffiliateCode}`" target="_blank"><button class="button is-rounded is-secondary mx-1">
+          <i class="fas fa-shopping-cart mr-1" /> INDIE BOOKSELLERS
+        </button></a> -->
 
         <a v-if="book.goodreads" :href="`https://www.goodreads.com/book/show/${book.goodreads}`" target="_blank"><button class="button is-rounded is-secondary mx-1 mr-20">
           <i class="fas fa-book-open mr-1" /> GOODREADS
