@@ -12,7 +12,7 @@ export default {
 
 <template>
   <div class="popups-area is-flex is-justify-content-center">
-    <div>
+    <div style="max-width: 90%; max-height: 200px; overflow: auto;">
       <div v-for="popup of $store.state.ui.popups" :key="popup.id">
         <Popup class="mb-2" :popup="popup" />
       </div>
