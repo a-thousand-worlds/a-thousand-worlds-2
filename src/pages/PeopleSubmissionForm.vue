@@ -154,7 +154,7 @@ export default {
 
             <div class="sublabel">
               <div v-for="pronoun of pronouns" :key="pronoun.id" class="control is-flex" style="column-break-inside: avoid;">
-                <input type="radio" name="pronoun" :id="`pronoun-${pronoun.id}`" v-model="submission.pronoun" :value="pronoun.id" class="checkbox mb-3 mt-1">
+                <input type="radio" name="pronoun" :id="`pronoun-${pronoun.id}`" v-model="submission.pronouns" :value="pronoun.id" class="checkbox mb-3 mt-1">
                 <label class="label pl-2 pb-1 no-user-select" :for="`pronoun-${pronoun.id}`" style="cursor: pointer;">{{ pronoun.text }}</label>
               </div>
             </div>
