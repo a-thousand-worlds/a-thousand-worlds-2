@@ -20,6 +20,10 @@ export default {
           name: 'name',
           message: 'Name is required'
         }] : [],
+        ...!this.affiliations.website ? [{
+          name: 'website',
+          message: 'Your website is required'
+        }] : [],
         ...!hasSelectedEngagements && !this.affiliations.otherEngagementCategory ? [{
           name: 'engagements',
           message: 'How you engage with books is required'
@@ -146,7 +150,7 @@ export default {
 
       <!-- website -->
       <div class="field">
-        <label class="label is-uppercase" :class="{ error: hasError('website') }">Your website or social media URL</label>
+        <label class="label is-uppercase" :class="{ error: hasError('website') }">Your website or social media URL<sup class="required">*</sup></label>
         <input v-model="affiliations.website" class="input" type="text">
       </div>
 
