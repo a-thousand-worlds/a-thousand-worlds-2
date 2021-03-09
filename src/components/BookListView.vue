@@ -48,7 +48,9 @@ export default {
           minHeight: !bgImage ? '180px' : null,
           paddingTop: coverRatio+'%',
           backgroundImage: `url(${bgImage})`,
-          backgroundSize: 'contain'
+          backgroundColor: bgImage ? 'transparent' : null,
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
         }" />
       </BookDetailLink>
     </div>

@@ -38,6 +38,8 @@ export default {
       paddingTop: coverRatio+'%',
       backgroundImage: `url(${bgImage})`,
       backgroundSize: 'contain',
+      backgroundRepeat: 'no-repeat',
+      backgroundColor: bgImage ? 'transparent' : null,
       minHeight: !bgImage ? '200px' : null,
     }" class="book-cover-wrapper bg-secondary">
       <div class="cover-shadow" />
