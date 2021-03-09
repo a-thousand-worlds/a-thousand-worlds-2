@@ -90,7 +90,7 @@ export default {
     adminEditClick(e) {
       // use e.shiftKey instead of editOnClick in case shift key is held down from previous page
       if (!e.shiftKey) return
-      this.$router.push({ name: 'BookDetail', params: { name: this.$route.params.name } })
+      this.$router.push({ name: 'BookDetail', params: this.$route.params })
     },
 
     closeTagsDropdown() {

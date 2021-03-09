@@ -101,7 +101,7 @@ export default {
     adminEditClick(e) {
       // use e.shiftKey instead of editOnClick in case shift key is held down from previous page
       if (!this.$iam('owner') || !e.shiftKey) return
-      this.$router.push({ name: 'PersonDetail', params: { name: this.$route.params.name } })
+      this.$router.push({ name: 'PersonDetail', params: this.$route.params })
     },
 
     closeTagsDropdown() {
