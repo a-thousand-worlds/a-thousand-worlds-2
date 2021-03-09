@@ -12,9 +12,9 @@ export default {
 <template>
   <div>
     <ul class="menu-list is-flex-grow-1">
-      <li><router-link :to="{name: 'Home'}" :class="{ 'router-link-active': $route.name === 'BookDetail' }">Books</router-link></li>
+      <li><router-link :to="{name: 'Home'}" :class="{ 'router-link-active': $route.name === 'BookDetail' || $route.name === 'BookEdit' }">Books</router-link></li>
       <li id="books-filter-menu" />
-      <li><router-link :to="{name: 'People'}" :class="{ 'router-link-active': $route.name === 'PersonDetail' }">People</router-link></li>
+      <li><router-link :to="{name: 'People'}" :class="{ 'router-link-active': $route.name === 'PersonDetail' || $route.name === 'PersonEdit' }">People</router-link></li>
       <li id="people-filter-menu" />
       <li><router-link :to="{name: 'Bundles'}">Book Bundles</router-link></li>
       <li id="bundles-filter-menu" />
