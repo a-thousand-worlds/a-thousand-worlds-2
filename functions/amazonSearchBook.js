@@ -1,5 +1,7 @@
 const express = require('express')
-const puppeteer = require('puppeteer')
+const puppeteer = require('puppeteer-extra')
+const puppeteerStealth = require('puppeteer-extra-plugin-stealth')
+puppeteer.use(puppeteerStealth())
 const cheerio = require('cheerio')
 
 // amazon uses '+' char to separate keywords in url, not %20 encoded 'space'

@@ -1,7 +1,11 @@
 const loadImage = require('./loadImage')
-const puppeteer = require('puppeteer')
 // const bookcovers = require('bookcovers')
 
+// comment if bookcovers module used
+/**/
+const puppeteer = require('puppeteer-extra')
+const puppeteerStealth = require('puppeteer-extra-plugin-stealth')
+puppeteer.use(puppeteerStealth())
 const amazonIsbnSearchUrl = isbn =>
   `https://www.amazon.com/gp/search/ref=sr_adv_b/?search-alias=stripbooks&unfiltered=1&field-isbn=${isbn}&sort=relevanceexprank`
 
@@ -42,6 +46,7 @@ async function scrape(isbn) {
   const thumbs = srcsets.map(parseSrcset).filter(a => !!a)
   return thumbs.length > 0 ? thumbs[0] : null
 }
+/**/
 
 async function coverImageByISBN(isbn, scaleToMaxWidth = 0) {
 

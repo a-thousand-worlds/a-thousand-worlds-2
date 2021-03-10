@@ -67,8 +67,7 @@ module.exports = () => {
     }
     book.goodreads = await getGoodreadsBookIDByISBN(req.query.isbn)
     const ttl = book.google ? book.google.title : book.openlib.title
-    console.log(`[${req.query.isbn}] found - ${ttl}`)
-    console.log(book)
+    console.log(`[${req.query.isbn}] found - ${ttl}`, JSON.stringify(book))
     res.json(book)
   })
 
