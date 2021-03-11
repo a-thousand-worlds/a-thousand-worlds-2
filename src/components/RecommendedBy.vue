@@ -16,13 +16,19 @@ export default {
     ContributorProfileForm,
   },
   props: {
+
     // contributor id
     modelValue: {
       type: String,
+      required: true,
     },
-    edit:
-      type: Boolean,
-    },
+
+    // if true, allows the contribor to be edited
+    edit: Boolean,
+
+    // if true, hides the "RECOMMENDED BY" text
+    nolabel: Boolean,
+
   },
   emits: ['update:modelValue'],
   data() {
@@ -34,6 +40,8 @@ export default {
   },
   computed: {
 
+    // accessible by admin only
+    // unauthorized users must access contributors individually
     contributors() {
       return this.$store.state.users.loaded
         ? Object.entries(this.$store.state.users.data)
@@ -42,6 +50,7 @@ export default {
         : []
     },
 
+    // populated individually in the created hook since users are not loaded automatically except for admin
     profile() {
       return this.modelValue && this.$store.state.users.loaded
         ? this.$store.state.users.data[this.modelValue]?.profile
@@ -76,6 +85,11 @@ export default {
       return normalizeLink(this.profile?.affiliations?.website || '')
     }
 
+  },
+  created() {
+    // load contributor
+    // not subscribed to firebase, but will reload
+    this.$store.dispatch('users/loadOne', this.modelValue)
   },
   methods: {
 
@@ -116,7 +130,7 @@ export default {
   <div v-if="edit || name" :style="edit ? 'margin-bottom: 150px;' : null">
 
     <div v-if="!showNewContributor">
-      <b>
+      <b v-if="!nolabel">
         <a v-if="edit" v-click-outside="closeDropdown" @click.prevent.stop="dropdownActive = !dropdownActive" style="user-select: none;" :class="{ 'primary-hover': edit, 'is-primary': dropdownActive }">– RECOMMENDED BY </a>
         <span v-else>– RECOMMENDED BY </span>
       </b>

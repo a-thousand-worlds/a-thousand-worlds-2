@@ -40,7 +40,7 @@ export default {
           name: 'organizationLink',
           message: 'Organization link is required'
         }] : [],
-        ...!hasIdentity && !this.otherIdentity ? [{
+        ...this.welcome && !hasIdentity && !this.otherIdentity ? [{
           name: 'identity',
           message: 'Identity is required'
         }] : [],
@@ -48,9 +48,8 @@ export default {
     })
   ],
   props: {
-    admin: {
-      type: Boolean,
-    }
+    admin: Boolean,
+    welcome: Boolean,
   },
   emits: ['cancel', 'save'],
   data() {
@@ -145,7 +144,7 @@ export default {
 <template>
   <div class="is-flex is-justify-content-center">
     <div style="max-width: 540px;">
-      <h2 v-if="!admin" class="field">Welcome! Let's start by getting the information that will be displayed with your book recommendations.</h2>
+      <h2 v-if="welcome" class="field">Welcome! Let's start by getting the information that will be displayed with your book recommendations.</h2>
 
       <form class="is-flex-grow-1" @submit.prevent="saveProfile">
 
@@ -205,28 +204,32 @@ export default {
           <input v-model="affiliations.organizationLink" @input="revalidate" class="input" type="text">
         </div>
 
-        <h2 v-if="!admin" class="mt-50">This information will not be made public:</h2>
+        <div v-if="admin || welcome">
 
-        <!-- identities -->
-        <div class="field" divider-30>
-          <label class="label">
-            <span :class="{ 'has-text-danger': hasError('identity') }" style="text-transform: uppercase;">Identity<sup class="required">*</sup></span>
-            <div style="font-weight: normal;">Please select all that apply</div>
-          </label>
+          <h2 v-if="!admin" class="mt-50">ATW is based on raising the voices of diverse identities. We'd love to know your identity. This information will not be made public.</h2>
 
-          <div class="sublabel tablet-columns-2">
-            <div v-for="identity of identityOptions" :key="identity.id" class="control is-flex" style="column-break-inside: avoid;">
-              <input v-model="identities[identity.id]" :id="`identity-${identity.id}`" type="checkbox" :false-value="null" class="checkbox mb-3 mt-1" @change="revalidate">
-              <label class="label pl-2 pb-1" :for="`identity-${identity.id}`" style="cursor: pointer;">{{ identity.tag }}</label>
-            </div>
-            <div>
-              <input v-model="identities.other" id="identity-other" type="checkbox" :false-value="null" class="checkbox mr-2 mb-3" @change="revalidate">
-              <label for="identity-other" class="label is-inline">Other</label>
+          <!-- identities -->
+          <div class="field" divider-30>
+            <label class="label">
+              <span :class="{ 'has-text-danger': hasError('identity') }" style="text-transform: uppercase;">Identity<sup class="required">*</sup></span>
+              <div style="font-weight: normal;">Please select all that apply</div>
+            </label>
+
+            <div class="sublabel tablet-columns-2">
+              <div v-for="identity of identityOptions" :key="identity.id" class="control is-flex" style="column-break-inside: avoid;">
+                <input v-model="identities[identity.id]" :id="`identity-${identity.id}`" type="checkbox" :false-value="null" class="checkbox mb-3 mt-1" @change="revalidate">
+                <label class="label pl-2 pb-1" :for="`identity-${identity.id}`" style="cursor: pointer;">{{ identity.tag }}</label>
+              </div>
               <div>
-                <input v-model="otherIdentity" @input="revalidate" class="input" style="max-width: 200px;" type="text">
+                <input v-model="identities.other" id="identity-other" type="checkbox" :false-value="null" class="checkbox mr-2 mb-3" @change="revalidate">
+                <label for="identity-other" class="label is-inline">Other</label>
+                <div>
+                  <input v-model="otherIdentity" @input="revalidate" class="input" style="max-width: 200px;" type="text">
+                </div>
               </div>
             </div>
           </div>
+
         </div>
 
         <!-- save button -->

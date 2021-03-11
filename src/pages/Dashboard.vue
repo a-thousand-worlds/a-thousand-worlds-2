@@ -82,7 +82,7 @@ export default {
 
       <section v-if="$can('submitBookOrBundle')" class="section bordered-top">
 
-        <ContributorProfileForm v-if="hasPendingContributorProfile" />
+        <ContributorProfileForm v-if="hasPendingContributorProfile" welcome />
 
         <div v-else>
 

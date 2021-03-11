@@ -76,6 +76,7 @@ export default {
   left: 0;
   margin-bottom: 10px;
   background-size: contain;
+  background-repeat: no-repeat;
 
   .cover-shadow, .cover-data, .bookmark {
     opacity: 0;

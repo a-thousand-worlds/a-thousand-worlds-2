@@ -56,6 +56,13 @@ const routes = [
       access: 'authorized'
     }
   }, {
+    path: '/contributor',
+    name: 'ContributorProfile',
+    component: () => import(/* webpackChunkName: "contributor" */ './pages/ContributorProfile.vue'),
+    meta: {
+      access: 'authorized'
+    },
+  }, {
     path: '/profile',
     name: 'Profile',
     component: () => import(/* webpackChunkName: "user" */ './pages/Login.vue'),
