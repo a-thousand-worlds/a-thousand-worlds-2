@@ -15,7 +15,7 @@ const renderBook = sub => {
     `<br><b>illustrated by</b> ${sub.illustrators}</a>`
     : ''
   const imageHtml = sub.thumbnail ?
-    `<p><a href="${bookDetailUrl}" target="_blank"><img src="${sub.thumbnail}" /></a></p>`
+    `<p><a href="${bookDetailUrl}" target="_blank"><img src="${sub.thumbnail}" width="150" /></a></p>`
     : ''
 
   return `
