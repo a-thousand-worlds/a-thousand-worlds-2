@@ -201,6 +201,7 @@ export default {
       }
 
       this.saveDraft()
+      this.revalidate()
 
     }, 500),
 
@@ -313,7 +314,7 @@ export default {
 
             <!-- title -->
             <div class="field">
-              <label class="label" :class="{ 'has-text-danger': hasError('title') }" :for="titleId">Title<sup class="required">*</sup></label>
+              <label :for="titleId" class="label" :class="{ 'has-text-danger': hasError('title') }">Title<sup class="required">*</sup></label>
               <BookTitleField v-model="sub.title" :disabled="$uiBusy || (books[si]?.id)" :inputClass="{ 'is-danger': hasError('title') }" :inputId="titleId" :searchable="false" @book-selected="fillBook($event, si)" @input="metadataInputsChanged(si)" />
             </div>
 
@@ -321,17 +322,17 @@ export default {
             <div class="field">
               <label class="label" :class="{ 'has-text-danger': hasError('authors') }" for="authors">Author(s)<sup class="required">*</sup></label>
               <div class="control">
-                <input id="authors" v-model="sub.authors" class="input" :class="{ 'is-danger': hasError('authors') }" type="text" :disabled="$uiBusy || (books[si]?.id)" @input="metadataInputsChanged(si)">
+                <input id="authors" v-model="sub.authors" type="text" :disabled="$uiBusy || (books[si]?.id)" @input="metadataInputsChanged(si)" class="input" :class="{ 'is-danger': hasError('authors') }">
               </div>
             </div>
 
             <!-- illustrators -->
             <div class="field">
-              <label class="label" :class="{ 'has-text-danger': hasError('illustrators') }" for="illustrators">Illustrator(s)<sup class="required">*</sup>
+              <label for="illustrators" class="label" :class="{ 'has-text-danger': hasError('illustrators') }">Illustrator(s)<sup class="required">*</sup>
                 <p style="font-weight: normal; text-transform: none;">If same as author type "same"</p>
               </label>
               <div class="control">
-                <input id="illustrators" v-model="sub.illustrators" class="input" type="text" :disabled="$uiBusy || (books[si]?.id)" @input="metadataInputsChanged(si)">
+                <input id="illustrators" v-model="sub.illustrators" type="text" :disabled="$uiBusy || (books[si]?.id)" @input="metadataInputsChanged(si)" class="input" :class="{ 'is-danger': hasError('illustrators') }">
               </div>
             </div>
 
@@ -361,13 +362,13 @@ export default {
                       <label class="label" :class="{ 'has-text-danger': hasError('isbn') }">Is this your book?</label>
                       <div class="field" :class="{ 'is-grouped': sub.attempts === 1 }">
                         <div class="control mb-2">
-                          <button class="button is-rounded" :class="{ 'is-primary': sub.confirmed !== false, 'is-selected': sub.confirmed }" :disabled="sub.confirmed" :style="sub.confirmed ? { cursor: 'default' } : null" @click.prevent="setConfirmed(si, true)">Yes</button>
+                          <button :disabled="sub.confirmed" :style="sub.confirmed ? { cursor: 'default' } : null" @click.prevent="setConfirmed(si, true)" class="button is-rounded" :class="{ 'is-primary': sub.confirmed !== false, 'is-selected': sub.confirmed }">Yes</button>
                         </div>
                         <div class="control mb-2">
-                          <button class="button is-rounded" @click.prevent="setConfirmed(si, false)">No{{ sub.attempts > 1 ? ', try again' : '' }}</button>
+                          <button @click.prevent="setConfirmed(si, false)" class="button is-rounded">No{{ sub.attempts > 1 ? ', try again' : '' }}</button>
                         </div>
                         <div class="control mb-2">
-                          <button v-if="sub.attempts > 1" class="button is-rounded" @click.prevent="setConfirmed(si, true)">No, but keep anyway</button>
+                          <button v-if="sub.attempts > 1" @click.prevent="setConfirmed(si, true)" class="button is-rounded">No, but keep anyway</button>
                         </div>
                       </div>
                     </div>
@@ -384,7 +385,7 @@ export default {
                       </div>
                       <div class="field">
                         <div class="control">
-                          <button class="button is-rounded is-primary" :disabled="!sub.isbn" @click="searchManualIsbn(si)">Search</button>
+                          <button :disabled="!sub.isbn" @click="searchManualIsbn(si)" class="button is-rounded is-primary">Search</button>
                           <button class="button is-flat" @click="setConfirmed(si, null)">Cancel</button>
                         </div>
                       </div>
@@ -425,7 +426,7 @@ export default {
           </section>
 
           <section v-if="submissions.length>1">
-            <button class="button is-rounded" @click="delSubmission(si)">
+            <button @click="delSubmission(si)" class="button is-rounded">
               <i class="fas fa-minus" />
               <span class="ml-3">Delete</span>
             </button>
@@ -445,9 +446,9 @@ export default {
         <hr>
 
         <div class="field is-grouped">
-          <button :class="{'is-loading': $uiBusy}" class="button is-rounded is-primary mr-20" @click.prevent="submitForReview">Submit for review</button>
+          <button @click.prevent="submitForReview" :class="{'is-loading': $uiBusy}" class="button is-rounded is-primary mr-20">Submit for review</button>
           <button class="button is-rounded" @click.prevent="clearAllSubmissions">Reset All</button>
-          <button v-if="draftSaved" class="button is-flat" @click.prevent="saveDraft" style="cursor: text;">Draft Saved</button>
+          <button v-if="draftSaved" @click.prevent="saveDraft" class="button is-flat" style="cursor: text;">Draft Saved</button>
         </div>
 
         <div v-if="errors.length" class="field">
