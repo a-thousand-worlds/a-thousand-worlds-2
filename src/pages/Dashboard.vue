@@ -37,7 +37,13 @@ export default {
     hasPendingContributorProfile() {
       // if affiliations are set, we know the user completed the ContributorProfileForm
       // returns true for non-contributors
-      return this.$iam('contributor') && !this.$store.state.user.user?.profile.affiliations
+
+      const affiliations = this.$store.state.user.user?.profile.affiliations
+      return this.$iam('contributor') && (
+        !affiliations ||
+        (!affiliations.website && !affiliations.organization && !affiliations.organizationLink && !(Object.values(affiliations.selectedEngagementCategory).length > 0 || affiliations.otherEngagementCategory)
+        )
+      )
     },
   },
   created() {

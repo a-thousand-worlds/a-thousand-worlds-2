@@ -21,19 +21,16 @@ export default {
       error: null,
       loading: false,
       password: '',
-      ...this.isEditProfile ? {
-        affiliations: {
-          organization: '',
-          organizationLink: '',
-          otherEngagementCategory: '',
-          website: null,
-          selectedEngagementCategories: {},
-          ...profile?.affiliations,
-        }
-      } : null,
+      affiliations: {
+        organization: '',
+        organizationLink: '',
+        otherEngagementCategory: '',
+        website: null,
+        selectedEngagementCategories: {},
+        ...profile?.affiliations,
+      },
       // only show errors after a submit has been attempted
       submitAttempt: false,
-
     }
   },
 
