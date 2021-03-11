@@ -1,6 +1,7 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 const coverImageByISBN = require('../util/coverImageByISBN')
+const loadImage = require('../util/loadImage')
 const uid = require('uuid').v4
 const getDownloadUrl = require('../util/getBucketFileDownloadUrl')
 
@@ -19,13 +20,26 @@ const watchBooks = functions
 
     await snap.ref.child('findingCover').set(true)
     let img
-    try {
-      // scaling cover image for book for maximum width 400px
-      img = await coverImageByISBN(book.isbn, 400)
+    if (book.cover && book.cover.downloadUrl) {
+      try {
+        img = await loadImage(book.cover.downloadUrl, 400)
+      }
+      catch (err) {
+        console.error('loadImage error', err)
+        img = null
+      }
     }
-    finally {
-      await snap.ref.child('findingCover').remove()
+    if (!img) {
+      try {
+        // scaling cover image for book for maximum width 400px
+        img = await coverImageByISBN(book.isbn, 400)
+      }
+      catch (err) {
+        console.error('image by isbn error', err)
+        img = null
+      }
     }
+    await snap.ref.child('findingCover').remove()
 
     if (!img) {
       console.log('No cover:', book.isbn)

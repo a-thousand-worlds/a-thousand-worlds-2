@@ -20,7 +20,9 @@
     "test:watch": "npm run test -- --watch",
     "update:books:tags": "mkdir -p /tmp/atw/ && firebase database:get /tags/books > /tmp/atw/books.tags.json && firebase database:get /books > /tmp/atw/books.json && node ./migrations/update-books-tags.js",
     "update:books:creators": "mkdir -p /tmp/atw/ && firebase database:get /people > /tmp/atw/creators.json && firebase database:get /books > /tmp/atw/books.json && node ./migrations/update-books-creators.js",
-    "update:images": "mkdir -p /tmp/atw/ && firebase database:get /books > /tmp/atw/books.json && node ./migrations/update-images.js"
+    "update:images": "mkdir -p /tmp/atw/ && firebase database:get /books > /tmp/atw/books.json && node ./migrations/update-images.js",
+    "import:books": "mkdir -p /tmp/atw/ && firebase database:get /people > /tmp/atw/people.json && firebase database:get /tags/books > /tmp/atw/books.tags.json && firebase database:get /users > /tmp/atw/users.json && firebase database:get /books > /tmp/atw/books.json && node ./migrations/import-books.js",
+    "import:books:nodownload": "node ./migrations/import-books.js"
   },
   "//dependencies": {
     "@ckeditor/ckeditor5-vue": "Waiting on https://github.com/ckeditor/ckeditor5-vue/pull/173"
@@ -75,6 +77,7 @@
     "firebase-tools": "^9.2.2",
     "husky": "^5.0.8",
     "jest-transform-stub": "^2.0.0",
+    "promptly": "^3.2.0",
     "sass": "^1.32.4",
     "sass-loader": "^10.1.1",
     "typescript": "^4.1.3",
