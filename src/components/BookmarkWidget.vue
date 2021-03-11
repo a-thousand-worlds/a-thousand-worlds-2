@@ -5,11 +5,17 @@ export default {
   components: {
     BookListView,
   },
-  props: ['mark'],
-  data() {
-    return {
-      book: null,
-      bundle: null
+  props: {
+    bookmark: {
+      required: true,
+    }
+  },
+  computed: {
+    book() {
+      return {
+        id: this.bookmark.id,
+        ...this.$store.state.books.data[this.bookmark.id],
+      }
     }
   }
 }
@@ -17,11 +23,11 @@ export default {
 
 <template>
   <div>
-    <div v-if="mark.type === 'book'" class="container">
-      <BookListView :book="$store.state.books.data[mark.id]" />
+    <div v-if="bookmark.type === 'book'" class="container">
+      <BookListView :book="book" />
     </div>
-    <div v-if="mark.type === 'bundle'">
-      {{ mark.type }}: {{ mark.id }}
+    <div v-if="bookmark.type === 'bundle'">
+      {{ bookmark.type }}: {{ bookmark.id }}
     </div>
   </div>
 </template>

@@ -11,24 +11,26 @@ export default {
     BookDetailLink,
   },
   props: {
-    book: {},
+    book: {
+      required: true
+    },
     // link to admin edit pages instead of public detail pages
     edit: Boolean,
   },
   computed: {
     coverRatio() {
+      if (!this.book) return 1
       if (this.updatedCover) return this.book.cover.height / this.book.cover.width * 100
-      if (!this.book || !this.book.coverWidth || !this.book.coverHeight) {
-        return 1
-      }
+      if (!this.book.coverWidth || !this.book.coverHeight) return 1
       return this.book.coverHeight / this.book.coverWidth * 100
     },
     bgImage() {
+      if (!this.book) return null
       if (this.updatedCover) return this.book.cover.url
       return this.book.cover || ''
     },
     updatedCover() {
-      return this.book.cover?.url?.startsWith('http')
+      return this.book?.cover?.url?.startsWith('http')
     }
   },
   created() {
@@ -39,7 +41,7 @@ export default {
 
 <template>
   <!-- doing v-if check because this component used for bookmarks bar also, and it may happen, that bookmarked (by some user) book may be removed from database (by admin), so book to display will be undefined -->
-  <div v-if="book" class="columns m-0">
+  <div class="columns m-0">
     <div class="column is-one-half p-0 mb-20">
       <BookDetailLink :book="book" :edit="edit" class="cover-data">
         <div class="img-cover bg-secondary" :style="{
@@ -60,11 +62,16 @@ export default {
         <div class="column p-0 pl-20 pr-10">
 
           <div class="is-flex is-justify-content-space-between mb-20">
+
             <div>
-              <BookDetailLink :book="book" class="cover-data" :edit="edit">
-                <h3 class="link mb-10" style="margin-right: 15px;">{{ book.title }}</h3>
+              <BookDetailLink v-if="book?.title" :book="book" class="cover-data" :edit="edit">
+                <h3 class="link mb-10 mr-15" style="margin-right: 15px;">{{ book.title }}</h3>
               </BookDetailLink>
-              <div class="authors">
+              <div v-else>
+                <h3 class="mb-10" style="margin-right: 15px;">Oops! Missing book</h3>
+                {{ book?.id }}
+              </div>
+              <div v-if="book.creators" class="authors">
                 <CreatorsWidget :book="book" linked :edit="edit" />
               </div>
             </div>
