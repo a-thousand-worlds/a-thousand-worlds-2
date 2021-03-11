@@ -85,8 +85,8 @@ export default {
   &.masonry-item-list {
     @include from($desktop) {
       margin: auto;
-      width: 50%;
-      max-width: 750px;
+      width: 33%;
+      min-width: 390px; // make sure there is enough room fro images in cover view to be at least 150px wide
     }
   }
 }
