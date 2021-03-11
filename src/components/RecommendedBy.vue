@@ -20,7 +20,7 @@ export default {
     modelValue: {
       type: String,
     },
-    edit: {
+    edit:
       type: Boolean,
     },
   },

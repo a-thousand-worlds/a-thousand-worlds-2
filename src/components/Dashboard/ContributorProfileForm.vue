@@ -1,5 +1,6 @@
 <script>
 import validator from '@/mixins/validator'
+import PhotoUpload from '@/components/PhotoUpload'
 import engagementOptions from '@/store/constants/engagements'
 
 const newAffiliations = () => ({
@@ -11,6 +12,9 @@ const newAffiliations = () => ({
 })
 
 export default {
+  components: {
+    PhotoUpload,
+  },
   mixins: [
     validator(function() {
       const hasIdentity = Object.values(this.identities).some(x => x)
@@ -62,6 +66,7 @@ export default {
       loading: false,
       name: '', // admin only
       otherIdentity: null,
+      photo: null,
     }
   },
   computed: {
@@ -93,6 +98,7 @@ export default {
         affiliations: this.affiliations,
         identities: this.identities,
         otherIdentity: this.otherIdentity,
+        photo: this.photo,
         ...this.admin ? { name: this.name } : null,
       }
 
@@ -143,35 +149,46 @@ export default {
 
       <form class="is-flex-grow-1" @submit.prevent="saveProfile">
 
-        <!-- name (admin only) -->
-        <div v-if="admin" class="field">
-          <label class="label is-uppercase" :class="{ error: hasError('name') }">Name<sup class="required">*</sup></label>
-          <input v-model="name" class="input" type="text">
-        </div>
+        <div class="is-flex field">
 
-        <!-- website -->
-        <div class="field">
-          <label class="label is-uppercase" :class="{ error: hasError('website') }">Your website or social media URL<sup class="required">*</sup></label>
-          <input v-model="affiliations.website" class="input" type="text">
-        </div>
+          <!-- photo -->
+          <PhotoUpload v-model="photo" class="mr-30 my-40" style="width: 45%" />
 
-        <!-- engagement -->
-        <div class="field">
-          <label class="label is-uppercase" :class="{ error: hasError('engagements') }">How do you engage with books?<sup class="required">*</sup></label>
-          <div class="sublabel tablet-columns-2">
-            <div v-for="engagement of engagementOptions" :key="engagement.id" class="control columns-2">
-              <input :id="`engagement-${engagement.id}`" v-model="affiliations.selectedEngagementCategories[engagement.id]" :name="engagement.id" @change="revalidate" type="checkbox" :false-value="null" class="checkbox mr-2 mb-3">
-              <label class="label is-inline" style="word-wrap: nobreak;" :for="`engagement-${engagement.id}`">
-                {{ engagement.text }}
-              </label>
+          <div class="is-flex-grow-1 is-flex is-justify-content-center is-flex-direction-column">
+
+            <!-- name (admin only) -->
+            <div v-if="admin" class="field">
+              <label class="label is-uppercase" :class="{ error: hasError('name') }">Name<sup class="required">*</sup></label>
+              <input v-model="name" class="input" type="text">
             </div>
-            <div>
-              <input v-model="affiliations.selectedEngagementCategories.other" id="engagement-other" type="checkbox" class="checkbox mr-2 mb-3" @change="revalitate">
-              <label for="engagement-other" class="label is-inline">Other</label>
-              <div>
-                <input v-model="affiliations.otherEngagementCategory" @change="revalidate" class="input" style="max-width: 200px;" type="text">
+
+            <!-- website -->
+            <!-- add a little extra margin on the right so that "social media url" doesn't wrap -->
+            <div class="field">
+              <label class="label is-uppercase" :class="{ error: hasError('website') }">Your website or social media URL<sup class="required">*</sup></label>
+              <input v-model="affiliations.website" class="input" type="text">
+            </div>
+
+            <!-- engagement -->
+            <div class="field">
+              <label class="label is-uppercase" :class="{ error: hasError('engagements') }">How do you engage with books?<sup class="required">*</sup></label>
+              <div class="sublabel tablet-columns-2">
+                <div v-for="engagement of engagementOptions" :key="engagement.id" class="control columns-2">
+                  <input :id="`engagement-${engagement.id}`" v-model="affiliations.selectedEngagementCategories[engagement.id]" :name="engagement.id" @change="revalidate" type="checkbox" :false-value="null" class="checkbox mr-2 mb-3">
+                  <label class="label is-inline" style="word-wrap: nobreak;" :for="`engagement-${engagement.id}`">
+                    {{ engagement.text }}
+                  </label>
+                </div>
+                <div>
+                  <input v-model="affiliations.selectedEngagementCategories.other" id="engagement-other" type="checkbox" class="checkbox mr-2 mb-3" @change="revalitate">
+                  <label for="engagement-other" class="label is-inline">Other</label>
+                  <div>
+                    <input v-model="affiliations.otherEngagementCategory" @change="revalidate" class="input" style="max-width: 200px;" type="text">
+                  </div>
+                </div>
               </div>
             </div>
+
           </div>
 
         </div>

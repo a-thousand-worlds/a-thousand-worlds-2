@@ -1,5 +1,6 @@
 <script>
 import ContributorProfileForm from '@/components/Dashboard/ContributorProfileForm'
+import ContributorProfilePreview from '@/components/Dashboard/ContributorProfilePreview'
 import CreatorProfilePreview from '@/components/Dashboard/CreatorProfilePreview'
 import InviteWidget from '@/components/InviteWidget'
 import Loader from '@/components/Loader'
@@ -10,6 +11,7 @@ import YourBookSubmissions from '@/components/Dashboard/YourBookSubmissions'
 export default {
   components: {
     ContributorProfileForm,
+    ContributorProfilePreview,
     CreatorProfilePreview,
     Loader,
     InviteWidget,
@@ -83,6 +85,9 @@ export default {
         <ContributorProfileForm v-if="hasPendingContributorProfile" />
 
         <div v-else>
+
+          <ContributorProfilePreview class="mb-30" />
+
           <h2 v-if="$can('submitPerson')">Submission Forms</h2>
           <h2 v-else>Suggest a book or bundle</h2>
           <div class="field is-grouped">
