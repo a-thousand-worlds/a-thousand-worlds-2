@@ -276,12 +276,13 @@ const go = async () => {
     return
   }
 
-  const pwd = await promptly.password(`Website password for <${owner.profile.email}>`)
+  const usr = await promptly.prompt(`Website authentication email`)
+  const pwd = await promptly.password(`Website authentication password for <${usr}>`)
   console.log('Connecting to firebase')
   const firebase = initFirebase()
   let credentials = null
   try {
-    credentials = await firebase.auth().signInWithEmailAndPassword(owner.profile.email, pwd)
+    credentials = await firebase.auth().signInWithEmailAndPassword(usr, pwd)
   }
   catch (err) {
     credentials = null
