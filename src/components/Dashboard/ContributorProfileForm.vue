@@ -73,7 +73,7 @@ export default {
       loading: false,
       name: '', // admin only
       otherIdentity: null,
-      photo: null,
+      photo: profile.photo,
     }
   },
   computed: {
@@ -87,6 +87,7 @@ export default {
   watch: {
     '$store.state.user.user'(next, prev) {
       this.identities = next?.profile?.identities || this.identities
+      this.photo = next?.profile?.photo || this.photo
     },
   },
   methods: {
