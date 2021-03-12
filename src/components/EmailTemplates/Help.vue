@@ -17,6 +17,7 @@ export default {}
         <li><b>LAST_NAME</b>: The last name of the invitee.</li>
         <li><b>FULL_NAME</b>: The full name of the invitee.</li>
         <li><b>SIGNUP_LINK</b>: The signup link for the selected role.</li>
+        <li><b>APPROVED_RECORDS</b>: Submission group approved records.</li>
       </ul>
     </p>
   </div>

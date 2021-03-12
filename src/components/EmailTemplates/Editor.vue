@@ -24,9 +24,14 @@ export default {
         path: 'email/invite',
       },
       {
-        title: 'Submission',
+        title: 'Approved submission group',
         items: ['book', 'bundle', 'people'],
-        path: 'email/submissions',
+        path: 'email/submissions/approved',
+      },
+      {
+        title: 'Rejected submission group',
+        items: ['book', 'bundle', 'people'],
+        path: 'email/submissions/rejected',
       }
     ]
 
@@ -62,7 +67,7 @@ export default {
       const templateVariables = html.match(/\w+_\w+/g)
 
       const isValidTemplateVariable = variable =>
-        ['FIRST_NAME', 'LAST_NAME', 'FULL_NAME', 'SIGNUP_LINK'].includes(variable)
+        ['FIRST_NAME', 'LAST_NAME', 'FULL_NAME', 'SIGNUP_LINK', 'APPROVED_RECORDS'].includes(variable)
 
       return (templateVariables || [])
         .map(variable => !isValidTemplateVariable(variable)
@@ -88,7 +93,7 @@ export default {
           <p class="menu-label">{{ group.title }}s</p>
           <ul class="menu-list">
             <li v-for="item of group.items" :key="item" class="is-capitalized">
-              <a :class="{ 'is-active': item === active.item }" @click.prevent="active = { group, item }">{{ item }}</a>
+              <a :class="{ 'is-active': item === active.item && group === active.group }" @click.prevent="active = { group, item }">{{ item }}</a>
             </li>
           </ul>
         </div>
