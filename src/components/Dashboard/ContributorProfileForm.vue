@@ -19,7 +19,7 @@ export default {
     validator(function() {
       const hasIdentity = Object.values(this.identities).some(x => x)
       const hasSelectedEngagements = Object.values(this.affiliations.selectedEngagementCategories).some(x => x)
-      return [
+      const errors = [
         // admin only
         ...this.admin && !this.name ? [{
           name: 'name',
@@ -50,7 +50,9 @@ export default {
             message: 'Identity is required'
           }] : []
         ] : [],
-      ]
+      ].flat()
+
+      return errors
     })
   ],
   props: {
@@ -244,13 +246,13 @@ export default {
         </div>
 
         <!-- cancel button (admin only) -->
-        <div class="field my-4">
+        <div v-if="admin" class="field my-4">
           <input type="button" value="Cancel" @click.prevent="cancel" class="button is-rounded is-fullwidth is-uppercase">
         </div>
 
         <!-- errors -->
         <div v-if="errors.length" class="field">
-          <p v-for="(error, i) of errors" :key="i" class="error has-text-centered is-uppercase">{{ error.message }}</p>
+          <p v-for="(error, i) of errors" :key="i" class="error has-text-centered is-uppercase">{{ error.message || 'Unknown error' }}</p>
         </div>
 
       </form>

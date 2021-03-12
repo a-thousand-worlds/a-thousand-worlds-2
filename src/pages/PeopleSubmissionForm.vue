@@ -268,7 +268,7 @@ export default {
         </div>
 
         <div v-if="errors.length" class="field">
-          <p v-for="(error, i) of errors" :key="i" class="error has-text-centered is-uppercase">{{ error.message }}</p>
+          <p v-for="(error, i) of errors" :key="i" class="error has-text-centered is-uppercase">{{ error.message || 'Unknown error' }}</p>
         </div>
 
       </form>

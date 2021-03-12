@@ -449,7 +449,7 @@ export default {
           </div>
 
           <div v-if="error" class="field">
-            <p class="error has-text-centered is-uppercase">{{ error.message }}</p>
+            <p class="error has-text-centered is-uppercase">{{ error.message || 'Unknown error' }}</p>
           </div>
 
           <p v-if="isLogin" class="has-text-centered">
