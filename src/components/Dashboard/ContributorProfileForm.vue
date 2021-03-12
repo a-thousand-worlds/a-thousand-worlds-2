@@ -20,30 +20,36 @@ export default {
       const hasIdentity = Object.values(this.identities).some(x => x)
       const hasSelectedEngagements = Object.values(this.affiliations.selectedEngagementCategories).some(x => x)
       return [
+        // admin only
         ...this.admin && !this.name ? [{
           name: 'name',
           message: 'Name is required'
         }] : [],
-        ...!this.affiliations.website ? [{
-          name: 'website',
-          message: 'Your website is required'
-        }] : [],
+
         ...!hasSelectedEngagements && !this.affiliations.otherEngagementCategory ? [{
           name: 'engagements',
           message: 'How you engage with books is required'
         }] : [],
-        ...!this.affiliations.organization ? [{
-          name: 'organizationName',
-          message: 'Organization is required'
-        }] : [],
-        ...!this.affiliations.organizationLink ? [{
-          name: 'organizationLink',
-          message: 'Organization link is required'
-        }] : [],
-        ...this.welcome && !hasIdentity && !this.otherIdentity ? [{
-          name: 'identity',
-          message: 'Identity is required'
-        }] : [],
+
+        // not required for admin
+        ...!this.admin ? [
+          !this.affiliations.website ? [{
+            name: 'website',
+            message: 'Your website is required'
+          }] : [],
+          ...!this.affiliations.organization ? [{
+            name: 'organizationName',
+            message: 'Organization is required'
+          }] : [],
+          ...!this.affiliations.organizationLink ? [{
+            name: 'organizationLink',
+            message: 'Organization link is required'
+          }] : [],
+          ...this.welcome && !hasIdentity && !this.otherIdentity ? [{
+            name: 'identity',
+            message: 'Identity is required'
+          }] : []
+        ] : [],
       ]
     })
   ],
@@ -164,7 +170,7 @@ export default {
             <!-- website -->
             <!-- add a little extra margin on the right so that "social media url" doesn't wrap -->
             <div class="field">
-              <label class="label is-uppercase" :class="{ error: hasError('website') }">Your website or social media URL<sup class="required">*</sup></label>
+              <label class="label is-uppercase" :class="{ error: hasError('website') }">Your website or social media URL<sup v-if="!admin" class="required">*</sup></label>
               <input v-model="affiliations.website" class="input" type="text">
             </div>
 
@@ -194,13 +200,13 @@ export default {
 
         <!-- organization -->
         <div class="field">
-          <label class="label is-uppercase" :class="{ error: hasError('organizationName') }">Are you affiliated with an organization?<sup class="required">*</sup></label>
+          <label class="label is-uppercase" :class="{ error: hasError('organizationName') }">Are you affiliated with an organization?<sup v-if="!admin" class="required">*</sup></label>
           <input v-model="affiliations.organization" @input="revalidate" class="input" type="text">
         </div>
 
         <!-- organization link -->
         <div class="field">
-          <label class="label is-uppercase" :class="{ error: hasError('organizationLink') }">Link to organization<sup class="required">*</sup></label>
+          <label class="label is-uppercase" :class="{ error: hasError('organizationLink') }">Link to organization<sup v-if="!admin" class="required">*</sup></label>
           <input v-model="affiliations.organizationLink" @input="revalidate" class="input" type="text">
         </div>
 
@@ -211,7 +217,7 @@ export default {
           <!-- identities -->
           <div class="field" divider-30>
             <label class="label">
-              <span :class="{ 'has-text-danger': hasError('identity') }" style="text-transform: uppercase;">Identity<sup class="required">*</sup></span>
+              <span :class="{ 'has-text-danger': hasError('identity') }" style="text-transform: uppercase;">Identity<sup v-if="!admin" class="required">*</sup></span>
               <div style="font-weight: normal;">Please select all that apply</div>
             </label>
 
