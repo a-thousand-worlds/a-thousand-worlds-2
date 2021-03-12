@@ -82,11 +82,12 @@ export default {
 
       <section v-if="$can('submitBookOrBundle')" class="section bordered-top">
 
-        <ContributorProfileForm v-if="hasPendingContributorProfile" welcome />
+        <div v-if="$iam('contributor')">
+          <ContributorProfileForm v-if="hasPendingContributorProfile" welcome />
+          <ContributorProfilePreview v-else class="mb-30" />
+        </div>
 
-        <div v-else>
-
-          <ContributorProfilePreview class="mb-30" />
+        <div>
 
           <h2 v-if="$can('submitPerson')">Submission Forms</h2>
           <h2 v-else>Suggest a book or bundle</h2>
