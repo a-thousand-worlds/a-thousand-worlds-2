@@ -63,13 +63,20 @@ export default {
     },
 
     title() {
-      const recommenderEngagements = this.profile?.affiliations?.selectedEngagementCategories
-        ? Object.keys(this.profile.affiliations.selectedEngagementCategories)
-          .map(id => engagements.find(engagement => engagement.id === id))
-          .filter(x => x)
-        : null
-      return recommenderEngagements
-        ? recommenderEngagements.map(engagement => engagement.text).join(', ')
+      const reviewerEngagements = [
+        // selectedEngagementCategories
+        ...this.profile?.affiliations?.selectedEngagementCategories
+          ? Object.keys(this.profile.affiliations.selectedEngagementCategories)
+            .map(id => engagements.find(engagement => engagement.id === id))
+            .filter(x => x)
+          : [],
+        // otherEngagementCategory
+        ...this.profile?.affiliations.otherEngagementCategory
+          ? [{ text: this.profile?.affiliations.otherEngagementCategory.trim() }]
+          : []
+      ]
+      return reviewerEngagements.length > 0
+        ? reviewerEngagements.map(engagement => engagement.text.trim()).join(', ')
         : null
     },
 
