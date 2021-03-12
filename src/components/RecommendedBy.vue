@@ -1,4 +1,5 @@
 <script>
+import _ from 'lodash'
 import engagements from '@/store/constants/engagements'
 import normalizeLink from '@/util/normalizeLink'
 import ContributorProfileForm from '@/components/Dashboard/ContributorProfileForm'
@@ -18,10 +19,7 @@ export default {
   props: {
 
     // contributor id
-    modelValue: {
-      type: String,
-      required: true,
-    },
+    modelValue: String,
 
     // if true, allows the contribor to be edited
     edit: Boolean,
@@ -40,14 +38,16 @@ export default {
   },
   computed: {
 
+    // sorted contributor for dropdown menu
     // accessible by admin only
     // unauthorized users must access contributors individually
     contributors() {
-      return this.$store.state.users.loaded
+      const contributorList = this.$store.state.users.loaded
         ? Object.entries(this.$store.state.users.data)
           .filter(([id, user]) => user.roles?.contributor)
           .map(([id, user]) => ({ id, ...user }))
         : []
+      return _.sortBy(contributorList, 'profile.name')
     },
 
     // populated individually in the created hook since users are not loaded automatically except for admin
