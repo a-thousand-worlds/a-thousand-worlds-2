@@ -1,6 +1,7 @@
 /** Vuex module for authentication and current user */
 import _ from 'lodash'
 import firebase from '@/firebase'
+import can from '@/util/can'
 import mergeOne from '@/util/mergeOne'
 import collection from '@/store/modules/collection'
 import router from '../router'
@@ -67,6 +68,10 @@ const module = mergeOne(usersModule, {
       firebase.auth().signOut()
       ctx.commit('setUser', null)
       ctx.commit('ui/setLastVisited', new Date(), { root: true })
+
+      // TODO: global clear mutation
+      // ctx.commit('clear', null, { root: true })
+
       router.push({ name: 'Login' })
     },
 
@@ -187,6 +192,15 @@ const module = mergeOne(usersModule, {
           profileRef.on('value', snap => {
             const profile = defaultProfile(u, snap.val())
             ctx.commit('setProfile', profile)
+
+            // subscribe to users once logged in if user can edit content
+            // they cannot be subscribed to before authorized login
+            // maybe there is a better way then setTimeout, but without it state does not yet have valid user
+            setTimeout(() => {
+              if (!ctx.rootState.users?.loaded && can(ctx.rootState, 'editContent')) {
+                ctx.dispatch('users/subscribe', {}, { root: true })
+              }
+            })
           })
 
         }
