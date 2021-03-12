@@ -36,10 +36,10 @@ export default {
     coverUrl() {
       return this.sub.thumbnail ||
         this.sub.cover?.url ||
-        this.sub.cover?.base64 ? this.sub.cover.base64.startsWith('data:image')
+        (this.sub.cover?.base64 ? this.sub.cover.base64.startsWith('data:image')
           ? this.sub.cover?.base64
           : `data:image/png;base64,${this.sub.cover.base64}`
-        : ''
+        : '')
     },
     /** Returns true if all authors exist in the people directory already. */
     authorsExist() {
