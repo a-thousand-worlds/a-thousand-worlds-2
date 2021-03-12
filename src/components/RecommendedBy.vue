@@ -137,7 +137,7 @@ export default {
 
       <!-- dropdown -->
       <div v-if="edit" class="dropdown no-user-select" :class="{ 'is-active': dropdownActive }" style="position: absolute;">
-        <div id="dropdown-menu" class="dropdown-menu" role="menu">
+        <div id="dropdown-menu" class="dropdown-menu" role="menu" style="top: auto; bottom: -1.5rem;">
           <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
             <a class="dropdown-item is-capitalized is-uppercase" @click.prevent="showNewContributor = true"><b>New Contributor</b></a>
             <a class="dropdown-item is-capitalized is-uppercase" @click.prevent="remove">None</a>
