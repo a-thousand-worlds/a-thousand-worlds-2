@@ -1,4 +1,5 @@
 <script>
+import _ from 'lodash'
 import engagements from '@/store/constants/engagements'
 import normalizeLink from '@/util/normalizeLink'
 import ContributorProfileForm from '@/components/Dashboard/ContributorProfileForm'
@@ -18,10 +19,7 @@ export default {
   props: {
 
     // contributor id
-    modelValue: {
-      type: String,
-      required: true,
-    },
+    modelValue: String,
 
     // if true, allows the contribor to be edited
     edit: Boolean,
@@ -40,14 +38,16 @@ export default {
   },
   computed: {
 
+    // sorted contributor for dropdown menu
     // accessible by admin only
     // unauthorized users must access contributors individually
     contributors() {
-      return this.$store.state.users.loaded
+      const contributorList = this.$store.state.users.loaded
         ? Object.entries(this.$store.state.users.data)
           .filter(([id, user]) => user.roles?.contributor)
           .map(([id, user]) => ({ id, ...user }))
         : []
+      return _.sortBy(contributorList, 'profile.name')
     },
 
     // populated individually in the created hook since users are not loaded automatically except for admin
@@ -63,13 +63,20 @@ export default {
     },
 
     title() {
-      const recommenderEngagements = this.profile?.affiliations?.selectedEngagementCategories
-        ? Object.keys(this.profile.affiliations.selectedEngagementCategories)
-          .map(id => engagements.find(engagement => engagement.id === id))
-          .filter(x => x)
-        : null
-      return recommenderEngagements
-        ? recommenderEngagements.map(engagement => engagement.text).join(', ')
+      const reviewerEngagements = [
+        // selectedEngagementCategories
+        ...this.profile?.affiliations?.selectedEngagementCategories
+          ? Object.keys(this.profile.affiliations.selectedEngagementCategories)
+            .map(id => engagements.find(engagement => engagement.id === id))
+            .filter(x => x)
+          : [],
+        // otherEngagementCategory
+        ...this.profile?.affiliations.otherEngagementCategory
+          ? [{ text: this.profile?.affiliations.otherEngagementCategory.trim() }]
+          : []
+      ]
+      return reviewerEngagements.length > 0
+        ? reviewerEngagements.map(engagement => engagement.text.trim()).join(', ')
         : null
     },
 
@@ -137,7 +144,7 @@ export default {
 
       <!-- dropdown -->
       <div v-if="edit" class="dropdown no-user-select" :class="{ 'is-active': dropdownActive }" style="position: absolute;">
-        <div id="dropdown-menu" class="dropdown-menu" role="menu">
+        <div id="dropdown-menu" class="dropdown-menu" role="menu" style="top: auto; bottom: -1.5rem;">
           <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
             <a class="dropdown-item is-capitalized is-uppercase" @click.prevent="showNewContributor = true"><b>New Contributor</b></a>
             <a class="dropdown-item is-capitalized is-uppercase" @click.prevent="remove">None</a>

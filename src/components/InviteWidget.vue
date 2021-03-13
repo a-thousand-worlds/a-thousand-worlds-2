@@ -258,7 +258,7 @@ export default {
     </div>
 
     <div v-if="error" class="field">
-      <p class="error is-uppercase">{{ error.message }}</p>
+      <p class="error is-uppercase">{{ error.message || 'Unknown error' }}</p>
       <div v-if="error.data" class="error">
         <p v-for="item of error.data" :key="item">{{ item }}</p>
       </div>

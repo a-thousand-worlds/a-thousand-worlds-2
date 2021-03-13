@@ -114,7 +114,7 @@ export default {
             @change="validate"
           />
           <div v-if="subjectErrors.length" class="field">
-            <p v-for="(error, i) of subjectErrors" :key="i" class="error my-10">{{ error.message }}</p>
+            <p v-for="(error, i) of subjectErrors" :key="i" class="error my-10">{{ error.message || 'Unknown error' }}</p>
           </div>
         </div>
         <div class="mb-20">
@@ -128,7 +128,7 @@ export default {
             />
           </div>
           <div v-if="bodyErrors.length" class="field">
-            <p v-for="(error, i) of bodyErrors" :key="i" class="error my-10">{{ error.message }}</p>
+            <p v-for="(error, i) of bodyErrors" :key="i" class="error my-10">{{ error.message || 'Unknown error' }}</p>
           </div>
         </div>
       </div>
