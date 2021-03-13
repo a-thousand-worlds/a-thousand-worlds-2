@@ -1,44 +1,43 @@
+/** Converts books from A Thousands Worlds V1 */
 const fs = require('fs')
 const promptly = require('promptly')
 const uuid = require('uuid').v4
 const dayjs = require('dayjs')
+const axios = require('axios').default
 // used to search publisher metadata (not presented at source data)
 const isbn = require('node-isbn')
 
-const importFile = process.argv[process.argv.length - 2]
-const importDetailsFile = process.argv[process.argv.length - 1]
-const envFile = process.argv[process.argv.length - 3]
+const envFile = process.argv[process.argv.length - 1]
+
+if (envFile.endsWith('import-books.js')) {
+  console.log('Ussage: npm run import:books PATH_TO_ENV_FILE')
+  process.exit(0)
+}
 
 require('dotenv').config({ path: envFile })
 
-console.log(`import with files: books <${importFile}>, details <${importDetailsFile}>`)
+console.log(`using firebase config from <${envFile}>`)
 
-/** loading json data and mapping to array */
-const loadJson = path => {
-  if (!fs.existsSync(path) || !path.endsWith('.json')) {
-    console.error(`File ${path} not exists or not a json file`)
-    return null
-  }
-  let data = null
-  try {
-    data = JSON.parse(fs.readFileSync(path))
-  }
-  catch (e) {
-    console.error(`Parsing ${path} error`, e)
-    return null
-  }
-  if (!data) {
-    console.error(`File ${path} is empty!`)
-    return null
-  }
-  if (Array.isArray(data)) return data
-  return Object.keys(data).map(id => {
-    const obj = data[id]
-    if (obj.id) return obj
-    // users not contains ids, but we need them
-    obj.id = id
-    return obj
+/** loading firebase website "collection" and mapping to array */
+const loadCollection = (f, path) => {
+  return new Promise((resolve, reject) => {
+    const db = f.database()
+    const ref = db.ref(path)
+    ref.once('value', snap => {
+      const collection = snap.val()
+      resolve(Object.keys(collection).map(id => {
+        const record = collection[id]
+        if (!record.id) record.id = id
+        return record
+      }))
+    })
   })
+}
+
+/** loads json data from url */
+const loadJsonUrl = async url => {
+  const data = await axios.get(url)
+  return data.data
 }
 
 /** Firebase initialization */
@@ -65,8 +64,9 @@ const _isbn = (code, provider) => {
   return isbn
     .provider([provider])
     .resolve(code)
+    // eslint-disable-next-line node/handle-callback-err
     .catch(err => {
-      console.error(`metadata searching at <${provider}> error!`, err)
+      console.log(`book isbn metadata <${code}> not exists at <${provider}> error! (nothing special - just to know)`)
       return null
     })
 }
@@ -83,24 +83,15 @@ const isbnSearch = async code => {
   return info
 }
 
-/** Source data */
-const books = loadJson('/tmp/atw/books.json')
-const tags = loadJson('/tmp/atw/books.tags.json')
-// creators can be updated if new created
-let creators = loadJson('/tmp/atw/people.json')
-const users = loadJson('/tmp/atw/users.json')
-const importBooks = loadJson(importFile)
-const importDetails = loadJson(importDetailsFile)
-
-if (!books || !tags || !creators || !users || !importBooks || !importDetails) {
-  console.error('Data missing! Ussage: "npm export:books PATH_TO_EXPORT_JSON_FILE"')
-  process.exit(1)
-}
-
 /** Converting tags */
-const convertTags = list => {
+const convertTags = (list, tags) => {
   return list.map(tagName => {
-    const tag = tags.find(tg => tg.tag.toLowerCase() === tagName.toLowerCase())
+    const tag = tags.find(tg => {
+      let name = tg.tag
+      if (name.toLowerCase() === tagName.toLowerCase()) return true
+      if (name === 'Non Fiction') name = 'Non-Fiction'
+      return name.toLowerCase() === tagName.toLowerCase()
+    })
     if (!tag) console.error(`Converting tag ${tagName} failed. Tag not found`)
     return tag
   })
@@ -112,7 +103,7 @@ const convertTags = list => {
 }
 
 /** Converting creators. */
-const convertCreator = (name, creatorUser) => {
+const convertCreator = (name, creators, creator) => {
   let person = creators.find(p => p.name.toLowerCase() === name.toLowerCase())
   if (person) {
     return {
@@ -125,11 +116,11 @@ const convertCreator = (name, creatorUser) => {
   person = {
     id: id,
     createdAt: dayjs().format(),
-    createdBy: creatorUser.id,
+    createdBy: creator.uid,
     approvedAt: dayjs().format(),
-    approvedBy: creatorUser.id,
+    approvedBy: creator.uid,
     updatedAt: dayjs().format(),
-    updatedBy: creatorUser.id,
+    updatedBy: creator.uid,
     name: name,
     bio: '',
   }
@@ -139,13 +130,47 @@ const convertCreator = (name, creatorUser) => {
   }
 }
 
+/** Converting contributor */
+const convertContributor = async (name, contributors) => {
+  const contributor = contributors.find(user => user.profile.name.toLowerCase() === name.toLowerCase())
+  if (contributor) {
+    console.log(`contributor ${name} recognized as userid <${contributor.id}>`)
+    return { contributor }
+  }
+  console.log(`contributor <${name}> not recognized!\nSelect existing user to be used as book contributor or use "new" to create new user:`)
+  contributors.forEach(user => console.log(`\t${user.profile.name} <${user.profile.email}>`))
+  console.log('\tnew - to create new user')
+  const newContributor = await promptly.choose('Select contributor\'s full name or email [new]: ', [...contributors.map(u => u.profile.email), ...contributors.map(u => u.profile.name), 'new'], { default: 'new' })
+  if (newContributor !== 'new') {
+    const ret = { contributor: contributors.find(user => user.profile.email === newContributor || user.profile.name === newContributor) }
+    console.log(`set <${ret.contirbutor.profile.name}> as book contributor`)
+    return ret
+  }
+  const id = uuid()
+  console.log(`new contributor user <${name}> prepared with id <${id}>`)
+  return {
+    contributor: {
+      id,
+      profile: {
+        name,
+        email: ''
+      },
+      roles: {
+        contributor: true
+      }
+    },
+    new: true
+  }
+}
+
 /** Converting book from source data to new structure */
-const convertBook = async (info, creator) => {
+const convertBook = async (info, creators, tags, contributors, creator) => {
   const id = uuid()
   const bookCreators = {}
   let newCreators = []
+  let newContributors = []
   const authors = info.author.split(',').map(author => {
-    const converted = convertCreator(author, creator)
+    const converted = convertCreator(author, creators, creator)
     newCreators = [...newCreators, ...converted.new]
     creators = [...creators, ...converted.new]
     return converted.creator
@@ -156,7 +181,7 @@ const convertBook = async (info, creator) => {
       illustratorIsSame = true
       return null
     }
-    const converted = convertCreator(illustrator, creator)
+    const converted = convertCreator(illustrator, creators, creator)
     newCreators = [...newCreators, ...converted.new]
     creators = [...creators, ...converted.new]
     return converted.creator
@@ -170,15 +195,20 @@ const convertBook = async (info, creator) => {
   illustrators.forEach(a => {
     bookCreators[a.id] = 'illustrator'
   })
-  const tags = convertTags(info.tags)
+  console.log('creators converted')
+  const bookTags = convertTags(info.tags, tags)
+  console.log('tags converted')
   const cover = {
     downloadUrl: `http://athousandworlds.org/assets/covers/${info.isbn}.jpg`
   }
   const meta = await isbnSearch(info.isbn)
 
+  const contributor = await convertContributor(info.details.reviewer, contributors, creator)
+  if (contributor.new) newContributors = [...newContributors, contributor.contributor]
+
   const book = {
     id: id,
-    createdBy: creator.id,
+    createdBy: contributor.contributor.id,
     createdAt: dayjs().format(),
     creators: bookCreators,
     goodreads: info.details.goodreads || '',
@@ -186,42 +216,63 @@ const convertBook = async (info, creator) => {
     cover: cover,
     publisher: meta.publisher,
     reviewedAt: dayjs().format(),
-    reviewedBy: creator.id,
+    reviewedBy: creator.uid,
     status: 'approved',
-    submissionId: null,
     summary: info.details.text,
-    tags: tags,
+    tags: bookTags,
     title: info.title,
     year: info.details.year,
   }
 
-  return { book, newCreators }
+  return { book, newCreators, newContributors }
 }
 
 /** Main function */
 const go = async () => {
-  console.log(`Exporting books from ${importFile}`)
+  console.log('Initializing firebase')
+  const usr = await promptly.prompt(`Website owner authentication email`)
+  const pwd = await promptly.password(`Website owner authentication password for <${usr}>`)
+  console.log('Connecting to firebase')
+  const firebase = initFirebase()
+  let credentials = null
+  try {
+    credentials = await firebase.auth().signInWithEmailAndPassword(usr, pwd)
+  }
+  catch (err) {
+    credentials = null
+  }
+  if (!credentials) {
+    console.log('Firebase authentication error. Nothing done. Aborting')
+    return
+  }
+  console.log(`Authorized as ${credentials.user.displayName} - ${credentials.user.uid}>.`)
+
+  console.log('downloading import data')
+  const importBooks = await loadJsonUrl('http://athousandworlds.org/2020.json')
+  const importDetails = await loadJsonUrl('http://athousandworlds.org/2020-detail.json')
+  console.log('loaded books', importBooks.length)
+
+  console.log(`Loading existing data.`)
+
+  const books = await loadCollection(firebase, 'books')
+  const tags = await loadCollection(firebase, 'tags/books')
+  const creators = await loadCollection(firebase, 'people')
+  const users = await loadCollection(firebase, 'users')
+  const contributors = users.filter(user => user.roles && (user.roles.contributor || user.roles.owner))
+
   console.log('existing books', books.length)
-  console.log('importing books', importBooks.length)
+  console.log('existing tags', tags.length)
+  console.log('existing creators', creators.length)
+  console.log('existing contributors', contributors.length)
 
-  // let's get owners
-  const owners = users.filter(user => user.roles && user.roles.owner)
-
-  if (!owners.length) {
-    console.error('Can\'t find owner user. Break.')
+  if (!books || !tags || !creators || !contributors || !importBooks || !importDetails) {
+    console.error('Data missing! Aborting')
     process.exit(1)
   }
-  let owner = owners[0]
-  if (owners.length > 1) {
-    const emails = owners.map(ow => ow.profile.email)
-    const ownerEmail = await promptly.choose(`Select user as books creator [${emails.join('/')}]`, emails)
-    owner = owners.find(ow => ow.profile.email === ownerEmail)
-  }
-
-  console.log(`User <${owner.profile.email}> will be used as books creator`)
 
   const newBooks = importBooks.map((eb, i) => {
-    const details = importDetails[i]
+    const details = importDetails[`${i + 1}`]
+
     const exByName = books.find(book => eb.title.toLowerCase() === book.title.toLowerCase())
     const exByIsbn = books.find(book => details.isbn === book.isbn)
     const exByIsbn13 = books.find(book => details.isbn13 === book.isbn)
@@ -233,17 +284,21 @@ const go = async () => {
     return null
   }).filter(x => !!x)
 
-  console.log(`\nFound <${newBooks.length}> new books\n`)
+  if (!newBooks.length) {
+    console.log('There is no new books. Aborting')
+    return
+  }
+  console.log(`\nFound <${newBooks.length}> new books:`)
+  newBooks.forEach(book => console.log(`\t${book.title}`))
 
   let books2create = []
   let creators2create = []
+  let contributors2create = []
   let yesAll = false
   // eslint-disable-next-line fp/no-loops
   for (const info of newBooks) {
-    console.log('\n')
-    // console.log('Createnew book', book)
-    const { book, newCreators } = await convertBook(info, owner)
-    // console.log('CreateBook?', book)
+    console.log(`\nPreparing book <${info.title}>`)
+    const { book, newCreators, newContributors } = await convertBook(info, [...creators, ...creators2create], tags, [...contributors, ...contributors2create], credentials.user)
     let ok = 'yes'
     if (!yesAll) {
       ok = await promptly.choose(`Create new book <${book.title}>? [Yes/no/abort/all]`, ['yes', 'no', 'abort', 'all'], { default: 'yes' })
@@ -259,40 +314,43 @@ const go = async () => {
     if (ok === 'all') {
       yesAll = true
     }
-    console.log(`Preparing book <${book.title}>`)
     books2create = [...books2create, book]
     creators2create = [...creators2create, ...newCreators]
+    contributors2create = [...contributors2create, ...newContributors]
   }
 
-  console.log(`\nBooks to create: ${books2create.length}\nCreators to create: ${creators2create.length}\n`)
+  console.log(`\nBooks to create: ${books2create.length}\nCreators to create: ${creators2create.length}\nContributors to create: ${contributors2create.length}`)
 
-  const saveOrUpload = await promptly.choose('Upload to firebase or save to files? [Upload/save]', ['upload', 'save'], { default: 'upload' })
+  const saveOrUpload = await promptly.choose('Upload to firebase or save to files? [upload/save/Abort]', ['upload', 'save', 'abort'], { default: 'abort' })
+  if (saveOrUpload === 'abort') {
+    console.log('Aborting. No database changes done')
+    return
+  }
+
   if (saveOrUpload === 'save') {
     let savePath = await promptly.prompt('Path to save new json data? [./]', { default: './' })
     if (!savePath.endsWith('/')) savePath += '/'
     fs.writeFileSync(`${savePath}books2create.json`, JSON.stringify(books2create, null, 2))
     fs.writeFileSync(`${savePath}creators2create.json`, JSON.stringify(creators2create, null, 2))
-    console.log(`Files <${savePath}books2create.json> and <${savePath}creators2create.json> saved.`)
+    fs.writeFileSync(`${savePath}contributors2create.json`, JSON.stringify(contributors2create, null, 2))
+    console.log(`Files <${savePath}books2create.json>, <${savePath}creators2create.json> and <${savePath}contributors2create.json> saved.`)
+    console.log('(No database changes done. To apply changes to database - restart and use "upload" option)')
     return
   }
 
-  const usr = await promptly.prompt(`Website authentication email`)
-  const pwd = await promptly.password(`Website authentication password for <${usr}>`)
-  console.log('Connecting to firebase')
-  const firebase = initFirebase()
-  let credentials = null
-  try {
-    credentials = await firebase.auth().signInWithEmailAndPassword(usr, pwd)
-  }
-  catch (err) {
-    credentials = null
-  }
-  if (!credentials) {
-    console.log('Firebase authentication error. No changes made. Aborting')
-    return
+  // creating contributors users
+  // eslint-disable-next-line fp/no-loops
+  for (const user of contributors2create) {
+    const ref = firebase.database().ref(`users/${user.id}`)
+    const data = {
+      profile: user.profile,
+      roles: user.roles
+    }
+    await ref.set(data)
+    console.log(`Contributor user <${user.profile.name}> saved [${user.id}]`)
   }
 
-  // creating users
+  // creating creators
   // eslint-disable-next-line fp/no-loops
   for (const creator of creators2create) {
     const ref = firebase.database().ref(`people/${creator.id}`)
