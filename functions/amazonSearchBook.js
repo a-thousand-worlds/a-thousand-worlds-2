@@ -8,16 +8,19 @@ const cheerio = require('cheerio')
 const amazonSearchUrl = keywords =>
   `https://www.amazon.com/s?k=${keywords.split(' ').map(el => encodeURIComponent(el)).join('+')}&i=stripbooks&s=relevanceexprank&unfiltered=1&ref=sr_adv_b`
 
-// search book url if  puppeteer element contains it
-const getBookUrl = async element => {
-  const prop = await element.getProperty('innerHTML')
-  const html = await prop.jsonValue()
-  const $ = cheerio.load(html)
-  const $span = $('span.rush-component')
-  if (!$span) return null
-  const $a = $('a.a-link-normal', $span)
-  if (!$a) return null
-  return $a.attr('href')
+const parseSrcset = srcset => {
+  if (!srcset) return null
+  return srcset
+    .split(', ')
+    .map(d => d.split(' '))
+    .reduce((p, c) => {
+      if (c.length !== 2) {
+        // throw new Error("Error parsing srcset.");
+        return p
+      }
+      p[c[1]] = c[0]
+      return p
+    }, {})
 }
 
 module.exports = () => {
@@ -40,46 +43,42 @@ module.exports = () => {
     const page = await browser.newPage()
     let result = null
     try {
+      console.log('URL: ', amazonSearchUrl(keywords))
       await page.goto(amazonSearchUrl(keywords), {
-        waitUntil: 'networkidle2'
+        waitUntil: 'domcontentloaded'
       })
-      const widgets = await page.$$('.celwidget')
+      const pageHtml = await page.content()
+      const $ = cheerio.load(pageHtml)
 
-      let bookUrl = null
-      if (Array.isArray(widgets)) {
-        const urls = await Promise.all(widgets.map(wgt => getBookUrl(wgt)))
-        bookUrl = urls.filter(url => !!url)[0]
+      let $el = null
+      let isbn = null
+      $('div.s-result-item').each(function (i, $result) {
+        const asin = $(this).data('asin')
+        if (asin && asin.length && !$el) {
+          $el = $(this)
+          isbn = asin
+        }
+      })
+      if (!isbn || !$el) {
+        console.log('nothing found', keywords)
       }
+      else {
+        const $imgSpan = $('span[data-component-type="s-product-image"]', $el)
+        const $a = $('a', $imgSpan)
+        const bookUrl = $a.attr('href')
+        const $img = $('img', $imgSpan)
+        const covers = parseSrcset($img.attr('srcset')) || {}
 
-      if (bookUrl) {
-        console.log('checking book page', bookUrl)
-        await page.goto(`https://amazon.com${bookUrl}`, {
-          waitUntil: 'networkidle2'
-        })
-
-        const pageHtml = await page.content()
-        const $book = cheerio.load(pageHtml)
-
-        const $attributes = $book('#dp-container li.rpi-carousel-attribute-card')
-
-        let isbn10 = null
-        let isbn13 = null
-
-        $attributes.each((i, $attribute) => {
-          const $lbl = $book('.rpi-attribute-label', $attribute)
-          const $val = $book('.rpi-attribute-value', $attribute)
-          if ($lbl.text().trim() === 'ISBN-10') isbn10 = $val.text().trim()
-          if ($lbl.text().trim() === 'ISBN-13') isbn13 = $val.text().trim()
-        })
-
-        if (isbn10 || isbn13) {
+        const maxCoverSize = ['3x', '2.5x', '2x', '1.5x', '1x'].find(size => covers[size])
+        const maxCover = maxCoverSize ? covers[maxCoverSize] : null
+        const $title = $('h2', $el)
+        const title = $title.text()
+        if (bookUrl && maxCover && title) {
           result = {
-            title: $book('#productTitle').text().trim(),
+            title: title.trim(),
             url: `https://amazon.com${bookUrl.split('?')[0]}`,
-            isbn: isbn10 || isbn13,
-            isbn10: isbn10,
-            isbn13: isbn13,
-            thumbnail: $book('#img-canvas img').attr('src')
+            isbn: isbn,
+            thumbnail: maxCover
           }
         }
       }
