@@ -5,6 +5,7 @@ const loadImage = require('../util/loadImage')
 const image64ToBuffer = require('../util/image64ToBuffer')
 const uid = require('uuid').v4
 const getDownloadUrl = require('../util/getBucketFileDownloadUrl')
+const sendEmail = require('../util/sendEmail')
 
 const watchBooks = functions
   .runWith({
@@ -28,6 +29,14 @@ const watchBooks = functions
     }
 
     console.log('onUpdate', book.title)
+    const attempts = book.findingCoverAttemps || 0
+    if (attempts >= 5) {
+      const project = functions.config().project
+      // let's send notification email to project admin
+      const mail = await sendEmail(project.admin_email, 'Attention! Book cover search failed!', `<p>Searching cover image for book <b>${book.title}</b> (isbn: ${book.isbn}) failed after 5 attempts!</p><p> - Sincerely, project Bot</p>`)
+      console.log(`Find cover for <${book.isbn}> failed after 5 times. Notification email send to <${project.admin_email}> with id <${mail.messageId}>`)
+      return
+    }
     await snap.ref.child('findingCover').set(true)
     if (!cover) {
       try {
@@ -77,6 +86,8 @@ const watchBooks = functions
       console.log('Book cover saved:', book.title, book.isbn, url)
     }
     else {
+      await snap.ref.child('findingCoverAttemps').set(attempts + 1)
+      await snap.ref.child('findingCover').remove()
       console.log('book processed without cover image', book.title, book.isbn)
     }
 

@@ -1,6 +1,7 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 const coverImageByISBN = require('./util/coverImageByISBN')
+const loadImage = require('./util/loadImage')
 const uid = require('uuid').v4
 
 const getDownloadUrl = (fileName, bucketName, token) => `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(fileName)}?alt=media&token=${token}`
@@ -19,7 +20,12 @@ const watchBookSubmissions = functions
     await snap.ref.child('findingCover').set(true)
     let img
     try {
-      img = await coverImageByISBN(book.isbn)
+      if (book.thumbnail) {
+        img = await loadImage(book.thumbnail, 400)
+      }
+      if (!img) {
+        img = await coverImageByISBN(book.isbn, 400)
+      }
     }
     finally {
       await snap.ref.child('findingCover').remove()

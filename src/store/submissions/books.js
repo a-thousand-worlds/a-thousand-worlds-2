@@ -120,13 +120,19 @@ const module = mergeOne(managed('submits/books'), {
 
       // save book
       const bookId = uid()
+
+      const bookCover = {}
+      if (sub.cover?.url) bookCover.downloadUrl = sub.cover.url
+      if (sub.cover?.base64) bookCover.base64 = sub.cover.base64
+      if (!sub.cover && sub.thumbnail) bookCover.downloadUrl = sub.thumbnail
+
       await context.dispatch('books/save', { path: bookId, value: {
         createdBy: sub.createdBy,
         creators: creators,
         goodreads: sub.goodreads || '',
         id: bookId,
         isbn: sub.isbn,
-        cover: sub.cover?.base64 ? sub.cover : null,
+        cover: bookCover,
         publisher: sub.publisher,
         reviewedAt: dayjs().format(),
         reviewedBy: context.rootState.user.user.uid,

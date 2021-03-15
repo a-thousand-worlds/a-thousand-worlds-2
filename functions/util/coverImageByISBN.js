@@ -50,7 +50,7 @@ async function scrape(isbn) {
 
 async function coverImageByISBN(isbn, scaleToMaxWidth = 0) {
 
-  console.log('Searching covers')
+  console.log('[coverImageByIsbn]: Searching covers')
 
   const covers = { amazon: {} }
   covers.amazon = await scrape(isbn)

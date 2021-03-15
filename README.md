@@ -34,6 +34,7 @@
     - https://console.firebase.google.com/u/0/project/PROJECT_NAME/functions/list
 1. Add Goodreads API key for firebase function
     - `firebase functions:config:set goodreads.api_key="YOUR_API_KEY"`
+1. Set administrator email functions config: `firebase functions:config:set project.admin_email="ADMINISTRATOR@EMAIL.ADDRESS"`
 1. Copy firebase config for local emulator:
   - `firebase functions:config:get > functions/.runtimeconfig.json`
 1. Redeploy Firebase functions: `firebase deploy --only functions`
