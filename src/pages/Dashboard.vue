@@ -69,7 +69,7 @@ export default {
       <h1 class="title page-title">Your Dashboard</h1>
 
       <div v-if="!hasPendingContributorProfile" class="header-options mr-10">
-        <router-link :to="{ name: 'Profile' }" style="color: black;">{{ !$iam('creator') ? 'Edit your profile' : 'Your Account' }}</router-link>
+        <router-link :to="{ name: 'Account' }" style="color: black;">Your Account</router-link>
       </div>
 
       <div v-if="!loaded" class="has-text-centered" style="margin-top: 20vh;">

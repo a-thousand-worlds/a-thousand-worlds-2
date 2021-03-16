@@ -37,8 +37,8 @@ export default {
   computed: {
 
     // boolean role and page aliases
-    isEditProfile() {
-      return this.active === 'profile'
+    isAccount() {
+      return this.active === 'account'
     },
     isLogin() {
       return this.active === 'login'
@@ -67,13 +67,11 @@ export default {
       return this.isSignup ?
         this.invite?.role ? `You have been invited to join as a ${this.invite.role}!` : 'Sign up for an account'
         : this.isLogin ? 'Log In'
-        : this.isEditProfile ? this.$iam('creator')
-          ? 'Your Account'
-          : 'Edit Profile'
+        : this.isAccount ? 'Your Account'
         : null
     },
     showOrgLink() {
-      return this.isEditProfile && this.isContributor
+      return this.isAccount && this.isContributor
     }
   },
 
@@ -103,7 +101,7 @@ export default {
       this.email = next?.profile?.email || this.email
       this.name = next?.profile?.name || this.name
 
-      if (this.isEditProfile) {
+      if (this.isAccount) {
         this.affiliations = next?.profile?.affiliations || this.affiliations
       }
     },
@@ -165,7 +163,7 @@ export default {
     getActiveFromUrl() {
       return window.location.pathname === '/login' ? 'login'
         : window.location.pathname === '/signup' ? 'signup'
-        : window.location.pathname === '/profile' ? 'profile'
+        : window.location.pathname === '/account' ? 'account'
         : null
     },
 
@@ -182,7 +180,7 @@ export default {
       else if (this.isLogin) {
         await this.login()
       }
-      else if (this.isEditProfile) {
+      else if (this.isAccount) {
         await this.saveProfile()
       }
     },
@@ -240,7 +238,7 @@ export default {
           .then(() => {
             if (!this.error) {
               this.$store.dispatch('ui/popup', {
-                text: 'Profile saved',
+                text: 'Account updated',
                 type: 'success'
               })
             }
@@ -260,7 +258,7 @@ export default {
       this.$router.push({
         name: this.isSignup ? 'Signup'
         : this.isLogin ? 'Login'
-        : this.isEditProfile ? 'Profile'
+        : this.isAccount ? 'Account'
         : null
       })
     },
@@ -279,7 +277,7 @@ export default {
       }
 
       // name
-      if ((this.isSignup || this.isEditProfile) && !this.name.length) {
+      if ((this.isSignup || this.isAccount) && !this.name.length) {
         this.error = {
           message: 'Please check required fields',
           fields: { ...this.error?.fields, name: true },
@@ -295,7 +293,7 @@ export default {
       }
 
       // contributor fields
-      if (this.isContributor && this.isEditProfile) {
+      if (this.isContributor && this.isAccount) {
 
         // website
         if (!this.affiliations.website) {
@@ -348,7 +346,7 @@ export default {
 
   <div class="mx-6">
 
-    <div v-if="isEditProfile" class="mb-5">
+    <div v-if="isAccount" class="mb-5">
       <a @click.prevent="$router.back" class="is-uppercase is-primary">&lt; Back</a>
     </div>
 
@@ -379,7 +377,7 @@ export default {
 
             <!-- name -->
             <div class="is-flex-grow-1 is-flex is-justify-content-center is-flex-direction-column">
-              <div v-if="isSignup || isEditProfile" class="field">
+              <div v-if="isSignup || isAccount" class="field">
                 <label :class="['label', { error: hasError('name') }]">NAME<sup class="required">*</sup></label>
                 <div class="control">
                   <input v-model="name" :disabled="loading" type="text" class="input" :class="{ 'is-danger': hasError('name') }" @input="revalidate">
@@ -387,7 +385,7 @@ export default {
               </div>
 
               <!-- email -->
-              <div v-if="isLogin || isSignup || isEditProfile" class="field">
+              <div v-if="isLogin || isSignup || isAccount" class="field">
                 <label :class="['label', { error: hasError('email') }]">EMAIL<sup class="required">*</sup></label>
                 <div class="control">
                   <span v-tippy="invite ? { content: `You have to use this email to sign up as a ${invite.role}, but you can change it after logging in.` } : null">
@@ -408,13 +406,13 @@ export default {
           </div>
 
           <!-- website -->
-          <div v-if="isContributor && isEditProfile" class="field">
+          <div v-if="isContributor && isAccount" class="field">
             <label class="label is-uppercase" :class="{ error: hasError('website') }">Your website or social media URL<sup class="required">*</sup></label>
             <input v-model="affiliations.website" class="input" type="text">
           </div>
 
           <!-- engagement -->
-          <div v-if="isContributor && isEditProfile" class="field">
+          <div v-if="isContributor && isAccount" class="field">
             <label class="label is-uppercase" :class="{ error: hasError('engagements') }">How do you engage with books?<sup class="required">*</sup></label>
             <div class="sublabel tablet-columns-2">
               <div v-for="engagement of engagements" :key="engagement.id" class="control columns-2">
@@ -433,7 +431,7 @@ export default {
           </div>
 
           <!-- organization -->
-          <div v-if="isContributor && isEditProfile" class="field" :class="{ 'divider-30': !showOrgLink }">
+          <div v-if="isContributor && isAccount" class="field" :class="{ 'divider-30': !showOrgLink }">
             <label class="label is-uppercase" :class="{ error: hasError('organizationName') }">Are you affiliated with an organization?<sup class="required">*</sup></label>
             <input v-model="affiliations.organization" :disabled="loading" @input="revalidate" class="input" type="text">
           </div>
@@ -445,7 +443,7 @@ export default {
           </div>
 
           <div class="field my-4">
-            <input :disabled="loading || hasFieldErrors || disableAfterSave" type="submit" class="button is-primary is-rounded is-fullwidth is-uppercase" :class="{'is-loading':loading}" :value="isLogin ? 'Log In' : isSignup ? 'Create Account' : isEditProfile ? 'Save' : null">
+            <input :disabled="loading || hasFieldErrors || disableAfterSave" type="submit" class="button is-primary is-rounded is-fullwidth is-uppercase" :class="{'is-loading':loading}" :value="isLogin ? 'Log In' : isSignup ? 'Create Account' : isAccount ? 'Save' : null">
           </div>
 
           <div v-if="error" class="field">
@@ -456,7 +454,7 @@ export default {
             <router-link :to="{name:'PasswordReset'}">FORGOT PASSWORD?</router-link>
           </p>
 
-          <p v-if="isEditProfile" class="has-text-centered">
+          <p v-if="isAccount" class="has-text-centered">
             <button class="button is-flat" :disabled="disableResetPassword" @click.prevent="resetPassword">Reset Password</button>
           </p>
 
