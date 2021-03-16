@@ -89,7 +89,16 @@ export default {
 
         <div v-if="!hasPendingContributorProfile">
 
-          <h2>Suggest a book{{ $can('submitPerson') ? ' or person' : '' }}<!--  or bundle --></h2>
+          <h2 v-if="$can('submitPerson')">Submission Forms</h2>
+          <h2 v-else>Suggest a book</h2>
+
+          <div class="bg-secondary p-20 mb-20" style="display: inline-block; border-radius: 10px; font-size: 20px;">
+            <h2 class="field">Getting Started</h2>
+            <p class="field">To submit picture books click on <b>BOOKS</b>. The BOOK Submission Form will allow you to submit multiple picture books to be reviewed by the ATW curatorial team and entered into the BOOK directory upon approval.</p>
+            <p class="field">To submit a book bundle click on <b>BUNDLE</b>. The BUNDLE Submission Form will allow you to submit a collection of 4-7 books based on one theme.  The BOOK BUNDLE is an opportunity to spotlight a certain theme, support a BIPOC bookstore and also to showcase you. Your bio and picture will be included in the BUNDLE as well. The BUNDLE form will be reviewed by the ATW curatorial team and entered into the BOOK BUNDLE directory upon approval.</p>
+            <button class="button is-rounded is-primary">Okay, got it</button>
+          </div>
+
           <div class="field is-grouped">
             <div class="control">
               <router-link class="button is-outlined is-primary" :to="{name:'BookSubmissionForm'}">Book</router-link>
