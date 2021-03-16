@@ -184,7 +184,7 @@ export default {
 
     <div class="columns">
 
-      <div class="column mr-0 is-two-fifths">
+      <div class="column column1 mr-0 is-two-fifths">
         <div v-if="book">
 
           <!-- cover image -->
@@ -287,8 +287,18 @@ export default {
 .book-detail {
   margin: 0 20px;
   max-width: $widescreen;
+  @include from($tablet) {
+    margin: 0 30px;
+  }
   @include from($desktop) {
     margin: 0 60px;
+  }
+}
+
+.column1 {
+  text-align: center;
+  @include from($tablet) {
+    text-align: left;
   }
 }
 
@@ -317,6 +327,6 @@ export default {
 <style lang="scss">
 // compensate for CKEditor paragraph so that it exactly matches normal paragraph spacing
 .summary.ck.ck-editor__editable_inline>:first-child {
-  margin: -1px -1px -1px -1px;
+  margin: -1px -2px -1px -1px;
 }
 </style>
