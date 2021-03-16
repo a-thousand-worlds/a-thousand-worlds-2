@@ -20,6 +20,7 @@ export default {
       <li id="bundles-filter-menu" />
       <li><router-link :to="{name: 'Support'}">Support</router-link></li>
       <li><router-link :to="{name: 'About'}">About</router-link></li>
+      <li><router-link :to="{name: 'Contact'}">Contact</router-link></li>
       <li v-if="!$iam('authorized')"><router-link :to="{name: 'Login'}">Log In</router-link></li>
       <li v-if="$iam('authorized')"><router-link :to="{name: 'Dashboard'}">Dashboard</router-link></li>
 
