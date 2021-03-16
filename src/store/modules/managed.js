@@ -11,7 +11,7 @@ const module = name => {
 
       /** save method overrides parents collection/abstract::save */
       save(ctx, { path, value, method }) {
-        if (!path) throw new Error('path required')
+        if (!path) throw new Error(`Managed collection "${name}": path required`)
 
         // only manage timestamps if saving a collection item
         const isSubpath = /.[/.]./g.test(path)
@@ -20,7 +20,7 @@ const module = name => {
         }
 
         // managed collection element should be object
-        if (typeof value !== 'object') throw new Error('value should be object')
+        if (typeof value !== 'object') throw new Error(`Managed collection "${name}": value should be object, not ${typeof value}`)
 
         const now = dayjs().format()
         const userId = ctx.rootState?.user?.user?.uid || null

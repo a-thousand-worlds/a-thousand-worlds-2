@@ -99,7 +99,8 @@ export default {
         // copy all relevant fields from person
         ..._.pick(this.person, Object.keys(emptySubmission)),
         // copy identities object, otherwise editing the form will update the person identities object by reference
-        identities: this.person?.identities ? { ...this.person.identities } : {}
+        identities: this.person?.identities ? { ...this.person.identities } : {},
+        ...this.person?.id ? { personId: this.person?.id } : {},
       }
     },
 

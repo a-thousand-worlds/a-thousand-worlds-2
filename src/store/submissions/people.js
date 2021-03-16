@@ -129,10 +129,6 @@ const module = mergeOne(managed('submits/people'), {
     /** Approves a single person. */
     approvePerson: async (context, sub) => {
 
-      /** Gets the person with an almost equal name. */
-      const person = sub =>
-        context.rootGetters['people/findBy'](person => almostEqual(person.name, sub.name))
-
       /** Get the creator id if it exists for the given user. */
       // TODO: This would be a lot easier if the peopleId was stored in the user profile
       const personSubmissionId = async userId => {
@@ -155,9 +151,11 @@ const module = mergeOne(managed('submits/people'), {
         return peopleSubmission?.peopleSubmissionId
       }
 
+      // find associated person by sub.personId or fuzzy equal name match
+      const person = context.rootGetters['people/get'](sub.personId) ||
+        context.rootGetters['people/findBy'](person => almostEqual(person.name, name))
       const personNew = {
-        id: await person(sub),
-        ...await person(sub),
+        ...person,
         ..._.pick(sub, Object.keys(personSubmission()))
       }
 
