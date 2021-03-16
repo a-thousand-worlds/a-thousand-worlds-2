@@ -1,6 +1,5 @@
 <script>
 import _ from 'lodash'
-import engagements from '@/store/constants/engagements'
 import Loader from '@/components/Loader'
 
 export default {
@@ -15,20 +14,11 @@ export default {
       active: this.getActiveFromUrl(),
       email: profile?.email || '',
       name: profile?.name || '',
-      engagements,
       disableAfterSave: false,
       disableResetPassword: false,
       error: null,
       loading: false,
       password: '',
-      affiliations: {
-        organization: '',
-        organizationLink: '',
-        otherEngagementCategory: '',
-        website: null,
-        selectedEngagementCategories: {},
-        ...profile?.affiliations,
-      },
       // only show errors after a submit has been attempted
       submitAttempt: false,
     }
@@ -45,12 +35,6 @@ export default {
     },
     isSignup() {
       return this.active === 'signup'
-    },
-    isContributor() {
-      return this.$store.state.user.user?.roles?.contributor || this.invite?.role === 'contributor'
-    },
-    isCreator() {
-      return this.$store.state.user.user?.roles?.creator || this.invite?.role === 'creator'
     },
 
     // other computed properties
@@ -70,9 +54,6 @@ export default {
         : this.isAccount ? 'Your Account'
         : null
     },
-    showOrgLink() {
-      return this.isAccount && this.isContributor
-    }
   },
 
   watch: {
@@ -100,10 +81,6 @@ export default {
 
       this.email = next?.profile?.email || this.email
       this.name = next?.profile?.name || this.name
-
-      if (this.isAccount) {
-        this.affiliations = next?.profile?.affiliations || this.affiliations
-      }
     },
     '$store.state.user.user.roles'(next, prev) {
       // redirect invited users to Dashboard
@@ -233,7 +210,6 @@ export default {
         await this.handleResponse(this.$store.dispatch('user/updateProfile', {
           name: this.name,
           email: this.email,
-          affiliations: this.affiliations,
         })
           .then(() => {
             if (!this.error) {
@@ -289,43 +265,6 @@ export default {
         this.error = {
           message: 'Please check required fields',
           fields: { ...this.error?.fields, password: true },
-        }
-      }
-
-      // contributor fields
-      if (this.isContributor && this.isAccount) {
-
-        // website
-        if (!this.affiliations.website) {
-          this.error = {
-            message: 'Please check required fields',
-            fields: { ...this.error?.fields, website: true },
-          }
-        }
-
-        // engagements
-        const hasSelectedEngagements = Object.values(this.affiliations.selectedEngagementCategories).some(x => x)
-        if (!hasSelectedEngagements && !this.affiliations.otherEngagementCategory) {
-          this.error = {
-            message: 'Please check required fields',
-            fields: { ...this.error?.fields, engagements: true },
-          }
-        }
-
-        // organization name
-        if (!this.affiliations.organization) {
-          this.error = {
-            message: 'Please check required fields',
-            fields: { ...this.error?.fields, organizationName: true },
-          }
-        }
-
-        // organization link
-        if (!this.affiliations.organizationLink) {
-          this.error = {
-            message: 'Please check required fields',
-            fields: { ...this.error?.fields, organizationLink: true },
-          }
         }
       }
 
@@ -403,43 +342,6 @@ export default {
               </div>
             </div>
 
-          </div>
-
-          <!-- website -->
-          <div v-if="isContributor && isAccount" class="field">
-            <label class="label is-uppercase" :class="{ error: hasError('website') }">Your website or social media URL<sup class="required">*</sup></label>
-            <input v-model="affiliations.website" class="input" type="text">
-          </div>
-
-          <!-- engagement -->
-          <div v-if="isContributor && isAccount" class="field">
-            <label class="label is-uppercase" :class="{ error: hasError('engagements') }">How do you engage with books?<sup class="required">*</sup></label>
-            <div class="sublabel tablet-columns-2">
-              <div v-for="engagement of engagements" :key="engagement.id" class="control columns-2">
-                <input :id="`engagement-${engagement.id}`" v-model="affiliations.selectedEngagementCategories[engagement.id]" :disabled="loading" :name="engagement.id" @input="revalidate" type="checkbox" :false-value="null" class="checkbox mr-2 mb-3">
-                <label class="label is-inline" style="word-wrap: nobreak;" :for="`engagement-${engagement.id}`">
-                  {{ engagement.text }}
-                </label>
-              </div>
-              <div>
-                <input v-model="affiliations.selectedEngagementCategories.other" id="engagement-other" :disabled="loading" type="checkbox" class="checkbox mr-2 mb-3">
-                <label for="engagement-other" class="label is-inline">Other</label>
-                <input v-model="affiliations.otherEngagementCategory" :disabled="loading" @input="revalidate" class="input" style="max-width: 200px;" type="text">
-              </div>
-            </div>
-
-          </div>
-
-          <!-- organization -->
-          <div v-if="isContributor && isAccount" class="field" :class="{ 'divider-30': !showOrgLink }">
-            <label class="label is-uppercase" :class="{ error: hasError('organizationName') }">Are you affiliated with an organization?<sup class="required">*</sup></label>
-            <input v-model="affiliations.organization" :disabled="loading" @input="revalidate" class="input" type="text">
-          </div>
-
-          <!-- organization link -->
-          <div v-if="showOrgLink" class="field divider-30">
-            <label class="label is-uppercase" :class="{ error: hasError('organizationLink') }">Link to organization<sup class="required">*</sup></label>
-            <input v-model="affiliations.organizationLink" :disabled="loading" @input="revalidate" class="input" type="text">
           </div>
 
           <div class="field my-4">

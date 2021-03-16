@@ -75,7 +75,7 @@ const module = mergeOne(usersModule, {
       router.push({ name: 'Login' })
     },
 
-    async signup({ commit, dispatch, rootState }, { code, email, name, identities, photo, affiliations, password }) {
+    async signup({ commit, dispatch, rootState }, { code, email, name, password }) {
       const { user } = await firebase.auth().createUserWithEmailAndPassword(email, password)
 
       commit('setUser', auth2user(user))
@@ -84,9 +84,6 @@ const module = mergeOne(usersModule, {
         name,
         email,
         ...code ? { code } : null,
-        ...identities ? { identities } : null,
-        ...photo ? { photo } : null,
-        ...affiliations ? { affiliations } : null,
       })
 
       return user
