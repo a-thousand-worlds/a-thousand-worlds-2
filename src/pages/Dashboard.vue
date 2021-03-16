@@ -68,7 +68,7 @@ export default {
 
       <h1 class="title page-title">Your Dashboard</h1>
 
-      <div class="header-options mr-10">
+      <div v-if="!hasPendingContributorProfile" class="header-options mr-10">
         <router-link :to="{ name: 'Profile' }" style="color: black;">{{ !$iam('creator') ? 'Edit your profile' : 'Your Account' }}</router-link>
       </div>
 
@@ -87,7 +87,7 @@ export default {
           <ContributorProfilePreview v-else class="mb-30" />
         </div>
 
-        <div>
+        <div v-if="!hasPendingContributorProfile">
 
           <h2 v-if="$can('submitPerson')">Submission Forms</h2>
           <h2 v-else>Suggest a book or bundle</h2>
