@@ -215,10 +215,10 @@ export default {
 
         <div v-if="admin || welcome">
 
-          <h2 v-if="!admin" class="mt-50">ATW is based on raising the voices of diverse identities. We'd love to know your identity. This information will not be made public.</h2>
+          <h2 v-if="!admin" class="mt-50 mb-30">ATW is based on raising the voices of diverse identities. We'd love to know your identity. This information will not be made public.</h2>
 
           <!-- identities -->
-          <div class="field" divider-30>
+          <div v-if="!admin" class="field" divider-30>
             <label class="label">
               <span :class="{ 'has-text-danger': hasError('identity') }" style="text-transform: uppercase;">Identity<sup v-if="!admin" class="required">*</sup></span>
               <div style="font-weight: normal;">Please select all that apply</div>
