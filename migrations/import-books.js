@@ -83,15 +83,18 @@ const isbnSearch = async code => {
   return info
 }
 
+/** Normalizes 1.0 tags to match 2.0 tags. */
+const normalizeTag = tag => tag
+  ? tag.replace('-', ' ').replace('transitions', 'transition').toLowerCase()
+  : ''
+
 /** Converting tags */
-const convertTags = (list, tags) => {
-  return list.map(tagName => {
-    const tag = tags.find(tg => {
-      let name = tg.tag
-      if (name.toLowerCase() === tagName.toLowerCase()) return true
-      if (name === 'Non Fiction') name = 'Non-Fiction'
-      return name.toLowerCase() === tagName.toLowerCase()
-    })
+const convertTags = (bookTags, tags) => {
+  return bookTags.map(tagName => {
+    const tag = tags.find(tg =>
+      // Convert "Non-fiction" to "Non fiction" for comparison
+      normalizeTag(tg.tag) === normalizeTag(tagName)
+    )
     if (!tag) console.error(`Converting tag ${tagName} failed. Tag not found`)
     return tag
   })
@@ -132,7 +135,7 @@ const convertCreator = (name, creators, creator) => {
 
 /** Converting contributor */
 const convertContributor = async (name, contributors) => {
-  const contributor = contributors.find(user => user.profile.name.toLowerCase() === name.toLowerCase())
+  const contributor = contributors.find(user => name && user.profile.name && user.profile.name.toLowerCase() === name.toLowerCase())
   if (contributor) {
     console.log(`contributor ${name} recognized as userid <${contributor.id}>`)
     return { contributor }
