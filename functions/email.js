@@ -1,5 +1,5 @@
 const admin = require('firebase-admin')
-// const functions = require('firebase-functions')
+const functions = require('firebase-functions')
 const express = require('express')
 const cors = require('cors')({ origin: true })
 const serviceAccount = require('./serviceAccountKey.json')
@@ -31,6 +31,29 @@ module.exports = () => {
 
   app.get('/', handleError(async (req, res) => {
 
+    const { to, html, subject } = req.query
+
+    if (!to || !html || !subject) {
+      res.status(500).send('Insufficient query parameters. to, subject, and html required.')
+      return
+    }
+
+    // can send emails to admin without authorization
+    const config = functions.config()
+    if (to === config.project.admin_email) {
+      const info = await sendEmail(to, subject, html)
+      if (info.error) {
+        console.log(`Sending email to <${to}> error: ${info.error}`)
+        res.status(500).send(info.error)
+        return
+      }
+      const id = info.messageId
+      console.log(`Email sent: <${to}> ${subject} [${id}]`)
+      res.status(200).json({ id })
+      return
+    }
+
+    // if it's not to admin - authorization is required
     if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
       res.status(401).send('Not authorized.')
       return
@@ -58,13 +81,6 @@ module.exports = () => {
       if (!roles || (!roles.owner && !roles.advisor && !roles.contributor && !roles.creator)) {
         console.log('user attempt to send email without permission!', user)
         res.status(403).send('Not authorized.')
-        return
-      }
-
-      const { to, html, subject } = req.query
-
-      if (!to || !html || !subject) {
-        res.status(500).send('Insufficient query parameters. to, subject, and html required.')
         return
       }
 
