@@ -8,11 +8,14 @@ export default {
       required: true,
     },
     noMinimumSize: Boolean,
-    noremove: Boolean,
-    // TODO: fix dynamic height and remove photoHeight
-    photoHeight: String,
+    noremove: Boolean
   },
   emits: ['update:modelValue'],
+  computed: {
+    bgPhoto() {
+      return this.modelValue ? `url(${this.modelValue.base64 || this.modelValue.url || this.modelValue})` : 'none'
+    }
+  },
   methods: {
 
     fileChange(e) {
@@ -59,18 +62,15 @@ export default {
 
     <div class="photo-circle mb-1" style="position: relative; height: 100%;">
       <!-- TODO: preserve aspect ratio with dynamic width and height. min-height is currently a magic number to keep a square aspect ratio. -->
-      <div :class="{ 'bg-secondary': !modelValue, 'has-photo': modelValue }" class="photo-container is-flex is-justify-content-center is-align-items-center" style="border-radius: 999px; position: relative; cursor: pointer; height: 100%;" :style="{ minHeight: photoHeight || '168px' }">
-        <div class="photo" v-if="modelValue" :style="{
-          width: '100%',
-          height: photoHeight || '100%',
-          minHeight: '100px',
-          minWidth: '100px',
-          borderRadius: '999px',
-          backgroundImage: `url(${modelValue.base64 || modelValue.url || modelValue})`,
-          backgroundSize: 'cover',
-          backgroundPosition: '50%',
-        }" />
-        <label for="photo-field" class="has-text-centered" style="cursor: pointer; font-weight: bold; position: absolute;">{{ modelValue ? 'CHANGE' : 'UPLOAD' }}<br>PHOTO</label>
+      <div :class="{ 'bg-secondary': !modelValue, 'has-photo': modelValue }" class="photo-container is-flex is-justify-content-center is-align-items-center" :style="{
+        borderRadius: '999px',
+        position: 'relative',
+        cursor: 'pointer',
+        backgroundImage: bgPhoto,
+        backgroundSize: 'cover',
+        paddingTop: '100%'
+      }">
+        <label for="photo-field" class="has-text-centered" style="cursor: pointer; font-weight: bold; position: absolute; margin-top: -100%;">{{ modelValue ? 'CHANGE' : 'UPLOAD' }}<br>PHOTO</label>
       </div>
 
       <input id="photo-field" ref="fileInput" type="file" @change="fileChange($event)" style="position: absolute; height: 100%; width: 100%; cursor: pointer; top: 0; opacity: 0; border-radius: 999px;">
