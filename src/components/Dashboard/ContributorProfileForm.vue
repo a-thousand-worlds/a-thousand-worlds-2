@@ -160,7 +160,7 @@ export default {
         <div class="is-flex field">
 
           <!-- photo -->
-          <PhotoUpload v-model="photo" class="mr-30 my-40" style="width: 45%" />
+          <PhotoUpload v-model="photo" :noMinimumSize="admin" class="mr-30 my-40" style="width: 45%" />
 
           <div class="is-flex-grow-1 is-flex is-justify-content-center is-flex-direction-column">
 
