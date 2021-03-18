@@ -124,7 +124,11 @@ export default {
       <div class="is-flex is-flex-direction-row is-flex-wrap-wrap">
         <div class="column-person" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
           <div class="cover-wrapper mb-20">
-            <div v-if="bgImage.length" :style="{backgroundImage: `url(${bgImage})`}" class="cover-photo bg-secondary" />
+            <div v-if="bgImage.length" @click.prevent="adminEditClick" class="cover-photo bg-secondary" :style="{
+              backgroundImage: `url(${bgImage})`,
+              cursor: editOnClick ? 'context-menu' : 'default',
+              'user-select': editOnClick ? 'none' : null
+            }" style="color: inherit;" />
           </div>
 
           <div class="title-container divider-30">
