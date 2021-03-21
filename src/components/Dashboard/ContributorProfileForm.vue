@@ -173,7 +173,7 @@ export default {
             <!-- website -->
             <!-- add a little extra margin on the right so that "social media url" doesn't wrap -->
             <div class="field">
-              <label class="label is-uppercase" :class="{ error: hasError('website') }">Your website or social media URL<sup v-if="!admin" class="required">*</sup></label>
+              <label class="label is-uppercase" :class="{ error: hasError('website') }" style="margin-right: -5px;">Your website or social media URL<sup v-if="!admin" class="required">*</sup></label>
               <input v-model="affiliations.website" class="input" type="text">
             </div>
 
