@@ -245,7 +245,16 @@ const module = mergeOne(managed('submits/books'), {
       await sendEmail({
         to: submitter.profile.email,
         subject: template(emailTemplate.subject),
-        body: template(emailTemplate.body)
+        body: `<html>
+          <head>
+            <style>
+              p { margin: 0; }
+            </style>
+          </head>
+          <body>
+            ${template(emailTemplate.body)}
+          </body>
+        </html>`
       })
 
     }

@@ -35,7 +35,7 @@ const module = mergeOne(collectionModule('invites'), {
       const html = `<html>
     <head>
       <style>
-        p { margin-bottom: 0; }
+        p { margin: 0; }
       </style>
     </head>
     <body>
