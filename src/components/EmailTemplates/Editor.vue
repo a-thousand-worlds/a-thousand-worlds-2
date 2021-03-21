@@ -24,12 +24,12 @@ export default {
         path: 'email/invite',
       },
       {
-        title: 'Approved submission group',
+        title: 'Approved Submission',
         items: ['book', 'bundle', 'people'],
         path: 'email/submissions/approved',
       },
       {
-        title: 'Rejected submission group',
+        title: 'Rejected Submission',
         items: ['book', 'bundle', 'people'],
         path: 'email/submissions/rejected',
       }
@@ -90,7 +90,7 @@ export default {
     <div class="column is-one-quarter">
       <aside class="menu">
         <div v-for="group of groups" :key="group.title" class="mb-20">
-          <p class="menu-label">{{ group.title }}s</p>
+          <p class="menu-label">{{ group.title }}{{ group.title.endsWith('ed') ? '' : 's' }}</p>
           <ul class="menu-list">
             <li v-for="item of group.items" :key="item" class="is-capitalized">
               <a :class="{ 'is-active': item === active.item && group === active.group }" @click.prevent="active = { group, item }">{{ item }}</a>
