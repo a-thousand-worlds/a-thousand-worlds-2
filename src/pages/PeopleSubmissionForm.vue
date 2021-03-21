@@ -14,8 +14,13 @@ export default {
   mixins: [
     validator(function() {
       return [
+        !this.submission.bio && { name: 'bio', message: 'Bio required' },
+        !this.submission.gender && { name: 'gender', message: 'Gender required' },
+        Object.values(this.submission.identities || {}).length === 0 && { name: 'identity', message: 'Identity required' },
         !this.submission.name && { name: 'name', message: 'Name required' },
+        !this.submission.photo && { name: 'photo', message: 'Photo required' },
         !this.submission.title && { name: 'title', message: 'Title required' },
+        !this.submission.website && { name: 'website', message: 'Website required' },
       ].filter(x => x)
     })
   ],
@@ -164,7 +169,7 @@ export default {
 
               <!-- preferred pronouns -->
               <div class="field">
-                <label class="label" :class="{ 'has-text-danger': hasError('name') }" style="font-weight: bold; text-transform: uppercase;">Pronouns</label>
+                <label class="label" style="font-weight: bold; text-transform: uppercase;">Pronouns</label>
 
                 <div class="sublabel">
                   <div v-for="pronoun of pronouns" :key="pronoun.id" class="control is-flex" style="column-break-inside: avoid;">
@@ -190,10 +195,16 @@ export default {
             </div>
           </div>
 
+          <!-- website -->
+          <div class="field">
+            <label class="label is-uppercase" :class="{ 'has-text-danger': hasError('website') }"><b>Your website or social media URL<sup class="required">*</sup></b></label>
+            <input type="text" v-model="submission.website" @input="saveDraftAndRevalidate" class="input">
+          </div>
+
           <!-- identities -->
           <div class="field">
             <label class="label">
-              <b :class="{ 'has-text-danger': hasError('identities') }" style="text-transform: uppercase;">Identity</b>
+              <b :class="{ 'has-text-danger': hasError('identity') }" style="text-transform: uppercase;">Identity<sup class="required">*</sup></b>
               <div style="font-weight: normal;">Please select all that apply.</div>
             </label>
 
@@ -207,7 +218,7 @@ export default {
 
           <!-- gender -->
           <div class="field">
-            <label class="label" :class="{ 'has-text-danger': hasError('gender') }" style="font-weight: bold; text-transform: uppercase;">Gender</label>
+            <label class="label" :class="{ 'has-text-danger': hasError('gender') }" style="font-weight: bold; text-transform: uppercase;">Gender<sup class="required">*</sup></label>
 
             <div class="sublabel tablet-columns-2">
               <div v-for="gender of genders" :key="gender.id" class="control is-flex" style="column-break-inside: avoid;">
@@ -219,7 +230,7 @@ export default {
 
           <!-- bio -->
           <div class="field">
-            <label class="label"><b>Bio</b></label>
+            <label class="label is-uppercase" :class="{ 'has-text-danger': hasError('gender') }"><b>Bio</b><sup class="required">*</sup></label>
             <textarea class="textarea" v-model="submission.bio" @input="saveDraftAndRevalidate" />
           </div>
 
@@ -237,7 +248,8 @@ export default {
 
           <!-- curateInterest -->
           <div class="field">
-            <label class="label"><b>Would you be in interested in curating a picture book bundle?</b> This entails listing your favorite 3-5 picture books (by other BIPOC creatives) that represent a theme of your choosing and writing a paragraph about this book collection.</label>
+            <label class="label"><b>Would you be in interested in curating a picture book bundle?</b>
+              <br>This entails listing your favorite 3-5 picture books (by other BIPOC creatives) that represent a theme of your choosing and writing a paragraph about this book collection.</label>
             <div class="control">
               <label style="cursor: pointer;">
                 <input type="radio" name="curateInterest" v-model="submission.curateInterest" value="Yes" @input="saveDraftAndRevalidate">

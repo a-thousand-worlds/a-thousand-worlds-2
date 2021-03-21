@@ -10,6 +10,7 @@ const personSubmission = () => ({
   photo: '',
   pronouns: '',
   title: 'author',
+  website: null,
 })
 
 export default personSubmission
