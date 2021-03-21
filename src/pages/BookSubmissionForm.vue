@@ -2,18 +2,21 @@
 import _ from 'lodash'
 import ISBN from 'isbn3'
 import { v4 as uid } from 'uuid'
-import BookTitleField from '@/components/fields/BookTitle'
-import Loader from '@/components/Loader'
 import metadataByISBN from '@/util/metadataByISBN'
 import findBookByKeyword from '@/util/findBookByKeyword'
 import isValidISBN from '@/util/isValidISBN'
 import isSame from '@/util/isSame'
 import validator from '@/mixins/validator'
 
+import BookTitleField from '@/components/fields/BookTitle'
+import Loader from '@/components/Loader'
+import RecommendedBy from '@/components/RecommendedBy'
+
 export default {
   components: {
     BookTitleField,
     Loader,
+    RecommendedBy,
   },
   mixins: [
     validator(function() {
@@ -140,6 +143,7 @@ export default {
         title: '',
         year: '',
         loadingMetadata: false,
+        ...this.$iam('owner') ? { createdBy: this.$store.state.user.user?.uid } : null,
       }
     },
     addMoreSubmission() {
@@ -402,6 +406,11 @@ export default {
                   -->
                 </div>
               </div>
+            </div>
+
+            <!-- recommended by (owner only) -->
+            <div v-if="$iam('owner')" class="field">
+              <RecommendedBy v-model="sub.createdBy" edit existing-contributors-only label="Recommended By" labelStyle="display: block;" style="font-size: 18px;" />
             </div>
 
             <!-- summary -->

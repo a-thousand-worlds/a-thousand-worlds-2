@@ -24,8 +24,16 @@ export default {
     // if true, allows the contribor to be edited
     edit: Boolean,
 
-    // if true, hides the "RECOMMENDED BY" text
-    nolabel: Boolean,
+    // if true, does not show options for New Contributor or None
+    existingContributorsOnly: Boolean,
+
+    label: {
+      type: String,
+      default: '–Recommended By'
+    },
+
+    labelClass: {},
+    labelStyle: {},
 
   },
   emits: ['update:modelValue'],
@@ -71,8 +79,8 @@ export default {
             .filter(x => x)
           : [],
         // otherEngagementCategory
-        ...this.profile?.affiliations.otherEngagementCategory
-          ? [{ text: this.profile?.affiliations.otherEngagementCategory.trim() }]
+        ...this.profile?.affiliations?.otherEngagementCategory
+          ? [{ text: this.profile.affiliations.otherEngagementCategory.trim() }]
           : []
       ]
       return reviewerEngagements.length > 0
@@ -133,21 +141,20 @@ export default {
 
 <template>
 
-  <!-- ensure there is enough room below Recommended By for the dropdown -->
-  <div v-if="edit || name" :style="edit ? 'margin-bottom: 150px;' : null">
+  <div v-if="edit || name">
 
     <div v-if="!showNewContributor">
-      <b v-if="!nolabel">
-        <a v-if="edit" v-click-outside="closeDropdown" @click.prevent.stop="dropdownActive = !dropdownActive" style="user-select: none;" :class="{ 'primary-hover': edit, 'is-primary': dropdownActive }">– RECOMMENDED BY </a>
-        <span v-else>– RECOMMENDED BY </span>
+      <b v-if="label" :class="labelClass" :style="labelStyle">
+        <a v-if="edit" v-click-outside="closeDropdown" @click.prevent.stop="dropdownActive = !dropdownActive" style="user-select: none;" class="is-uppercase mr-2" :class="{ 'primary-hover': edit, 'is-primary': dropdownActive }">{{ label }}</a>
+        <span v-else class="is-uppercase mr-2">{{ label }}</span>
       </b>
 
       <!-- dropdown -->
       <div v-if="edit" class="dropdown no-user-select" :class="{ 'is-active': dropdownActive }" style="position: absolute;">
         <div id="dropdown-menu" class="dropdown-menu" role="menu" style="top: auto; bottom: -1.5rem;">
           <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
-            <a class="dropdown-item is-capitalized is-uppercase" @click.prevent="showNewContributor = true"><b>New Contributor</b></a>
-            <a class="dropdown-item is-capitalized is-uppercase" @click.prevent="remove">None</a>
+            <a v-if="!existingContributorsOnly" class="dropdown-item is-capitalized is-uppercase" @click.prevent="showNewContributor = true"><b>New Contributor</b></a>
+            <a v-if="!existingContributorsOnly" class="dropdown-item is-capitalized is-uppercase" @click.prevent="remove">None</a>
             <hr class="dropdown-divider">
             <a v-for="contributor in contributors" :key="contributor.id" class="dropdown-item is-capitalized" :class="{ 'is-active': contributor.id === modelValue }" @click.prevent="update(contributor)">
               {{ contributor.profile.name }}

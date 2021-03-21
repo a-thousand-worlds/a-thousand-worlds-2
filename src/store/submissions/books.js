@@ -1,7 +1,9 @@
 import { v4 as uid } from 'uuid'
+import _ from 'lodash'
 import dayjs from 'dayjs'
 import managed from '@/store/modules/managed'
 import almostEqual from '@/util/almostEqual'
+import iam from '@/util/iam'
 import isSame from '@/util/isSame'
 import mergeOne from '@/util/mergeOne'
 import renderBook from '@/util/renderEmailBook'
@@ -20,15 +22,11 @@ const module = mergeOne(managed('submits/books'), {
   actions: {
 
     /** Submit books suggestions to Firebase */
-    submit: async (context, list) => {
+    submit: async (context, submissions) => {
       const submissionGroupId = uid()
-      const profile = context.rootState.user.user.profile
-      profile.draftBooks = []
-      if (!profile.submissions) {
-        profile.submissions = {}
-      }
-      // eslint-disable-next-line  fp/no-loops
-      for (const sub of list) {
+
+      // save final submission objects to submits/books
+      const submissionsSaved = submissions.map(sub => {
         const sid = uid()
         const subData = {
           authors: Array.isArray(sub.authors) ? sub.authors.join(', ') : sub.authors || '',
@@ -45,13 +43,38 @@ const module = mergeOne(managed('submits/books'), {
           title: sub.title,
           type: 'book',
           year: sub.year || '',
+          ...sub.createdBy ? { createdBy: sub.createdBy } : null,
         }
         // set state before saving to Firebase, otherwise value gets set to undefined
         context.commit('setOne', { path: sid, value: subData })
         context.dispatch('save', { path: sid, value: subData })
-        profile.submissions[sid] = 'pending'
-      }
-      await context.dispatch('user/saveProfile', profile, { root: true })
+
+        return subData
+      })
+
+      // save user profile/submissions
+
+      // allow createdBy to be overwritten (owner only)
+      const reviewerGroups = _.groupBy(submissionsSaved, 'createdBy')
+      Object.entries(reviewerGroups).forEach(async ([createdBy, submissions]) => {
+
+        const profile = iam(context.rootState, 'owner') && createdBy
+          ? context.rootState.users.data[createdBy]?.profile
+          : context.rootState.user.user.profile
+
+        await context.dispatch('user/saveProfile', {
+          ...profile,
+          draftBooks: [],
+          submissions: {
+            ...profile.submissions,
+            ...submissionsSaved.reduce((accum, sub) => ({
+              ...accum,
+              [sub.id]: 'pending',
+            }), {})
+          }
+        }, { root: true })
+      })
+
     },
 
     /** Reject submission */
