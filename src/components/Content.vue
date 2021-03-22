@@ -2,6 +2,7 @@
 import _ from 'lodash'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import { get } from '@/util/get-set'
+import FirebaseUploadAdapter from '@/util/ckeditorFirebaseUploadAdapter'
 
 export default {
   props: {
@@ -19,6 +20,7 @@ export default {
       editor: BalloonEditor,
       editorConfig: {
         placeholder: this.placeholder,
+        extraPlugins: [FirebaseUploadAdapter]
       },
       html: this.getContent(),
     }
