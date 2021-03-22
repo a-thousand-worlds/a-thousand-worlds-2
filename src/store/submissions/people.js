@@ -98,27 +98,42 @@ const module = mergeOne(managed('submits/people'), {
         throw new Error(message)
       }
 
-      const firstName = submitter.profile.name && submitter.profile.name.includes(' ')
-        ? submitter.profile.name.slice(0, submitter.profile.name.indexOf(' '))
-        : submitter.profile.name
+      const emailTemplate = context.rootGetters['content/get']('email/submissions/rejected/people')
 
-      const salutation = firstName
-        ? `Dear ${firstName},`
-        : 'Hello,'
+      if (!emailTemplate || !emailTemplate.subject || !emailTemplate.body) {
+        const message = `No email template for people submission approving`
+        console.error(message, sub)
+        throw new Error(message)
+      }
 
+      const fullName = submitter.profile.name || 'friend'
+      const firstName = fullName.includes(' ')
+        ? fullName.slice(0, fullName.indexOf(' '))
+        : fullName
+      const lastName = fullName.includes(' ')
+        ? fullName.slice(fullName.indexOf(' ') + 1)
+        : ''
+
+      const template = s => s.replace(/FIRST_NAME/g, firstName)
+        .replace(/LAST_NAME/g, lastName)
+        .replace(/FULL_NAME/g, fullName)
+
+      // sending email
       await sendEmail({
         to: submitter.profile.email,
-        subject: 'A Thousand Worlds - Thank you for your People Submission',
-        body: `
-          <p>${salutation}</p>
-          <p>Thank you for filling out a People Submission Form and being part of <b>A Thousand Worlds!</b></p>
-          <p>Your submission was not accepted for the public directory at this time, but we have retained it in our records and appreciate your contribution.</p>
-          <p>Should you have any feedback, questions or concerns don't hesitate to reach out: <a href ="mailto:${process.env.VUE_APP_ADMIN_EMAIL}">${process.env.VUE_APP_ADMIN_EMAIL}</a></p>
-          <p>Warm regards,<br>
-            -Cátia Chien & ATW team
-            </p>
-        `
+        subject: template(emailTemplate.subject),
+        body: `<html>
+          <head>
+            <style>
+              p { margin: 0; }
+            </style>
+          </head>
+          <body>
+            ${template(emailTemplate.body)}
+          </body>
+        </html>`
       })
+
     },
 
     /** Approves submissions group */
@@ -199,30 +214,43 @@ const module = mergeOne(managed('submits/people'), {
         `<p><a href="${personDetailUrl}" target="_blank"><img src="${personNew.photo.downloadUrl}" /></a></p>`
         : ''
 
-      const firstName = submitter.profile.name && submitter.profile.name.includes(' ')
-        ? submitter.profile.name.slice(0, submitter.profile.name.indexOf(' '))
-        : submitter.profile.name
+      const approvedRecord = `<p><b><a href="${personDetailUrl}" target="_blank">${sub.name}</a></b></p>${imageHtml}`
 
-      const salutation = firstName
-        ? `Dear ${firstName},`
-        : 'Hello,'
+      const emailTemplate = context.rootGetters['content/get']('email/submissions/approved/people')
 
+      if (!emailTemplate || !emailTemplate.subject || !emailTemplate.body) {
+        const message = 'No email template for books submission approving'
+        console.error(message, sub)
+        throw new Error(message)
+      }
+
+      const fullName = submitter.profile.name || 'friend'
+      const firstName = fullName.includes(' ')
+        ? fullName.slice(0, fullName.indexOf(' '))
+        : fullName
+      const lastName = fullName.includes(' ')
+        ? fullName.slice(fullName.indexOf(' ') + 1)
+        : ''
+
+      const template = s => s.replace(/FIRST_NAME/g, firstName)
+        .replace(/LAST_NAME/g, lastName)
+        .replace(/FULL_NAME/g, fullName)
+        .replace(/APPROVED_RECORDS/g, approvedRecord)
+
+      // sending email
       await sendEmail({
         to: submitter.profile.email,
-        subject: 'A Thousand Worlds - Thank you for your People Submission!',
-        body: `
-          <p>${salutation}</p>
-          <p>
-            Thank you for filling out a People Submission Form and being part of <b>A Thousand Worlds!</b><br>
-            We have reviewed your information and we have created your public People Page:
-          <p>
-            <b><a href="${personDetailUrl}" target="_blank">${sub.name}</a></b>
-          </p>
-          ${imageHtml}
-          <p>In your dashboard you'll be able to view and edit your profile. Simply make the edits in the People Submission form and re-submit for approval.</p>
-          <p>Thank you for being part of <b>A Thousand Worlds!</b></p>
-          <p>-Cátia Chien & ATW team</p>
-        `
+        subject: template(emailTemplate.subject),
+        body: `<html>
+          <head>
+            <style>
+              p { margin: 0; }
+            </style>
+          </head>
+          <body>
+            ${template(emailTemplate.body)}
+          </body>
+        </html>`
       })
 
     },
