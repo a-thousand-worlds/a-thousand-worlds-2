@@ -16,6 +16,9 @@ const sendEmail = async ({ to, subject, body }) => {
     headers: {
       Authorization: `Bearer ${token}`
     }
+  }).catch(e => {
+    console.error(e)
+    throw new Error('Email not sent')
   })
 }
 
