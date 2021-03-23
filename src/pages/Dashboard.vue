@@ -89,13 +89,13 @@ export default {
 
         <div v-if="!hasPendingContributorProfile">
 
-          <h2 v-if="$can('submitPerson')">Submission Forms</h2>
-          <h2 v-else>Suggest a book<!--  or bundle --></h2>
+          <h2>Suggest a book<!--  or bundle --></h2>
           <div class="field is-grouped">
             <div class="control">
               <router-link class="button is-outlined is-primary" :to="{name:'BookSubmissionForm'}">Book</router-link>
             </div>
-            <div v-if="$can('submitPerson')" class="control">
+            <!-- disable show person submission button for owner until it can support submitting a profile for someone else rather than yourself -->
+            <div v-if="$can('submitPerson') && !$iam('owner')" class="control">
               <router-link class="button is-outlined is-primary" :to="{name:'PersonSubmissionForm'}">Person</router-link>
             </div>
             <!-- <div class="control">

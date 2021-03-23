@@ -13,7 +13,7 @@ export const rights = {
   editEmailTemplates: [],
   review: ['advisor'],
   submitBookOrBundle: ['advisor', 'contributor'],
-  submitPerson: ['advisor', 'creator'],
+  submitPerson: ['creator'],
   viewDashboard: ['advisor', 'contributor', 'creator'],
 }
 
