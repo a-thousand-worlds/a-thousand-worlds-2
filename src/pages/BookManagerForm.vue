@@ -1,3 +1,4 @@
+<!-- DEPRECATED. Use Book Submission Form. -->
 <script>
 
 import coverImageByISBN from '@/util/coverImageByISBN'
