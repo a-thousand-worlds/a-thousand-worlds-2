@@ -103,6 +103,7 @@ export default {
         name: this.name,
         // copy all relevant fields from person
         ..._.pick(this.person, Object.keys(emptySubmission)),
+        ...this.person?.bio ? { bio: this.person.bio.replace(/<\/?p>/g, '') } : null,
         // copy identities object, otherwise editing the form will update the person identities object by reference
         identities: this.person?.identities ? { ...this.person.identities } : {},
         ...this.person?.id ? { personId: this.person?.id } : {},
@@ -122,9 +123,16 @@ export default {
 
       if (!this.validate()) return
 
+      /** Replaces line breaks with paragraphs */
+      const insertParagraphs = s =>
+        s.replace(/([^\n]+)\n|([^\n]+)$/g, text => `<p>${text.replace('\n', '')}</p>\n`)
+
       this.$store.commit('ui/setBusy', true)
       try {
-        await this.$store.dispatch('submissions/people/submit', this.submission)
+        await this.$store.dispatch('submissions/people/submit', {
+          ...this.submission,
+          ...this.submission.bio ? { bio: insertParagraphs(this.submission.bio) } : null,
+        })
         this.$store.commit('ui/setBusy', false)
         this.$router.push({ name: 'Dashboard' })
       }
