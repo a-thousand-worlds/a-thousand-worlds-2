@@ -109,8 +109,8 @@ const module = mergeOne(managed('submits/books'), {
     approveBook: async (context, sub) => {
 
       // collect creators and create not existing people
-      const authors = sub.authors.split(',').map(x => x.trim()).filter(x => x)
-      const illustrators = sub.illustrators.split(',').map(x => x.trim()).filter(x => x)
+      const authors = sub.authors.split(/[.,;&]| and /g).map(x => x.trim()).filter(x => x)
+      const illustrators = sub.illustrators.split(/[.,;&]| and /g).map(x => x.trim()).filter(x => x)
         // convert "same" text to creator name
         .map(illustrator => isSame(illustrator) ? authors[0] : illustrator)
       const creators = {}
