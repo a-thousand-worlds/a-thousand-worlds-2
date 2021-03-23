@@ -134,7 +134,7 @@ export default {
       <!-- allow long names to push a few pixels into the padding before wrapping -->
       <span v-for="(person, i) of illustrators" :key="i">
         <PersonDetailLink v-if="person.person && linked && !personPageActive(person)" :person="person.person" :edit="edit" class="name linked">{{ person.person.name }}</PersonDetailLink>
-        <span v-else class="name">{{ person.person.name }}</span>
+        <span v-else class="name">{{ person.person?.name }}</span>
         <span v-if="illustrators.length > 1 && i !== illustrators?.length - 1" class="mr-2">,</span>
       </span>
     </div>
