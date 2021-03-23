@@ -26,13 +26,19 @@ export default ({
     WelcomeDismissable,
   },
   computed: {
+    showRightBar() {
+      return !this.$route?.meta?.access ||
+        this.$route?.name === 'BookEdit' ||
+        this.$route?.name === 'PersonEdit' ||
+        this.$route?.name === 'BundleEdit'
+    },
     showWelcome() {
       // do not show welcome banner until route is loaded
       // $route.name is undefined on initial load
       // window.location.pathname is available immediately
       return (window.location.pathname === '/' || this.$route.name)
         && !this.$store.state.ui.lastVisited && !this.$route.meta?.access && this.$route.name !== 'Login'
-    }
+    },
   },
   watch: {
     '$route'(next) {
@@ -65,16 +71,18 @@ export default ({
         </div>
         <router-view />
       </section>
+
       <section v-if="$store.state.ui.bookmarksOpen" class="bookmarks column">
         <BookmarksView />
       </section>
 
       <!-- add the rightbar-border to main instead of rightbar itself in order to get correct z-indexing with welcome banner -->
-      <div class="rightbar-border is-hidden-mobile" />
+      <div v-if="showRightBar" class="rightbar-border is-hidden-mobile" />
 
     </div>
 
-    <section class="rightbar is-hidden-mobile">
+    <!-- do not show rightbar on dashboard pages -->
+    <section v-if="showRightBar" class="rightbar is-hidden-mobile">
       <!-- Hide bookmarks when welcome message is shown not only for UX but also because we cannot accomplish the correct layering with z-indexes due to circularity: rightbar > main > welcome > rightbar. -->
       <RightBar :hideBookmarks="showWelcome" />
     </section>
