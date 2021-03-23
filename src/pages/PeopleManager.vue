@@ -141,7 +141,7 @@ export default {
               <SortableTableHeading id="nameLower" v-model="sortConfig">Name</SortableTableHeading>
               <SortableTableHeading id="title" v-model="sortConfig">Title</SortableTableHeading>
               <SortableTableHeading id="created" v-model="sortConfig" default="desc" class="has-text-right pr-20">Created</SortableTableHeading>
-              <th class="has-text-right">Delete</th>
+              <!-- <th class="has-text-right">Delete</th> -->
             </tr>
           </thead>
           <tbody>
@@ -168,15 +168,16 @@ export default {
               <!-- created -->
               <td class="has-text-right">{{ formatDate(person.created) }}</td>
 
-              <!-- edit/delete -->
-              <td class="has-text-right">
+              <!-- delete -->
+              <!-- disable until better syncing of books and user account is implemented -->
+              <!-- <td class="has-text-right">
                 <div class="field is-grouped is-justify-content-flex-end">
                   <p class="control">
                     <button :disabled="$uiBusy" class="button is-flat" @click.prevent="remove(person.id)">
                       <i class="fas fa-times" />
                     </button></p>
                 </div>
-              </td>
+              </td> -->
 
             </tr>
 
