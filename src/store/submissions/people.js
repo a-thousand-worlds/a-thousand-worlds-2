@@ -167,11 +167,13 @@ const module = mergeOne(managed('submits/people'), {
       }
 
       // find associated person by sub.personId or fuzzy equal name match
-      const person = context.rootGetters['people/get'](sub.personId) ||
+      const person = (sub.personId && context.rootGetters['people/get'](sub.personId)) ||
         context.rootGetters['people/findBy'](person => almostEqual(person.name, name))
+      const personId = sub.personId || person?.id || uid()
       const personNew = {
         ...person,
-        ..._.pick(sub, Object.keys(personSubmission()))
+        ..._.pick(sub, Object.keys(personSubmission())),
+        id: personId,
       }
 
       // if submission contains photo - we resaving it to separate file related with creator record
@@ -186,14 +188,14 @@ const module = mergeOne(managed('submits/people'), {
       // update user submission and people submission
       await context.dispatch('updateSubmission', {
         peopleSubmissionId: await personSubmissionId(sub.createdBy) || uid(),
-        personId: personNew.id,
+        personId,
         sub,
         status: 'approved'
       })
 
-      // save user
+      // save creator
       await context.dispatch('people/save', {
-        path: personNew.id,
+        path: personId,
         value: personNew
       }, { root: true })
 
