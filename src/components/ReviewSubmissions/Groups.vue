@@ -19,8 +19,10 @@ export default {
   },
   computed: {
     submissions() {
-      return this.$store.getters[`submissions/${this.type}/list`]()
+      const submissions = this.$store.getters[`submissions/${this.type}/list`]()
         .filter(sub => sub && sub.status === this.status)
+      this.$store.dispatch('debug', { submissions })
+      return submissions
     },
     submissionsGroups() {
       const groups = this.submissions
