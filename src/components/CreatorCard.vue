@@ -18,7 +18,7 @@ export default {
       type: String,
     },
   },
-  emits: ['updateTitle'],
+  emits: ['remove', 'updateTitle'],
   data() {
     return {
       creatorTitles,
@@ -49,6 +49,11 @@ export default {
     updateTitle(titleId) {
       this.closeTitleDropdown()
       this.$emit('updateTitle', titleId)
+    },
+
+    remove() {
+      this.closeTitleDropdown()
+      this.$emit('remove')
     },
 
   },
@@ -87,9 +92,16 @@ export default {
         <div v-if="edit" class="dropdown no-user-select" :class="{ 'is-active': titleDropdownActive }" style="position: absolute;">
           <div id="dropdown-menu" class="dropdown-menu" role="menu">
             <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
+
+              <!-- remove -->
+              <a class="dropdown-item" @click.prevent="remove"><b>REMOVE CREATOR</b></a>
+              <hr class="dropdown-divider">
+
+              <!-- title options -->
               <a v-for="title in creatorTitles" :key="title.id" class="dropdown-item is-capitalized" @click.prevent="updateTitle(title.id)">
                 {{ title.text }}
               </a>
+
             </div>
           </div>
         </div>

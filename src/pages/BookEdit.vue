@@ -120,6 +120,12 @@ export default {
       }
     },
 
+    removeCreator(creatorId) {
+      this.updateBook('creators', {
+        [creatorId]: null
+      })
+    },
+
     saveIsbn(isbn) {
 
       // save isbn
@@ -266,7 +272,7 @@ export default {
           <!-- creators -->
           <div class="creators divider-bottom">
             <div class=" is-flex is-flex-wrap-wrap" style="margin-right: -30px;">
-              <CreatorCard v-for="id in creators" :key="id" :id="id" :role="book.creators[id]" class="mb-20 mr-30" style="min-width: 33%;" @updateTitle="titleId => updateTitle(id, titleId)" edit />
+              <CreatorCard v-for="id in creators" :key="id" :id="id" :role="book.creators[id]" class="mb-20 mr-30" style="min-width: 33%;" @remove="removeCreator(id)" @updateTitle="titleId => updateTitle(id, titleId)" edit />
               <AddCreator class="mb-10 ml-1 mr-30" @update="addCreator" />
             </div>
           </div>
