@@ -41,6 +41,7 @@ export default {
     return {
       dropdownActive: false,
       newContributor: newContributor(),
+      showEditContributor: false,
       showNewContributor: false,
     }
   },
@@ -61,7 +62,10 @@ export default {
     // populated individually in the created hook since users are not loaded automatically except for admin
     profile() {
       return this.modelValue && this.$store.state.users.loaded
-        ? this.$store.state.users.data[this.modelValue]?.profile
+        ? {
+          id: this.modelValue,
+          ...this.$store.state.users.data[this.modelValue]?.profile,
+        }
         : null
     },
 
@@ -108,11 +112,14 @@ export default {
   },
   methods: {
 
-    createNewContributor(newContributor) {
-      newContributor.then(contributor => {
-        this.update(contributor)
-        this.resetNewContributorForm()
-      })
+    contributorFormSaved(newContributor) {
+      if (this.showNewContributor) {
+        newContributor.then(contributor => {
+          this.update(contributor)
+        })
+      }
+      this.closeDropdown()
+      this.resetContributorForm()
     },
 
     // function declaration needed for v-click-outside
@@ -120,9 +127,10 @@ export default {
       this.dropdownActive = false
     },
 
-    resetNewContributorForm() {
+    resetContributorForm() {
       this.newContributor = newContributor()
       this.showNewContributor = false
+      this.showEditContributor = false
     },
 
     remove() {
@@ -143,7 +151,7 @@ export default {
 
   <div v-if="edit || name">
 
-    <div v-if="!showNewContributor">
+    <div v-if="!showNewContributor && !showEditContributor">
       <b v-if="label" :class="labelClass" :style="labelStyle">
         <a v-if="edit" v-click-outside="closeDropdown" @click.prevent.stop="dropdownActive = !dropdownActive" style="user-select: none;" class="is-uppercase mr-2" :class="{ 'primary-hover': edit, 'is-primary': dropdownActive }">{{ label }}</a>
         <span v-else class="is-uppercase mr-2">{{ label }}</span>
@@ -154,6 +162,7 @@ export default {
         <div id="dropdown-menu" class="dropdown-menu" role="menu" style="top: auto; bottom: -1.5rem;">
           <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
             <a v-if="!existingContributorsOnly" class="dropdown-item is-capitalized is-uppercase" @click.prevent="showNewContributor = true"><b>New Contributor</b></a>
+            <a v-if="modelValue" class="dropdown-item is-capitalized is-uppercase" @click.prevent="showEditContributor = true"><b>Edit Contributor</b></a>
             <a v-if="!existingContributorsOnly" class="dropdown-item is-capitalized is-uppercase" @click.prevent="remove">None</a>
             <hr class="dropdown-divider">
             <a v-for="contributor in contributors" :key="contributor.id" class="dropdown-item is-capitalized" :class="{ 'is-active': contributor.id === modelValue }" @click.prevent="update(contributor)">
@@ -182,8 +191,8 @@ export default {
 
     <!-- New Contributor -->
     <div v-else style="max-width: 450px;">
-      <h2 class="divider-bottom">New Contributor</h2>
-      <ContributorProfileForm admin @cancel="resetNewContributorForm" @save="createNewContributor" />
+      <h2 class="divider-bottom">{{ showEditContributor ? 'Edit' : 'New' }} Contributor</h2>
+      <ContributorProfileForm :contributor="profile" @cancel="resetContributorForm" @save="contributorFormSaved" admin />
     </div>
 
   </div>

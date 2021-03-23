@@ -57,11 +57,12 @@ export default {
   ],
   props: {
     admin: Boolean,
+    contributor: {},
     welcome: Boolean,
   },
   emits: ['cancel', 'save'],
   data() {
-    const profile = this.$store.state.user.user?.profile
+    const profile = this.contributor || this.$store.state.user.user?.profile
     return {
       affiliations: {
         ...newAffiliations(),
@@ -71,9 +72,9 @@ export default {
       engagementOptions,
       identities: profile?.identities ? { ...profile.identities } : {},
       loading: false,
-      name: '', // admin only
+      name: profile?.name || '', // admin only
       otherIdentity: null,
-      photo: profile.photo,
+      photo: profile.photo || null,
     }
   },
   computed: {
@@ -87,7 +88,7 @@ export default {
   watch: {
     '$store.state.user.user'(next, prev) {
       this.identities = next?.profile?.identities || this.identities
-      this.photo = next?.profile?.photo || this.photo
+      this.photo = next?.profile?.photo || this.photo || null
     },
   },
   methods: {
@@ -105,13 +106,23 @@ export default {
       const profile = {
         affiliations: this.affiliations,
         identities: this.identities,
+        name: this.name,
         otherIdentity: this.otherIdentity,
-        photo: this.photo,
+        photo: this.photo || null,
         ...this.admin ? { name: this.name } : null,
       }
 
+      const savePromise = this.contributor
+        // admin edit contributor
+        ? this.$store.dispatch('users/update', {
+          path: `${this.contributor.id}/profile`,
+          value: profile,
+        })
+        // new contributor or existing contributor self
+        : this.$store.dispatch(this.admin ? 'users/saveContributor' : 'user/updateProfile', profile)
+
       // do not await so we can emit save with a promise
-      const updated = this.$store.dispatch(this.admin ? 'users/saveContributor' : 'user/updateProfile', profile)
+      savePromise
         .then(uid => {
           this.loading = false
           this.$store.dispatch('ui/popup', {
@@ -129,7 +140,7 @@ export default {
         this.disableAfterSave = false
       }, 1000)
 
-      this.$emit('save', updated.then(uid => ({
+      this.$emit('save', savePromise.then(uid => ({
         ...profile,
         id: uid,
       })))
