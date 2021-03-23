@@ -90,7 +90,7 @@ export default {
         <div v-if="!hasPendingContributorProfile">
 
           <h2 v-if="$can('submitPerson')">Submission Forms</h2>
-          <h2 v-else>Suggest a book or bundle</h2>
+          <h2 v-else>Suggest a book<!--  or bundle --></h2>
           <div class="field is-grouped">
             <div class="control">
               <router-link class="button is-outlined is-primary" :to="{name:'BookSubmissionForm'}">Book</router-link>
@@ -98,9 +98,9 @@ export default {
             <div v-if="$can('submitPerson')" class="control">
               <router-link class="button is-outlined is-primary" :to="{name:'PersonSubmissionForm'}">Person</router-link>
             </div>
-            <div class="control">
+            <!-- <div class="control">
               <router-link class="button is-outlined is-primary" :to="{name:'BundleSubmissionForm'}">Bundle</router-link>
-            </div>
+            </div> -->
           </div>
 
         </div>

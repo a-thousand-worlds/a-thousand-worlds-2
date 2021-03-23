@@ -100,87 +100,102 @@ export default {
 </script>
 
 <template>
-  <h1 class="title page-title">Curate a Book Bundle</h1>
 
-  <section class="section">
+  <div class="mx-20 mb-30">
+    <div class="is-flex is-justify-content-center">
+      <form class="is-flex-grow-1" style="max-width: 540px;" @submit.prevent="submitForReview">
 
-    <div class="field">
-      <label class="label">What do you want to call this bundle?</label>
-      <div class="control">
-        <input v-model="name" :disabled="$uiBusy" type="text" class="input">
-      </div>
+        <div class="mb-5">
+          <a @click.prevent="$router.back" class="is-uppercase is-primary">&lt; Back</a>
+        </div>
+
+        <h1 class="title page-title divider-bottom">Curate a Book Bundle</h1>
+
+        <div>
+          <section class="section">
+
+            <div class="field">
+              <label class="label">What do you want to call this bundle?</label>
+              <div class="control">
+                <input v-model="name" :disabled="$uiBusy" type="text" class="input">
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label">Tell us why you love these books. (this will serve as the description for the Bundle)</label>
+              <div class="control">
+                <textarea v-model="description" class="textarea" />
+              </div>
+            </div>
+
+            <hr>
+          </section>
+          <div v-for="(book, i) of books" :key="i">
+            <section class="section">
+
+              <div class="field">
+                <label class="label">Title</label>
+                <book-title-field v-model="books[i].title" :disabled="$uiBusy" @book-selected="fillBook($event, i)" />
+              </div>
+
+              <div class="field">
+                <label class="label">Author</label>
+                <person-field v-model="books[i].author" :disabled="$uiBusy" :role="'author'" />
+              </div>
+
+              <div class="field">
+                <label class="label">Illustrator</label>
+                <person-field v-model="books[i].illustrator" :disabled="$uiBusy" :role="'illustrator'" />
+              </div>
+
+              <div class="field">
+                <label class="label">ISBN</label>
+                <book-isbn-field
+                  v-model="books[i].isbn"
+                  :disabled="$uiBusy"
+                  :searchable="false"
+                  @book-selected="fillBook($event, i)"
+                />
+              </div>
+
+            </section>
+
+            <section v-if="books.length>1">
+              <button class="button is-info is-outlined" @click="delBook(i)">
+                <i class="fas fa-minus" />
+                <span class="ml-3">Delete</span>
+              </button>
+            </section>
+
+          </div>
+
+          <section class="section">
+            <div>
+              <button :disabled="$uiBusy" class="button is-primary" @click.prevent="addBook">
+                <i class="fas fa-plus" />
+                <span class="ml-2">Add another book</span>
+              </button>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="field is-grouped">
+              <div class="control">
+                <button :disabled="!draftable||$uiBusy" :class="{'is-loading':$uiBusy}" class="button is-primary" @click.prevent="saveDraft">
+                  <span class="ml-2">Save as draft</span>
+                </button>
+              </div>
+              <div class="control">
+                <button :disabled="!submitable||$uiBusy" :class="{'is-loading':$uiBusy}" class="button is-primary" @click.prevent="submitForReview">
+                  <span class="ml-2">Submit for review</span>
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+      </form>
     </div>
-
-    <div class="field">
-      <label class="label">Tell us why you love these books. (this will serve as the description for the Bundle)</label>
-      <div class="control">
-        <textarea v-model="description" class="textarea" />
-      </div>
-    </div>
-
-    <hr>
-  </section>
-  <div v-for="(book, i) of books" :key="i">
-    <section class="section">
-
-      <div class="field">
-        <label class="label">Title</label>
-        <book-title-field v-model="books[i].title" :disabled="$uiBusy" @book-selected="fillBook($event, i)" />
-      </div>
-
-      <div class="field">
-        <label class="label">Author</label>
-        <person-field v-model="books[i].author" :disabled="$uiBusy" :role="'author'" />
-      </div>
-
-      <div class="field">
-        <label class="label">Illustrator</label>
-        <person-field v-model="books[i].illustrator" :disabled="$uiBusy" :role="'illustrator'" />
-      </div>
-
-      <div class="field">
-        <label class="label">ISBN</label>
-        <book-isbn-field
-          v-model="books[i].isbn"
-          :disabled="$uiBusy"
-          :searchable="false"
-          @book-selected="fillBook($event, i)"
-        />
-      </div>
-
-    </section>
-
-    <section v-if="books.length>1">
-      <button class="button is-info is-outlined" @click="delBook(i)">
-        <i class="fas fa-minus" />
-        <span class="ml-3">Delete</span>
-      </button>
-    </section>
-
   </div>
-
-  <section class="section">
-    <div>
-      <button :disabled="$uiBusy" class="button is-primary" @click.prevent="addBook">
-        <i class="fas fa-plus" />
-        <span class="ml-2">Add another book</span>
-      </button>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="field is-grouped">
-      <div class="control">
-        <button :disabled="!draftable||$uiBusy" :class="{'is-loading':$uiBusy}" class="button is-primary" @click.prevent="saveDraft">
-          <span class="ml-2">Save as draft</span>
-        </button>
-      </div>
-      <div class="control">
-        <button :disabled="!submitable||$uiBusy" :class="{'is-loading':$uiBusy}" class="button is-primary" @click.prevent="submitForReview">
-          <span class="ml-2">Submit for review</span>
-        </button>
-      </div>
-    </div>
-  </section>
 
 </template>
