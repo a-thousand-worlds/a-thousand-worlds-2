@@ -1,11 +1,12 @@
 <script>
 import _ from 'lodash'
 import dayjs from 'dayjs'
+import { remove as diacritics } from 'diacritics'
+import creatorTitles from '@/store/constants/creatorTitles'
 import Loader from '@/components/Loader'
 import PersonDetailLink from '@/components/PersonDetailLink'
 import SortableTableHeading from '@/components/SortableTableHeading'
 import StaticCoverImage from '@/components/StaticCoverImage'
-import { remove as diacritics } from 'diacritics'
 
 /** Generates a sort token that will sort empty strings to the end regardless of sort direction. */
 const sortEmptyToEnd = (s, dir) =>
@@ -21,6 +22,7 @@ export default {
   },
   data() {
     return {
+      creatorTitles,
       search: '',
       sortConfig: {
         field: 'created',
@@ -76,6 +78,11 @@ export default {
 
     formatDate(d) {
       return dayjs(d).format('M/D/YYYY hh:mm')
+    },
+
+    getTitle(person) {
+      const creatorTitleObject = creatorTitles.find(o => o.id === person.title || o.id === person.role)
+      return creatorTitleObject?.text
     },
 
     async remove(id) {
@@ -156,7 +163,7 @@ export default {
               </td>
 
               <!-- title -->
-              <td>{{ person.title || person.role }}</td>
+              <td>{{ getTitle(person) }}</td>
 
               <!-- created -->
               <td class="has-text-right">{{ formatDate(person.created) }}</td>
