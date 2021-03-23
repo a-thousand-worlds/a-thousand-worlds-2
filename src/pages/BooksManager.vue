@@ -20,11 +20,12 @@ export default {
     StaticCoverImage,
   },
   data() {
+    const sortField = this.$route.query?.sort || 'created'
     return {
-      search: '',
+      search: this.$route.query?.search || '',
       sortConfig: {
-        field: 'created',
-        dir: 'desc',
+        field: sortField,
+        dir: this.$route.query?.dir || (sortField === 'created' ? 'desc' : 'asc'),
       },
     }
   },
@@ -69,6 +70,33 @@ export default {
           titleLower: book.title.toLowerCase(),
         }))
     }
+
+  },
+
+  watch: {
+
+    // update search query param on change
+    search: _.debounce(function(next, prev) {
+      this.$router.replace({
+        ...this.$route,
+        query: {
+          ...this.$route.query,
+          search: next || undefined,
+        },
+      })
+    }, 200),
+
+    // update sort query param on change
+    sortConfig: _.debounce(function(next, prev) {
+      this.$router.replace({
+        ...this.$route,
+        query: {
+          ...this.$route.query,
+          sort: next.field,
+          dir: next.dir,
+        },
+      })
+    }, 200),
 
   },
 
