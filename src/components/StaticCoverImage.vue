@@ -4,7 +4,8 @@ export default {
   props: ['item'],
   computed: {
     url() {
-      return this.item.cover?.url || this.item.cover || this.item.photo || this.item.thumbnail || ''
+      const photoObject = this.item.cover || this.item.photo || this.item.thumbnail
+      return photoObject?.url || photoObject || ''
     },
   }
 }

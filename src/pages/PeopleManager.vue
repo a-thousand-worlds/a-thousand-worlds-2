@@ -144,7 +144,7 @@ export default {
               <!-- photo -->
               <td>
                 <PersonDetailLink :person="person" edit>
-                  <StaticCoverImage :item="person" style="width: 150px; min-width: 50px; min-height: auto;" />
+                  <StaticCoverImage :item="person" style="width: 150px; min-width: 50px; min-height: auto; border-radius: 99px;" />
                 </PersonDetailLink>
               </td>
 
