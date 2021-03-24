@@ -184,6 +184,7 @@ const module = mergeOne(managed('submits/books'), {
         path: sub.id,
         value: {
           ...sub,
+          bookId,
           reviewedAt: dayjs().format(),
           reviewedBy: context.rootState.user.user.uid,
           status: 'approved',
