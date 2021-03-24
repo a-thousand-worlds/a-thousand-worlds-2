@@ -9,13 +9,13 @@ import isSame from '@/util/isSame'
 import validator from '@/mixins/validator'
 
 import BookTitleField from '@/components/fields/BookTitle'
-import Loader from '@/components/Loader'
+import LogarithmicProgressBar from '@/components/LogarithmicProgressBar'
 import RecommendedBy from '@/components/RecommendedBy'
 
 export default {
   components: {
     BookTitleField,
-    Loader,
+    LogarithmicProgressBar,
     RecommendedBy,
   },
   mixins: [
@@ -357,13 +357,13 @@ export default {
               <div class="columns">
 
                 <!-- cover/loading -->
-                <div class="column is-narrow">
-                  <Loader v-if="loadingBook[si]" role="loading" />
+                <div class="column">
+                  <LogarithmicProgressBar v-if="loadingBook[si]" role="loading" />
                   <div v-else class="bg-secondary">
                     <img :src="coverImage(si) || null" role="thumbnail" alt="thumbnail" style="display: block; min-width: 120px; min-height: 150px; max-width: 265px;" :style="(sub.confirmed === false || (sub.confirmed === true && !coverImage(si))) && !books[si] ? { visibility: 'hidden' } : null">
                   </div>
                 </div>
-                <div class="column is-flex is-align-items-center">
+                <div v-if="!loadingBook[si]" class="column is-flex is-align-items-center">
 
                   <!-- Duplicate -->
                   <!-- Do not show if ui is busy, otherwise auto approved books by owner flash this message  -->
