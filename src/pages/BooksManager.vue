@@ -2,6 +2,7 @@
 import _ from 'lodash'
 import dayjs from 'dayjs'
 import BookDetailLink from '@/components/BookDetailLink'
+import PersonDetailLink from '@/components/PersonDetailLink'
 import Loader from '@/components/Loader'
 import SortableTableHeading from '@/components/SortableTableHeading'
 import StaticCoverImage from '@/components/StaticCoverImage'
@@ -16,6 +17,7 @@ export default {
   components: {
     BookDetailLink,
     Loader,
+    PersonDetailLink,
     SortableTableHeading,
     StaticCoverImage,
   },
@@ -41,8 +43,8 @@ export default {
       // sort books by the sort config
       const sort = list => {
         const sorted = _.sortBy(list, [
-          book => this.sortConfig.field === 'authors' ? sortEmptyToEnd(this.authors(book.creators), this.sortConfig.dir)
-          : this.sortConfig.field === 'illustrators' ? sortEmptyToEnd(this.illustrators(book.creators), this.sortConfig.dir)
+          book => this.sortConfig.field === 'authors' ? sortEmptyToEnd(this.authorsString(book.creators), this.sortConfig.dir)
+          : this.sortConfig.field === 'illustrators' ? sortEmptyToEnd(this.illustratorsString(book.creators), this.sortConfig.dir)
           : book[this.sortConfig.field],
           'titleLower'
         ])
@@ -55,8 +57,8 @@ export default {
           book.created,
           book.isbn,
           book.title,
-          this.authors(book.creators),
-          this.illustrators(book.creators)
+          this.authorsString(book.creators),
+          this.illustratorsString(book.creators)
         ].join(' ')).toLowerCase().includes(diacritics(this.search.trim()).toLowerCase()))
         : list
 
@@ -106,7 +108,13 @@ export default {
       const people = this.$store.state.people.data || {}
       return Object.entries(creators || {})
         .filter(([id, value]) => value === 'author' || value === 'both')
-        .map(([id, value]) => people[id]?.name)
+        .map(([id, value]) => people[id])
+        .filter(x => x)
+    },
+
+    authorsString(creators) {
+      return this.authors(creators)
+        .map(author => author?.name)
         .join(', ')
     },
 
@@ -118,7 +126,13 @@ export default {
       const people = this.$store.state.people.data || {}
       return Object.entries(creators || {})
         .filter(([id, value]) => value === 'illustrator')
-        .map(([id, value]) => people[id]?.name)
+        .map(([id, value]) => people[id])
+        .filter(x => x)
+    },
+
+    illustratorsString(creators) {
+      return this.illustrators(creators)
+        .map(illustrator => illustrator?.name)
         .join(', ')
     },
 
@@ -200,10 +214,18 @@ export default {
               <td><BookDetailLink :book="book" edit>{{ book.title }}</BookDetailLink></td>
 
               <!-- author(s) -->
-              <td>{{ authors(book.creators) }}</td>
+              <td>
+                <span v-for="(author, i) of authors(book.creators)" :key="author.id">
+                  <span v-if="i !== 0">, </span><PersonDetailLink :person="author" edit>{{ author.name }}</PersonDetailLink>
+                </span>
+              </td>
 
               <!-- illustrator(r) -->
-              <td>{{ illustrators(book.creators) }}</td>
+              <td>
+                <span v-for="(illustrator, i) of illustrators(book.creators)" :key="illustrator.id">
+                  <span v-if="i !== 0">, </span><PersonDetailLink :person="illustrator" edit>{{ illustrator.name }}</PersonDetailLink>
+                </span>
+              </td>
 
               <!-- created -->
               <td class="has-text-right">{{ formatDate(book.created) }}</td>
