@@ -54,7 +54,7 @@ module.exports = () => {
       let isbn = null
       $('div.s-result-item').each(function (i, $result) {
         const asin = $(this).data('asin')
-        if (asin && asin.length && !$el) {
+        if (asin && `${asin}`.length && !$el) {
           $el = $(this)
           isbn = asin
         }
