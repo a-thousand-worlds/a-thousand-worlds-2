@@ -3,6 +3,7 @@ import _ from 'lodash'
 import dayjs from 'dayjs'
 import { remove as diacritics } from 'diacritics'
 import creatorTitles from '@/store/constants/creatorTitles'
+import DeletePersonButton from '@/components/DeletePersonButton'
 import Loader from '@/components/Loader'
 import PersonDetailLink from '@/components/PersonDetailLink'
 import SortableTableHeading from '@/components/SortableTableHeading'
@@ -15,6 +16,7 @@ const sortEmptyToEnd = (s, dir) =>
 export default {
   name: 'PeopleManager',
   components: {
+    DeletePersonButton,
     Loader,
     PersonDetailLink,
     SortableTableHeading,
@@ -113,16 +115,6 @@ export default {
       return creatorTitleObject?.text
     },
 
-    async remove(id) {
-      this.$store.commit('ui/setBusy', true)
-      try {
-        await this.$store.dispatch('people/remove', id)
-      }
-      finally {
-        this.$store.commit('ui/setBusy', false)
-      }
-    },
-
   },
 }
 
@@ -168,7 +160,7 @@ export default {
               <SortableTableHeading id="nameLower" v-model="sortConfig">Name</SortableTableHeading>
               <SortableTableHeading id="title" v-model="sortConfig">Title</SortableTableHeading>
               <SortableTableHeading id="created" v-model="sortConfig" default="desc" class="has-text-right pr-20">Created</SortableTableHeading>
-              <!-- <th class="has-text-right">Delete</th> -->
+              <th class="has-text-right">Delete</th>
             </tr>
           </thead>
           <tbody>
@@ -197,14 +189,13 @@ export default {
 
               <!-- delete -->
               <!-- disable until better syncing of books and user account is implemented -->
-              <!-- <td class="has-text-right">
+              <td class="has-text-right">
                 <div class="field is-grouped is-justify-content-flex-end">
                   <p class="control">
-                    <button :disabled="$uiBusy" class="button is-flat" @click.prevent="remove(person.id)">
-                      <i class="fas fa-times" />
-                    </button></p>
+                    <DeletePersonButton :person="person" />
+                  </p>
                 </div>
-              </td> -->
+              </td>
 
             </tr>
 

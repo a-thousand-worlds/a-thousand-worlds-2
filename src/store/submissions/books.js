@@ -75,6 +75,11 @@ const module = mergeOne(managed('submits/books'), {
         }, { root: true })
       })
 
+      // auto approve submissions by owner
+      if (iam(context.rootState, 'owner')) {
+        await context.dispatch('approve', submissionsSaved)
+      }
+
     },
 
     /** Reject submission */
@@ -105,7 +110,7 @@ const module = mergeOne(managed('submits/books'), {
       await subs.reduce((prev, sub) => prev.then(() => context.dispatch('approveBook', sub)), Promise.resolve())
     },
 
-    /** Approves a single book submission. Does not send email. */
+    /** Approves a single book submission. */
     approveBook: async (context, sub) => {
 
       // collect creators and create not existing people
@@ -179,6 +184,7 @@ const module = mergeOne(managed('submits/books'), {
         path: sub.id,
         value: {
           ...sub,
+          bookId,
           reviewedAt: dayjs().format(),
           reviewedBy: context.rootState.user.user.uid,
           status: 'approved',
@@ -264,21 +270,27 @@ const module = mergeOne(managed('submits/books'), {
         .replace(/FULL_NAME/g, fullName)
         .replace(/APPROVED_RECORDS/g, approvedRecords)
 
-      // sending email
-      await sendEmail({
-        to: submitter.profile.email,
-        subject: template(emailTemplate.subject),
-        body: `<html>
-          <head>
-            <style>
-              p { margin: 0; }
-            </style>
-          </head>
-          <body>
-            ${template(emailTemplate.body)}
-          </body>
-        </html>`
-      })
+      // send email
+      // if it fails, catch the error since the approval still succeeded
+      // sendEmail will log an error
+      try {
+        await sendEmail({
+          to: submitter.profile.email,
+          subject: template(emailTemplate.subject),
+          body: `<html>
+            <head>
+              <style>
+                p { margin: 0; }
+              </style>
+            </head>
+            <body>
+              ${template(emailTemplate.body)}
+            </body>
+          </html>`
+        })
+      }
+      catch (e) {
+      }
 
     }
 

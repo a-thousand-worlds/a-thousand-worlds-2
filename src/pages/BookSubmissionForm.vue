@@ -9,13 +9,13 @@ import isSame from '@/util/isSame'
 import validator from '@/mixins/validator'
 
 import BookTitleField from '@/components/fields/BookTitle'
-import Loader from '@/components/Loader'
+import LogarithmicProgressBar from '@/components/LogarithmicProgressBar'
 import RecommendedBy from '@/components/RecommendedBy'
 
 export default {
   components: {
     BookTitleField,
-    Loader,
+    LogarithmicProgressBar,
     RecommendedBy,
   },
   mixins: [
@@ -109,7 +109,16 @@ export default {
       finally {
         this.$store.commit('ui/setBusy', false)
       }
-      this.$router.push({ name: 'SubmissionThankYou', params: { type: 'book' } })
+
+      // if owner, alert success and reset the form rather than redirect
+      if (this.$iam('owner')) {
+        this.$store.dispatch('ui/popup', 'Book added to directory!')
+        this.clearAllSubmissions()
+      }
+      // redirect all other users to Thank You page
+      else {
+        this.$router.push({ name: 'SubmissionThankYou', params: { type: 'book' } })
+      }
     },
     clearDraft() {
       // user should be defined for all normal use
@@ -348,16 +357,17 @@ export default {
               <div class="columns">
 
                 <!-- cover/loading -->
-                <div class="column is-narrow">
-                  <Loader v-if="loadingBook[si]" role="loading" />
+                <div class="column">
+                  <LogarithmicProgressBar v-if="loadingBook[si]" role="loading" />
                   <div v-else class="bg-secondary">
-                    <img :src="coverImage(si) || sub.confirmed === false" role="thumbnail" alt="thumbnail" style="display: block; min-width: 120px; min-height: 150px; max-width: 265px;" :style="(sub.confirmed === false || (sub.confirmed === true && !coverImage(si))) && !books[si] ? { visibility: 'hidden' } : null">
+                    <img :src="coverImage(si) || null" role="thumbnail" alt="thumbnail" style="display: block; min-width: 120px; min-height: 150px; max-width: 265px;" :style="(sub.confirmed === false || (sub.confirmed === true && !coverImage(si))) && !books[si] ? { visibility: 'hidden' } : null">
                   </div>
                 </div>
-                <div class="column is-flex is-align-items-center">
+                <div v-if="!loadingBook[si]" class="column is-flex is-align-items-center">
 
                   <!-- Duplicate -->
-                  <div v-if="books[si]">
+                  <!-- Do not show if ui is busy, otherwise auto approved books by owner flash this message  -->
+                  <div v-if="books[si] && !$uiBusy">
                     <p class="mb-10 is-uppercase" style="font-weight: bold; max-width: 265px;">Great minds think alike. This book is already in our directory.</p>
                     <button class="button is-rounded" @click="clearSubmission(si)">
                       Clear Info
@@ -459,7 +469,7 @@ export default {
         <hr>
 
         <div class="field is-grouped">
-          <button @click.prevent="submitForReview" :class="{'is-loading': $uiBusy}" class="button is-rounded is-primary mr-20">Submit for review</button>
+          <button @click.prevent="submitForReview" :class="{'is-loading': $uiBusy}" class="button is-rounded is-primary mr-20">{{ $iam('owner') ? 'Add to Directory' : 'Submit for review' }}</button>
           <button class="button is-rounded" @click.prevent="clearAllSubmissions">Reset All</button>
           <button v-if="draftSaved" @click.prevent="saveDraft" class="button is-flat" style="cursor: text;">Draft Saved</button>
         </div>
