@@ -43,12 +43,13 @@ export default {
   methods: {
     setSubject(next) {
       this.subject = next
+      this.showSubjectDropdown = false
     },
     hideSubjectDropdown() {
       // timeout here allows subject div recieve @click event
       setTimeout(() => {
         this.showSubjectDropdown = false
-      }, 100)
+      }, 200)
     },
     sendEmail() {
       this.$store.commit('ui/setBusy', true)
@@ -82,8 +83,8 @@ export default {
   <div class="columns m-20">
     <div class="column p-0 is-half-desktop is-offset-one-quarter-desktop">
       <Content name="contact/title" class="contact-page-title page-title is-uppercase" format="inline">We want to hear from you!</Content>
-      <div class="columns">
-        <div class="column is-one-quarter"><HeartIcon class="fill-primary p-5" width="140px" height="140px" /></div>
+      <div class="columns is-mobile">
+        <div class="column is-3-tablet is-6-mobile is-offset-1-tablet"><HeartIcon class="fill-primary p-5" width="140px" height="140px" /></div>
         <div class="column">
           <Content name="contact/header" format="multiline" placeholder="Type here">
             <p>Nominate a Leader</p>
