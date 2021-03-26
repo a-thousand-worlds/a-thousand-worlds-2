@@ -8,6 +8,10 @@ const routes = [
     name: 'Home',
     component: () => import(/* webpackChunkName: "guest" */ './pages/Home.vue')
   }, {
+    path: '/social-image',
+    name: 'SocialImage',
+    component: () => import(/* webpackChunkName: "other" */ './pages/SocialImage.vue')
+  }, {
     path: '/bundles',
     name: 'Bundles',
     component: () => import(/* webpackChunkName: "guest" */ './pages/Bundles.vue')

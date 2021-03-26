@@ -4,11 +4,12 @@ module.exports = {
 
     // meta
     const description = 'Colorful Reads X Colorful People'
-    const image = '/social/red.png'
+    const image = '/social/home.png'
     const logo = '/logo/red.png'
     const title = 'A Thousand Worlds'
     const twitter = 'worlds_thousand'
-    const url = 'https://athousandworlds.org'
+    const url = 'https://a-thousand-worlds--staging-0ljdwtb8.web.app'
+    // const url = 'https://athousandworlds.org'
 
     config
       .plugin('html')
