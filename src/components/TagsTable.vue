@@ -1,9 +1,20 @@
 <script>
 import { v4 as uid } from 'uuid'
+import draggable from 'vuedraggable'
 import specialFilters from '@/store/constants/special-filters'
+
+// Sets the cursor while dragging (most of the time)
+// See: https://github.com/SortableJS/Vue.Draggable/issues/815#issuecomment-808420144
+const setDragCursor = value => {
+  const html = document.getElementsByTagName('html').item(0)
+  html.classList.toggle('grabbing', value)
+}
 
 export default {
   name: 'TagsTable',
+  components: {
+    draggable,
+  },
   props: {
     type: {
       type: String,
@@ -13,6 +24,7 @@ export default {
   },
   data() {
     return {
+      drag: false,
       edits: {},
       newTag: {},
     }
@@ -41,6 +53,59 @@ export default {
       this.resetNewTag()
     },
 
+    dragStart(e) {
+      this.drag = true
+      const tag = this.tags[e.oldIndex]
+      tag.dragging = true
+      setDragCursor(true)
+    },
+
+    async dragEnd(e) {
+      this.drag = false
+      setDragCursor(false)
+
+      const tagOld = this.tags[e.oldIndex]
+      const tagNew = this.tags[e.newIndex]
+
+      if (!tagOld || !tagNew) {
+        throw new Error('Tag index error')
+      }
+
+      tagOld.dragging = false
+
+      if (e.oldIndex === e.newIndex) return
+
+      const startIndex = Math.min(e.oldIndex, e.newIndex)
+      const endIndex = Math.max(e.oldIndex, e.newIndex)
+      const tagsResorted = this.tags.slice(startIndex, endIndex + 1)
+      const startSortOrder = this.tags[startIndex].sortOrder
+
+      try {
+        await this.$store.dispatch(`tags/${this.type}/update`, {
+          path: '/',
+          value: tagsResorted.reduce((accum, tag, i) => ({
+            ...accum,
+            [`${tag.id}/sortOrder`]: tagOld.sortOrder < tagNew.sortOrder
+              // shift up
+              ? i === 0
+                // move first item to the end
+                ? startSortOrder + tagsResorted.length - 1
+                // shift other items up
+                : startSortOrder + i - 1
+              // shift down
+              : i === tagsResorted.length - 1
+                // move last item to the beginning
+                ? startSortOrder
+                // shift other items down
+                : startSortOrder + i + 1
+          }), {})
+        })
+      }
+      catch (e) {
+        await this.$store.dispatch('ui/popup', { text: e.toString(), type: 'error', autoclose: false })
+      }
+    },
+
     async remove(id) {
       await this.$store.dispatch(`tags/${this.type}/remove`, id)
       this.resetNewTag()
@@ -53,6 +118,7 @@ export default {
         sortOrder: this.tags.length > 0
           ? (this.tags[this.tags.length - 1].sortOrder || 0) + 1
           : 1,
+        weight: 1,
       }
     },
 
@@ -81,9 +147,13 @@ export default {
     async updateTag(tagid) {
       const tag = { ...this.edits[tagid] }
       this.$store.commit('ui/setBusy', true)
-      await this.$store.dispatch(`tags/${this.type}/save`, { path: tagid, value: tag })
+      try {
+        await this.$store.dispatch(`tags/${this.type}/save`, { path: tagid, value: tag })
+      }
+      finally {
+        this.$store.commit('ui/setBusy', false)
+      }
       this.edits[tagid] = null
-      this.$store.commit('ui/setBusy', false)
     },
 
   },
@@ -97,16 +167,15 @@ export default {
     <thead>
       <tr>
         <th style="width: 100%;">Tag</th>
-        <th class="has-text-right" v-tippy="{ content: `Set the sort order of the tags in the filter menu. Tags with lower numbers show up above tags with higher numbers.` }" style="white-space: nowrap;">Sort <i class="far fa-question-circle" /></th>
-        <th class="has-text-centered" v-tippy="{ content: `Adjust the likelihood of ${type} being sorted to the top. For example, a person that has a tag with weight 10 means the person is 10 times more likely to be sorted to the top than a person that has a tag with weight 1` }" style="white-space: nowrap;">Weight <i class="far fa-question-circle" /></th>
+        <th class="has-text-centered" v-tippy="{ content: `Adjust the likelihood of ${type} being sorted to the top. For example, a person that has a tag with a weight of 10 means the person is 10 times more likely to be sorted to the top than a person that has a tag with a weight of 1.` }" style="white-space: nowrap;">Weight <i class="far fa-question-circle" /></th>
         <th v-if="type === 'people'" class="has-text-centered" v-tippy="{ content: `Show this tag as one of the identity options when contributors sign up.` }" style="white-space: nowrap;">Contributor <i class="far fa-question-circle" /></th>
         <th class="has-text-centered" v-tippy="{ content: `Show this tag in the ${type} filter menu` }" style="white-space: nowrap;">Show <i class="far fa-question-circle" /></th>
         <th>Edit/Delete</th>
       </tr>
     </thead>
-    <tbody>
 
-      <!-- special filters -->
+    <!-- special filters -->
+    <tbody class="special-filters">
       <tr v-for="filter of specialFilters" :key="filter.id">
         <td>
           <div class="field">
@@ -119,80 +188,82 @@ export default {
         <td v-if="type === 'people'" />
         <td />
       </tr>
-
-      <!-- filters -->
-      <tr v-for="tag of tags" :key="tag.id">
-
-        <!-- tag -->
-        <td>
-          <div class="field">
-            <div class="control">
-              <span v-if="edits[tag.id]"><input v-model="edits[tag.id].tag" type="text" class="input"></span>
-              <span v-else>{{ tag.tag }}</span>
-            </div>
-          </div>
-        </td>
-
-        <!-- sort -->
-        <td class="has-text-right">
-          <span v-if="!edits[tag.id]">
-            <span class="ml-2">{{ tag.sortOrder }}</span>
-          </span>
-          <span v-if="edits[tag.id]">
-            <input v-model.number="edits[tag.id].sortOrder" type="number" class="input" style="min-width: 50px; padding-right: calc(0.75rem - 8px);">
-          </span>
-        </td>
-
-        <!-- weight -->
-        <td class="has-text-right">
-          <span v-if="!edits[tag.id]">
-            <span class="ml-2">{{ tag.weight }}</span>
-          </span>
-          <span v-if="edits[tag.id]">
-            <input v-model.number="edits[tag.id].weight" type="number" class="input" style="min-width: 50px;padding-right: calc(0.75rem - 8px);" required>
-          </span>
-        </td>
-
-        <!-- contributor -->
-        <td v-if="type === 'people'" class="has-text-centered">
-          <a @click.prevent="toggleShowOnContributorSignup(tag.id)">
-            <i v-if="tag.showOnContributorSignup" class="fas fa-check has-text-primary" />
-            <i v-else class="fas fa-minus has-text-secondary" />
-          </a>
-        </td>
-
-        <!-- show in book filters -->
-        <td class="has-text-centered">
-          <a v-if="!edits[tag.id]" @click.prevent="toggleShowOnFront(tag.id)">
-            <i v-if="tag.showOnFront" class="fas fa-check has-text-primary" />
-            <i v-else class="fas fa-minus has-text-secondary" />
-          </a>
-          <span v-if="edits[tag.id]"><input v-model="edits[tag.id].showOnFront" type="checkbox" class="checkbox"></span>
-        </td>
-
-        <!-- edit/delete -->
-        <td>
-          <div v-if="!edits[tag.id]" class="field is-grouped is-justify-content-flex-end">
-            <p class="control"><button :disabled="$uiBusy" class="button is-flat" @click.prevent="toggleEditTag(tag.id, tag)">
-                                 <i class="fas fa-pencil-alt" />
-                               </button>
-              <button :disabled="$uiBusy" class="button is-flat" @click.prevent="remove(tag.id)">
-                <i class="fas fa-times" />
-              </button></p>
-          </div>
-          <div v-if="edits[tag.id]" class="field is-grouped is-justify-content-flex-end">
-            <p class="control"><button :disabled="$uiBusy" class="button is-rounded" @click.prevent="toggleEditTag(tag.id, null)">
-              <span>Cancel</span>
-            </button></p>
-            <p class="control"><button :disabled="$uiBusy" class="button is-rounded is-primary" @click.prevent="updateTag(tag.id)">
-              <i class="fas fa-check mr-2" />
-              <span>Save</span>
-            </button></p>
-          </div>
-        </td>
-
-      </tr>
     </tbody>
+
+    <draggable
+      v-model="tags"
+      @start="dragStart"
+      @end="dragEnd"
+      item-key="id"
+      tag="tbody"
+    >
+
+      <template #item="{ element: tag }">
+
+        <tr :class="{ 'bg-secondary': tag.dragging }">
+          <!-- filters (comment cannot go in template -->
+
+          <!-- tag -->
+          <td style="cursor: grab;">
+            <div class="field">
+              <div class="control">
+                <span v-if="edits[tag.id]"><input v-model="edits[tag.id].tag" type="text" class="input"></span>
+                <span v-else>{{ tag.tag }}</span>
+              </div>
+            </div>
+          </td>
+
+          <!-- weight -->
+          <td class="has-text-right">
+            <span v-if="!edits[tag.id]">
+              <span class="ml-2">{{ tag.weight }}</span>
+            </span>
+            <span v-if="edits[tag.id]">
+              <input v-model.number="edits[tag.id].weight" type="number" class="input" style="min-width: 50px;padding-right: calc(0.75rem - 8px);" required>
+            </span>
+          </td>
+
+          <!-- contributor -->
+          <td v-if="type === 'people'" class="has-text-centered">
+            <a @click.prevent="toggleShowOnContributorSignup(tag.id)">
+              <i v-if="tag.showOnContributorSignup" class="fas fa-check has-text-primary" />
+              <i v-else class="fas fa-minus has-text-secondary" />
+            </a>
+          </td>
+
+          <!-- show in book filters -->
+          <td class="has-text-centered">
+            <a v-if="!edits[tag.id]" @click.prevent="toggleShowOnFront(tag.id)">
+              <i v-if="tag.showOnFront" class="fas fa-check has-text-primary" />
+              <i v-else class="fas fa-minus has-text-secondary" />
+            </a>
+            <span v-if="edits[tag.id]"><input v-model="edits[tag.id].showOnFront" type="checkbox" class="checkbox"></span>
+          </td>
+
+          <!-- edit/delete -->
+          <td>
+            <div v-if="!edits[tag.id]" class="field is-grouped is-justify-content-flex-end">
+              <p class="control"><button :disabled="$uiBusy" class="button is-flat" @click.prevent="toggleEditTag(tag.id, tag)">
+                                   <i class="fas fa-pencil-alt" />
+                                 </button>
+                <button :disabled="$uiBusy" class="button is-flat" @click.prevent="remove(tag.id)">
+                  <i class="fas fa-times" />
+                </button></p>
+            </div>
+            <div v-if="edits[tag.id]" class="field is-grouped is-justify-content-flex-end">
+              <p class="control"><button :disabled="$uiBusy" class="button is-rounded" @click.prevent="toggleEditTag(tag.id, null)">
+                <span>Cancel</span>
+              </button></p>
+              <p class="control"><button :disabled="$uiBusy" class="button is-rounded is-primary" @click.prevent="updateTag(tag.id)">
+                <i class="fas fa-check mr-2" />
+                <span>Save</span>
+              </button></p>
+            </div>
+          </td>
+
+        </tr>
+      </template>
+    </draggable>
   </table>
 
   <form class="w-100" @submit.prevent="addTag">
@@ -203,18 +274,6 @@ export default {
       <p class="control w-100">
         <input v-model="newTag.tag" type="text" :disabled="$uiBusy" class="input" placeholder="Enter tag">
       </p>
-      <p class="control">
-        <a class="button is-static">Sort Order</a>
-      </p>
-      <p class="control">
-        <input v-model.number="newTag.sortOrder" :disabled="$uiBusy" type="text" class="input" placeholder="1" style="min-width: 60px">
-      </p>
-      <p class="control">
-        <a class="button" @click.prevent="newTag.showOnFront = !newTag.showOnFront">
-          Show <input v-model="newTag.showOnFront" :disabled="$uiBusy" type="checkbox" class="checkbox ml-2">
-        </a>
-      </p>
-      <p class="control" />
       <p class="control">
         <button :disabled="$uiBusy" type="submit" class="button is-primary">
           <i class="fas fa-plus mr-2" />
@@ -232,5 +291,15 @@ table th:last-child {
 }
 table td {
   vertical-align: middle;
+}
+// set border-bottom on the special-filters table, otherwise it will omit the border on the last row
+.table .special-filters td {
+  border-bottom-width: 1px;
+}
+</style>
+
+<style lang="scss">
+.grabbing * {
+  cursor: grabbing;
 }
 </style>

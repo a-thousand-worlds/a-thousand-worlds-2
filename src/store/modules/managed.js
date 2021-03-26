@@ -14,8 +14,10 @@ const module = name => {
         if (!path) throw new Error(`Managed collection "${name}": path required`)
 
         // only manage timestamps if saving a collection item
-        const isSubpath = /.[/.]./g.test(path)
-        if (isSubpath) {
+        // skip timestamp if path is '/' which may be used in multi-path updates
+        // See: https://stackoverflow.com/a/33793367/480608
+        const skipTimestamps = /.[/.]./g.test(path) || path === '/'
+        if (skipTimestamps) {
           return collectionModule.actions[method || 'save'](ctx, { path, value })
         }
 
