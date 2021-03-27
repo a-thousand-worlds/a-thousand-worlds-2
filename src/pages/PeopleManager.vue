@@ -10,6 +10,7 @@ import Loader from '@/components/Loader'
 import PersonDetailLink from '@/components/PersonDetailLink'
 import SortableTableHeading from '@/components/SortableTableHeading'
 import StaticCoverImage from '@/components/StaticCoverImage'
+import Tag from '@/components/Tag'
 
 /** Generates a sort token that will sort empty strings to the end regardless of sort direction. */
 const sortEmptyToEnd = (s, dir) =>
@@ -24,6 +25,7 @@ export default {
     PersonDetailLink,
     SortableTableHeading,
     StaticCoverImage,
+    Tag,
   },
   data() {
     const sortField = this.$route.query?.sort || 'created'
@@ -62,7 +64,8 @@ export default {
         ? list.filter(person => diacritics([
           person.name,
           this.formatDate(person.created),
-          this.formatTitle(person)
+          this.formatTitle(person),
+          this.getTags(person).map(tag => tag.tag).join(' ')
         ].join(' ')).toLowerCase().includes(diacritics(this.search.trim()).toLowerCase()))
         : list
 
@@ -75,7 +78,11 @@ export default {
           ...person,
           nameLower: person.name.toLowerCase(),
         }))
-    }
+    },
+
+    tags() {
+      return this.$store.getters[`tags/people/listSorted`]()
+    },
 
   },
 
@@ -115,6 +122,13 @@ export default {
     formatTitle(person) {
       const creatorTitleObject = creatorTitles.find(o => o.id === person.title || o.id === person.role)
       return creatorTitleObject?.text
+    },
+
+    getTags(person) {
+      const tagsState = this.$store.state.tags.people
+      return tagsState.loaded
+        ? Object.keys(person.identities || {}).map(tagId => tagsState.data[tagId])
+        : null
     },
 
   },
@@ -160,6 +174,7 @@ export default {
             <tr>
               <td />
               <SortableTableHeading id="nameLower" v-model="sortConfig">Name</SortableTableHeading>
+              <th>Tags</th>
               <SortableTableHeading id="title" v-model="sortConfig">Title</SortableTableHeading>
               <SortableTableHeading id="created" v-model="sortConfig" default="desc" class="has-text-right pr-20">Created</SortableTableHeading>
               <th class="has-text-right">Delete</th>
@@ -181,6 +196,11 @@ export default {
                 <PersonDetailLink :person="person" edit>
                   <HighlightedText :search="search">{{ person.name }}</HighlightedText>
                 </PersonDetailLink>
+              </td>
+
+              <!-- tags -->
+              <td>
+                <Tag v-for="tag of getTags(person)" :key="tag.id" :tag="tag" type="people" button-class="is-outlined" nolink><HighlightedText :search="search">{{ tag.tag }}</HighlightedText></Tag>
               </td>
 
               <!-- title -->
