@@ -9,6 +9,7 @@ import Loader from '@/components/Loader'
 import PersonDetailLink from '@/components/PersonDetailLink'
 import SortableTableHeading from '@/components/SortableTableHeading'
 import StaticCoverImage from '@/components/StaticCoverImage'
+import Tag from '@/components/Tag'
 
 /** Generates a sort token that will sort empty strings to the end regardless of sort direction. */
 const sortEmptyToEnd = (s, dir) =>
@@ -23,6 +24,7 @@ export default {
     PersonDetailLink,
     SortableTableHeading,
     StaticCoverImage,
+    Tag,
   },
   data() {
     const sortField = this.$route.query?.sort || 'created'
@@ -68,7 +70,11 @@ export default {
           ...book,
           titleLower: book.title.toLowerCase(),
         }))
-    }
+    },
+
+    tags() {
+      return this.$store.getters[`tags/books/listSorted`]()
+    },
 
   },
 
@@ -129,6 +135,13 @@ export default {
         .join(', ')
     },
 
+    getTags(book) {
+      const tagsState = this.$store.state.tags.books
+      return tagsState.loaded
+        ? Object.keys(book.tags).map(tagId => tagsState.data[tagId])
+        : null
+    },
+
     illustrators(creators) {
       const people = this.$store.state.people.data || {}
       return Object.entries(creators || {})
@@ -154,7 +167,8 @@ export default {
         this.formatAuthors(book.creators),
         this.formatContributor(book.createdBy),
         this.formatDate(book.created),
-        this.formatIllustrators(book.creators)
+        this.formatIllustrators(book.creators),
+        this.getTags(book).map(tag => tag.tag).join(' ')
       ]
         .map(s => (s || '').toLowerCase())
         .some(s => this.searchPredicateString(s))
@@ -173,7 +187,7 @@ export default {
 <template>
 
   <div class="is-flex is-justify-content-center m-20 mb-40">
-    <div class="is-flex-grow-1 mx-20" style="max-width: 900px;">
+    <div class="is-flex-grow-1 mx-20" style="max-width: 1000px;">
 
       <div class="mb-5">
         <a @click.prevent="$router.back" class="is-uppercase is-primary">&lt; Back</a>
@@ -209,6 +223,7 @@ export default {
               <td />
               <SortableTableHeading id="isbn" v-model="sortConfig">ISBN</SortableTableHeading>
               <SortableTableHeading id="titleLower" v-model="sortConfig">Title</SortableTableHeading>
+              <th>Tags</th>
               <SortableTableHeading id="authors" v-model="sortConfig">Author(s)</SortableTableHeading>
               <SortableTableHeading id="illustrators" v-model="sortConfig">Illustrator(s)</SortableTableHeading>
               <SortableTableHeading id="contributor" v-model="sortConfig">Contributor</SortableTableHeading>
@@ -232,6 +247,11 @@ export default {
 
               <!-- title -->
               <td><BookDetailLink :book="book" edit><HighlightedText :search="search">{{ book.title }}</HighlightedText></BookDetailLink></td>
+
+              <!-- tags -->
+              <td>
+                <Tag v-for="tag of getTags(book)" :key="tag.id" :tag="tag" type="books" button-class="is-outlined" nolink><HighlightedText :search="search">{{ tag.tag }}</HighlightedText></Tag>
+              </td>
 
               <!-- author(s) -->
               <td>

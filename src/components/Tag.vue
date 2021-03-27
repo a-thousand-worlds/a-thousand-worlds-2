@@ -55,8 +55,8 @@ export default {
 <template>
   <div v-if="tag" class="mr-1" style="display: inline-block;">
 
-    <span v-if="nolink" :class="buttonClass" class="button is-primary is-rounded is-mini" style="cursor: default; font-size: 10px;" :style="tagStyle">
-      <span>{{ tag.tag }}</span>
+    <span v-if="nolink" :class="buttonClass" class="button is-primary is-rounded is-mini nolink" style="cursor: default; font-size: 10px;" :style="tagStyle">
+      <slot>{{ tag.tag }}</slot>
       <span v-if="editable" class="close" v-tippy="{ content: `Remove tag from ${singleType}` }" @click.prevent="removeTag">✕</span>
     </span>
 
@@ -76,6 +76,8 @@ export default {
 
 <style lang="scss" scoped>
 @import "bulma/sass/utilities/_all.sass";
+@import '@/assets/style/vars.scss';
+@import '@/assets/style/mixins.scss';
 @import "bulma/sass/elements/table.sass";
 
 .close {
@@ -94,4 +96,10 @@ export default {
     background-color: transparent;
   }
 }
+
+.button.is-primary.nolink:hover {
+  @include primary(color, !important);
+  background-color: inherit !important;
+}
+
 </style>
