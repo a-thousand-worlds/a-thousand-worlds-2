@@ -58,6 +58,7 @@ export default {
           book.isbn,
           book.title,
           this.authorsString(book.creators),
+          this.formatContributor(book.createdBy),
           this.illustratorsString(book.creators)
         ].join(' ')).toLowerCase().includes(diacritics(this.search.trim()).toLowerCase()))
         : list
@@ -116,6 +117,10 @@ export default {
       return this.authors(creators)
         .map(author => author?.name)
         .join(', ')
+    },
+
+    formatContributor(contributorId) {
+      return this.$store.getters['users/get'](contributorId)?.profile?.name
     },
 
     formatDate(d) {
@@ -192,6 +197,7 @@ export default {
               <SortableTableHeading id="titleLower" v-model="sortConfig">Title</SortableTableHeading>
               <SortableTableHeading id="authors" v-model="sortConfig">Author(s)</SortableTableHeading>
               <SortableTableHeading id="illustrators" v-model="sortConfig">Illustrator(s)</SortableTableHeading>
+              <SortableTableHeading id="contributor" v-model="sortConfig">Contributor</SortableTableHeading>
               <SortableTableHeading id="created" v-model="sortConfig" default="desc" class="has-text-right pr-20">Created</SortableTableHeading>
               <th class="has-text-right">Delete</th>
             </tr>
@@ -220,11 +226,16 @@ export default {
                 </span>
               </td>
 
-              <!-- illustrator(r) -->
+              <!-- illustrator(s) -->
               <td>
                 <span v-for="(illustrator, i) of illustrators(book.creators)" :key="illustrator.id">
                   <span v-if="i !== 0">, </span><PersonDetailLink :person="illustrator" edit>{{ illustrator.name }}</PersonDetailLink>
                 </span>
+              </td>
+
+              <!-- contributor -->
+              <td>
+                {{ formatContributor(book.createdBy) }}
               </td>
 
               <!-- created -->
