@@ -33,7 +33,7 @@ const module = mergeOne(managed('submits/books'), {
           group: submissionGroupId,
           id: sid,
           illustrators: Array.isArray(sub.illustrators) ? sub.illustrators.join('. ') : sub.illustrators || '',
-          isbn: sub.isbn || '',
+          isbn: sub.isbn ? sub.isbn.toString() : '',
           publisher: sub.publisher || '',
           reviewComment: '',
           status: 'pending',

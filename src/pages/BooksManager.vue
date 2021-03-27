@@ -179,7 +179,7 @@ export default {
         contributor: this.formatContributor(book.createdBy),
         created: this.formatDate(book.created),
         illustrator: this.formatIllustrators(book.creators),
-        isbn: book.isbn.toString(),
+        isbn: book.isbn,
         tag: this.getTags(book).map(tag => tag.tag).join(' '),
         title: book.title,
       }
