@@ -51,7 +51,7 @@ export default {
           book => this.sortConfig.field === 'authors' ? sortEmptyToEnd(this.formatAuthors(book.creators), this.sortConfig.dir)
           : this.sortConfig.field === 'illustrators' ? sortEmptyToEnd(this.formatIllustrators(book.creators), this.sortConfig.dir)
           : this.sortConfig.field === 'tags' ? sortEmptyToEnd(this.getTags(book).map(tag => tag.tag).join(' '), this.sortConfig.dir)
-          : book[this.sortConfig.field],
+          : sortEmptyToEnd(book[this.sortConfig.field], this.sortConfig.dir),
           'titleLower'
         ])
         return this.sortConfig.dir === 'desc' ? _.reverse(sorted) : sorted
@@ -239,7 +239,8 @@ export default {
               <SortableTableHeading id="authors" v-model="sortConfig">Author(s)</SortableTableHeading>
               <SortableTableHeading id="illustrators" v-model="sortConfig">Illustrator(s)</SortableTableHeading>
               <SortableTableHeading id="contributor" v-model="sortConfig">Contributor</SortableTableHeading>
-              <SortableTableHeading id="created" v-model="sortConfig" default="desc" class="has-text-right pr-20">Created</SortableTableHeading>
+              <SortableTableHeading id="year" v-model="sortConfig" default="desc" class="has-text-right">Published</SortableTableHeading>
+              <SortableTableHeading id="created" v-model="sortConfig" default="desc" class="has-text-right">Created</SortableTableHeading>
               <th class="has-text-right">Delete</th>
             </tr>
           </thead>
@@ -283,6 +284,9 @@ export default {
               <td>
                 <HighlightedText field="contributor" :search="search">{{ formatContributor(book.createdBy) }}</HighlightedText>
               </td>
+
+              <!-- published -->
+              <td class="has-text-right"><HighlightedText field="published" :search="search">{{ book.year }}</HighlightedText></td>
 
               <!-- created -->
               <td class="has-text-right"><HighlightedText field="created" :search="search">{{ formatDate(book.created) }}</HighlightedText></td>
