@@ -52,6 +52,7 @@ export default {
         const sorted = _.sortBy(list, [
           person => this.sortConfig.field === 'title' ? sortEmptyToEnd((person.title || person.role || '').toLowerCase(), this.sortConfig.dir)
           : this.sortConfig.field === 'created' ? dayjs(person.created)
+          : this.sortConfig.field === 'tags' ? sortEmptyToEnd(this.getTags(person).map(tag => tag.tag).join(' '), this.sortConfig.dir)
           : this.sortConfig.field === 'updated' ? dayjs(person.updated)
           : (person[this.sortConfig.field] || '').toLowerCase(),
           'nameLower'
@@ -174,7 +175,7 @@ export default {
             <tr>
               <td />
               <SortableTableHeading id="nameLower" v-model="sortConfig">Name</SortableTableHeading>
-              <th>Tags</th>
+              <SortableTableHeading id="tags" v-model="sortConfig">Tags</SortableTableHeading>
               <SortableTableHeading id="title" v-model="sortConfig">Title</SortableTableHeading>
               <SortableTableHeading id="created" v-model="sortConfig" default="desc" class="has-text-right pr-20">Created</SortableTableHeading>
               <th class="has-text-right">Delete</th>

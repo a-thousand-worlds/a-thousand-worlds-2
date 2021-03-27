@@ -50,6 +50,7 @@ export default {
         const sorted = _.sortBy(books, [
           book => this.sortConfig.field === 'authors' ? sortEmptyToEnd(this.formatAuthors(book.creators), this.sortConfig.dir)
           : this.sortConfig.field === 'illustrators' ? sortEmptyToEnd(this.formatIllustrators(book.creators), this.sortConfig.dir)
+          : this.sortConfig.field === 'tags' ? sortEmptyToEnd(this.getTags(book).map(tag => tag.tag).join(' '), this.sortConfig.dir)
           : book[this.sortConfig.field],
           'titleLower'
         ])
@@ -223,7 +224,7 @@ export default {
               <td />
               <SortableTableHeading id="isbn" v-model="sortConfig">ISBN</SortableTableHeading>
               <SortableTableHeading id="titleLower" v-model="sortConfig">Title</SortableTableHeading>
-              <th>Tags</th>
+              <SortableTableHeading id="tags" v-model="sortConfig">Tags</SortableTableHeading>
               <SortableTableHeading id="authors" v-model="sortConfig">Author(s)</SortableTableHeading>
               <SortableTableHeading id="illustrators" v-model="sortConfig">Illustrator(s)</SortableTableHeading>
               <SortableTableHeading id="contributor" v-model="sortConfig">Contributor</SortableTableHeading>
