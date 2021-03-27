@@ -24,16 +24,19 @@ export default {
   computed: {
     peopleList() {
       return Object.keys(this.book.creators || {})
-        .map(creatorId => ({ person: this.$store.state.people.data?.[creatorId] || null, role: this.book.creators[creatorId] }))
+        .map(creatorId => ({
+          person: this.$store.state.people.data?.[creatorId] || null,
+          role: this.book.creators[creatorId]
+        }))
     },
     authors() {
-      return this.peopleList.filter(creator => creator.role === 'both' || creator.role === 'author')
+      return this.peopleList.filter(creator => creator.role === 'author-illustrator' || creator.role === 'author')
     },
     illustrators() {
-      return this.peopleList.filter(creator => creator.role === 'both' || creator.role === 'illustrator')
+      return this.peopleList.filter(creator => creator.role === 'author-illustrator' || creator.role === 'illustrator')
     },
     illustratorsSame() {
-      return this.authors.every(creator => creator.role === 'both')
+      return this.authors.every(creator => creator.role === 'author-illustrator')
     },
   },
 
@@ -57,7 +60,7 @@ export default {
       const creatorsOld = this[titleIdOld + 's'] || this.peopleList
       const creatorsNew = creatorsOld.reduce((accum, creator) => ({
         ...accum,
-        [creator.person.id]: titleIdNew === 'author-illustrator' ? 'both' : titleIdNew
+        [creator.person.id]: titleIdNew === 'author-illustrator' ? 'author-illustrator' : titleIdNew
       }), {})
 
       this.updateBook(`creators`, creatorsNew)

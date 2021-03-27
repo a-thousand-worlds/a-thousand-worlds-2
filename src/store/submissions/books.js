@@ -130,7 +130,7 @@ const module = mergeOne(managed('submits/books'), {
           cid = uid()
           await context.dispatch('people/save', { path: cid, value: { id: cid, name: author, reviewedBy: context.rootState.user.user.uid } }, { root: true })
         }
-        creators[cid] = creators[cid] ? 'both' : 'author'
+        creators[cid] = creators[cid] ? 'author-illustrator' : 'author'
       })
 
       // add illustrator creators
@@ -143,7 +143,7 @@ const module = mergeOne(managed('submits/books'), {
           cid = uid()
           await context.dispatch('people/save', { path: cid, value: { id: cid, name: illustrator, reviewedBy: context.rootState.user.user.uid } }, { root: true })
         }
-        creators[cid] = creators[cid] ? 'both' : 'illustrator'
+        creators[cid] = creators[cid] ? 'author-illustrator' : 'illustrator'
       })
 
       // save book

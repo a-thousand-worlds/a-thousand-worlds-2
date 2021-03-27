@@ -158,7 +158,7 @@ export default {
     updateTitle(creatorId, titleId) {
       // map titleId from creatorTitles to book creator titles
       this.updateBook('creators', {
-        [creatorId]: titleId === 'author-illustrator' ? 'both' : titleId
+        [creatorId]: titleId === 'author-illustrator' ? 'author-illustrator' : titleId
       })
     },
 

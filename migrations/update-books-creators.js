@@ -54,7 +54,7 @@ booksIds.forEach(bookId => {
           console.log(`illustrator <${illustrator}> person not found for book <${book.title}>`)
           return
         }
-        nextCreators[person.id] = nextCreators[person.id] ? 'both' : person.role || 'illustrator'
+        nextCreators[person.id] = nextCreators[person.id] ? 'author-illustrator' : person.role || 'illustrator'
       })
     }
     book.creators = nextCreators

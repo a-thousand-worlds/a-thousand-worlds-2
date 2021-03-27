@@ -192,7 +192,7 @@ const convertBook = async (info, creators, tags, contributors, creator) => {
   authors.forEach(a => {
     bookCreators[a.id] = 'author'
     if (illustratorIsSame) {
-      bookCreators[a.id] = 'both'
+      bookCreators[a.id] = 'author-illustrator'
     }
   })
   illustrators.forEach(a => {
