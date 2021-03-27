@@ -56,7 +56,7 @@ export default {
   <div v-if="tag" class="mr-1" style="display: inline-block;">
 
     <span v-if="nolink" :class="buttonClass" class="button is-primary is-rounded is-mini nolink" style="cursor: default; font-size: 10px;" :style="tagStyle">
-      <slot>{{ tag.tag }}</slot>
+      <span><slot>{{ tag.tag }}</slot></span>
       <span v-if="editable" class="close" v-tippy="{ content: `Remove tag from ${singleType}` }" @click.prevent="removeTag">✕</span>
     </span>
 
