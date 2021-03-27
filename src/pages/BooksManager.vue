@@ -43,8 +43,8 @@ export default {
       // sort books by the sort config
       const sort = list => {
         const sorted = _.sortBy(list, [
-          book => this.sortConfig.field === 'authors' ? sortEmptyToEnd(this.authorsString(book.creators), this.sortConfig.dir)
-          : this.sortConfig.field === 'illustrators' ? sortEmptyToEnd(this.illustratorsString(book.creators), this.sortConfig.dir)
+          book => this.sortConfig.field === 'authors' ? sortEmptyToEnd(this.formatAuthors(book.creators), this.sortConfig.dir)
+          : this.sortConfig.field === 'illustrators' ? sortEmptyToEnd(this.formatIllustrators(book.creators), this.sortConfig.dir)
           : book[this.sortConfig.field],
           'titleLower'
         ])
@@ -57,9 +57,9 @@ export default {
           book.created,
           book.isbn,
           book.title,
-          this.authorsString(book.creators),
+          this.formatAuthors(book.creators),
           this.formatContributor(book.createdBy),
-          this.illustratorsString(book.creators)
+          this.formatIllustrators(book.creators)
         ].join(' ')).toLowerCase().includes(diacritics(this.search.trim()).toLowerCase()))
         : list
 
@@ -113,7 +113,7 @@ export default {
         .filter(x => x)
     },
 
-    authorsString(creators) {
+    formatAuthors(creators) {
       return this.authors(creators)
         .map(author => author?.name)
         .join(', ')
@@ -127,18 +127,18 @@ export default {
       return dayjs(d).format('M/D/YYYY hh:mm')
     },
 
+    formatIllustrators(creators) {
+      return this.illustrators(creators)
+        .map(illustrator => illustrator?.name)
+        .join(', ')
+    },
+
     illustrators(creators) {
       const people = this.$store.state.people.data || {}
       return Object.entries(creators || {})
         .filter(([id, value]) => value === 'illustrator')
         .map(([id, value]) => people[id])
         .filter(x => x)
-    },
-
-    illustratorsString(creators) {
-      return this.illustrators(creators)
-        .map(illustrator => illustrator?.name)
-        .join(', ')
     },
 
     async remove(id) {
