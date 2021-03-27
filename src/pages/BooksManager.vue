@@ -1,12 +1,14 @@
 <script>
 import _ from 'lodash'
 import dayjs from 'dayjs'
+import { remove as diacritics } from 'diacritics'
+
 import BookDetailLink from '@/components/BookDetailLink'
-import PersonDetailLink from '@/components/PersonDetailLink'
+import HighlightedText from '@/components/HighlightedText'
 import Loader from '@/components/Loader'
+import PersonDetailLink from '@/components/PersonDetailLink'
 import SortableTableHeading from '@/components/SortableTableHeading'
 import StaticCoverImage from '@/components/StaticCoverImage'
-import { remove as diacritics } from 'diacritics'
 
 /** Generates a sort token that will sort empty strings to the end regardless of sort direction. */
 const sortEmptyToEnd = (s, dir) =>
@@ -16,6 +18,7 @@ export default {
   name: 'BooksManager',
   components: {
     BookDetailLink,
+    HighlightedText,
     Loader,
     PersonDetailLink,
     SortableTableHeading,
@@ -41,8 +44,8 @@ export default {
     books() {
 
       // sort books by the sort config
-      const sort = list => {
-        const sorted = _.sortBy(list, [
+      const sort = books => {
+        const sorted = _.sortBy(books, [
           book => this.sortConfig.field === 'authors' ? sortEmptyToEnd(this.formatAuthors(book.creators), this.sortConfig.dir)
           : this.sortConfig.field === 'illustrators' ? sortEmptyToEnd(this.formatIllustrators(book.creators), this.sortConfig.dir)
           : book[this.sortConfig.field],
@@ -52,16 +55,9 @@ export default {
       }
 
       // filter books by the active search
-      const filter = list => this.search
-        ? list.filter(book => diacritics([
-          book.created,
-          book.isbn,
-          book.title,
-          this.formatAuthors(book.creators),
-          this.formatContributor(book.createdBy),
-          this.formatIllustrators(book.creators)
-        ].join(' ')).toLowerCase().includes(diacritics(this.search.trim()).toLowerCase()))
-        : list
+      const filter = books => this.search
+        ? books.filter(book => this.searchPredicate(book))
+        : books
 
       return sort(filter(this.booksList))
     },
@@ -151,6 +147,24 @@ export default {
       }
     },
 
+    searchPredicate(book) {
+      return [
+        book.isbn.toString(),
+        book.title,
+        this.formatAuthors(book.creators),
+        this.formatContributor(book.createdBy),
+        this.formatDate(book.created),
+        this.formatIllustrators(book.creators)
+      ]
+        .map(s => (s || '').toLowerCase())
+        .some(s => this.searchPredicateString(s))
+    },
+
+    /** Returns true if a string matches the search term (trimmed, lowercased, and diacritics removed). */
+    searchPredicateString(s) {
+      return diacritics(s.trim()).toLowerCase().includes(diacritics(this.search.trim()).toLowerCase())
+    }
+
   }
 }
 
@@ -214,32 +228,32 @@ export default {
               </td>
 
               <!-- ISBN -->
-              <td><BookDetailLink :book="book" edit>{{ book.isbn }}</BookDetailLink></td>
+              <td><BookDetailLink :book="book" edit><HighlightedText :search="search">{{ book.isbn }}</HighlightedText></BookDetailLink></td>
 
               <!-- title -->
-              <td><BookDetailLink :book="book" edit>{{ book.title }}</BookDetailLink></td>
+              <td><BookDetailLink :book="book" edit><HighlightedText :search="search">{{ book.title }}</HighlightedText></BookDetailLink></td>
 
               <!-- author(s) -->
               <td>
                 <span v-for="(author, i) of authors(book.creators)" :key="author.id">
-                  <span v-if="i !== 0">, </span><PersonDetailLink :person="author" edit>{{ author.name }}</PersonDetailLink>
+                  <span v-if="i !== 0">, </span><PersonDetailLink :person="author" edit><HighlightedText :search="search">{{ author.name }}</HighlightedText></PersonDetailLink>
                 </span>
               </td>
 
               <!-- illustrator(s) -->
               <td>
                 <span v-for="(illustrator, i) of illustrators(book.creators)" :key="illustrator.id">
-                  <span v-if="i !== 0">, </span><PersonDetailLink :person="illustrator" edit>{{ illustrator.name }}</PersonDetailLink>
+                  <span v-if="i !== 0">, </span><PersonDetailLink :person="illustrator" edit><HighlightedText :search="search">{{ illustrator.name }}</HighlightedText></PersonDetailLink>
                 </span>
               </td>
 
               <!-- contributor -->
               <td>
-                {{ formatContributor(book.createdBy) }}
+                <HighlightedText :search="search">{{ formatContributor(book.createdBy) }}</HighlightedText>
               </td>
 
               <!-- created -->
-              <td class="has-text-right">{{ formatDate(book.created) }}</td>
+              <td class="has-text-right"><HighlightedText :search="search">{{ formatDate(book.created) }}</HighlightedText></td>
 
               <!-- edit/delete -->
               <td class="has-text-right">

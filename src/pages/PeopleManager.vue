@@ -3,7 +3,9 @@ import _ from 'lodash'
 import dayjs from 'dayjs'
 import { remove as diacritics } from 'diacritics'
 import creatorTitles from '@/store/constants/creatorTitles'
+
 import DeletePersonButton from '@/components/DeletePersonButton'
+import HighlightedText from '@/components/HighlightedText'
 import Loader from '@/components/Loader'
 import PersonDetailLink from '@/components/PersonDetailLink'
 import SortableTableHeading from '@/components/SortableTableHeading'
@@ -17,6 +19,7 @@ export default {
   name: 'PeopleManager',
   components: {
     DeletePersonButton,
+    HighlightedText,
     Loader,
     PersonDetailLink,
     SortableTableHeading,
@@ -57,10 +60,9 @@ export default {
       // filter people by the active search
       const filter = list => this.search
         ? list.filter(person => diacritics([
-          person.created,
           person.name,
-          person.title,
-          person.role,
+          this.formatDate(person.created),
+          this.formatTitle(person)
         ].join(' ')).toLowerCase().includes(diacritics(this.search.trim()).toLowerCase()))
         : list
 
@@ -110,7 +112,7 @@ export default {
       return dayjs(d).format('M/D/YYYY hh:mm')
     },
 
-    getTitle(person) {
+    formatTitle(person) {
       const creatorTitleObject = creatorTitles.find(o => o.id === person.title || o.id === person.role)
       return creatorTitleObject?.text
     },
@@ -177,15 +179,15 @@ export default {
               <!-- name -->
               <td>
                 <PersonDetailLink :person="person" edit>
-                  {{ person.name }}
+                  <HighlightedText :search="search">{{ person.name }}</HighlightedText>
                 </PersonDetailLink>
               </td>
 
               <!-- title -->
-              <td>{{ getTitle(person) }}</td>
+              <td><HighlightedText :search="search">{{ formatTitle(person) }}</HighlightedText></td>
 
               <!-- created -->
-              <td class="has-text-right">{{ formatDate(person.created) }}</td>
+              <td class="has-text-right"><HighlightedText :search="search">{{ formatDate(person.created) }}</HighlightedText></td>
 
               <!-- delete -->
               <!-- disable until better syncing of books and user account is implemented -->
