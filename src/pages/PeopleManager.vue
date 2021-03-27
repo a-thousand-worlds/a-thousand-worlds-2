@@ -48,8 +48,8 @@ export default {
     people() {
 
       // sort people by the sort config
-      const sort = list => {
-        const sorted = _.sortBy(list, [
+      const sort = people => {
+        const sorted = _.sortBy(people, [
           person => this.sortConfig.field === 'title' ? sortEmptyToEnd((person.title || person.role || '').toLowerCase(), this.sortConfig.dir)
           : this.sortConfig.field === 'created' ? dayjs(person.created)
           : this.sortConfig.field === 'tags' ? sortEmptyToEnd(this.getTags(person).map(tag => tag.tag).join(' '), this.sortConfig.dir)
@@ -61,14 +61,9 @@ export default {
       }
 
       // filter people by the active search
-      const filter = list => this.search
-        ? list.filter(person => diacritics([
-          person.name,
-          this.formatDate(person.created),
-          this.formatTitle(person),
-          this.getTags(person).map(tag => tag.tag).join(' ')
-        ].join(' ')).toLowerCase().includes(diacritics(this.search.trim()).toLowerCase()))
-        : list
+      const filter = people => this.search
+        ? people.filter(person => this.searchPredicate(person))
+        : people
 
       return sort(filter(this.peopleList))
     },
@@ -130,6 +125,33 @@ export default {
       return tagsState.loaded
         ? Object.keys(person.identities || {}).map(tagId => tagsState.data[tagId])
         : null
+    },
+
+    /** Returns true if a string matches the search term (trimmed, lowercased, and diacritics removed). */
+    isMatch(value, search) {
+      return diacritics(value.trim()).toLowerCase().includes(diacritics(search.trim()).toLowerCase())
+    },
+
+    /** Returns true if the person matches the search. Case insensitive, partial match, support for filtering by field, e.g. tag:poetry */
+    searchPredicate(person) {
+
+      const split = this.search.split(':')
+      const field = split.length > 1 ? split[0].trim().toLowerCase() : null
+      const searchValue = split.length > 1 ? split[1] : split[0]
+
+      // map fields to formating functions
+      const format = {
+        name: person.name,
+        created: this.formatDate(person.created),
+        title: this.formatTitle(person),
+        tag: this.getTags(person).map(tag => tag.tag).join(' ')
+      }
+
+      return field
+        ? this.isMatch(format[field] || '', searchValue)
+        : Object.values(format)
+          .map(s => (s || '').toLowerCase())
+          .some(s => this.isMatch(s, searchValue))
     },
 
   },
@@ -195,20 +217,20 @@ export default {
               <!-- name -->
               <td>
                 <PersonDetailLink :person="person" edit>
-                  <HighlightedText :search="search">{{ person.name }}</HighlightedText>
+                  <HighlightedText field="name" :search="search">{{ person.name }}</HighlightedText>
                 </PersonDetailLink>
               </td>
 
               <!-- tags -->
               <td>
-                <Tag v-for="tag of getTags(person)" :key="tag.id" :tag="tag" type="people" button-class="is-outlined" nolink><HighlightedText :search="search">{{ tag.tag }}</HighlightedText></Tag>
+                <Tag v-for="tag of getTags(person)" :key="tag.id" :tag="tag" type="people" button-class="is-outlined" nolink><HighlightedText field="tag" :search="search">{{ tag.tag }}</HighlightedText></Tag>
               </td>
 
               <!-- title -->
-              <td><HighlightedText :search="search">{{ formatTitle(person) }}</HighlightedText></td>
+              <td><HighlightedText field="title" :search="search">{{ formatTitle(person) }}</HighlightedText></td>
 
               <!-- created -->
-              <td class="has-text-right"><HighlightedText :search="search">{{ formatDate(person.created) }}</HighlightedText></td>
+              <td class="has-text-right"><HighlightedText field="created" :search="search">{{ formatDate(person.created) }}</HighlightedText></td>
 
               <!-- delete -->
               <!-- disable until better syncing of books and user account is implemented -->

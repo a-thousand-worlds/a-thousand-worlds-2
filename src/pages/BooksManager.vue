@@ -151,6 +151,11 @@ export default {
         .filter(x => x)
     },
 
+    /** Returns true if a string matches the search term (trimmed, lowercased, and diacritics removed). */
+    isMatch(value, search) {
+      return diacritics(value.trim()).toLowerCase().includes(diacritics(search.trim()).toLowerCase())
+    },
+
     async remove(id) {
       this.$store.commit('ui/setBusy', true)
       try {
@@ -161,24 +166,30 @@ export default {
       }
     },
 
+    /** Returns true if the book matches the search. Case insensitive, partial match, support for filtering by field, e.g. tag:poetry */
     searchPredicate(book) {
-      return [
-        book.isbn.toString(),
-        book.title,
-        this.formatAuthors(book.creators),
-        this.formatContributor(book.createdBy),
-        this.formatDate(book.created),
-        this.formatIllustrators(book.creators),
-        this.getTags(book).map(tag => tag.tag).join(' ')
-      ]
-        .map(s => (s || '').toLowerCase())
-        .some(s => this.searchPredicateString(s))
-    },
 
-    /** Returns true if a string matches the search term (trimmed, lowercased, and diacritics removed). */
-    searchPredicateString(s) {
-      return diacritics(s.trim()).toLowerCase().includes(diacritics(this.search.trim()).toLowerCase())
-    }
+      const split = this.search.split(':')
+      const field = split.length > 1 ? split[0].trim().toLowerCase() : null
+      const searchValue = split.length > 1 ? split[1] : split[0]
+
+      // map fields to formating functions
+      const format = {
+        author: this.formatAuthors(book.creators),
+        contributor: this.formatContributor(book.createdBy),
+        created: this.formatDate(book.created),
+        illustrator: this.formatIllustrators(book.creators),
+        isbn: book.isbn.toString(),
+        tag: this.getTags(book).map(tag => tag.tag).join(' '),
+        title: book.title,
+      }
+
+      return field
+        ? this.isMatch(format[field] || '', searchValue)
+        : Object.values(format)
+          .map(s => (s || '').toLowerCase())
+          .some(s => this.isMatch(s, searchValue))
+    },
 
   }
 }
@@ -201,7 +212,7 @@ export default {
           <router-link class="mr-20" :to="{ name:'TagsManager' }" style="color: black; line-height: 2.5;">Book Tags</router-link>
         </div>
         <div class="is-flex is-align-items-center">
-          <span class="has-text-right" v-tippy="{ content: `Search by ISBN, title, creator, or date created` }" style="white-space: nowrap;"><i class="far fa-question-circle" /></span>
+          <span class="has-text-right" v-tippy="{ content: `Search all books. Use 'field:value' to filter by a specific field, e.g. 'illustrator:Ho'` }" style="white-space: nowrap;"><i class="far fa-question-circle" /></span>
           <i class="fas fa-search" style="transform: translateX(23px); z-index: 10; opacity: 0.3;" />
           <input v-model="search" placeholder="Search" class="input pl-30">
         </div>
@@ -244,37 +255,37 @@ export default {
               </td>
 
               <!-- ISBN -->
-              <td><BookDetailLink :book="book" edit><HighlightedText :search="search">{{ book.isbn }}</HighlightedText></BookDetailLink></td>
+              <td><BookDetailLink :book="book" edit><HighlightedText field="isbn" :search="search">{{ book.isbn }}</HighlightedText></BookDetailLink></td>
 
               <!-- title -->
-              <td><BookDetailLink :book="book" edit><HighlightedText :search="search">{{ book.title }}</HighlightedText></BookDetailLink></td>
+              <td><BookDetailLink :book="book" edit><HighlightedText field="title" :search="search">{{ book.title }}</HighlightedText></BookDetailLink></td>
 
               <!-- tags -->
               <td>
-                <Tag v-for="tag of getTags(book)" :key="tag.id" :tag="tag" type="books" button-class="is-outlined" nolink><HighlightedText :search="search">{{ tag.tag }}</HighlightedText></Tag>
+                <Tag v-for="tag of getTags(book)" :key="tag.id" :tag="tag" type="books" button-class="is-outlined" nolink><HighlightedText field="tag" :search="search">{{ tag.tag }}</HighlightedText></Tag>
               </td>
 
               <!-- author(s) -->
               <td>
                 <span v-for="(author, i) of authors(book.creators)" :key="author.id">
-                  <span v-if="i !== 0">, </span><PersonDetailLink :person="author" edit><HighlightedText :search="search">{{ author.name }}</HighlightedText></PersonDetailLink>
+                  <span v-if="i !== 0">, </span><PersonDetailLink :person="author" edit><HighlightedText field="author" :search="search">{{ author.name }}</HighlightedText></PersonDetailLink>
                 </span>
               </td>
 
               <!-- illustrator(s) -->
               <td>
                 <span v-for="(illustrator, i) of illustrators(book.creators)" :key="illustrator.id">
-                  <span v-if="i !== 0">, </span><PersonDetailLink :person="illustrator" edit><HighlightedText :search="search">{{ illustrator.name }}</HighlightedText></PersonDetailLink>
+                  <span v-if="i !== 0">, </span><PersonDetailLink :person="illustrator" edit><HighlightedText field="illustrator" :search="search">{{ illustrator.name }}</HighlightedText></PersonDetailLink>
                 </span>
               </td>
 
               <!-- contributor -->
               <td>
-                <HighlightedText :search="search">{{ formatContributor(book.createdBy) }}</HighlightedText>
+                <HighlightedText field="contributor" :search="search">{{ formatContributor(book.createdBy) }}</HighlightedText>
               </td>
 
               <!-- created -->
-              <td class="has-text-right"><HighlightedText :search="search">{{ formatDate(book.created) }}</HighlightedText></td>
+              <td class="has-text-right"><HighlightedText field="created" :search="search">{{ formatDate(book.created) }}</HighlightedText></td>
 
               <!-- edit/delete -->
               <td class="has-text-right">

@@ -3,6 +3,11 @@ import { remove as diacritics } from 'diacritics'
 
 export default {
   props: {
+    // if the search term contains a field that does not match, do not highlight
+    // i.e. a different field was searched directly
+    field: {
+      type: String,
+    },
     search: {
       required: true,
       type: String,
@@ -11,9 +16,19 @@ export default {
   computed: {
 
     searchMatchStart() {
-      return this.search
-        && this.value
-        && diacritics(this.value).toLowerCase().indexOf(diacritics(this.search.trim()).toLowerCase())
+      return this.search && this.value && (!this.searchField || this.searchField.trim().toLowerCase() === this.field)
+        ? diacritics(this.value).toLowerCase().indexOf(diacritics(this.searchValue.trim()).toLowerCase())
+        : -1
+    },
+
+    searchField() {
+      const split = this.search.split(':')
+      return split.length > 1 ? split[0] : null
+    },
+
+    searchValue() {
+      const split = this.search.split(':')
+      return split.length > 1 ? split[1] : split[0]
     },
 
     value() {
