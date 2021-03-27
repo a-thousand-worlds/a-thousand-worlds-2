@@ -1,21 +1,25 @@
 <script>
 import _ from 'lodash'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
+import creatorTitles from '@/store/constants/creatorTitles'
+import almostEqual from '@/util/almostEqual'
 import PhotoUpload from '@/components/PhotoUpload'
 import SimpleInput from '@/components/fields/SimpleInput'
 import Tag from '@/components/Tag'
-import almostEqual from '@/util/almostEqual'
+import Dropdown from '@/components/Dropdown'
 
 export default {
   components: {
     PhotoUpload,
     SimpleInput,
     Tag,
+    Dropdown,
   },
   props: ['submission', 'checked'],
   data() {
     return {
       busy: false,
+      creatorTitles,
       editor: BalloonEditor,
       image: null,
       sub: this.submission || {},
@@ -96,12 +100,7 @@ export default {
           placeholder="Name"
         />
 
-        <SimpleInput
-          v-model="sub.title"
-          @update:modelValue="save"
-          :disabled="busy"
-          placeholder="Title"
-        />
+        <Dropdown v-model="sub.title" :options="creatorTitles" @update:modelValue="save" style="display: block;" />
 
         <Tag v-if="!person" :tag="{ tag: 'NEW' }" nolink class="mt-1" v-tippy="{ content: 'This person is new! When they are approved, they will be added to the people directory but they won\'t have any books.' }" />
         <div v-else>{{ books.length }} book{{ books.length === 1 ?'' : 's' }}</div>
