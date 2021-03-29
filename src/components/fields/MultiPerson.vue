@@ -6,7 +6,7 @@ export default {
   data() {
     return {
       names: this.modelValue || '',
-      people: this.modelValue && this.modelValue.length ? this.modelValue.split(/[.,;&]| and /g).map(x => x.trim()) : [],
+      people: this.modelValue && this.modelValue.length ? this.modelValue.split(/[,;&]| and /g).map(x => x.trim()) : [],
       searches: [],
       mode: 'view'
     }
@@ -63,7 +63,7 @@ export default {
       if (this.searches.length) {
         return
       }
-      this.people = this.names.split(/[.,;&]| and /g).map(x => x.trim())
+      this.people = this.names.split(/[,;&]| and /g).map(x => x.trim())
       this.$emit('update:modelValue', this.people.join(', '))
       this.mode = 'view'
     },
