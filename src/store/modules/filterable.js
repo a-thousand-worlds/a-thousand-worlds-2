@@ -1,5 +1,7 @@
 import * as slugify from '@sindresorhus/slugify'
+import router from '@/router'
 import specialFilters from '@/store/constants/special-filters'
+import genders from '@/store/constants/genders'
 
 const module = () => ({
   state: {
@@ -10,9 +12,9 @@ const module = () => ({
       state.filters = []
     },
     toggleFilter(state, filter) {
-      state.filters = state.filters.includes(filter)
-        ? state.filters.filter(x => x !== filter)
-        : [...state.filters, filter]
+      state.filters = state.filters.some(activeFilter => activeFilter.id === filter.id && (!activeFilter.submenu || activeFilter.submenu.id === filter.submenu?.id))
+        ? state.filters.filter(activeFilter => activeFilter.id !== filter.id)
+        : [...filter.submenu ? state.filters.filter(activeFilter => activeFilter.id !== filter.id) : state.filters, filter]
     },
     setFilters(state, filters) {
       state.filters = filters
@@ -27,33 +29,61 @@ const module = () => ({
       return items.filter(item =>
         state.filters.every(filter => {
           // handle hardcoded special filters
-          const key = specialFilters.people.some(({ id }) => id === filter) ? 'title' : tagName
+          const key = filter.tag === 'Gender' ? 'gender'
+            : specialFilters.people.some(({ id }) => id === filter.id) ? 'title'
+            : tagName
           const value = item[key]
-          const list = Array.isArray(value) || typeof value === 'string' ? value :
-            typeof value === 'object' ? Object.keys(value) :
-            []
-          return list.includes(filter)
+          const itemFilters = Array.isArray(value) ? value
+            : typeof value === 'string' ? [value]
+            : typeof value === 'object' ? Object.keys(value)
+            : []
+          return itemFilters.some(itemFilter => itemFilter === (filter.submenu?.id || filter.id))
         })
       )
     }
   },
   actions: {
+    resetFilters({ commit, dispatch }) {
+      commit('resetFilters')
+      dispatch('updateUrl')
+    },
+    setFilters({ commit, dispatch }, filters) {
+      commit('setFilters', filters)
+      dispatch('updateUrl')
+    },
     setFiltersFromUrl({ state, commit, rootGetters }, type) {
       const urlParams = new URLSearchParams(window.location.search)
-      const filters = (urlParams.get('filters') || '').split(',')
+      const urlFilters = (urlParams.get('filters') || '').split(',')
 
-      if (filters.length > 0) {
+      if (urlFilters.length > 0) {
         const tags = rootGetters[`tags/${type}/list`]()
-        const tagsSelected = filters
-          .map(filter => tags.find(tag => slugify(tag.tag) === filter))
+        const tagsSelected = urlFilters
+          .map(urlFilter => {
+            const [filterKey, submenuKey] = urlFilter.split('/')
+            const activeFilter = tags.find(tag => slugify(tag.tag) === filterKey)
+            return submenuKey ? { ...activeFilter, submenu: genders.find(gender => slugify(gender.text) === submenuKey) } : activeFilter
+          })
           .filter(x => x)
-        commit('setFilters', tagsSelected.map(tag => tag.id))
+        commit('setFilters', tagsSelected)
+        console.log('setFiltersFromUrl', tagsSelected)
       }
       else {
         commit('resetFilters')
       }
 
     },
+    toggleFilter({ commit, dispatch }, filter) {
+      commit('toggleFilter', filter)
+      dispatch('updateUrl')
+    },
+    updateUrl({ state }) {
+      router.replace({
+        ...router.currentRoute,
+        query: state.filters.length > 0 ? {
+          filters: state.filters.map(activeFilter => slugify(activeFilter.tag) + (activeFilter.submenu ? `/${slugify(activeFilter.submenu.text)}` : '')).join(',')
+        } : {}
+      })
+    }
   },
 })
 

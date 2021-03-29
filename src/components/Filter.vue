@@ -1,5 +1,5 @@
 <script>
-import * as slugify from '@sindresorhus/slugify'
+import genders from '@/store/constants/genders'
 import specialFilters from '@/store/constants/special-filters'
 
 export default {
@@ -8,6 +8,12 @@ export default {
       type: String,
       required: true,
       validator: value => ['books', 'bundles', 'people'].indexOf(value) !== -1,
+    }
+  },
+  data() {
+    return {
+      genders,
+      genderSubmenuActive: false,
     }
   },
   computed: {
@@ -29,6 +35,9 @@ export default {
     },
   },
   methods: {
+    closeGenderSubmenu() {
+      this.toggleGenderSubmenu(false)
+    },
     /** Adds manual <br> to long tags otherwise the inline-block elements will take up the full width and add unnecessary space before the selection icon. */
     formatTag(name) {
       if (name.length < 22) return name
@@ -39,32 +48,29 @@ export default {
         ? `${name.slice(0, secondSpace)}<br/>${name.slice(secondSpace)}`
         : `${name.slice(0, firstSpace)}<br/>${name.slice(firstSpace)}`
     },
+    isFiltered(filter) {
+      return this.$store.state[this.type]?.filters?.some(activeFilter =>
+        activeFilter.id === filter.id && (!filter.submenu || activeFilter.submenu?.id === filter.submenu?.id)
+      )
+    },
+    resetFilters() {
+      this.$store.dispatch(`${this.type}/resetFilters`)
+      this.$router.replace({ name: this.routerType })
+    },
     /** Sets custom offsets on the selection icon to vertically center it on long tags. */
     selectedIconStyle(name) {
       return name.toUpperCase().startsWith('ARAB/MIDDLE')
         ? { marginLeft: '6px', top: '11px' }
         : null
     },
+    toggleGenderSubmenu(value) {
+      this.genderSubmenuActive = value !== undefined ? value : !this.genderSubmenuActive
+    },
     toggleFilter(filter) {
-      const fid = filter.id
-      this.$store.commit(`${this.type}/toggleFilter`, fid)
-      const tags = this.$store.state.tags[this.type].data
+      this.$store.dispatch(`${this.type}/toggleFilter`, filter)
+      // const tags = this.$store.state.tags[this.type].data
       // handle hardcoded special filters
-      const tagLabel = (this.specialFilters?.find(({ id }) => id === fid) || tags[fid]).tag
-      const filters = this.$store.state[this.type].filters
-      this.$router.replace({
-        name: this.routerType,
-        query: filters.length > 0 ? {
-          filters: filters.map(fid => slugify(tagLabel)).join(',')
-        } : null
-      })
-    },
-    resetFilters() {
-      this.$store.commit(`${this.type}/resetFilters`)
-      this.$router.replace({ name: this.routerType })
-    },
-    isFiltered(fid) {
-      return this.$store.state[this.type]?.filters?.includes(fid)
+      // const tagLabel = (this.specialFilters?.find(({ id }) => id === filter.id) || tags[filter.id]).tag
     },
   }
 }
@@ -78,14 +84,26 @@ export default {
       <li v-for="filter in specialFilters" :key="filter.id" @click="toggleFilter(filter)">
         <button :class="{ active: isFiltered(filter)}" class="pb-2" style="padding-left: 2px;">
           <span style="display: inline-block;" :innerHTML="formatTag(filter.tag)" />
-          <span v-if="isFiltered(filter.id)" class="remove-tag" :style="selectedIconStyle(filter.tag)">{{ '—' }}</span></button>
+          <span v-if="isFiltered(filter)" class="remove-tag" :style="selectedIconStyle(filter.tag)">{{ '—' }}</span></button>
       </li>
 
       <!-- filters -->
-      <li v-for="filter in tags" :key="filter.id" @click="toggleFilter(filter)">
-        <button v-if="filter.showOnFront" :class="{ active: isFiltered(filter.id)}" class="pb-2" style="padding-left: 2px;">
+      <li v-for="filter in tags" :key="filter.id" @mouseover="filter.tag === 'Gender' && toggleGenderSubmenu(true)" @mouseleave="filter.tag === 'Gender' && toggleGenderSubmenu(false)" @click.stop="filter.tag !== 'Gender' && toggleFilter(filter)" style="position: relative;">
+
+        <button v-if="filter.showOnFront" :class="{ active: isFiltered(filter) || (filter.tag === 'Gender' && genderSubmenuActive)}" class="pb-2" style="padding-left: 2px;">
           <span style="display: inline-block;" :innerHTML="formatTag(filter.tag)" />
-          <span v-if="isFiltered(filter.id)" class="remove-tag" :style="selectedIconStyle(filter.tag)">{{ '—' }}</span></button>
+          <span v-if="isFiltered(filter)" class="remove-tag" :style="selectedIconStyle(filter.tag)">{{ '—' }}</span></button>
+
+        <!-- Gender submenu -->
+        <div v-if="filter.tag === 'Gender' && genderSubmenuActive" v-click-outside="closeGenderSubmenu" class="gender-submenu p-2" style="position: absolute; z-index: 1; background-color: #fff; top: -5px; left: 80px; min-width: 168px;">
+          <div v-for="gender of genders" :key="gender.id" @click="toggleFilter({ ...filter, submenu: gender })">
+            <button :class="{ active: isFiltered({ ...filter, submenu: gender }) }" class="pb-2" style="padding-left: 2px;">
+              <span style="display: inline-block;" :innerHTML="gender.text" />
+              <span v-if="isFiltered({ ...filter, submenu: gender })" class="remove-tag">{{ '—' }}</span></button>
+          </div>
+
+        </div>
+
       </li>
 
     </ul>
@@ -95,6 +113,7 @@ export default {
 
 <style scoped lang="scss">
 @import "bulma/sass/utilities/_all.sass";
+@import "bulma/sass/elements/box.sass";
 @import '@/assets/style/mixins.scss';
 @import '@/assets/style/vars.scss';
 
@@ -148,6 +167,12 @@ a {
   text-align: center;
   position: absolute;
   top: -1px;
+}
+
+.gender-submenu {
+  @include secondary(border-color);
+  border: solid 1px;
+  box-shadow: $box-shadow;
 }
 
 </style>

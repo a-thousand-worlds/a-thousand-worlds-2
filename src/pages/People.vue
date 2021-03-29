@@ -39,6 +39,11 @@ export default {
       }
     }
   },
+  methods: {
+    resetFilter() {
+      this.$store.dispatch('people/resetFilters')
+    },
+  },
 }
 
 </script>
