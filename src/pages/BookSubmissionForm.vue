@@ -115,8 +115,7 @@ export default {
       // if owner, alert success and reset the form rather than redirect
       if (this.$iam('owner')) {
         this.$store.dispatch('ui/popup', 'Book added to directory!')
-        console.log('this.submissions', this.submissions)
-        // this.clearAllSubmissions()
+        this.clearAllSubmissions()
       }
       // redirect all other users to Thank You page
       else {
