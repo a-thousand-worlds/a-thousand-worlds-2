@@ -199,7 +199,7 @@ export default {
 <template>
 
   <div class="is-flex is-justify-content-center m-20 mb-40">
-    <div class="is-flex-grow-1 mx-20" style="max-width: 1000px;">
+    <div class="is-flex-grow-1 mx-20" style="max-width: 1200px;">
 
       <div class="mb-5">
         <a @click.prevent="$router.back" class="is-uppercase is-primary">&lt; Back</a>
