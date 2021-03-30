@@ -45,6 +45,7 @@ export default {
       ckConfig: {
         toolbar: [],
       },
+      dayjs,
       editOnClick: false,
       editor: BalloonEditor,
       tagsDropdownActive: false,
@@ -71,6 +72,10 @@ export default {
       return Object.keys(this.book?.tags || [])
         .map(id => bookTags[id])
         .filter(x => x)
+    },
+    createdByName() {
+      const user = this.$store.getters['users/get'](this.book?.createdBy)
+      return user?.profile?.name
     },
     tagOptions() {
       return this.$store.getters['tags/books/listSorted']()
@@ -229,6 +234,24 @@ export default {
           </div>
 
           <div class="my-20">
+
+            <!-- Created By -->
+            <div class="is-flex">
+              <b class="mr-1">submitted by</b>
+              <span style="opacity: 0.5;">{{ createdByName }}</span>
+            </div>
+
+            <!-- Created At -->
+            <div class="is-flex">
+              <b class="mr-1">submitted on</b>
+              <span style="opacity: 0.5;">{{ dayjs(book.createdAt).format('M/D/YYYY') }}</span>
+            </div>
+
+            <!-- Updated At -->
+            <div v-if="book.updatedAt !== book.createdAt" class="is-flex">
+              <b class="mr-1">updated on</b>
+              <span style="opacity: 0.5;">{{ dayjs(book.updatedAt).format('M/D/YYYY') }}</span>
+            </div>
 
             <!-- isbn -->
             <div class="is-flex">
