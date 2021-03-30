@@ -27,12 +27,12 @@ export default {
     Tag,
   },
   data() {
-    const sortField = this.$route.query?.sort || 'created'
+    const sortField = this.$route.query?.sort || 'createdAt'
     return {
       search: this.$route.query?.search || '',
       sortConfig: {
         field: sortField,
-        dir: this.$route.query?.dir || (sortField === 'created' ? 'desc' : 'asc'),
+        dir: this.$route.query?.dir || (sortField === 'createdAt' ? 'desc' : 'asc'),
       },
     }
   },
@@ -177,7 +177,7 @@ export default {
       const format = {
         author: this.formatAuthors(book.creators),
         contributor: this.formatContributor(book.createdBy),
-        created: this.formatDate(book.created),
+        created: this.formatDate(book.createdAt),
         illustrator: this.formatIllustrators(book.creators),
         isbn: book.isbn,
         tag: this.getTags(book).map(tag => tag.tag).join(' '),
@@ -240,7 +240,7 @@ export default {
               <SortableTableHeading id="illustrators" v-model="sortConfig">Illustrator(s)</SortableTableHeading>
               <SortableTableHeading id="contributor" v-model="sortConfig">Contributor</SortableTableHeading>
               <SortableTableHeading id="year" v-model="sortConfig" default="desc" class="has-text-right">Published</SortableTableHeading>
-              <SortableTableHeading id="created" v-model="sortConfig" default="desc" class="has-text-right">Created</SortableTableHeading>
+              <SortableTableHeading id="createdAt" v-model="sortConfig" default="desc" class="has-text-right">Created</SortableTableHeading>
               <th class="has-text-right">Delete</th>
             </tr>
           </thead>
@@ -288,8 +288,8 @@ export default {
               <!-- published -->
               <td class="has-text-right"><HighlightedText field="published" :search="search">{{ book.year }}</HighlightedText></td>
 
-              <!-- created -->
-              <td class="has-text-right"><HighlightedText field="created" :search="search">{{ formatDate(book.created) }}</HighlightedText></td>
+              <!-- created at -->
+              <td class="has-text-right"><HighlightedText field="created" :search="search">{{ formatDate(book.createdAt) }}</HighlightedText></td>
 
               <!-- edit/delete -->
               <td class="has-text-right">
