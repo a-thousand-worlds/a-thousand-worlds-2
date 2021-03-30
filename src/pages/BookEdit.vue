@@ -233,45 +233,45 @@ export default {
 
           </div>
 
-          <div class="my-20">
+          <table class="my-20">
 
             <!-- Created By -->
-            <div class="is-flex">
-              <b class="mr-1">submitted by</b>
-              <span style="opacity: 0.5;">{{ createdByName }}</span>
-            </div>
+            <tr>
+              <th class="has-text-right"><b class="mr-3">submitted by</b></th>
+              <td><span style="opacity: 0.5;">{{ createdByName }}</span></td>
+            </tr>
 
             <!-- Created At -->
-            <div class="is-flex">
-              <b class="mr-1">submitted on</b>
-              <span style="opacity: 0.5;">{{ dayjs(book.createdAt).format('M/D/YYYY') }}</span>
-            </div>
+            <tr>
+              <th class="has-text-right"><b class="mr-3">submitted on</b></th>
+              <td><span style="opacity: 0.5;">{{ dayjs(book.createdAt).format('M/D/YYYY') }}</span></td>
+            </tr>
 
             <!-- Updated At -->
-            <div v-if="book.updatedAt !== book.createdAt" class="is-flex">
-              <b class="mr-1">updated on</b>
-              <span style="opacity: 0.5;">{{ dayjs(book.updatedAt).format('M/D/YYYY') }}</span>
-            </div>
+            <tr v-if="book.updatedAt !== book.createdAt">
+              <th class="has-text-right"><b class="mr-3">updated on</b></th>
+              <td><span style="opacity: 0.5;">{{ dayjs(book.updatedAt).format('M/D/YYYY') }}</span></td>
+            </tr>
 
             <!-- isbn -->
-            <div class="is-flex">
-              <b class="mr-1">isbn</b>
-              <SimpleInput v-if="book" @update:modelValue="saveIsbn" v-model="book.isbn" placeholder="Enter ISBN" />
-            </div>
+            <tr>
+              <th class="has-text-right"><b class="mr-3">isbn</b></th>
+              <td><SimpleInput v-if="book" @update:modelValue="saveIsbn" v-model="book.isbn" placeholder="Enter ISBN" /></td>
+            </tr>
 
             <!-- year -->
-            <div class="is-flex">
-              <b class="mr-1">year</b>
-              <SimpleInput v-if="book" @update:modelValue="updateBook({ year: $event })" v-model="book.year" placeholder="Enter Year" />
-            </div>
+            <tr>
+              <th class="has-text-right"><b class="mr-3">year</b></th>
+              <td><SimpleInput v-if="book" @update:modelValue="updateBook({ year: $event })" v-model="book.year" placeholder="Enter Year" /></td>
+            </tr>
 
             <!-- goodreads -->
-            <div class="is-flex">
-              <b class="mr-1">goodreads</b>
-              <SimpleInput v-if="book" @update:modelValue="updateBook({ goodreads: $event })" v-model="book.goodreads" placeholder="No value" />
-            </div>
+            <tr>
+              <th class="has-text-right"><b class="mr-3">goodreads</b></th>
+              <td><SimpleInput v-if="book" @update:modelValue="updateBook({ goodreads: $event })" v-model="book.goodreads" placeholder="No value" /></td>
+            </tr>
 
-          </div>
+          </table>
 
         </div>
       </div>
