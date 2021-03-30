@@ -154,6 +154,19 @@ export default {
           .some(s => this.isMatch(s, searchValue))
     },
 
+    toggleTagSearch(tag) {
+      const term = `tag:${tag.tag}`
+
+      if (this.search.includes(term)) {
+        this.search = this.search.replace(term, '')
+      }
+      else {
+        // replace search until better search logic is implemented
+        this.search = term
+        // this.search = `${this.search} ${term}`.trim()
+      }
+    },
+
   },
 }
 
@@ -224,7 +237,7 @@ export default {
 
               <!-- tags -->
               <td>
-                <Tag v-for="tag of getTags(person)" :key="tag.id" :tag="tag" type="people" button-class="is-outlined" nolink><HighlightedText field="tag" :search="search">{{ tag.tag }}</HighlightedText></Tag>
+                <Tag v-for="tag of getTags(person)" :key="tag.id" :tag="tag" type="people" @click="toggleTagSearch" nolink button-class="is-outlined pointer"><HighlightedText field="tag" :search="search">{{ tag.tag }}</HighlightedText></Tag>
               </td>
 
               <!-- title -->
@@ -257,4 +270,10 @@ export default {
 <style lang="scss" scoped>
 @import "bulma/sass/utilities/_all.sass";
 @import "bulma/sass/elements/table.sass";
+</style>
+
+<style lang="scss">
+.pointer span {
+  cursor: pointer !important;
+}
 </style>
