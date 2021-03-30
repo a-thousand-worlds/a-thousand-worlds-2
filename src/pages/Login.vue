@@ -138,6 +138,7 @@ export default {
         .then(() => {
           this.loading = false
           this.error = null
+          this.disableAfterSave = false
         })
         .catch(err => {
           console.error(err)
@@ -148,6 +149,7 @@ export default {
             : err.message
           }
           this.loading = false
+          this.disableSend = false
         })
     },
 
@@ -218,6 +220,7 @@ export default {
             : err.message
           }
           this.loading = false
+          this.disableSend = false
         })
 
       if (!this.error) {
@@ -235,10 +238,6 @@ export default {
           })
         )
       }
-
-      this.disableAfterSaveTimeout = setTimeout(() => {
-        this.disableAfterSave = false
-      }, 1000)
     },
 
     setActive(active) {
