@@ -108,6 +108,7 @@ body {
 
 #app {
   min-height: 100%;
+  overflow: auto;
 }
 </style>
 
