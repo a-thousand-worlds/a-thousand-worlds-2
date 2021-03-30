@@ -114,6 +114,8 @@ export default {
     resetNewTag() {
       this.newTag = {
         tag: '',
+        showOnContributorForm: true,
+        showOnPeopleForm: true,
         showOnFront: true,
         sortOrder: this.tags.length > 0
           ? (this.tags[this.tags.length - 1].sortOrder || 0) + 1
@@ -126,12 +128,21 @@ export default {
       this.edits[id] = state
     },
 
-    async toggleShowOnContributorSignup(id) {
+    async toggleShowOnContributorForm(id) {
       const tag = this.$store.state.tags[this.type].data[id]
-      tag.showOnContributorSignup = !tag.showOnContributorSignup || null
+      tag.showOnContributorForm = !tag.showOnContributorForm || null
       await this.$store.dispatch(`tags/${this.type}/save`, {
-        path: `${id}/showOnContributorSignup`,
-        value: tag.showOnContributorSignup
+        path: `${id}/showOnContributorForm`,
+        value: tag.showOnContributorForm
+      })
+    },
+
+    async toggleShowOnPeopleForm(id) {
+      const tag = this.$store.state.tags[this.type].data[id]
+      tag.showOnPeopleForm = !tag.showOnPeopleForm || null
+      await this.$store.dispatch(`tags/${this.type}/save`, {
+        path: `${id}/showOnPeopleForm`,
+        value: tag.showOnPeopleForm
       })
     },
 
@@ -168,7 +179,8 @@ export default {
       <tr>
         <th style="width: 100%;">Tag</th>
         <th class="has-text-centered" v-tippy="{ content: `Adjust the likelihood of ${type} being sorted to the top. For example, a person that has a tag with a weight of 10 means the person is 10 times more likely to be sorted to the top than a person that has a tag with a weight of 1.` }" style="white-space: nowrap;">Weight <i class="far fa-question-circle" /></th>
-        <th v-if="type === 'people'" class="has-text-centered" v-tippy="{ content: `Show this tag as one of the identity options when contributors sign up.` }" style="white-space: nowrap;">Contributor <i class="far fa-question-circle" /></th>
+        <th v-if="type === 'people'" class="has-text-centered" v-tippy="{ content: `Show this tag as one of the identity options on the People Submission Form.` }" style="white-space: nowrap;">Contributor <i class="far fa-question-circle" /></th>
+        <th v-if="type === 'people'" class="has-text-centered" v-tippy="{ content: `Show this tag as one of the identity options on the Contributor Profile Form.` }" style="white-space: nowrap;">Contributor <i class="far fa-question-circle" /></th>
         <th class="has-text-centered" v-tippy="{ content: `Show this tag in the ${type} filter menu` }" style="white-space: nowrap;">Show <i class="far fa-question-circle" /></th>
         <th>Edit/Delete</th>
       </tr>
@@ -223,10 +235,18 @@ export default {
             </span>
           </td>
 
+          <!-- creator -->
+          <td v-if="type === 'people'" class="has-text-centered">
+            <a @click.prevent="toggleShowOnPeopleForm(tag.id)">
+              <i v-if="tag.showOnPeopleForm" class="fas fa-check has-text-primary" />
+              <i v-else class="fas fa-minus has-text-secondary" />
+            </a>
+          </td>
+
           <!-- contributor -->
           <td v-if="type === 'people'" class="has-text-centered">
-            <a @click.prevent="toggleShowOnContributorSignup(tag.id)">
-              <i v-if="tag.showOnContributorSignup" class="fas fa-check has-text-primary" />
+            <a @click.prevent="toggleShowOnContributorForm(tag.id)">
+              <i v-if="tag.showOnContributorForm" class="fas fa-check has-text-primary" />
               <i v-else class="fas fa-minus has-text-secondary" />
             </a>
           </td>

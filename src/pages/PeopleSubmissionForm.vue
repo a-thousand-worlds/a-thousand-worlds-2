@@ -42,6 +42,7 @@ export default {
     },
     peopleTags() {
       return this.$store.getters[`tags/people/listSorted`]()
+        .filter(tag => tag.showOnPeopleForm)
     },
     person() {
       /* We used to get the creator through an old person submission.
