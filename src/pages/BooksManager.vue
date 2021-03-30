@@ -212,6 +212,7 @@ export default {
           <router-link class="mr-20" :to="{ name:'TagsManager' }" style="color: black; line-height: 2.5;">Book Tags</router-link>
         </div>
         <div class="is-flex is-align-items-center">
+          <span v-if="loaded" class="mr-40" style="white-space: nowrap">{{ books.length }} book{{ books.length === 1 ? '' : 's' }} <span v-if="search">(filtered)</span></span>
           <span class="has-text-right" v-tippy="{ content: `Search all books. Use 'field:value' to filter by a specific field, e.g. 'illustrator:Ho'` }" style="white-space: nowrap;"><i class="far fa-question-circle" /></span>
           <i class="fas fa-search" style="transform: translateX(23px); z-index: 10; opacity: 0.3;" />
           <input v-model="search" placeholder="Search" class="input pl-30">
