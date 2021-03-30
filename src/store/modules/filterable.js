@@ -65,7 +65,6 @@ const module = () => ({
           })
           .filter(x => x)
         commit('setFilters', tagsSelected)
-        console.log('setFiltersFromUrl', tagsSelected)
       }
       else {
         commit('resetFilters')
