@@ -8,7 +8,8 @@ const variants = {
   'I am a BIPOC Leader in the book industry': 'You are a superstar! Please share what your title is or how you engage with picture books. Thank you for you interest in contributing to our picture book directory!',
   'Partnership Opportunity': 'Message',
   'Feedback and Questions about A Thousand Worlds': 'Message',
-  'Report a Bug': 'Message'
+  'Report a Bug': 'Message',
+  Other: 'Message'
 }
 
 export default {
@@ -19,19 +20,20 @@ export default {
   },
   data() {
     const query = new URLSearchParams(decodeURI(window.location.search))
-    return {
+    const ret = {
       name: query.get('from') || '',
       email: query.get('email') || '',
+      // subject: query.get('subject') || Object.keys(variants)[0],
       subject: query.get('subject') || '',
       message: query.get('message') || '',
-      showSubjectDropdown: false
+      dropdown: ''
     }
+    // ret.dropdown = Object.keys(variants).includes(ret.subject) ? ret.subject : 'Other'
+    return ret
   },
   computed: {
     subjectVariants() {
-      return this.subject.length
-        ? Object.keys(variants).filter(variant => variant.toLowerCase().includes(this.subject.toLowerCase()) && variant.toLowerCase() !== this.subject.toLowerCase())
-        : Object.keys(variants)
+      return Object.keys(variants)
     },
     messagePlaceholder() {
       return variants[this.subject] || 'Message'
@@ -41,15 +43,8 @@ export default {
     }
   },
   methods: {
-    setSubject(next) {
-      this.subject = next
-      this.showSubjectDropdown = false
-    },
-    hideSubjectDropdown() {
-      // timeout here allows subject div recieve @click event
-      setTimeout(() => {
-        this.showSubjectDropdown = false
-      }, 200)
+    setSubject() {
+      this.subject = this.dropdown === 'Other' ? '' : this.dropdown
     },
     sendEmail() {
       this.$store.commit('ui/setBusy', true)
@@ -115,10 +110,11 @@ export default {
       </div>
 
       <div class="field subject-field">
-        <input :disabled="$store.state.ui.busy" class="input" type="text" @focus="showSubjectDropdown = true" @blur="hideSubjectDropdown()" placeholder="Subject" v-model="subject">
-        <div v-if="showSubjectDropdown && subjectVariants.length" class="subject-dropdown">
-          <div v-for="subj in subjectVariants" :key="subj" @click="setSubject(subj)" class="subject">{{ subj }}</div>
-        </div>
+        <select required v-if="dropdown !== 'Other'" :disabled="$store.state.ui.busy" class="input" v-model="dropdown" @change="setSubject()">
+          <option value="" disabled>Subject</option>
+          <option v-for="subj in subjectVariants" :key="subj" @click="setSubject(subj)" class="subject-opt">{{ subj }}</option>
+        </select>
+        <input v-else :disabled="$store.state.ui.busy" class="input" type="text" placeholder="Subject" v-model="subject">
       </div>
 
       <div class="field">
@@ -135,6 +131,8 @@ export default {
 </template>
 
 <style lang="scss">
+$placeholderColor: #a0a0a0;
+
 .contact-page-title {
   font-size: 40px;
 }
@@ -142,29 +140,16 @@ export default {
   padding-top: 11px;
   font-size: 18px;
 }
-.subject-field {
-  position: relative;
-
-  .subject-dropdown {
-    position: absolute;
-    z-index: 10;
-    background: #fff;
-    border: 1px solid #dbdbdb;
-    width: 100%;
-
-    .subject {
-      padding: 5px;
-      border-bottom: 1px solid #dbdbdb;
-      cursor: pointer;
-
-      &:last-child {
-        border-bottom: 0;
-      }
-
-      &:hover {
-        background-color: #f9f9f9;
-      }
-    }
-  }
+select:invalid {
+  color: $placeholderColor;
+}
+option:first-child {
+  display:  none;
+}
+option {
+  color: black;
+}
+::placeholder {
+  color: $placeholderColor !important;
 }
 </style>
