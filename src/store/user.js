@@ -182,6 +182,23 @@ const module = mergeOne(usersModule, {
                 ...val.roles
               },
             })
+
+            // it may happen, that user after registration didn't get his roles from invite immediatelly
+            // so getting role from invite
+            if (val.profile.code && !val.roles) {
+              const inviteRef = firebase.database().ref(`invites/${val.profile.code}`)
+              inviteRef.once('value', inviteSnap => {
+                const invite = inviteSnap.val()
+                if (invite && invite.role) {
+                  const roles = {
+                    authorized: true
+                  }
+                  roles[invite.role] = true
+                  ctx.commit('setRoles', roles)
+                }
+              })
+            }
+
           })
 
           // subscribe to profile
@@ -198,6 +215,13 @@ const module = mergeOne(usersModule, {
                 ctx.dispatch('users/subscribe', {}, { root: true })
               }
             })
+          })
+
+          // subscribe to roles
+          const rolesRef = firebase.database().ref(`users/${u.uid}/roles`)
+          rolesRef.on('value', snap => {
+            const roles = defaultProfile(u, snap.val())
+            ctx.commit('setRoles', roles)
           })
 
         }
