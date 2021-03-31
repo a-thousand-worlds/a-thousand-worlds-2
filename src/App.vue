@@ -52,7 +52,12 @@ export default ({
 </script>
 
 <template>
-  <div :class="`theme${$store.state.theme}`">
+  <!-- a special page to generate a book cover collage -->
+  <div v-if="$route?.name === 'SocialImage'">
+    <router-view />
+  </div>
+  <!-- full website -->
+  <div v-else :class="`theme${$store.state.theme}`">
 
     <MobileHeader class="is-hidden-tablet" />
 
@@ -103,6 +108,7 @@ body {
 
 #app {
   min-height: 100%;
+  overflow: auto;
 }
 </style>
 

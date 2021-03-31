@@ -1,4 +1,5 @@
 <script>
+import genders from '@/store/constants/genders'
 import BookmarkIcon from '@/assets/icons/bookmark.svg'
 import BooksIcon from '@/assets/icons/books.svg'
 import BundlesIcon from '@/assets/icons/bundles.svg'
@@ -11,13 +12,17 @@ export default {
     BooksIcon,
     FilterIcon,
   },
+  data() {
+    return {
+      genders,
+    }
+  },
   computed: {
     bookmarksCount() {
       return Object.keys(this.$store.state.user.user?.profile.bookmarks || {}).length
     },
     filters() {
-      const ret = this.$store.state[this.filterType].filters
-      return ret
+      return this.$store.state[this.filterType].filters
     },
     showFilters() {
       return this.filterType
@@ -34,20 +39,25 @@ export default {
     },
   },
   methods: {
-    isFiltered(tag) {
+    isFiltered(filter) {
       const filters = this.filters || []
-      return filters.includes(tag)
+      return filters.some(activeFilter => activeFilter.id === filter.id && (!filter.submenu || filter.submenu.id === activeFilter.submenu?.id))
     },
     resetFilters() {
-      this.$store.commit(`${this.type}/resetFilters`)
+      this.$store.dispatch(`${this.filterType}/resetFilters`)
     },
-    setFilters(e) {
-      const options = [...e.target.options]
+    setFilters() {
+      const options = [...this.$refs.select.options]
       const selected = options
         // ignore reset option
         .filter(option => option.selected && option.value !== '_reset')
-        .map(option => option.value)
-      this.$store.commit(`${this.type}/setFilters`, selected)
+        .map(option => {
+          const gender = this.genders.find(gender => gender.id === option.value)
+          return gender
+            ? { ...this.tags.find(tag => tag.tag === 'Gender'), submenu: gender }
+            : this.tags.find(tag => tag.id === option.value)
+        })
+      this.$store.dispatch(`${this.filterType}/setFilters`, selected)
     },
     toggleBookmarks() {
       if (!this.$iam('authorized')) {
@@ -57,7 +67,7 @@ export default {
       const state = this.$store.state.ui.bookmarksOpen
       this.$store.commit('ui/setBookmarksOpen', !state)
     }
-  }
+  },
 }
 </script>
 
@@ -68,10 +78,12 @@ export default {
     <ul class="menu-list my-10">
 
       <li v-if="showFilters && !$store.state.ui.bookmarksOpen" style="position: relative;">
-        <select @change="setFilters" multiple style="position: absolute; overflow: hidden; left: 0: top: 0; overflow: hidden; min-width: 60px; max-width: 100px; width: 70px; height: 100%; font-size: 20px; cursor: pointer; opacity: 0; text-transform: uppercase;">
+        <select ref="select" @change="setFilters" multiple style="position: absolute; overflow: hidden; left: 0: top: 0; overflow: hidden; min-width: 60px; max-width: 100px; width: 70px; height: 100%; font-size: 20px; cursor: pointer; opacity: 0; text-transform: uppercase;">
           <!-- <option @click="resetFilters" value="_reset">Reset Filter</option> -->
           <optgroup disabled hidden />
-          <option v-for="tag in tags" :key="tag.id" :selected="isFiltered(tag.id)" :value="tag.id">{{ tag.tag }}</option>
+          <option v-for="tag of tags.filter(tag => tag.tag !== 'Gender')" :key="tag.id" :selected="isFiltered(tag)" :value="tag.id" @click="setFilters">{{ tag.tag }}</option>
+          <option disabled>──────────</option>
+          <option v-for="gender of genders" :key="gender.id" :selected="isFiltered({ ...tags.find(tag => tag.tag === 'Gender'), submenu: gender })" :value="gender.id" @click="setFilters">{{ gender.text }}</option>
         </select>
         <FilterIcon />
         <label class="mt-2">Filter</label>

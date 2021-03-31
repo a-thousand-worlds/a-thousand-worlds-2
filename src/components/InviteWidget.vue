@@ -64,6 +64,7 @@ export default {
         .then(() => {
           this.loading = false
           this.error = null
+          this.disableSend = false
         })
         .catch(err => {
           console.error(err)
@@ -71,6 +72,7 @@ export default {
             message: err.message
           }
           this.loading = false
+          this.disableSend = false
         })
     },
 
@@ -88,11 +90,6 @@ export default {
 
       this.closeInviteDropdown()
 
-      clearTimeout(this.disableSend)
-      this.disableSend = setTimeout(() => {
-        this.disableSend = null
-      }, 1000)
-
       if (!this.validate()) return
 
       const invitePromises = this.recipients.map(recipient =>
@@ -102,10 +99,12 @@ export default {
         })
       )
 
-      await this.handleResponse(Promise.all(invitePromises).then(() => {
-        this.message = `Email${this.recipients.length > 1 ? 's' : ''} sent!`
-        this.reset()
-      }))
+      await this.handleResponse(Promise.all(invitePromises)
+        .then(() => {
+          this.$store.dispatch('ui/popup', { text: `Email${this.recipients.length > 1 ? 's' : ''} sent!`, type: 'success' })
+          this.reset()
+        })
+      )
     },
 
     setInviteRole(value) {

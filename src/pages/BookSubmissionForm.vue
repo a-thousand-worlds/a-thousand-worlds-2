@@ -27,6 +27,7 @@ export default {
   ],
   data() {
     return {
+      books: [],
       ckConfig: {
         toolbar: []
       },
@@ -37,16 +38,6 @@ export default {
       submissions: [],
       titleId: uid(),
     }
-  },
-  computed: {
-    books() {
-      return this.submissions.map(({ confirmed, isbn }) =>
-        confirmed === null ? null : Object.values(this.$store.state.books.data || {}).find(
-          // note that hardcover and softcover have different ISBNs, so duplicates cannot be detected automatically
-          book => ISBN.asIsbn10(book.isbn || '') === ISBN.asIsbn10(isbn || '')
-        )
-      )
-    },
   },
   created() {
     const draftBooks = this.$store.state.user.user?.profile.draftBooks
@@ -66,10 +57,20 @@ export default {
   },
   methods: {
     coverImage(si) {
-      const cover = this.books[si]?.cover || this.submissions[si].thumbnail
-      return typeof cover === 'string'
-        ? cover
-        : cover?.base64?.url || ''
+      return this.books[si]?.cover?.base64?.url
+        || this.books[si]?.cover?.url
+        || this.books[si]?.cover
+        || this.submissions[si].thumbnail
+    },
+
+    /** Gets books from the directory with matching ISBNs. Call this manually when the ISBN is updated rather than automatically in a computed property to avoid a false positive on the duplicate book detection when an owner adds an auto-approved book. */
+    getBooks() {
+      this.books = this.submissions.map(({ confirmed, isbn }) =>
+        confirmed === null ? null : Object.values(this.$store.state.books.data || {}).find(
+          // note that hardcover and softcover have different ISBNs, so duplicates cannot be detected automatically
+          book => ISBN.asIsbn10(book.isbn || '') === ISBN.asIsbn10(isbn || '')
+        )
+      )
     },
 
     async setConfirmed(si, state) {
@@ -94,6 +95,7 @@ export default {
         sub.isbn = null
       }
 
+      this.getBooks()
       this.revalidate()
     },
     async submitForReview() {
@@ -164,6 +166,7 @@ export default {
     },
     clearSubmission(si) {
       this.submissions[si] = this.newSubmissionObject()
+      this.errors = []
     },
     clearAllSubmissions(si) {
       this.submissions = [this.newSubmissionObject()]
@@ -184,6 +187,7 @@ export default {
         this.submissions[si].isbn = null
         this.submissions[si].confirmed = null
         this.submissions[si].thumbnail = ''
+        this.getBooks()
         return
       }
 
@@ -213,6 +217,7 @@ export default {
         this.setConfirmed(si, false)
       }
 
+      this.getBooks()
       this.saveDraft()
       this.revalidate()
 
@@ -276,6 +281,7 @@ export default {
         sub.isbn = isbn
         sub.thumbnail = thumbnail
         sub.attempts = 2
+        this.getBooks()
         this.setConfirmed(si, null)
         this.updateMetadataDebounced(si)
       }

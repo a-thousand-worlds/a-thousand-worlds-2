@@ -192,7 +192,7 @@ const convertBook = async (info, creators, tags, contributors, creator) => {
   authors.forEach(a => {
     bookCreators[a.id] = 'author'
     if (illustratorIsSame) {
-      bookCreators[a.id] = 'both'
+      bookCreators[a.id] = 'author-illustrator'
     }
   })
   illustrators.forEach(a => {
@@ -215,7 +215,7 @@ const convertBook = async (info, creators, tags, contributors, creator) => {
     createdAt: dayjs().format(),
     creators: bookCreators,
     goodreads: info.details.goodreads || '',
-    isbn: info.isbn,
+    isbn: info.isbn ? info.isbn.toString() : '',
     cover: cover,
     publisher: meta.publisher,
     reviewedAt: dayjs().format(),

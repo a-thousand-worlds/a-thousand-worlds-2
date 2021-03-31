@@ -1,12 +1,15 @@
 <script>
 import _ from 'lodash'
 import dayjs from 'dayjs'
+import { remove as diacritics } from 'diacritics'
+
 import BookDetailLink from '@/components/BookDetailLink'
-import PersonDetailLink from '@/components/PersonDetailLink'
+import HighlightedText from '@/components/HighlightedText'
 import Loader from '@/components/Loader'
+import PersonDetailLink from '@/components/PersonDetailLink'
 import SortableTableHeading from '@/components/SortableTableHeading'
 import StaticCoverImage from '@/components/StaticCoverImage'
-import { remove as diacritics } from 'diacritics'
+import Tag from '@/components/Tag'
 
 /** Generates a sort token that will sort empty strings to the end regardless of sort direction. */
 const sortEmptyToEnd = (s, dir) =>
@@ -16,18 +19,20 @@ export default {
   name: 'BooksManager',
   components: {
     BookDetailLink,
+    HighlightedText,
     Loader,
     PersonDetailLink,
     SortableTableHeading,
     StaticCoverImage,
+    Tag,
   },
   data() {
-    const sortField = this.$route.query?.sort || 'created'
+    const sortField = this.$route.query?.sort || 'createdAt'
     return {
       search: this.$route.query?.search || '',
       sortConfig: {
         field: sortField,
-        dir: this.$route.query?.dir || (sortField === 'created' ? 'desc' : 'asc'),
+        dir: this.$route.query?.dir || (sortField === 'createdAt' ? 'desc' : 'asc'),
       },
     }
   },
@@ -41,26 +46,21 @@ export default {
     books() {
 
       // sort books by the sort config
-      const sort = list => {
-        const sorted = _.sortBy(list, [
-          book => this.sortConfig.field === 'authors' ? sortEmptyToEnd(this.authorsString(book.creators), this.sortConfig.dir)
-          : this.sortConfig.field === 'illustrators' ? sortEmptyToEnd(this.illustratorsString(book.creators), this.sortConfig.dir)
-          : book[this.sortConfig.field],
+      const sort = books => {
+        const sorted = _.sortBy(books, [
+          book => this.sortConfig.field === 'authors' ? sortEmptyToEnd(this.formatAuthors(book.creators), this.sortConfig.dir)
+          : this.sortConfig.field === 'illustrators' ? sortEmptyToEnd(this.formatIllustrators(book.creators), this.sortConfig.dir)
+          : this.sortConfig.field === 'tags' ? sortEmptyToEnd(this.getTags(book).map(tag => tag.tag).join(' '), this.sortConfig.dir)
+          : sortEmptyToEnd(book[this.sortConfig.field], this.sortConfig.dir),
           'titleLower'
         ])
         return this.sortConfig.dir === 'desc' ? _.reverse(sorted) : sorted
       }
 
       // filter books by the active search
-      const filter = list => this.search
-        ? list.filter(book => diacritics([
-          book.created,
-          book.isbn,
-          book.title,
-          this.authorsString(book.creators),
-          this.illustratorsString(book.creators)
-        ].join(' ')).toLowerCase().includes(diacritics(this.search.trim()).toLowerCase()))
-        : list
+      const filter = books => this.search
+        ? books.filter(book => this.searchPredicate(book))
+        : books
 
       return sort(filter(this.booksList))
     },
@@ -71,7 +71,11 @@ export default {
           ...book,
           titleLower: book.title.toLowerCase(),
         }))
-    }
+    },
+
+    tags() {
+      return this.$store.getters[`tags/books/listSorted`]()
+    },
 
   },
 
@@ -107,19 +111,36 @@ export default {
     authors(creators) {
       const people = this.$store.state.people.data || {}
       return Object.entries(creators || {})
-        .filter(([id, value]) => value === 'author' || value === 'both')
+        .filter(([id, value]) => value === 'author' || value === 'author-illustrator')
         .map(([id, value]) => people[id])
         .filter(x => x)
     },
 
-    authorsString(creators) {
+    formatAuthors(creators) {
       return this.authors(creators)
         .map(author => author?.name)
         .join(', ')
     },
 
+    formatContributor(contributorId) {
+      return this.$store.getters['users/get'](contributorId)?.profile?.name
+    },
+
     formatDate(d) {
       return dayjs(d).format('M/D/YYYY hh:mm')
+    },
+
+    formatIllustrators(creators) {
+      return this.illustrators(creators)
+        .map(illustrator => illustrator?.name)
+        .join(', ')
+    },
+
+    getTags(book) {
+      const tagsState = this.$store.state.tags.books
+      return tagsState.loaded
+        ? Object.keys(book.tags).map(tagId => tagsState.data[tagId])
+        : null
     },
 
     illustrators(creators) {
@@ -130,10 +151,9 @@ export default {
         .filter(x => x)
     },
 
-    illustratorsString(creators) {
-      return this.illustrators(creators)
-        .map(illustrator => illustrator?.name)
-        .join(', ')
+    /** Returns true if a string matches the search term (trimmed, lowercased, and diacritics removed). */
+    isMatch(value, search) {
+      return diacritics(value.trim()).toLowerCase().includes(diacritics(search.trim()).toLowerCase())
     },
 
     async remove(id) {
@@ -146,6 +166,44 @@ export default {
       }
     },
 
+    /** Returns true if the book matches the search. Case insensitive, partial match, support for filtering by field, e.g. tag:poetry */
+    searchPredicate(book) {
+
+      const split = this.search.split(':')
+      const field = split.length > 1 ? split[0].trim().toLowerCase() : null
+      const searchValue = split.length > 1 ? split[1] : split[0]
+
+      // map fields to formating functions
+      const format = {
+        author: this.formatAuthors(book.creators),
+        contributor: this.formatContributor(book.createdBy),
+        created: this.formatDate(book.createdAt),
+        illustrator: this.formatIllustrators(book.creators),
+        isbn: book.isbn,
+        tag: this.getTags(book).map(tag => tag.tag).join(' '),
+        title: book.title,
+      }
+
+      return field
+        ? this.isMatch(format[field] || '', searchValue)
+        : Object.values(format)
+          .map(s => (s || '').toLowerCase())
+          .some(s => this.isMatch(s, searchValue))
+    },
+
+    toggleTagSearch(tag) {
+      const term = `tag:${tag.tag}`
+
+      if (this.search.includes(term)) {
+        this.search = this.search.replace(term, '')
+      }
+      else {
+        // replace search until better search logic is implemented
+        this.search = term
+        // this.search = `${this.search} ${term}`.trim()
+      }
+    },
+
   }
 }
 
@@ -154,7 +212,7 @@ export default {
 <template>
 
   <div class="is-flex is-justify-content-center m-20 mb-40">
-    <div class="is-flex-grow-1 mx-20" style="max-width: 900px;">
+    <div class="is-flex-grow-1 mx-20" style="max-width: 1200px;">
 
       <div class="mb-5">
         <a @click.prevent="$router.back" class="is-uppercase is-primary">&lt; Back</a>
@@ -167,7 +225,8 @@ export default {
           <router-link class="mr-20" :to="{ name:'TagsManager' }" style="color: black; line-height: 2.5;">Book Tags</router-link>
         </div>
         <div class="is-flex is-align-items-center">
-          <span class="has-text-right" v-tippy="{ content: `Search by ISBN, title, creator, or date created` }" style="white-space: nowrap;"><i class="far fa-question-circle" /></span>
+          <span v-if="loaded" class="mr-40" style="white-space: nowrap">{{ books.length }} book{{ books.length === 1 ? '' : 's' }} <span v-if="search">(filtered)</span></span>
+          <span class="has-text-right" v-tippy="{ content: `Search all books. Use 'field:value' to filter by a specific field, e.g. 'illustrator:Ho'` }" style="white-space: nowrap;"><i class="far fa-question-circle" /></span>
           <i class="fas fa-search" style="transform: translateX(23px); z-index: 10; opacity: 0.3;" />
           <input v-model="search" placeholder="Search" class="input pl-30">
         </div>
@@ -190,9 +249,12 @@ export default {
               <td />
               <SortableTableHeading id="isbn" v-model="sortConfig">ISBN</SortableTableHeading>
               <SortableTableHeading id="titleLower" v-model="sortConfig">Title</SortableTableHeading>
+              <SortableTableHeading id="tags" v-model="sortConfig">Tags</SortableTableHeading>
               <SortableTableHeading id="authors" v-model="sortConfig">Author(s)</SortableTableHeading>
               <SortableTableHeading id="illustrators" v-model="sortConfig">Illustrator(s)</SortableTableHeading>
-              <SortableTableHeading id="created" v-model="sortConfig" default="desc" class="has-text-right pr-20">Created</SortableTableHeading>
+              <SortableTableHeading id="contributor" v-model="sortConfig">Contributor</SortableTableHeading>
+              <SortableTableHeading id="year" v-model="sortConfig" default="desc" class="has-text-right">Published</SortableTableHeading>
+              <SortableTableHeading id="createdAt" v-model="sortConfig" default="desc" class="has-text-right">Created</SortableTableHeading>
               <th class="has-text-right">Delete</th>
             </tr>
           </thead>
@@ -208,27 +270,40 @@ export default {
               </td>
 
               <!-- ISBN -->
-              <td><BookDetailLink :book="book" edit>{{ book.isbn }}</BookDetailLink></td>
+              <td><BookDetailLink :book="book" edit><HighlightedText field="isbn" :search="search">{{ book.isbn }}</HighlightedText></BookDetailLink></td>
 
               <!-- title -->
-              <td><BookDetailLink :book="book" edit>{{ book.title }}</BookDetailLink></td>
+              <td><BookDetailLink :book="book" edit><HighlightedText field="title" :search="search">{{ book.title }}</HighlightedText></BookDetailLink></td>
+
+              <!-- tags -->
+              <td>
+                <Tag v-for="tag of getTags(book)" :key="tag.id" :tag="tag" type="books" @click="toggleTagSearch" nolink button-class="is-outlined pointer"><HighlightedText field="tag" :search="search">{{ tag.tag }}</HighlightedText></Tag>
+              </td>
 
               <!-- author(s) -->
               <td>
                 <span v-for="(author, i) of authors(book.creators)" :key="author.id">
-                  <span v-if="i !== 0">, </span><PersonDetailLink :person="author" edit>{{ author.name }}</PersonDetailLink>
+                  <span v-if="i !== 0">, </span><PersonDetailLink :person="author" edit><HighlightedText field="author" :search="search">{{ author.name }}</HighlightedText></PersonDetailLink>
                 </span>
               </td>
 
-              <!-- illustrator(r) -->
+              <!-- illustrator(s) -->
               <td>
                 <span v-for="(illustrator, i) of illustrators(book.creators)" :key="illustrator.id">
-                  <span v-if="i !== 0">, </span><PersonDetailLink :person="illustrator" edit>{{ illustrator.name }}</PersonDetailLink>
+                  <span v-if="i !== 0">, </span><PersonDetailLink :person="illustrator" edit><HighlightedText field="illustrator" :search="search">{{ illustrator.name }}</HighlightedText></PersonDetailLink>
                 </span>
               </td>
 
-              <!-- created -->
-              <td class="has-text-right">{{ formatDate(book.created) }}</td>
+              <!-- contributor -->
+              <td>
+                <HighlightedText field="contributor" :search="search">{{ formatContributor(book.createdBy) }}</HighlightedText>
+              </td>
+
+              <!-- published -->
+              <td class="has-text-right"><HighlightedText field="published" :search="search">{{ book.year }}</HighlightedText></td>
+
+              <!-- created at -->
+              <td class="has-text-right"><HighlightedText field="created" :search="search">{{ formatDate(book.createdAt) }}</HighlightedText></td>
 
               <!-- edit/delete -->
               <td class="has-text-right">
@@ -254,4 +329,10 @@ export default {
 <style lang="scss" scoped>
 @import "bulma/sass/utilities/_all.sass";
 @import "bulma/sass/elements/table.sass";
+</style>
+
+<style lang="scss">
+.pointer span {
+  cursor: pointer !important;
+}
 </style>

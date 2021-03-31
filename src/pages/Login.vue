@@ -1,5 +1,5 @@
 <script>
-import _ from 'lodash'
+import validator from '@/mixins/validator'
 import Loader from '@/components/Loader'
 
 export default {
@@ -7,6 +7,29 @@ export default {
   components: {
     Loader,
   },
+
+  mixins: [
+    validator(function() {
+      return [
+        // email
+        !this.email.length && {
+          name: 'email',
+          message: 'Email is required',
+        },
+        // name
+        (this.isSignup || this.isAccount) && !this.name.length && {
+          name: 'name',
+          message: 'Name is required',
+        },
+        // password
+        (this.isSignup || this.isLogin) && !this.password.length && {
+          name: 'password',
+          message: 'Password is required',
+        },
+      ].filter(x => x)
+    })
+  ],
+
   data() {
     const profile = this.$store.state.user.user?.profile
     return {
@@ -16,7 +39,6 @@ export default {
       name: profile?.name || '',
       disableAfterSave: false,
       disableResetPassword: false,
-      error: null,
       loading: false,
       password: '',
       // only show errors after a submit has been attempted
@@ -40,9 +62,6 @@ export default {
     // other computed properties
     code() {
       return this.$route.query.code
-    },
-    hasFieldErrors() {
-      return Object.keys(this.error?.fields || {}).length > 0
     },
     invite() {
       return this.code ? this.$store.getters['invites/get'](this.code) : null
@@ -119,6 +138,7 @@ export default {
         .then(() => {
           this.loading = false
           this.error = null
+          this.disableAfterSave = false
         })
         .catch(err => {
           console.error(err)
@@ -129,12 +149,8 @@ export default {
             : err.message
           }
           this.loading = false
+          this.disableSend = false
         })
-    },
-
-    /** Returns 'error' if a field is in error. */
-    hasError(field) {
-      return this.error?.fields?.[field]
     },
 
     getActiveFromUrl() {
@@ -204,6 +220,7 @@ export default {
             : err.message
           }
           this.loading = false
+          this.disableSend = false
         })
 
       if (!this.error) {
@@ -221,10 +238,6 @@ export default {
           })
         )
       }
-
-      this.disableAfterSaveTimeout = setTimeout(() => {
-        this.disableAfterSave = false
-      }, 1000)
     },
 
     setActive(active) {
@@ -238,43 +251,6 @@ export default {
         : null
       })
     },
-
-    /** Checks all fields for errors and updates this.error. */
-    validate() {
-
-      this.error = null
-
-      // email
-      if (!this.email.length) {
-        this.error = {
-          message: 'Please check required fields',
-          fields: { ...this.error?.fields, email: true },
-        }
-      }
-
-      // name
-      if ((this.isSignup || this.isAccount) && !this.name.length) {
-        this.error = {
-          message: 'Please check required fields',
-          fields: { ...this.error?.fields, name: true },
-        }
-      }
-
-      // password
-      if ((this.isSignup || this.isLogin) && !this.password.length) {
-        this.error = {
-          message: 'Please check required fields',
-          fields: { ...this.error?.fields, password: true },
-        }
-      }
-
-      return !this.error
-    },
-
-    /** Debounced validation, only if error */
-    revalidate: _.debounce(function() {
-      return !this.error || this.validate()
-    }, 50),
 
   },
 }
@@ -345,11 +321,11 @@ export default {
           </div>
 
           <div class="field my-4">
-            <input :disabled="loading || hasFieldErrors || disableAfterSave" type="submit" class="button is-primary is-rounded is-fullwidth is-uppercase" :class="{'is-loading':loading}" :value="isLogin ? 'Log In' : isSignup ? 'Create Account' : isAccount ? 'Save' : null">
+            <input :disabled="loading || disableAfterSave" type="submit" class="button is-primary is-rounded is-fullwidth is-uppercase" :class="{'is-loading':loading}" :value="isLogin ? 'Log In' : isSignup ? 'Create Account' : isAccount ? 'Save' : null">
           </div>
 
-          <div v-if="error" class="field">
-            <p class="error has-text-centered is-uppercase">{{ error.message || 'Unknown error' }}</p>
+          <div v-if="errors.length" class="field">
+            <p v-for="(error, i) of errors" :key="i" class="error has-text-centered is-uppercase">{{ error.message || 'Unknown error' }}</p>
           </div>
 
           <p v-if="isLogin" class="has-text-centered">

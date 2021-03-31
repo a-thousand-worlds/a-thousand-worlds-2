@@ -1,6 +1,6 @@
 {
   "name": "atw2",
-  "version": "0.20.0",
+  "version": "0.23.0",
   "private": true,
   "scripts": {
     "build": "vue-cli-service build",
@@ -50,6 +50,7 @@
     "vue": "^3.0.5",
     "vue-router": "^4.0.3",
     "vue-tippy": "^6.0.0-alpha.24",
+    "vuedraggable": "^4.0.1",
     "vuex": "^4.0.0-rc.1"
   },
   "devDependencies": {

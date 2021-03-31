@@ -21,11 +21,8 @@ export default {
     },
   },
   methods: {
-    logBooks() {
-      console.log(this.$store.state)
-    },
     resetFilter() {
-      this.$store.commit('books/resetFilters')
+      this.$store.dispatch('books/resetFilters')
     },
   },
 }

@@ -45,6 +45,7 @@ export default {
       ckConfig: {
         toolbar: [],
       },
+      dayjs,
       editOnClick: false,
       editor: BalloonEditor,
       tagsDropdownActive: false,
@@ -71,6 +72,10 @@ export default {
       return Object.keys(this.book?.tags || [])
         .map(id => bookTags[id])
         .filter(x => x)
+    },
+    createdByName() {
+      const user = this.$store.getters['users/get'](this.book?.createdBy)
+      return user?.profile?.name
     },
     tagOptions() {
       return this.$store.getters['tags/books/listSorted']()
@@ -158,7 +163,7 @@ export default {
     updateTitle(creatorId, titleId) {
       // map titleId from creatorTitles to book creator titles
       this.updateBook('creators', {
-        [creatorId]: titleId === 'author-illustrator' ? 'both' : titleId
+        [creatorId]: titleId === 'author-illustrator' ? 'author-illustrator' : titleId
       })
     },
 
@@ -228,27 +233,45 @@ export default {
 
           </div>
 
-          <div class="my-20">
+          <table class="my-20">
+
+            <!-- Created By -->
+            <tr>
+              <th class="has-text-right"><b class="mr-3">submitted by</b></th>
+              <td><span style="opacity: 0.5;">{{ createdByName }}</span></td>
+            </tr>
+
+            <!-- Created At -->
+            <tr>
+              <th class="has-text-right"><b class="mr-3">submitted on</b></th>
+              <td><span style="opacity: 0.5;">{{ dayjs(book.createdAt).format('M/D/YYYY') }}</span></td>
+            </tr>
+
+            <!-- Updated At -->
+            <tr v-if="book.updatedAt !== book.createdAt">
+              <th class="has-text-right"><b class="mr-3">updated on</b></th>
+              <td><span style="opacity: 0.5;">{{ dayjs(book.updatedAt).format('M/D/YYYY') }}</span></td>
+            </tr>
 
             <!-- isbn -->
-            <div class="is-flex">
-              <b class="mr-1">isbn</b>
-              <SimpleInput v-if="book" @update:modelValue="saveIsbn" v-model="book.isbn" placeholder="Enter ISBN" />
-            </div>
+            <tr>
+              <th class="has-text-right"><b class="mr-3">isbn</b></th>
+              <td><SimpleInput v-if="book" @update:modelValue="saveIsbn" v-model="book.isbn" placeholder="Enter ISBN" /></td>
+            </tr>
 
             <!-- year -->
-            <div class="is-flex">
-              <b class="mr-1">year</b>
-              <SimpleInput v-if="book" @update:modelValue="updateBook({ year: $event })" v-model="book.year" placeholder="Enter Year" />
-            </div>
+            <tr>
+              <th class="has-text-right"><b class="mr-3">year</b></th>
+              <td><SimpleInput v-if="book" @update:modelValue="updateBook({ year: $event })" v-model="book.year" placeholder="Enter Year" /></td>
+            </tr>
 
             <!-- goodreads -->
-            <div class="is-flex">
-              <b class="mr-1">goodreads</b>
-              <SimpleInput v-if="book" @update:modelValue="updateBook({ goodreads: $event })" v-model="book.goodreads" placeholder="No value" />
-            </div>
+            <tr>
+              <th class="has-text-right"><b class="mr-3">goodreads</b></th>
+              <td><SimpleInput v-if="book" @update:modelValue="updateBook({ goodreads: $event })" v-model="book.goodreads" placeholder="No value" /></td>
+            </tr>
 
-          </div>
+          </table>
 
         </div>
       </div>

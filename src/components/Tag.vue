@@ -15,7 +15,7 @@ export default {
       validator: value => ['books', 'bundles', 'people'].indexOf(value) !== -1,
     }
   },
-  emits: ['remove'],
+  emits: ['click', 'remove'],
   computed: {
     // map the prop type to the router type
     routerType() {
@@ -55,20 +55,20 @@ export default {
 <template>
   <div v-if="tag" class="mr-1" style="display: inline-block;">
 
-    <span v-if="nolink" :class="buttonClass" class="button is-primary is-rounded is-mini" style="cursor: default; font-size: 10px;" :style="tagStyle">
-      <span>{{ tag.tag }}</span>
-      <span v-if="editable" class="close" v-tippy="{ content: `Remove tag from ${singleType}` }" @click.prevent="removeTag">✕</span>
+    <span v-if="nolink" @click.prevent.stop="$emit('click', tag)" :class="buttonClass" class="button is-primary is-rounded is-mini nolink" style="cursor: default; font-size: 10px;" :style="tagStyle">
+      <span><slot>{{ tag.tag }}</slot></span>
+      <span v-if="editable" class="close" v-tippy="{ content: `Remove tag from ${singleType}` }" @click.prevent.stop="removeTag">✕</span>
     </span>
 
-    <button v-else-if="editable" :class="buttonClass" class="button is-primary is-rounded is-mini" style="cursor: default; font-size: 10px;" :style="tagStyle">
+    <button v-else-if="editable" @click.prevent.stop="$emit('click', tag)" :class="buttonClass" class="button is-primary is-rounded is-mini" style="cursor: default; font-size: 10px;" :style="tagStyle">
       <!-- reset color to inherit, otherwise it will become the primary color on hover and disappear on the primary colored background -->
-      <a @click.prevent="goToManager" style="color: inherit;">{{ tag.tag }}</a>
-      <span v-if="editable" class="close" v-tippy="{ content: `Remove tag from ${singleType}` }" @click.prevent="removeTag">✕</span>
+      <a @click.prevent.stop="goToManager" style="color: inherit;">{{ tag.tag }}</a>
+      <span v-if="editable" class="close" v-tippy="{ content: `Remove tag from ${singleType}` }" @click.prevent.stop="removeTag">✕</span>
     </button>
 
-    <button v-else :class="buttonClass" class="button is-primary is-rounded is-mini mb-1" style="display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; font-size: 11px;" :style="tagStyle">
-      <span @click.prevent="goToFilter">{{ tag.tag }}</span>
-      <span v-if="editable" class="close" v-tippy="{ content: 'Remove tag from book' }" @click.prevent="removeTag">✕</span>
+    <button v-else :class="buttonClass" @click.prevent.stop="$emit('click', tag)" class="button is-primary is-rounded is-mini mb-1" style="display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; font-size: 11px;" :style="tagStyle">
+      <span @click.prevent.stop="goToFilter">{{ tag.tag }}</span>
+      <span v-if="editable" class="close" v-tippy="{ content: 'Remove tag from book' }" @click.prevent.stop="removeTag">✕</span>
     </button>
 
   </div>
@@ -76,6 +76,8 @@ export default {
 
 <style lang="scss" scoped>
 @import "bulma/sass/utilities/_all.sass";
+@import '@/assets/style/vars.scss';
+@import '@/assets/style/mixins.scss';
 @import "bulma/sass/elements/table.sass";
 
 .close {
@@ -94,4 +96,10 @@ export default {
     background-color: transparent;
   }
 }
+
+.button.is-primary.nolink:hover {
+  @include primary(color, !important);
+  background-color: inherit !important;
+}
+
 </style>

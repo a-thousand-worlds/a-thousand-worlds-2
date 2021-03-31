@@ -28,8 +28,11 @@ export default {
 @import '@/assets/style/vars.scss';
 @import '@/assets/style/mixins.scss';
 
-.notification:not(.is-danger) {
-  @include primary('background-color');
+.notification {
+  color: #fff;
+  &:not(.is-danger) {
+    @include primary('background-color');
+  }
 }
 
 .has-shadow {

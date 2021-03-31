@@ -33,7 +33,7 @@ const module = mergeOne(managed('submits/books'), {
           group: submissionGroupId,
           id: sid,
           illustrators: Array.isArray(sub.illustrators) ? sub.illustrators.join('. ') : sub.illustrators || '',
-          isbn: sub.isbn || '',
+          isbn: sub.isbn ? sub.isbn.toString() : '',
           publisher: sub.publisher || '',
           reviewComment: '',
           status: 'pending',
@@ -114,8 +114,8 @@ const module = mergeOne(managed('submits/books'), {
     approveBook: async (context, sub) => {
 
       // collect creators and create not existing people
-      const authors = sub.authors.split(/[.,;&]| and /g).map(x => x.trim()).filter(x => x)
-      const illustrators = sub.illustrators.split(/[.,;&]| and /g).map(x => x.trim()).filter(x => x)
+      const authors = sub.authors.split(/[,;&]| and /g).map(x => x.trim()).filter(x => x)
+      const illustrators = sub.illustrators.split(/[,;&]| and /g).map(x => x.trim()).filter(x => x)
         // convert "same" text to creator name
         .map(illustrator => isSame(illustrator) ? authors[0] : illustrator)
       const creators = {}
@@ -130,7 +130,7 @@ const module = mergeOne(managed('submits/books'), {
           cid = uid()
           await context.dispatch('people/save', { path: cid, value: { id: cid, name: author, reviewedBy: context.rootState.user.user.uid } }, { root: true })
         }
-        creators[cid] = creators[cid] ? 'both' : 'author'
+        creators[cid] = creators[cid] ? 'author-illustrator' : 'author'
       })
 
       // add illustrator creators
@@ -143,7 +143,7 @@ const module = mergeOne(managed('submits/books'), {
           cid = uid()
           await context.dispatch('people/save', { path: cid, value: { id: cid, name: illustrator, reviewedBy: context.rootState.user.user.uid } }, { root: true })
         }
-        creators[cid] = creators[cid] ? 'both' : 'illustrator'
+        creators[cid] = creators[cid] ? 'author-illustrator' : 'illustrator'
       })
 
       // save book

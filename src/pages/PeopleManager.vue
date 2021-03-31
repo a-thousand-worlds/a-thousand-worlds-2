@@ -3,11 +3,14 @@ import _ from 'lodash'
 import dayjs from 'dayjs'
 import { remove as diacritics } from 'diacritics'
 import creatorTitles from '@/store/constants/creatorTitles'
+
 import DeletePersonButton from '@/components/DeletePersonButton'
+import HighlightedText from '@/components/HighlightedText'
 import Loader from '@/components/Loader'
 import PersonDetailLink from '@/components/PersonDetailLink'
 import SortableTableHeading from '@/components/SortableTableHeading'
 import StaticCoverImage from '@/components/StaticCoverImage'
+import Tag from '@/components/Tag'
 
 /** Generates a sort token that will sort empty strings to the end regardless of sort direction. */
 const sortEmptyToEnd = (s, dir) =>
@@ -17,10 +20,12 @@ export default {
   name: 'PeopleManager',
   components: {
     DeletePersonButton,
+    HighlightedText,
     Loader,
     PersonDetailLink,
     SortableTableHeading,
     StaticCoverImage,
+    Tag,
   },
   data() {
     const sortField = this.$route.query?.sort || 'created'
@@ -43,10 +48,11 @@ export default {
     people() {
 
       // sort people by the sort config
-      const sort = list => {
-        const sorted = _.sortBy(list, [
+      const sort = people => {
+        const sorted = _.sortBy(people, [
           person => this.sortConfig.field === 'title' ? sortEmptyToEnd((person.title || person.role || '').toLowerCase(), this.sortConfig.dir)
           : this.sortConfig.field === 'created' ? dayjs(person.created)
+          : this.sortConfig.field === 'tags' ? sortEmptyToEnd(this.getTags(person).map(tag => tag.tag).join(' '), this.sortConfig.dir)
           : this.sortConfig.field === 'updated' ? dayjs(person.updated)
           : (person[this.sortConfig.field] || '').toLowerCase(),
           'nameLower'
@@ -55,14 +61,9 @@ export default {
       }
 
       // filter people by the active search
-      const filter = list => this.search
-        ? list.filter(person => diacritics([
-          person.created,
-          person.name,
-          person.title,
-          person.role,
-        ].join(' ')).toLowerCase().includes(diacritics(this.search.trim()).toLowerCase()))
-        : list
+      const filter = people => this.search
+        ? people.filter(person => this.searchPredicate(person))
+        : people
 
       return sort(filter(this.peopleList))
     },
@@ -73,7 +74,11 @@ export default {
           ...person,
           nameLower: person.name.toLowerCase(),
         }))
-    }
+    },
+
+    tags() {
+      return this.$store.getters[`tags/people/listSorted`]()
+    },
 
   },
 
@@ -110,9 +115,56 @@ export default {
       return dayjs(d).format('M/D/YYYY hh:mm')
     },
 
-    getTitle(person) {
+    formatTitle(person) {
       const creatorTitleObject = creatorTitles.find(o => o.id === person.title || o.id === person.role)
       return creatorTitleObject?.text
+    },
+
+    getTags(person) {
+      const tagsState = this.$store.state.tags.people
+      return tagsState.loaded
+        ? Object.keys(person.identities || {}).map(tagId => tagsState.data[tagId])
+        : null
+    },
+
+    /** Returns true if a string matches the search term (trimmed, lowercased, and diacritics removed). */
+    isMatch(value, search) {
+      return diacritics(value.trim()).toLowerCase().includes(diacritics(search.trim()).toLowerCase())
+    },
+
+    /** Returns true if the person matches the search. Case insensitive, partial match, support for filtering by field, e.g. tag:poetry */
+    searchPredicate(person) {
+
+      const split = this.search.split(':')
+      const field = split.length > 1 ? split[0].trim().toLowerCase() : null
+      const searchValue = split.length > 1 ? split[1] : split[0]
+
+      // map fields to formating functions
+      const format = {
+        name: person.name,
+        created: this.formatDate(person.created),
+        title: this.formatTitle(person),
+        tag: this.getTags(person).map(tag => tag.tag).join(' ')
+      }
+
+      return field
+        ? this.isMatch(format[field] || '', searchValue)
+        : Object.values(format)
+          .map(s => (s || '').toLowerCase())
+          .some(s => this.isMatch(s, searchValue))
+    },
+
+    toggleTagSearch(tag) {
+      const term = `tag:${tag.tag}`
+
+      if (this.search.includes(term)) {
+        this.search = this.search.replace(term, '')
+      }
+      else {
+        // replace search until better search logic is implemented
+        this.search = term
+        // this.search = `${this.search} ${term}`.trim()
+      }
     },
 
   },
@@ -136,7 +188,8 @@ export default {
           <router-link class="mr-20" :to="{ name:'TagsManager', query: { active: 'people' } }" style="color: black; line-height: 2.5;">People Tags</router-link>
         </div>
         <div class="is-flex is-align-items-center">
-          <span class="has-text-right" v-tippy="{ content: `Search by name, title, or date created` }" style="white-space: nowrap;"><i class="far fa-question-circle" /></span>
+          <span v-if="loaded" class="mr-40" style="white-space: nowrap">{{ people.length }} creator{{ people.length === 1 ? '' : 's' }} <span v-if="search">(filtered)</span></span>
+          <span class="has-text-right" v-tippy="{ content: `Search all creators. Use 'field:value' to filter by a specific field, e.g. 'tag:Asian'` }" style="white-space: nowrap;"><i class="far fa-question-circle" /></span>
           <i class="fas fa-search" style="transform: translateX(23px); z-index: 10; opacity: 0.3;" />
           <input v-model="search" placeholder="Search" class="input pl-30">
         </div>
@@ -158,6 +211,7 @@ export default {
             <tr>
               <td />
               <SortableTableHeading id="nameLower" v-model="sortConfig">Name</SortableTableHeading>
+              <SortableTableHeading id="tags" v-model="sortConfig">Tags</SortableTableHeading>
               <SortableTableHeading id="title" v-model="sortConfig">Title</SortableTableHeading>
               <SortableTableHeading id="created" v-model="sortConfig" default="desc" class="has-text-right pr-20">Created</SortableTableHeading>
               <th class="has-text-right">Delete</th>
@@ -177,15 +231,20 @@ export default {
               <!-- name -->
               <td>
                 <PersonDetailLink :person="person" edit>
-                  {{ person.name }}
+                  <HighlightedText field="name" :search="search">{{ person.name }}</HighlightedText>
                 </PersonDetailLink>
               </td>
 
+              <!-- tags -->
+              <td>
+                <Tag v-for="tag of getTags(person)" :key="tag.id" :tag="tag" type="people" @click="toggleTagSearch" nolink button-class="is-outlined pointer"><HighlightedText field="tag" :search="search">{{ tag.tag }}</HighlightedText></Tag>
+              </td>
+
               <!-- title -->
-              <td>{{ getTitle(person) }}</td>
+              <td><HighlightedText field="title" :search="search">{{ formatTitle(person) }}</HighlightedText></td>
 
               <!-- created -->
-              <td class="has-text-right">{{ formatDate(person.created) }}</td>
+              <td class="has-text-right"><HighlightedText field="created" :search="search">{{ formatDate(person.created) }}</HighlightedText></td>
 
               <!-- delete -->
               <!-- disable until better syncing of books and user account is implemented -->
@@ -211,4 +270,10 @@ export default {
 <style lang="scss" scoped>
 @import "bulma/sass/utilities/_all.sass";
 @import "bulma/sass/elements/table.sass";
+</style>
+
+<style lang="scss">
+.pointer span {
+  cursor: pointer !important;
+}
 </style>

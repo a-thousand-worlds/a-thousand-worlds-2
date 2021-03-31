@@ -53,7 +53,7 @@ export default {
     </div>
 
     <!-- add -->
-    <Tag :tag="{ tag: 'ADD CREATOR' }" nolink buttonClass="add-tag" tagStyle="border-color: #000; cursor: pointer;" v-click-outside="closeDropdown" @click.prevent.stop="dropdownActive = !dropdownActive" />
+    <Tag :tag="{ tag: 'ADD CREATOR' }" nolink buttonClass="add-tag is-outlined" tagStyle="border-color: #000; cursor: pointer;" v-click-outside="closeDropdown" @click.prevent.stop="dropdownActive = !dropdownActive" />
 
   </div>
 
@@ -63,13 +63,14 @@ export default {
 @import "bulma/sass/utilities/_all.sass";
 @import "bulma/sass/components/dropdown.sass";
 @import '@/assets/style/vars.scss';
+@import '@/assets/style/mixins.scss';
 
 hr.dropdown-divider {
   background-color: #ccc;
 }
 
 .add-tag {
-  background-color: #fff !important;
+  color: #000 !important;
 
   & span {
     color: #000;
@@ -79,10 +80,11 @@ hr.dropdown-divider {
     color: #000;
   }
 
-  &:hover {
-    background-color: #000 !important;
+  &.button.is-primary.nolink:hover {
+    @include primary(background-color, !important);
+    @include primary(border-color, !important);
     & span {
-      color: #fff;
+      color: #fff !important;
     }
   }
 }

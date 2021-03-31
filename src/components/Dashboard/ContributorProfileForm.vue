@@ -125,6 +125,7 @@ export default {
       savePromise
         .then(uid => {
           this.loading = false
+          this.disableAfterSave = false
           this.$store.dispatch('ui/popup', {
             text: `${this.admin ? 'Contributor' : 'Profile'} saved`,
             type: 'success'
@@ -133,12 +134,9 @@ export default {
         })
         .catch(e => {
           this.loading = false
+          this.disableAfterSave = false
           throw new Error(e)
         })
-
-      this.disableAfterSaveTimeout = setTimeout(() => {
-        this.disableAfterSave = false
-      }, 1000)
 
       this.$emit('save', savePromise.then(uid => ({
         ...profile,
