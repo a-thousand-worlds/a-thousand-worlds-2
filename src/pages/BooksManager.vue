@@ -1,5 +1,7 @@
 <script>
-import _ from 'lodash'
+import sortBy from 'lodash/sortBy'
+import reverse from 'lodash/reverse'
+import debounce from 'lodash/debounce'
 import dayjs from 'dayjs'
 import { remove as diacritics } from 'diacritics'
 
@@ -47,14 +49,14 @@ export default {
 
       // sort books by the sort config
       const sort = books => {
-        const sorted = _.sortBy(books, [
+        const sorted = sortBy(books, [
           book => this.sortConfig.field === 'authors' ? sortEmptyToEnd(this.formatAuthors(book.creators), this.sortConfig.dir)
           : this.sortConfig.field === 'illustrators' ? sortEmptyToEnd(this.formatIllustrators(book.creators), this.sortConfig.dir)
           : this.sortConfig.field === 'tags' ? sortEmptyToEnd(this.getTags(book).map(tag => tag.tag).join(' '), this.sortConfig.dir)
           : sortEmptyToEnd(book[this.sortConfig.field], this.sortConfig.dir),
           'titleLower'
         ])
-        return this.sortConfig.dir === 'desc' ? _.reverse(sorted) : sorted
+        return this.sortConfig.dir === 'desc' ? reverse(sorted) : sorted
       }
 
       // filter books by the active search
@@ -82,7 +84,7 @@ export default {
   watch: {
 
     // update search query param on change
-    search: _.debounce(function(next, prev) {
+    search: debounce(function(next, prev) {
       this.$router.replace({
         ...this.$route,
         query: {
@@ -93,7 +95,7 @@ export default {
     }, 200),
 
     // update sort query param on change
-    sortConfig: _.debounce(function(next, prev) {
+    sortConfig: debounce(function(next, prev) {
       this.$router.replace({
         ...this.$route,
         query: {

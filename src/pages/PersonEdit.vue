@@ -11,8 +11,11 @@ import PhotoUpload from '@/components/PhotoUpload'
 import Tag from '@/components/Tag'
 import SimpleInput from '@/components/fields/SimpleInput'
 
+// const BalloonEditor = import(/* webpackChunkName: "ckeditor" */'@ckeditor/ckeditor5-build-balloon')
+
 export default {
   components: {
+    // ckeditor: () => import(/* webpackChunkName: "ckeditor" */ '@ckeditor/ckeditor5-vue'),
     BookListView,
     Filter,
     Loader,
@@ -37,6 +40,7 @@ export default {
         toolbar: [],
       },
       creatorTitles,
+      // editor: () => import(/* webpackChunkName: "ckeditor" */'@ckeditor/ckeditor5-build-balloon'),
       editor: BalloonEditor,
       editOnClick: false,
       tagsDropdownActive: false,

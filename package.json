@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "vue-cli-service build",
+    "build:report": "vue-cli-service build --report",
     "deploy": "npm run build && firebase deploy --only hosting",
     "deploy:functions": "firebase deploy --only functions",
     "deploy:staging": "npm run build && npm run host:staging",

@@ -1,5 +1,5 @@
 import { v4 as uid } from 'uuid'
-import _ from 'lodash'
+import groupBy from 'lodash/groupBy'
 import dayjs from 'dayjs'
 import managed from '@/store/modules/managed'
 import almostEqual from '@/util/almostEqual'
@@ -55,7 +55,7 @@ const module = mergeOne(managed('submits/books'), {
       // save user profile/submissions
 
       // allow createdBy to be overwritten (owner only)
-      const reviewerGroups = _.groupBy(submissionsSaved, 'createdBy')
+      const reviewerGroups = groupBy(submissionsSaved, 'createdBy')
       Object.entries(reviewerGroups).forEach(async ([createdBy, submissions]) => {
 
         const profile = iam(context.rootState, 'owner') && createdBy

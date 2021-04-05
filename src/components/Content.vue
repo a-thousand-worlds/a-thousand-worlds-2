@@ -1,5 +1,5 @@
 <script>
-import _ from 'lodash'
+import debounce from 'lodash/debounce'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import { get } from '@/util/get-set'
 import FirebaseUploadAdapter from '@/util/ckeditorFirebaseUploadAdapter'
@@ -65,7 +65,7 @@ export default {
       return this.$store.getters['content/get'](this.name) ?? slotDefault
     },
 
-    save: _.debounce(function() {
+    save: debounce(function() {
       if (this.$can('editContent')) {
         this.$store.dispatch('content/save', { path: this.name, value: this.html })
       }

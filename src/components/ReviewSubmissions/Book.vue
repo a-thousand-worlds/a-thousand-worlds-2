@@ -1,5 +1,5 @@
 <script>
-import _ from 'lodash'
+import debounce from 'lodash/debounce'
 import Jimp from 'jimp'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import almostEqual from '@/util/almostEqual'
@@ -7,8 +7,11 @@ import MultiPersonField from '@/components/fields/MultiPerson'
 import SimpleInput from '@/components/fields/SimpleInput'
 import Tag from '@/components/Tag'
 
+// const BalloonEditor = import(/* webpackChunkName: "ckeditor" */'@ckeditor/ckeditor5-build-balloon')
+
 export default {
   components: {
+    // ckeditor: () => import(/* webpackChunkName: "ckeditor" */ '@ckeditor/ckeditor5-vue'),
     MultiPersonField,
     SimpleInput,
     Tag,
@@ -22,6 +25,7 @@ export default {
         placeholder: 'No summary'
       },
       sub: this.submission || {},
+      // editor: () => import(/* webpackChunkName: "ckeditor" */'@ckeditor/ckeditor5-build-balloon'),
       editor: BalloonEditor,
       // selected: this.checked || false,
       // submitter: {},
@@ -74,7 +78,7 @@ export default {
       await this.$store.commit('ui/setBusy', false)
       this.$store.dispatch('ui/popup', 'Submission rejected')
     },
-    save: _.debounce(async function() {
+    save: debounce(async function() {
       await this.$store.dispatch('submissions/books/save', {
         path: this.sub.id,
         value: { ...this.sub }

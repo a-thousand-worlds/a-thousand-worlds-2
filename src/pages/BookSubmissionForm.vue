@@ -1,5 +1,6 @@
 <script>
-import _ from 'lodash'
+import throttle from 'lodash/throttle'
+import debounce from 'lodash/debounce'
 import ISBN from 'isbn3'
 import { v4 as uid } from 'uuid'
 import metadataByISBN from '@/util/metadataByISBN'
@@ -130,7 +131,7 @@ export default {
       clearTimeout(this.draftSaved)
       this.draftSaved = null
     },
-    saveDraft: _.debounce(function() {
+    saveDraft: debounce(function() {
       // user should be defined for all normal use
       // it may be undefined in unit tests
       if (!this.$store.state.user.user) return
@@ -179,7 +180,7 @@ export default {
       this.revalidate()
     },
 
-    metadataInputsChangedDebounced: _.debounce(async function(si) {
+    metadataInputsChangedDebounced: debounce(async function(si) {
       const { authors, illustrators, title } = this.submissions[si]
       this.setConfirmed(si, null)
       this.submissions[si].attempts = 0
@@ -253,7 +254,7 @@ export default {
       if (meta.illustrators?.length && meta.illustrators?.join(', ') !== sub.illustrators && !sub.illustrators) sub.illustrators = meta.illustrators.join(', ')
     },
 
-    updateMetadataDebounced: _.debounce(function(si) {
+    updateMetadataDebounced: debounce(function(si) {
       return this.updateMetadata(si)
     }, 500),
 
@@ -302,7 +303,7 @@ export default {
       ].filter(x => x)
     },
 
-    revalidate: _.throttle(function() {
+    revalidate: throttle(function() {
       this.saveDraft()
       if (this.errors.length > 0) {
         this.validate()

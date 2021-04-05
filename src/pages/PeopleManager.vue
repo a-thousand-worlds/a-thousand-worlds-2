@@ -1,5 +1,7 @@
 <script>
-import _ from 'lodash'
+import sortBy from 'lodash/sortBy'
+import reverse from 'lodash/reverse'
+import debounce from 'lodash/debounce'
 import dayjs from 'dayjs'
 import { remove as diacritics } from 'diacritics'
 import creatorTitles from '@/store/constants/creatorTitles'
@@ -49,7 +51,7 @@ export default {
 
       // sort people by the sort config
       const sort = people => {
-        const sorted = _.sortBy(people, [
+        const sorted = sortBy(people, [
           person => this.sortConfig.field === 'title' ? sortEmptyToEnd((person.title || person.role || '').toLowerCase(), this.sortConfig.dir)
           : this.sortConfig.field === 'created' ? dayjs(person.created)
           : this.sortConfig.field === 'tags' ? sortEmptyToEnd(this.getTags(person).map(tag => tag.tag).join(' '), this.sortConfig.dir)
@@ -57,7 +59,7 @@ export default {
           : (person[this.sortConfig.field] || '').toLowerCase(),
           'nameLower'
         ])
-        return this.sortConfig.dir === 'desc' ? _.reverse(sorted) : sorted
+        return this.sortConfig.dir === 'desc' ? reverse(sorted) : sorted
       }
 
       // filter people by the active search
@@ -85,7 +87,7 @@ export default {
   watch: {
 
     // update search query param on change
-    search: _.debounce(function(next, prev) {
+    search: debounce(function(next, prev) {
       this.$router.replace({
         ...this.$route,
         query: {
@@ -96,7 +98,7 @@ export default {
     }, 200),
 
     // update sort query param on change
-    sortConfig: _.debounce(function(next, prev) {
+    sortConfig: debounce(function(next, prev) {
       this.$router.replace({
         ...this.$route,
         query: {

@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import pick from 'lodash/pick'
 import { v4 as uid } from 'uuid'
 import dayjs from 'dayjs'
 import * as slugify from '@sindresorhus/slugify'
@@ -172,7 +172,7 @@ const module = mergeOne(managed('submits/people'), {
       const personId = sub.personId || person?.id || uid()
       const personNew = {
         ...person,
-        ..._.pick(sub, Object.keys(personSubmission())),
+        ...pick(sub, Object.keys(personSubmission())),
         id: personId,
       }
 

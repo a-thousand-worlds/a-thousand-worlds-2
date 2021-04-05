@@ -1,5 +1,6 @@
 <script>
-import _ from 'lodash'
+import pick from 'lodash/pick'
+import debounce from 'lodash/debounce'
 import validator from '@/mixins/validator'
 import genders from '@/store/constants/genders'
 import creatorTitles from '@/store/constants/creatorTitles'
@@ -103,7 +104,7 @@ export default {
         // name from private user profile
         name: this.name,
         // copy all relevant fields from person
-        ..._.pick(this.person, Object.keys(emptySubmission)),
+        ...pick(this.person, Object.keys(emptySubmission)),
         ...this.person?.bio ? { bio: this.person.bio.replace(/<\/?p>/g, '') } : null,
         // copy identities object, otherwise editing the form will update the person identities object by reference
         identities: this.person?.identities ? { ...this.person.identities } : {},
@@ -111,7 +112,7 @@ export default {
       }
     },
 
-    saveDraftAndRevalidate: _.debounce(function() {
+    saveDraftAndRevalidate: debounce(function() {
       this.revalidate()
       clearTimeout(this.draftSaved)
       this.$store.dispatch('user/savePersonSubmissionDraft', this.submission)

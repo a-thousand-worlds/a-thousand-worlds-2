@@ -1,5 +1,5 @@
 <script>
-import _ from 'lodash'
+import sortBy from 'lodash/sortBy'
 import Clipboard from 'clipboard'
 import BookDetailFooter from '@/components/BookDetailFooter'
 import BookmarkButton from '@/components/BookmarkButton'
@@ -50,7 +50,7 @@ export default {
     // creators id array sorted by authors then illustrators
     creators() {
       if (!this.book || !this.book.creators) return []
-      return _.sortBy(Object.keys(this.book.creators), id => this.book.creators[id])
+      return sortBy(Object.keys(this.book.creators), id => this.book.creators[id])
     },
     editUrl() {
       const url = window.location.href

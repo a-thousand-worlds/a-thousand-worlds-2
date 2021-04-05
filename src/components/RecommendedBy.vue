@@ -1,5 +1,5 @@
 <script>
-import _ from 'lodash'
+import sortBy from 'lodash/sortBy'
 import engagements from '@/store/constants/engagements'
 import normalizeLink from '@/util/normalizeLink'
 import ContributorProfileForm from '@/components/Dashboard/ContributorProfileForm'
@@ -56,7 +56,7 @@ export default {
           .filter(([id, user]) => user.roles?.contributor)
           .map(([id, user]) => ({ id, ...user }))
         : []
-      return _.sortBy(contributorList, 'profile.name')
+      return sortBy(contributorList, 'profile.name')
     },
 
     // populated individually in the created hook since users are not loaded automatically except for admin

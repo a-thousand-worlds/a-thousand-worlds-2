@@ -1,5 +1,5 @@
 /** Vuex module for authentication and current user */
-import _ from 'lodash'
+import set from 'lodash/set'
 import firebase from '@/firebase'
 import can from '@/util/can'
 import mergeOne from '@/util/mergeOne'
@@ -97,7 +97,7 @@ const module = mergeOne(usersModule, {
     /** Save to the currently logged in user */
     save(ctx, { path, value }) {
       const userNew = { ...ctx.state.user }
-      _.set(userNew, path, value)
+      set(userNew, path, value)
       ctx.commit('setUser', userNew)
       return usersModule.actions.save(ctx, {
         path: `${ctx.state.user.uid}/${path}`,

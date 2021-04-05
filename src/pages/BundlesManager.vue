@@ -1,5 +1,7 @@
 <script>
-import _ from 'lodash'
+import sortBy from 'lodash/sortBy'
+import reverse from 'lodash/reverse'
+import debounce from 'lodash/debounce'
 import dayjs from 'dayjs'
 import Loader from '@/components/Loader'
 import PersonDetailLink from '@/components/PersonDetailLink'
@@ -40,14 +42,14 @@ export default {
 
       // sort bundles by the sort config
       const sort = list => {
-        const sorted = _.sortBy(list, [
+        const sorted = sortBy(list, [
           bundle => this.sortConfig.field === 'title' ? sortEmptyToEnd((bundle.title || bundle.role || '').toLowerCase(), this.sortConfig.dir)
           : this.sortConfig.field === 'created' ? dayjs(bundle.created)
           : this.sortConfig.field === 'updated' ? dayjs(bundle.updated)
           : (bundle[this.sortConfig.field] || '').toLowerCase(),
           'nameLower'
         ])
-        return this.sortConfig.dir === 'desc' ? _.reverse(sorted) : sorted
+        return this.sortConfig.dir === 'desc' ? reverse(sorted) : sorted
       }
 
       // filter bundles by the active search
@@ -76,7 +78,7 @@ export default {
   watch: {
 
     // update search query param on change
-    search: _.debounce(function(next, prev) {
+    search: debounce(function(next, prev) {
       this.$router.replace({
         ...this.$route,
         query: {
@@ -87,7 +89,7 @@ export default {
     }, 200),
 
     // update sort query param on change
-    sortConfig: _.debounce(function(next, prev) {
+    sortConfig: debounce(function(next, prev) {
       this.$router.replace({
         ...this.$route,
         query: {

@@ -1,4 +1,13 @@
 module.exports = {
+  configureWebpack: {
+    optimization: {
+      splitChunks: {
+        chunks: 'all',
+      },
+    }
+  },
+  /*
+  */
   // https://github.com/visualfanatic/vue-svg-loader
   chainWebpack: config => {
 

@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import debounce from 'lodash/debounce'
 
 const validator = getErrors => ({
 
@@ -19,7 +19,7 @@ const validator = getErrors => ({
       return this.errors.length === 0
     },
 
-    revalidate: _.debounce(function(...args) {
+    revalidate: debounce(function(...args) {
       if (this.errors.length > 0) {
         this.validate(...args)
       }

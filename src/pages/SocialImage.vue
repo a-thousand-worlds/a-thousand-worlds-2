@@ -1,5 +1,6 @@
 <script>
-import _ from 'lodash'
+import reverse from 'lodash/reverse'
+import sortBy from 'lodash/sortBy'
 import StaticCoverImage from '@/components/StaticCoverImage'
 
 export default {
@@ -9,7 +10,7 @@ export default {
   },
   computed: {
     books() {
-      return _.reverse(_.sortBy(this.$store.getters['books/list'](), 'created'))
+      return reverse(sortBy(this.$store.getters['books/list'](), 'created'))
     },
   },
 }

@@ -2,7 +2,9 @@
 import managed from '@/store/modules/managed'
 import mergeOne from '@/util/mergeOne'
 import firebase from '@/firebase'
-import Jimp from 'jimp'
+// import Jimp from 'jimp'
+
+const importJimp = () => import('jimp'/* webpackChunkName: "jimp" */)
 
 const module = (name, field) => mergeOne(managed(name), {
   actions: {
@@ -10,6 +12,7 @@ const module = (name, field) => mergeOne(managed(name), {
       if (!path) throw new Error('path required')
       if (typeof value !== 'object') throw new Error('value should be object')
       const image = value[field]
+      const Jimp = await importJimp()
       if (image?.downloadUrl?.length) {
         const img = await Jimp.read(image.downloadUrl)
         const buff = await img.getBufferAsync(Jimp.MIME_PNG)

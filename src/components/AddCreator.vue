@@ -1,5 +1,5 @@
 <script>
-import _ from 'lodash'
+import sortBy from 'lodash/sortBy'
 import creatorTitles from '@/store/constants/creatorTitles'
 import Tag from '@/components/Tag'
 
@@ -19,7 +19,7 @@ export default {
   computed: {
     creators() {
       return this.$store.state.people.data
-        ? _.sortBy(Object.values(this.$store.state.people.data), 'name')
+        ? sortBy(Object.values(this.$store.state.people.data), 'name')
         : null
     }
   },

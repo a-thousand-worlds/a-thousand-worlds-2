@@ -1,5 +1,5 @@
 <script>
-import _ from 'lodash'
+import sortBy from 'lodash/sortBy'
 import dayjs from 'dayjs'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import AddCreator from '@/components/AddCreator'
@@ -14,6 +14,8 @@ import RecommendedBy from '@/components/RecommendedBy'
 import SimpleInput from '@/components/fields/SimpleInput'
 import Tag from '@/components/Tag'
 
+// const BalloonEditor = import(/* webpackChunkName: "ckeditor" */'@ckeditor/ckeditor5-build-balloon')
+
 const formatDate = d => {
   return dayjs(d).format('M/D/YYYY hh:mm')
 }
@@ -21,6 +23,7 @@ const formatDate = d => {
 export default {
   name: 'BookDetail',
   components: {
+    // ckeditor: () => import(/* webpackChunkName: "ckeditor" */ '@ckeditor/ckeditor5-vue'),
     AddCreator,
     BookDetailLink,
     CreatorCard,
@@ -47,6 +50,7 @@ export default {
       },
       dayjs,
       editOnClick: false,
+      // editor: () => import(/* webpackChunkName: "ckeditor" */'@ckeditor/ckeditor5-build-balloon'),
       editor: BalloonEditor,
       tagsDropdownActive: false,
     }
@@ -62,7 +66,7 @@ export default {
     // creators id array sorted by authors then illustrators
     creators() {
       if (!this.book || !this.book.creators) return []
-      return _.sortBy(Object.keys(this.book.creators), id => this.book.creators[id])
+      return sortBy(Object.keys(this.book.creators), id => this.book.creators[id])
     },
     isbn() {
       return this.$route.params.isbn
