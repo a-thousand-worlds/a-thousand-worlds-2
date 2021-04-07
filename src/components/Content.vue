@@ -1,10 +1,12 @@
 <script>
 import debounce from 'lodash/debounce'
-import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import { get } from '@/util/get-set'
-import FirebaseUploadAdapter from '@/util/ckeditorFirebaseUploadAdapter'
+import { defineAsyncComponent } from 'vue'
 
 export default {
+  components: {
+    CEditor: defineAsyncComponent(() => import(/* webpackChunkName: "ckeditor" */ '@/components/CEditor'))
+  },
   props: {
     name: String,
     placeholder: String,
@@ -17,11 +19,6 @@ export default {
   emits: ['data', 'change'],
   data() {
     return {
-      editor: BalloonEditor,
-      editorConfig: {
-        placeholder: this.placeholder,
-        extraPlugins: [FirebaseUploadAdapter]
-      },
       html: this.getContent(),
     }
   },
@@ -77,17 +74,6 @@ export default {
 </script>
 
 <template>
-  <input v-if="format === 'oneline' || format === 'inline'" v-model="html" type="text" :class="format === 'oneline' ? 'input' : format" :disabled="!$can('editContent') || !loaded">
-  <ckeditor v-else v-model="html" :editor="editor" :config="editorConfig" :disabled="!$can('editContent') || !loaded" />
+  <CEditor v-if="$can('editContent')" v-model="html" :format="format" :placeholder="placeholder" />
+  <div v-else :innerHTML="html" />
 </template>
-
-<style scoped lang="scss">
-
-.inline {
-  border: none;
-  box-shadow: none;
-  max-width: 100%;
-  width: 100%;
-}
-
-</style>

@@ -8,11 +8,8 @@ import SimpleInput from '@/components/fields/SimpleInput'
 import Tag from '@/components/Tag'
 import Dropdown from '@/components/Dropdown'
 
-// const BalloonEditor = import(/* webpackChunkName: "ckeditor" */'@ckeditor/ckeditor5-build-balloon')
-
 export default {
   components: {
-    // ckeditor: () => import(/* webpackChunkName: "ckeditor" */ '@ckeditor/ckeditor5-vue'),
     PhotoUpload,
     SimpleInput,
     Tag,
@@ -23,7 +20,6 @@ export default {
     return {
       busy: false,
       creatorTitles,
-      // editor: () => import(/* webpackChunkName: "ckeditor" */'@ckeditor/ckeditor5-build-balloon'),
       editor: BalloonEditor,
       image: null,
       sub: this.submission || {},

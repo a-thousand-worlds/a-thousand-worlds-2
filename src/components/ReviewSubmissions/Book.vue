@@ -7,11 +7,8 @@ import MultiPersonField from '@/components/fields/MultiPerson'
 import SimpleInput from '@/components/fields/SimpleInput'
 import Tag from '@/components/Tag'
 
-// const BalloonEditor = import(/* webpackChunkName: "ckeditor" */'@ckeditor/ckeditor5-build-balloon')
-
 export default {
   components: {
-    // ckeditor: () => import(/* webpackChunkName: "ckeditor" */ '@ckeditor/ckeditor5-vue'),
     MultiPersonField,
     SimpleInput,
     Tag,
@@ -25,10 +22,7 @@ export default {
         placeholder: 'No summary'
       },
       sub: this.submission || {},
-      // editor: () => import(/* webpackChunkName: "ckeditor" */'@ckeditor/ckeditor5-build-balloon'),
       editor: BalloonEditor,
-      // selected: this.checked || false,
-      // submitter: {},
       cover: null,
       people: []
     }

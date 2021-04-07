@@ -14,8 +14,6 @@ import RecommendedBy from '@/components/RecommendedBy'
 import SimpleInput from '@/components/fields/SimpleInput'
 import Tag from '@/components/Tag'
 
-// const BalloonEditor = import(/* webpackChunkName: "ckeditor" */'@ckeditor/ckeditor5-build-balloon')
-
 const formatDate = d => {
   return dayjs(d).format('M/D/YYYY hh:mm')
 }
@@ -23,7 +21,6 @@ const formatDate = d => {
 export default {
   name: 'BookDetail',
   components: {
-    // ckeditor: () => import(/* webpackChunkName: "ckeditor" */ '@ckeditor/ckeditor5-vue'),
     AddCreator,
     BookDetailLink,
     CreatorCard,
@@ -50,7 +47,6 @@ export default {
       },
       dayjs,
       editOnClick: false,
-      // editor: () => import(/* webpackChunkName: "ckeditor" */'@ckeditor/ckeditor5-build-balloon'),
       editor: BalloonEditor,
       tagsDropdownActive: false,
     }
