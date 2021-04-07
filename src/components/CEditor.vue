@@ -6,7 +6,6 @@ export default {
   props: ['modelValue', 'config', 'disabled', 'placeholder', 'format'],
   emits: ['update:modelValue'],
   data() {
-    console.log('cfg', this.config)
     return {
       html: this.modelValue || '',
       editor: BalloonEditor,

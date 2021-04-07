@@ -4,7 +4,8 @@ const firebaseImport = () => import(/* webpackChunkName: "firebase" */ '@/fireba
 
 /** Gets the value of a Firebase reference. */
 export const firebaseGet = refString => new Promise((resolve, reject) => {
-  firebaseImport().then(firebase => {
+  firebaseImport().then(firebasem => {
+    const firebase = firebasem.default
     const ref = firebase.database().ref(refString)
     ref.once('value', snap => {
       resolve(snap.val())
