@@ -1,8 +1,9 @@
 /** A collection that overrides save to provide `createdAt`/`createdBy`, `updatedAt`/`updatedBy`, `reviewedAt`/`reviewedBy` fields. */
 import collection from '@/store/modules/collection'
 import mergeOne from '@/util/mergeOne'
-import firebase from '@/firebase'
+// import firebase from '@/firebase'
 import dayjs from 'dayjs'
+const firebaseImport = () => import(/* webpackChunkName: "firebase" */ '@/firebase')
 
 const module = name => {
   const collectionModule = collection(name)
@@ -10,7 +11,7 @@ const module = name => {
     actions: {
 
       /** save method overrides parents collection/abstract::save */
-      save(ctx, { path, value, method }) {
+      async save(ctx, { path, value, method }) {
         if (!path) throw new Error(`Managed collection "${name}": path required`)
 
         // only manage timestamps if saving a collection item
@@ -35,6 +36,8 @@ const module = name => {
           ...method !== 'update' && value.reviewedBy && !value.reviewedAt && { reviewedAt: userId },
         }
 
+        const firebasem = await firebaseImport()
+        const firebase = firebasem.default
         return firebase.database().ref(`${name}/${path}`)[method || 'set'](valueNew)
       },
 

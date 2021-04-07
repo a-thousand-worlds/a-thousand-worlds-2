@@ -1,7 +1,8 @@
 /** Imaged collection elements use `field` field for element related image, stored at Firestore */
 import managed from '@/store/modules/managed'
 import mergeOne from '@/util/mergeOne'
-import firebase from '@/firebase'
+// import firebase from '@/firebase'
+const firebaseImport = () => import(/* webpackChunkName: "firebase" */ '@/firebase')
 // import Jimp from 'jimp'
 
 const importJimp = () => import('jimp'/* webpackChunkName: "jimp" */)
@@ -11,6 +12,8 @@ const module = (name, field) => mergeOne(managed(name), {
     async saveWithImage(state, { path, value }) {
       if (!path) throw new Error('path required')
       if (typeof value !== 'object') throw new Error('value should be object')
+      const firebasem = await firebaseImport()
+      const firebase = firebasem.default
       const image = value[field]
       const Jimp = await importJimp()
       if (image?.downloadUrl?.length) {
@@ -43,6 +46,8 @@ const module = (name, field) => mergeOne(managed(name), {
     async removeWithImage(state, path) {
       if (!path) throw new Error('path required')
       await state.dispatch(`remove`, path)
+      const firebasem = await firebaseImport()
+      const firebase = firebasem.default
       const ref = await firebase.storage().ref(`${name}/${path}`)
       await ref.delete()
     }

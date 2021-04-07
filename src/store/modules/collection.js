@@ -1,11 +1,14 @@
-import firebase from '@/firebase'
+// import firebase from '@/firebase'
 import { get, set } from '@/util/get-set'
+const firebaseImport = () => import(/* webpackChunkName: "firebase" */ '@/firebase')
 
 /** Gets the value of a Firebase reference. */
 export const firebaseGet = refString => new Promise((resolve, reject) => {
-  const ref = firebase.database().ref(refString)
-  ref.once('value', snap => {
-    resolve(snap.val())
+  firebaseImport().then(firebase => {
+    const ref = firebase.database().ref(refString)
+    ref.once('value', snap => {
+      resolve(snap.val())
+    })
   })
 })
 
@@ -83,6 +86,8 @@ const collectionModule = name => ({
     async save(context, { path, value }) {
       if (!path) throw new Error('path required')
       if (value === undefined) throw new Error('value may not be undefined')
+      const firebasem = await firebaseImport()
+      const firebase = firebasem.default
       const ref = firebase.database().ref(`${name}/${path}`)
       await ref.set(value)
     },
@@ -93,21 +98,26 @@ const collectionModule = name => ({
      * @param transform  Transform the value before it is saved to the state.
      */
     subscribe(context, { onValue, transform } = {}) {
-      const ref = firebase.database().ref(name)
-      ref.on('value', snap => {
-        const value = snap.val()
-        const valueTransformed = transform ? transform(value) : value
-        context.commit('set', valueTransformed || {})
+      firebaseImport().then(firebasem => {
+        const firebase = firebasem.default
+        const ref = firebase.database().ref(name)
+        ref.on('value', snap => {
+          const value = snap.val()
+          const valueTransformed = transform ? transform(value) : value
+          context.commit('set', valueTransformed || {})
 
-        // call onValue after updating state
-        if (onValue) {
-          onValue(value)
-        }
+          // call onValue after updating state
+          if (onValue) {
+            onValue(value)
+          }
+        })
       })
     },
     /** Removes collection entry from Firebase */
     async remove(context, path) {
       if (!path) throw new Error('path required')
+      const firebasem = await firebaseImport()
+      const firebase = firebasem.default
       const ref = firebase.database().ref(`${name}/${path}`)
       await ref.remove()
     },
@@ -115,6 +125,8 @@ const collectionModule = name => ({
     async update(context, { path, value }) {
       if (!path) throw new Error('path required')
       if (value === undefined) throw new Error('value may not be undefined')
+      const firebasem = await firebaseImport()
+      const firebase = firebasem.default
       const ref = firebase.database().ref(`${name}/${path}`)
       await ref.update(value)
     },

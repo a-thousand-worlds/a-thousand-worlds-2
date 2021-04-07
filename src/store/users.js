@@ -1,8 +1,9 @@
 /** Vuex module for users collection */
 import * as slugify from '@sindresorhus/slugify'
-import firebase from '@/firebase'
+// import firebase from '@/firebase'
 import collectionModule, { firebaseGet } from './modules/collection'
 import mergeOne from '@/util/mergeOne'
+const firebaseImport = () => import(/* webpackChunkName: "firebase" */ '@/firebase')
 
 const module = mergeOne(collectionModule('users'), {
   actions: {
@@ -25,6 +26,8 @@ const module = mergeOne(collectionModule('users'), {
         throw new Error(`User '${profile.name}' already exists`)
       }
 
+      const firebasem = await firebaseImport()
+      const firebase = firebasem.default
       await firebase.database().ref(newUserPath).set({
         profile: {
           ...profile,

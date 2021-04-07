@@ -1,9 +1,10 @@
 import * as animal from 'cute-animals'
-import firebase from '@/firebase'
+// import firebase from '@/firebase'
 import mergeOne from '@/util/mergeOne'
 import sendEmail from '@/util/sendEmail'
 import collectionModule from './modules/collection'
 // import { v4 as uid } from 'uuid'
+const firebaseImport = () => import(/* webpackChunkName: "firebase" */ '@/firebase')
 
 const module = mergeOne(collectionModule('invites'), {
   actions: {
@@ -58,6 +59,8 @@ const module = mergeOne(collectionModule('invites'), {
       // generate unique code and save invite record
       // do not overwrite existing record if we have an invitation code collision
       // use a transaction to check existing value and allow retries
+      const firebasem = await firebaseImport()
+      const firebase = firebasem.default
       const ref = firebase.database().ref('invites')
       await ref.transaction(invites => {
         code = animal('adj adj animal').replace(/ /g, '-')

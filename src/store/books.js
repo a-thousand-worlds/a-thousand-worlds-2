@@ -1,8 +1,9 @@
-import firebase from '@/firebase'
+// import firebase from '@/firebase'
 import mergeOne from '@/util/mergeOne'
 import managed from '@/store/modules/managed'
 import filterable from '@/store/modules/filterable'
 import shuffleable from '@/store/modules/shuffleable'
+const firebaseImport = () => import(/* webpackChunkName: "firebase" */ '@/firebase')
 
 const moduleFilterable = filterable()
 const module = mergeOne(
@@ -40,6 +41,8 @@ const module = mergeOne(
 
         // delete book
         // TODO: archive instead of completely deleting
+        const firebasem = await firebaseImport()
+        const firebase = firebasem.default
         await firebase.database().ref(`books/${bookId}`).remove()
       }
     }

@@ -1,10 +1,11 @@
 /** Vuex module for authentication and current user */
 import set from 'lodash/set'
-import firebase from '@/firebase'
+// import firebase from '@/firebase'
 import can from '@/util/can'
 import mergeOne from '@/util/mergeOne'
 import collection from '@/store/modules/collection'
 import router from '../router'
+const firebaseImport = () => import(/* webpackChunkName: "firebase" */ '@/firebase')
 
 function defaultProfile(user, profile = {}) {
   const def = {
@@ -60,11 +61,15 @@ const module = mergeOne(usersModule, {
       })
     },
 
-    login(ctx, data) {
+    async login(ctx, data) {
+      const firebasem = await firebaseImport()
+      const firebase = firebasem.default
       return firebase.auth().signInWithEmailAndPassword(data.email, data.password)
     },
 
-    logout(ctx) {
+    async logout(ctx) {
+      const firebasem = await firebaseImport()
+      const firebase = firebasem.default
       firebase.auth().signOut()
       ctx.commit('setUser', null)
       ctx.commit('ui/setLastVisited', new Date(), { root: true })
@@ -76,6 +81,8 @@ const module = mergeOne(usersModule, {
     },
 
     async signup({ commit, dispatch, rootState }, { code, email, name, password }) {
+      const firebasem = await firebaseImport()
+      const firebase = firebasem.default
       const { user } = await firebase.auth().createUserWithEmailAndPassword(email, password)
 
       commit('setUser', auth2user(user))
@@ -90,7 +97,9 @@ const module = mergeOne(usersModule, {
     },
 
     // keep it here as 'user related'
-    passwordReset(ctx, email) {
+    async passwordReset(ctx, email) {
+      const firebasem = await firebaseImport()
+      const firebase = firebasem.default
       return firebase.auth().sendPasswordResetEmail(email)
     },
 
@@ -106,12 +115,16 @@ const module = mergeOne(usersModule, {
     },
 
     async saveProfile(ctx, profile) {
+      const firebasem = await firebaseImport()
+      const firebase = firebasem.default
       const ref = firebase.database().ref(`users/${ctx.state.user.uid}/profile`)
       await ref.set(profile)
       ctx.commit('setProfile', profile)
     },
 
     async updateProfile(ctx, values) {
+      const firebasem = await firebaseImport()
+      const firebase = firebasem.default
       const ref = firebase.database().ref(`users/${ctx.state.user.uid}/profile`)
       await ref.update(values)
       ctx.commit('setProfile', {
@@ -164,75 +177,80 @@ const module = mergeOne(usersModule, {
     },
 
     subscribe: ctx => {
+      firebaseImport().then(firebasem => {
+        const firebase = firebasem.default
 
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          // User is signed in.
-          const u = auth2user(user)
-          const userRef = firebase.database().ref(`users/${u.uid}`)
+        firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+            // User is signed in.
+            const u = auth2user(user)
+            const userRef = firebase.database().ref(`users/${u.uid}`)
 
-          // subscribe to user
-          userRef.on('value', snap => {
-            const val = snap.val() || { profile: {}, roles: {} }
-            ctx.commit('setUser', {
-              ...u,
-              profile: defaultProfile(u, val.profile || {}),
-              roles: {
-                authorized: true,
-                ...val.roles
-              },
+            // subscribe to user
+            userRef.on('value', snap => {
+              const val = snap.val() || { profile: {}, roles: {} }
+              ctx.commit('setUser', {
+                ...u,
+                profile: defaultProfile(u, val.profile || {}),
+                roles: {
+                  authorized: true,
+                  ...val.roles
+                },
+              })
+
+              // it may happen, that user after registration didn't get his roles from invite immediatelly
+              // so getting role from invite
+              if (val.profile.code && !val.roles) {
+                const inviteRef = firebase.database().ref(`invites/${val.profile.code}`)
+                inviteRef.once('value', inviteSnap => {
+                  const invite = inviteSnap.val()
+                  if (invite && invite.role) {
+                    const roles = {
+                      authorized: true
+                    }
+                    roles[invite.role] = true
+                    ctx.commit('setRoles', roles)
+                  }
+                })
+              }
+
             })
 
-            // it may happen, that user after registration didn't get his roles from invite immediatelly
-            // so getting role from invite
-            if (val.profile.code && !val.roles) {
-              const inviteRef = firebase.database().ref(`invites/${val.profile.code}`)
-              inviteRef.once('value', inviteSnap => {
-                const invite = inviteSnap.val()
-                if (invite && invite.role) {
-                  const roles = {
-                    authorized: true
-                  }
-                  roles[invite.role] = true
-                  ctx.commit('setRoles', roles)
+            // subscribe to profile
+            const profileRef = firebase.database().ref(`users/${u.uid}/profile`)
+            profileRef.on('value', snap => {
+              const profile = defaultProfile(u, snap.val())
+              ctx.commit('setProfile', profile)
+
+              // subscribe to users once logged in if user can edit content
+              // they cannot be subscribed to before authorized login
+              // maybe there is a better way then setTimeout, but without it state does not yet have valid user
+              setTimeout(() => {
+                if (!ctx.rootState.users?.loaded && can(ctx.rootState, 'editContent')) {
+                  ctx.dispatch('users/subscribe', {}, { root: true })
                 }
               })
-            }
-
-          })
-
-          // subscribe to profile
-          const profileRef = firebase.database().ref(`users/${u.uid}/profile`)
-          profileRef.on('value', snap => {
-            const profile = defaultProfile(u, snap.val())
-            ctx.commit('setProfile', profile)
-
-            // subscribe to users once logged in if user can edit content
-            // they cannot be subscribed to before authorized login
-            // maybe there is a better way then setTimeout, but without it state does not yet have valid user
-            setTimeout(() => {
-              if (!ctx.rootState.users?.loaded && can(ctx.rootState, 'editContent')) {
-                ctx.dispatch('users/subscribe', {}, { root: true })
-              }
             })
-          })
 
-          // subscribe to roles
-          const rolesRef = firebase.database().ref(`users/${u.uid}/roles`)
-          rolesRef.on('value', snap => {
-            const roles = defaultProfile(u, snap.val())
-            ctx.commit('setRoles', roles)
-          })
+            // subscribe to roles
+            const rolesRef = firebase.database().ref(`users/${u.uid}/roles`)
+            rolesRef.on('value', snap => {
+              const roles = defaultProfile(u, snap.val())
+              ctx.commit('setRoles', roles)
+            })
 
-        }
-        else {
-          ctx.commit('setUser', null)
-        }
+          }
+          else {
+            ctx.commit('setUser', null)
+          }
+        })
       })
 
     },
 
     async updateEmail(ctx, email) {
+      const firebasem = await firebaseImport()
+      const firebase = firebasem.default
       const user = firebase.auth().currentUser
       if (user.email !== email) {
         await user.updateEmail(email)
