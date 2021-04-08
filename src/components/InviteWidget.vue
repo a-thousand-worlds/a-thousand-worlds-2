@@ -3,6 +3,7 @@ import parseRecipient from '@/util/parseRecipient'
 
 export default {
   data() {
+    const allowedRoles = this.$allowedInviteeRoles()
     return {
       disableSend: null,
       dropdownActive: false,
@@ -10,7 +11,7 @@ export default {
       emailInput: '',
       error: null,
       message: null,
-      role: null,
+      role: allowedRoles.length === 1 ? allowedRoles[0] : null,
     }
   },
   computed: {
