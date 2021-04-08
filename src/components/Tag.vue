@@ -44,6 +44,9 @@ export default {
     goToManager() {
       this.$router.push({ name: 'TagsManager', query: { active: this.type } })
     },
+    onClick() {
+      this.$emit('click', this.tag)
+    },
     removeTag() {
       this.$emit('remove', this.tag)
     },
@@ -55,20 +58,20 @@ export default {
 <template>
   <div v-if="tag" class="mr-1" style="display: inline-block;">
 
-    <span v-if="nolink" @click.prevent.stop="$emit('click', tag)" :class="buttonClass" class="button is-primary is-rounded is-mini nolink" style="cursor: default; font-size: 10px;" :style="tagStyle">
+    <span v-if="nolink" @click="onClick" :class="buttonClass" class="button is-primary is-rounded is-mini nolink" style="cursor: default; font-size: 10px;" :style="tagStyle">
       <span><slot>{{ tag.tag }}</slot></span>
-      <span v-if="editable" class="close" v-tippy="{ content: `Remove tag from ${singleType}` }" @click.prevent.stop="removeTag">✕</span>
+      <span v-if="editable" class="close" v-tippy="{ content: `Remove tag from ${singleType}` }" @click="removeTag">✕</span>
     </span>
 
-    <button v-else-if="editable" @click.prevent.stop="$emit('click', tag)" :class="buttonClass" class="button is-primary is-rounded is-mini" style="cursor: default; font-size: 10px;" :style="tagStyle">
+    <button v-else-if="editable" @click="onClick" :class="buttonClass" class="button is-primary is-rounded is-mini" style="cursor: default; font-size: 10px;" :style="tagStyle">
       <!-- reset color to inherit, otherwise it will become the primary color on hover and disappear on the primary colored background -->
       <a @click.prevent.stop="goToManager" style="color: inherit;">{{ tag.tag }}</a>
-      <span v-if="editable" class="close" v-tippy="{ content: `Remove tag from ${singleType}` }" @click.prevent.stop="removeTag">✕</span>
+      <span v-if="editable" class="close" v-tippy="{ content: `Remove tag from ${singleType}` }" @click="removeTag">✕</span>
     </button>
 
-    <button v-else :class="buttonClass" @click.prevent.stop="$emit('click', tag)" class="button is-primary is-rounded is-mini mb-1" style="display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; font-size: 11px;" :style="tagStyle">
-      <span @click.prevent.stop="goToFilter">{{ tag.tag }}</span>
-      <span v-if="editable" class="close" v-tippy="{ content: 'Remove tag from book' }" @click.prevent.stop="removeTag">✕</span>
+    <button v-else :class="buttonClass" @click="onClick" class="button is-primary is-rounded is-mini mb-1" style="display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; font-size: 11px;" :style="tagStyle">
+      <span @click="goToFilter">{{ tag.tag }}</span>
+      <span v-if="editable" class="close" v-tippy="{ content: 'Remove tag from book' }" @click="removeTag">✕</span>
     </button>
 
   </div>

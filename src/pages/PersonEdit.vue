@@ -233,7 +233,7 @@ export default {
               </div>
 
               <!-- tag -->
-              <Tag :tag="{ tag: 'ADD TAG' }" nolink tagStyle="background-color: #fff; border-color: #000; color: #000 !important; cursor: pointer;" v-click-outside="closeTagsDropdown" @click.prevent.stop="tagsDropdownActive = !tagsDropdownActive" />
+              <Tag :tag="{ tag: 'ADD TAG' }" nolink tagStyle="background-color: #fff; border-color: #000; color: #000 !important; cursor: pointer;" v-click-outside="closeTagsDropdown" @click="tagsDropdownActive = !tagsDropdownActive" />
 
             </div>
 
