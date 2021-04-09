@@ -78,14 +78,14 @@ export default {
       const moveDown = tagOld.sortOrder < tagNew.sortOrder
       const parentOld = this.getParent(tagOld, this.tags)
       const parentNew = parentOld
-        // allow sub-tags to be moved into another tag
+        // allow subtags to be moved into another tag
         ? tagNew.parent
           ? this.getParent(tagNew, this.tags)
           : moveDown ? tagNew : this.tags[e.newIndex - 1]
-        // do not allow tags to be moved to sub-tags
+        // do not allow tags to be moved to subtags
         : null
 
-      // do not allow sub-tags to be moved to the top level
+      // do not allow subtags to be moved to the top level
       if (parentOld && !parentNew) {
         return
       }
@@ -94,7 +94,10 @@ export default {
       const endIndex = Math.max(e.oldIndex, e.newIndex)
       const tagsToResort = this.tags.slice(startIndex, endIndex + 1)
       const startSortOrder = this.tags[startIndex].sortOrder
-      const tagUpdates = tagsToResort.reduce((accum, tag, i) => ({
+      const subtags = this.tags.filter(tag => tag.parent === tagOld.id)
+
+      // update tag sortOrders
+      const updatesTags = tagsToResort.reduce((accum, tag, i) => ({
         ...accum,
         [`${tag.id}/sortOrder`]: moveDown
           // shift up
@@ -109,17 +112,28 @@ export default {
             ? startSortOrder
             // shift other items down
             : startSortOrder + i + 1
-      }), {
-        // update parent
-        ...parentOld !== parentNew && {
-          [`${tagOld.id}/parent`]: parentNew?.id || null
-        }
-      })
+      }), {})
+
+      // re-order subtags with parent.sortOrder + 0.1 increments
+      // ensures no conflicts with other tags
+      const updatesSubtags = subtags.reduce((accum, tag, i) => ({
+        ...accum,
+        [`${tag.id}/sortOrder`]: updatesTags[`${tagOld.id}/sortOrder`] + 1 + (i + 1) * 0.01
+      }), {})
+
+      // update parent if moving a subtag to a new parent
+      const updatesParent = parentOld !== parentNew && {
+        [`${tagOld.id}/parent`]: parentNew?.id || null
+      }
 
       try {
         await this.$store.dispatch(`tags/${this.type}/update`, {
           path: '/',
-          value: tagUpdates
+          value: {
+            ...updatesTags,
+            ...updatesSubtags,
+            ...updatesParent,
+          }
         })
       }
       catch (e) {
