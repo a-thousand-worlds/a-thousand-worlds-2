@@ -34,7 +34,6 @@ export default {
     return {
       ckConfig: {
         placeholder: 'Enter bio',
-        toolbar: [],
       },
       creatorTitles,
       editor: BalloonEditor,

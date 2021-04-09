@@ -43,7 +43,6 @@ export default {
   data() {
     return {
       ckConfig: {
-        toolbar: [],
       },
       dayjs,
       editOnClick: false,

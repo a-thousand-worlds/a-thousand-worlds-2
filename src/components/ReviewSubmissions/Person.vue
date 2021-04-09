@@ -28,7 +28,6 @@ export default {
   computed: {
     ckConfig() {
       return {
-        toolbar: [],
         placeholder: 'No bio'
       }
     },

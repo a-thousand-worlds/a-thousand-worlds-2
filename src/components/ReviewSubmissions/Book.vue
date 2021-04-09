@@ -18,7 +18,6 @@ export default {
     return {
       busy: false,
       ckConfig: {
-        toolbar: [],
         placeholder: 'No summary'
       },
       sub: this.submission || {},

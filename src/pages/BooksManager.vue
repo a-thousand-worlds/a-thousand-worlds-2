@@ -141,7 +141,9 @@ export default {
     getTags(book) {
       const tagsState = this.$store.state.tags.books
       return tagsState.loaded
-        ? Object.keys(book.tags).map(tagId => tagsState.data[tagId])
+        ? Object.keys(book.tags)
+          .map(tagId => tagsState.data[tagId])
+          .filter(x => !!x) // if somehow no tag was defined for book - without this filter page will bring error and stop working
         : null
     },
 
