@@ -65,7 +65,8 @@ export default {
       if (next && !prev) {
         this.submission = {
           ...this.newSubmission(),
-          ...this.$store.state.user.user?.profile.draftPerson
+          // using the draft after the initial submission is confusing/wrong
+          ...!this.person && this.$store.state.user.user?.profile.draftPerson
         }
       }
     },
@@ -79,7 +80,8 @@ export default {
   created() {
     this.submission = {
       ...this.newSubmission(),
-      ...this.$store.state.user.user?.profile.draftPerson
+      // using the draft after the initial submission is confusing/wrong
+      ...!this.person && this.$store.state.user.user?.profile.draftPerson
     }
   },
   methods: {
