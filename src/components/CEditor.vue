@@ -18,6 +18,9 @@ export default {
   watch: {
     html() {
       this.$emit('update:modelValue', this.html)
+    },
+    modelValue(next) {
+      this.html = next
     }
   }
 }
@@ -36,6 +39,10 @@ export default {
   box-shadow: none;
   max-width: 100%;
   width: 100%;
+}
+
+.ck.editor {
+  border: 1px solid #dbdbdb;
 }
 
 </style>
