@@ -152,6 +152,12 @@ export default {
         : null
     },
 
+    /** Returns true if the tag's parent is being dragged. */
+    isParentDragging(tag) {
+      const parent = this.getParent(tag, this.tags)
+      return parent?.dragging
+    },
+
     async remove(id) {
       await this.$store.dispatch(`tags/${this.type}/remove`, id)
       this.resetNewTag()
@@ -258,7 +264,7 @@ export default {
 
       <template #item="{ element: tag }">
 
-        <tr :class="{ 'bg-secondary': tag.dragging }">
+        <tr :class="{ 'bg-secondary': tag.dragging }" :style="isParentDragging(tag) && { display: 'none' }">
           <!-- filters (comment cannot go in template -->
 
           <!-- tag -->
