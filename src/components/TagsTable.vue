@@ -75,35 +75,67 @@ export default {
 
       if (e.oldIndex === e.newIndex) return
 
+      const moveDown = tagOld.sortOrder < tagNew.sortOrder
+      const parentOld = this.getParent(tagOld, this.tags)
+      const parentNew = parentOld
+        // allow sub-tags to be moved into another tag
+        ? tagNew.parent
+          ? this.getParent(tagNew, this.tags)
+          : moveDown ? tagNew : this.tags[e.newIndex - 1]
+        // do not allow tags to be moved to sub-tags
+        : null
+
+      // do not allow sub-tags to be moved to the top level
+      if (parentOld && !parentNew) {
+        return
+      }
+
       const startIndex = Math.min(e.oldIndex, e.newIndex)
       const endIndex = Math.max(e.oldIndex, e.newIndex)
-      const tagsResorted = this.tags.slice(startIndex, endIndex + 1)
+      const tagsToResort = this.tags.slice(startIndex, endIndex + 1)
       const startSortOrder = this.tags[startIndex].sortOrder
+      const tagUpdates = tagsToResort.reduce((accum, tag, i) => ({
+        ...accum,
+        [`${tag.id}/sortOrder`]: moveDown
+          // shift up
+          ? i === 0
+            // move first item to the end
+            ? startSortOrder + tagsToResort.length - 1
+            // shift other items up
+            : startSortOrder + i - 1
+          // shift down
+          : i === tagsToResort.length - 1
+            // move last item to the beginning
+            ? startSortOrder
+            // shift other items down
+            : startSortOrder + i + 1
+      }), {
+        // update parent
+        ...parentOld !== parentNew && {
+          [`${tagOld.id}/parent`]: parentNew?.id || null
+        }
+      })
 
       try {
         await this.$store.dispatch(`tags/${this.type}/update`, {
           path: '/',
-          value: tagsResorted.reduce((accum, tag, i) => ({
-            ...accum,
-            [`${tag.id}/sortOrder`]: tagOld.sortOrder < tagNew.sortOrder
-              // shift up
-              ? i === 0
-                // move first item to the end
-                ? startSortOrder + tagsResorted.length - 1
-                // shift other items up
-                : startSortOrder + i - 1
-              // shift down
-              : i === tagsResorted.length - 1
-                // move last item to the beginning
-                ? startSortOrder
-                // shift other items down
-                : startSortOrder + i + 1
-          }), {})
+          value: tagUpdates
         })
       }
       catch (e) {
         await this.$store.dispatch('ui/popup', { text: e.toString(), type: 'error', autoclose: false })
       }
+    },
+
+    /** Gets the parent of the tag if it has one. */
+    getParent(tag, tags) {
+      const tagIndex = tags.indexOf(tag)
+      return tag.parent && tagIndex !== -1
+        // eslint-disable-next-line fp/no-mutating-methods
+        ? tags.slice(0, tagIndex)
+          .reverse()
+          .find(tag => !tag.parent)
+        : null
     },
 
     async remove(id) {
@@ -216,11 +248,13 @@ export default {
           <!-- filters (comment cannot go in template -->
 
           <!-- tag -->
-          <td style="cursor: grab;">
-            <div class="field">
-              <div class="control">
-                <span v-if="edits[tag.id]"><input v-model="edits[tag.id].tag" type="text" class="input"></span>
-                <span v-else>{{ tag.tag }}</span>
+          <td style="cursor: grab;" :style="tag.parent && { paddingLeft: 0 }">
+            <div :style="tag.parent && { borderBottom: '#dbdbdb', lineHeight: 3.5, margin: '-10px -20px -10px 0', paddingLeft: '42px' }">
+              <div class="field">
+                <div class="control">
+                  <span v-if="edits[tag.id]"><input v-model="edits[tag.id].tag" type="text" class="input"></span>
+                  <span v-else>{{ tag.tag }}</span>
+                </div>
               </div>
             </div>
           </td>
