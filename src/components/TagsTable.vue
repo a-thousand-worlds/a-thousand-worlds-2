@@ -94,7 +94,6 @@ export default {
       const endIndex = Math.max(e.oldIndex, e.newIndex)
       const tagsToResort = this.tags.slice(startIndex, endIndex + 1)
       const startSortOrder = this.tags[startIndex].sortOrder
-      const subtags = this.tags.filter(tag => tag.parent === tagOld.id)
 
       // update tag sortOrders
       const updatesTags = tagsToResort.reduce((accum, tag, i) => ({
@@ -116,9 +115,13 @@ export default {
 
       // re-order subtags with parent.sortOrder + 0.1 increments
       // ensures no conflicts with other tags
+      // re-order all subtags that are affected by the move
+      const subtags = this.tags.filter(tag => tag.parent)
       const updatesSubtags = subtags.reduce((accum, tag, i) => ({
         ...accum,
-        [`${tag.id}/sortOrder`]: updatesTags[`${tagOld.id}/sortOrder`] + 1 + (i + 1) * 0.01
+        ...updatesTags[`${tag.parent}/sortOrder`] && {
+          [`${tag.id}/sortOrder`]: updatesTags[`${tag.parent}/sortOrder`] + (i + 1) * 0.01
+        }
       }), {})
 
       // update parent if moving a subtag to a new parent

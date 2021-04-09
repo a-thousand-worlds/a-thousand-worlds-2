@@ -4,7 +4,9 @@ const module = () => ({
     listSorted: (state, getters) => () => state.loaded
       // eslint-disable-next-line fp/no-mutating-methods
       ? getters.list()
-        .sort((a, b) => parseInt(a.sortOrder) === parseInt(b.sortOrder) ? 0 : parseInt(a.sortOrder) > parseInt(b.sortOrder) ? 1 : -1)
+        .sort((a, b) => parseFloat(a.sortOrder) > parseFloat(b.sortOrder) ? 1
+        : parseFloat(a.sortOrder) < parseFloat(b.sortOrder) ? -1
+        : 0)
       : []
   }
 })
