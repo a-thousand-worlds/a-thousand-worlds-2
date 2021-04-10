@@ -24,7 +24,8 @@ export default {
   },
   data() {
     return {
-      drag: false,
+      dragging: null,
+      dragTo: null,
       edits: {},
       newTag: {},
     }
@@ -53,25 +54,56 @@ export default {
       this.resetNewTag()
     },
 
+    /** On move, set this.dragTo for conditional styles. */
+    dragMove(e) {
+      const tagNew = this.tags[e.relatedContext.index + (e.willInsertAfter ? 1 : 0)]
+      this.dragTo = tagNew
+    },
+
     dragStart(e) {
-      this.drag = true
       const tag = this.tags[e.oldIndex]
-      tag.dragging = true
+      this.dragging = tag
       setDragCursor(true)
     },
 
+    /**
+     * Handles completion of a drag.
+     *
+     * Test cases:
+     *
+     * Move up/down
+     * Move multiple steps up/down
+     * Move to top/bottom
+     *
+     * Move parent up/down
+     * Move parent multiple steps up/down
+     * Move parent to top/bottom
+     *
+     * Move subtag up/down
+     * Move subtag multiple steps up/down
+     * Move subtag to top/bottom
+     *
+     * Move subtag to another parent
+     * Move subtag to top (noop)
+     * Move subtag multiple steps up/down
+     *
+     * Move tag across and above subtags
+     * Move tag across and below subtags
+     * Move tag between subtags
+     *
+     */
     async dragEnd(e) {
-      this.drag = false
+      this.dragging = null
+      this.dragTo = null
       setDragCursor(false)
 
       const tagOld = this.tags[e.oldIndex]
       const tagNew = this.tags[e.newIndex]
+      const tagNext = this.tags[e.newIndex + 1]
 
       if (!tagOld || !tagNew) {
         throw new Error('Tag index error')
       }
-
-      tagOld.dragging = false
 
       if (e.oldIndex === e.newIndex) return
 
@@ -86,13 +118,15 @@ export default {
         : null
 
       // do not allow subtags to be moved to the top level
-      if (parentOld && !parentNew) {
-        return
-      }
+      if (parentOld && !parentNew) return
+
+      // do not allow top-level tags to be moved above a subtag
+      if (!parentOld && (moveDown ? tagNext : tagNew)?.parent) return
 
       const startIndex = Math.min(e.oldIndex, e.newIndex)
       const endIndex = Math.max(e.oldIndex, e.newIndex)
       const tagsToResort = this.tags.slice(startIndex, endIndex + 1)
+      // .filter(tag => parentOld || !tag.parent)
       const startSortOrder = this.tags[startIndex].sortOrder
 
       // update tag sortOrders
@@ -114,15 +148,19 @@ export default {
       }), {})
 
       // re-order subtags with parent.sortOrder + 0.1 increments
+      // only when moving a top-level tag
       // ensures no conflicts with other tags
       // re-order all subtags that are affected by the move
-      const subtags = this.tags.filter(tag => tag.parent)
-      const updatesSubtags = subtags.reduce((accum, tag, i) => ({
-        ...accum,
-        ...updatesTags[`${tag.parent}/sortOrder`] && {
-          [`${tag.id}/sortOrder`]: updatesTags[`${tag.parent}/sortOrder`] + (i + 1) * 0.01
-        }
-      }), {})
+      const updatesSubtags = parentOld ? [] : this.tags
+        .filter(tag => tag.parent === tagOld.id)
+        .reduce((accum, tag, i) => {
+          // const parentSortOrder = updatesTags[`${parentOld ? tag.parent : tagOld.id}/sortOrder`]
+          const parentSortOrder = updatesTags[`${tagOld.id}/sortOrder`]
+          return {
+            ...accum,
+            [`${tag.id}/sortOrder`]: parentSortOrder + (i + 1) * 0.01
+          }
+        }, {})
 
       // update parent if moving a subtag to a new parent
       const updatesParent = parentOld !== parentNew && {
@@ -155,10 +193,14 @@ export default {
         : null
     },
 
+    /** Returns true if we are dragging a top-level tag to a subtag. */
+    isDraggingToSubtag() {
+      return this.dragging && !this.dragging.parent && this.dragTo?.parent
+    },
+
     /** Returns true if the tag's parent is being dragged. */
     isParentDragging(tag) {
-      const parent = this.getParent(tag, this.tags)
-      return parent?.dragging
+      return this.dragging && this.dragging === this.getParent(tag, this.tags)
     },
 
     async remove(id) {
@@ -261,13 +303,17 @@ export default {
       v-model="tags"
       @start="dragStart"
       @end="dragEnd"
+      :move="dragMove"
       item-key="id"
       tag="tbody"
     >
 
       <template #item="{ element: tag }">
 
-        <tr :class="{ 'bg-secondary': tag.dragging }" :style="isParentDragging(tag) && { display: 'none' }">
+        <tr :class="{ 'bg-secondary': tag === dragging }" :style="{
+          ...isParentDragging(tag) && { display: 'none' },
+          ...tag === dragging && isDraggingToSubtag() && { backgroundColor: '#dbdbdb' },
+        }">
           <!-- filters (comment cannot go in template -->
 
           <!-- tag -->
