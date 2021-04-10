@@ -281,7 +281,7 @@ export default {
       <tr>
         <th style="width: 100%;">Tag</th>
         <th class="has-text-centered" v-tippy="{ content: `Adjust the likelihood of ${type} being sorted to the top. For example, a person that has a tag with a weight of 10 means the person is 10 times more likely to be sorted to the top than a person that has a tag with a weight of 1.` }" style="white-space: nowrap;">Weight <i class="far fa-question-circle" /></th>
-        <th v-if="type === 'people'" class="has-text-centered" v-tippy="{ content: `Show this tag as one of the identity options on the People Submission Form.` }" style="white-space: nowrap;">Contributor <i class="far fa-question-circle" /></th>
+        <th v-if="type === 'people'" class="has-text-centered" v-tippy="{ content: `Show this tag as one of the identity options on the People Submission Form.` }" style="white-space: nowrap;">Creator <i class="far fa-question-circle" /></th>
         <th v-if="type === 'people'" class="has-text-centered" v-tippy="{ content: `Show this tag as one of the identity options on the Contributor Profile Form.` }" style="white-space: nowrap;">Contributor <i class="far fa-question-circle" /></th>
         <th class="has-text-centered" v-tippy="{ content: `Show this tag in the ${type} filter menu` }" style="white-space: nowrap;">Show <i class="far fa-question-circle" /></th>
         <th>Edit/Delete</th>
