@@ -193,9 +193,14 @@ export default {
         : null
     },
 
+    /** Returns true if we are dragging a subtag to the top where it would have no parent. */
+    isDraggingSubtagToTop(tag) {
+      return tag === this.dragging && this.dragging.parent && this.dragTo === this.tags[0]
+    },
+
     /** Returns true if we are dragging a top-level tag to a subtag. */
-    isDraggingToSubtag() {
-      return this.dragging && !this.dragging.parent && this.dragTo?.parent
+    isDraggingToSubtag(tag) {
+      return tag === this.dragging && !this.dragging.parent && this.dragTo?.parent
     },
 
     /** Returns true if the tag's parent is being dragged. */
@@ -312,7 +317,7 @@ export default {
 
         <tr :class="{ 'bg-secondary': tag === dragging }" :style="{
           ...isParentDragging(tag) && { display: 'none' },
-          ...tag === dragging && isDraggingToSubtag() && { backgroundColor: '#dbdbdb' },
+          ...isDraggingToSubtag(tag) || isDraggingSubtagToTop(tag) ? { backgroundColor: '#dbdbdb' } : null,
         }">
           <!-- filters (comment cannot go in template -->
 
