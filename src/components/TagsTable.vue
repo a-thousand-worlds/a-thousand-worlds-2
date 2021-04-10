@@ -99,6 +99,7 @@ export default {
 
       const tagOld = this.tags[e.oldIndex]
       const tagNew = this.tags[e.newIndex]
+      const tagPrev = this.tags[e.newIndex - 1]
       const tagNext = this.tags[e.newIndex + 1]
 
       if (!tagOld || !tagNew) {
@@ -113,14 +114,16 @@ export default {
         // allow subtags to be moved into another tag
         ? tagNew.parent
           ? this.getParent(tagNew)
-          : moveDown ? tagNew : this.tags[e.newIndex - 1]
-        // do not allow tags to be moved to subtags
+          : moveDown
+            ? tagNew
+            // handle dragging a subtag to the last position within a tag
+            : tagPrev.parent ? this.getParent(tagPrev) : tagPrev
         : null
 
       // do not allow subtags to be moved to the top level
       if (parentOld && !parentNew) return
 
-      // do not allow top-level tags to be moved above a subtag
+      // do not allow top-level tags to be moved to a subtag
       if (!parentOld && (moveDown ? tagNext : tagNew)?.parent) return
 
       const startIndex = Math.min(e.oldIndex, e.newIndex)
@@ -326,7 +329,7 @@ export default {
 
           <!-- tag -->
           <td style="cursor: grab;" :style="tag.parent && { paddingLeft: 0 }">
-            <div :style="tag.parent && { borderBottom: '#dbdbdb', lineHeight: 3.5, margin: '-10px -20px -10px 0', paddingLeft: '42px' }">
+            <div :style="tag.parent && { borderBottom: '#dbdbdb', margin: '-10px -20px -10px 0', paddingLeft: '42px' }">
               <div class="field">
                 <div class="control">
                   <span v-if="edits[tag.id]"><input v-model="edits[tag.id].tag" type="text" class="input"></span>
