@@ -1,5 +1,4 @@
 <script>
-import genders from '@/store/constants/genders'
 import specialFilters from '@/store/constants/special-filters'
 
 export default {
@@ -12,13 +11,12 @@ export default {
   },
   data() {
     return {
-      genders,
-      genderSubmenuActive: false,
+      submenuActive: null,
     }
   },
   computed: {
-    specialFilters() {
-      return specialFilters[this.type]
+    allTags() {
+      return this.$store.getters[`tags/${this.type}/listSorted`]()
     },
     filters() {
       return Object.values(this.$store.state[this.type]?.filters || {})
@@ -30,13 +28,17 @@ export default {
         : this.type === 'bundles' ? 'Bundles'
         : null
     },
+    specialFilters() {
+      return specialFilters[this.type]
+    },
     tags() {
-      return this.$store.getters[`tags/${this.type}/listSorted`]()
+      // filter out subtags from main filter list
+      return this.allTags.filter(tag => !tag.parent)
     },
   },
   methods: {
-    closeGenderSubmenu() {
-      this.toggleGenderSubmenu(false)
+    closeSubmenu() {
+      this.toggleSubmenu(null)
     },
     /** Adds manual <br> to long tags otherwise the inline-block elements will take up the full width and add unnecessary space before the selection icon. */
     formatTag(name) {
@@ -53,6 +55,10 @@ export default {
         activeFilter.id === filter.id && (!filter.submenu || activeFilter.submenu?.id === filter.submenu?.id)
       )
     },
+    /** Returns true if a tag has subtags */
+    isParent(tag) {
+      return this.allTags.some(t => t.parent === tag.id)
+    },
     resetFilters() {
       this.$store.dispatch(`${this.type}/resetFilters`)
       this.$router.replace({ name: this.routerType })
@@ -63,8 +69,12 @@ export default {
         ? { marginLeft: '6px', top: '11px' }
         : null
     },
-    toggleGenderSubmenu(value) {
-      this.genderSubmenuActive = value !== undefined ? value : !this.genderSubmenuActive
+    /** Gets all the subtags of a top-level tag. */
+    subtags(tag) {
+      return this.allTags.filter(t => t.parent === tag.id)
+    },
+    toggleSubmenu(value) {
+      this.submenuActive = value !== this.submenuActive ? value : null
     },
     toggleFilter(filter) {
       this.$store.dispatch(`${this.type}/toggleFilter`, filter)
@@ -88,18 +98,18 @@ export default {
       </li>
 
       <!-- filters -->
-      <li v-for="filter in tags" :key="filter.id" @mouseover="filter.tag === 'Gender' && toggleGenderSubmenu(true)" @mouseleave="filter.tag === 'Gender' && toggleGenderSubmenu(false)" @click.stop="filter.tag !== 'Gender' && toggleFilter(filter)" style="position: relative;">
+      <li v-for="filter in tags" :key="filter.id" @mouseenter="isParent(filter) && toggleSubmenu(filter)" @mouseleave="isParent(filter) && toggleSubmenu(null)" @click.stop="!isParent(filter) && toggleFilter(filter)" style="position: relative;">
 
-        <button v-if="filter.showOnFront" :class="{ active: isFiltered(filter) || (filter.tag === 'Gender' && genderSubmenuActive)}" class="pb-2" style="padding-left: 2px;">
+        <button v-if="filter.showOnFront" :class="{ active: isFiltered(filter) || (isParent(filter) && submenuActive)}" class="pb-2" style="padding-left: 2px;">
           <span style="display: inline-block;" :innerHTML="formatTag(filter.tag)" />
           <span v-if="isFiltered(filter)" class="remove-tag" :style="selectedIconStyle(filter.tag)">{{ '—' }}</span></button>
 
-        <!-- Gender submenu -->
-        <div v-if="filter.tag === 'Gender' && genderSubmenuActive" v-click-outside="closeGenderSubmenu" class="gender-submenu p-2" style="position: absolute; z-index: 1; background-color: #fff; top: -5px; left: 80px; min-width: 168px;">
-          <div v-for="gender of genders" :key="gender.id" @click="toggleFilter({ ...filter, submenu: gender })">
-            <button :class="{ active: isFiltered({ ...filter, submenu: gender }) }" class="pb-2" style="padding-left: 2px;">
-              <span style="display: inline-block;" :innerHTML="gender.text" />
-              <span v-if="isFiltered({ ...filter, submenu: gender })" class="remove-tag">{{ '—' }}</span></button>
+        <!-- subtags -->
+        <div v-if="isParent(filter) && submenuActive" v-click-outside="closeSubmenu" class="subtag-menu p-2" style="position: absolute; z-index: 1; background-color: #fff; top: -5px; left: 80px; min-width: 168px;">
+          <div v-for="subtag of subtags(filter)" :key="subtag.id" @click="toggleFilter(subtag)">
+            <button :class="{ active: isFiltered(subtag) }" class="pb-2" style="padding-left: 2px;">
+              <span style="display: inline-block;" :innerHTML="subtag.tag" />
+              <span v-if="isFiltered(subtag)" class="remove-tag">{{ '—' }}</span></button>
           </div>
 
         </div>
@@ -169,7 +179,7 @@ a {
   top: -1px;
 }
 
-.gender-submenu {
+.subtag-menu {
   @include secondary(border-color);
   border: solid 1px;
   box-shadow: $box-shadow;

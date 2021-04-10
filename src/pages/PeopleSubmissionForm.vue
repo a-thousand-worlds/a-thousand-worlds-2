@@ -2,7 +2,6 @@
 import pick from 'lodash/pick'
 import debounce from 'lodash/debounce'
 import validator from '@/mixins/validator'
-import genders from '@/store/constants/genders'
 import creatorTitles from '@/store/constants/creatorTitles'
 import pronouns from '@/store/constants/pronouns'
 import personSubmission from '@/store/constants/personSubmission'
@@ -29,7 +28,6 @@ export default {
     return {
       draftSaved: null,
       creatorTitles,
-      genders,
       pronouns,
       submission: this.newSubmission(),
     }

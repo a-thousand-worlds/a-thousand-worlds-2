@@ -1,7 +1,6 @@
 import * as slugify from '@sindresorhus/slugify'
 import router from '@/router'
 import specialFilters from '@/store/constants/special-filters'
-import genders from '@/store/constants/genders'
 
 const module = () => ({
   state: {
@@ -29,8 +28,7 @@ const module = () => ({
       return items.filter(item =>
         state.filters.every(filter => {
           // handle hardcoded special filters
-          const key = filter.tag === 'Gender' ? 'gender'
-            : specialFilters.people.some(({ id }) => id === filter.id) ? 'title'
+          const key = specialFilters.people.some(({ id }) => id === filter.id) ? 'title'
             : tagName
           const value = item[key]
           const itemFilters = Array.isArray(value) ? value
@@ -59,9 +57,9 @@ const module = () => ({
         const tags = rootGetters[`tags/${type}/list`]()
         const tagsSelected = urlFilters
           .map(urlFilter => {
-            const [filterKey, submenuKey] = urlFilter.split('/')
+            const [filterKey] = urlFilter.split('/')
             const activeFilter = tags.find(tag => slugify(tag.tag) === filterKey)
-            return submenuKey ? { ...activeFilter, submenu: genders.find(gender => slugify(gender.text) === submenuKey) } : activeFilter
+            return activeFilter
           })
           .filter(x => x)
         commit('setFilters', tagsSelected)
