@@ -225,7 +225,7 @@ export default {
               <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': tagsDropdownActive }" style="text-align: left;">
                 <div id="dropdown-menu" class="dropdown-menu" role="menu">
                   <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
-                    <a v-for="tag in tagOptions" :key="tag.id" class="dropdown-item is-capitalized" @click.prevent="updatePerson('identities', { [tag.id]: true })">
+                    <a v-for="tag in tagOptions" :key="tag.id" @click.prevent="updatePerson('identities', { [tag.id]: true })" :class="{ 'ml-20': tag.parent }" class="dropdown-item is-capitalized">
                       {{ tag.tag }}
                     </a>
                   </div>
