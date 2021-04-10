@@ -67,7 +67,7 @@ export default {
     },
 
     /**
-     * Handles completion of a drag.
+     * Handles completion of a drag with support for subtags.
      *
      * Test cases:
      *
@@ -108,11 +108,11 @@ export default {
       if (e.oldIndex === e.newIndex) return
 
       const moveDown = tagOld.sortOrder < tagNew.sortOrder
-      const parentOld = this.getParent(tagOld, this.tags)
+      const parentOld = this.getParent(tagOld)
       const parentNew = parentOld
         // allow subtags to be moved into another tag
         ? tagNew.parent
-          ? this.getParent(tagNew, this.tags)
+          ? this.getParent(tagNew)
           : moveDown ? tagNew : this.tags[e.newIndex - 1]
         // do not allow tags to be moved to subtags
         : null
@@ -130,37 +130,40 @@ export default {
       const startSortOrder = this.tags[startIndex].sortOrder
 
       // update tag sortOrders
+      // subtags use 0.01 increment
+      const increment = parentOld ? 0.01 : 1
       const updatesTags = tagsToResort.reduce((accum, tag, i) => ({
         ...accum,
         [`${tag.id}/sortOrder`]: moveDown
           // shift up
           ? i === 0
             // move first item to the end
-            ? startSortOrder + tagsToResort.length - 1
+            ? startSortOrder + (tagsToResort.length - 1) * increment
             // shift other items up
-            : startSortOrder + i - 1
+            : startSortOrder + (i - 1) * increment
           // shift down
           : i === tagsToResort.length - 1
             // move last item to the beginning
             ? startSortOrder
             // shift other items down
-            : startSortOrder + i + 1
+            : startSortOrder + (i + 1) * increment
       }), {})
 
-      // re-order subtags with parent.sortOrder + 0.1 increments
-      // only when moving a top-level tag
+      // re-order subtags with parent.sortOrder + 0.01 increments
+      // only when moving a top-level tag across the subtag list
       // ensures no conflicts with other tags
       // re-order all subtags that are affected by the move
-      const updatesSubtags = parentOld ? [] : this.tags
-        .filter(tag => tag.parent === tagOld.id)
+      const updatesSubtags = !parentOld ? this.tags
+        .filter(tag => tag.parent)
         .reduce((accum, tag, i) => {
           // const parentSortOrder = updatesTags[`${parentOld ? tag.parent : tagOld.id}/sortOrder`]
-          const parentSortOrder = updatesTags[`${tagOld.id}/sortOrder`]
+          const parentSortOrder = updatesTags[`${tag.parent}/sortOrder`] || this.getParent(tag).sortOrder
           return {
             ...accum,
             [`${tag.id}/sortOrder`]: parentSortOrder + (i + 1) * 0.01
           }
         }, {})
+        : []
 
       // update parent if moving a subtag to a new parent
       const updatesParent = parentOld !== parentNew && {
@@ -183,11 +186,11 @@ export default {
     },
 
     /** Gets the parent of the tag if it has one. */
-    getParent(tag, tags) {
-      const tagIndex = tags.indexOf(tag)
+    getParent(tag) {
+      const tagIndex = this.tags.indexOf(tag)
       return tag.parent && tagIndex !== -1
         // eslint-disable-next-line fp/no-mutating-methods
-        ? tags.slice(0, tagIndex)
+        ? this.tags.slice(0, tagIndex)
           .reverse()
           .find(tag => !tag.parent)
         : null
@@ -205,7 +208,7 @@ export default {
 
     /** Returns true if the tag's parent is being dragged. */
     isParentDragging(tag) {
-      return this.dragging && this.dragging === this.getParent(tag, this.tags)
+      return this.dragging && this.dragging === this.getParent(tag)
     },
 
     async remove(id) {
