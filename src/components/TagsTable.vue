@@ -406,6 +406,14 @@ export default {
         <input v-model="newTag.tag" type="text" :disabled="$uiBusy" class="input" placeholder="Enter tag">
       </p>
       <p class="control">
+        <a class="button" style="border: solid 1px #dbdbdb; border-left: 0;">
+          <label style="cursor: pointer; user-select: none;">
+            <span class="mr-2">Subtag</span>
+            <input v-model="newTag.parent" type="checkbox" :false-value="null" class="checkbox">
+          </label>
+        </a>
+      </p>
+      <p class="control">
         <button :disabled="$uiBusy" type="submit" class="button is-primary">
           <i class="fas fa-plus mr-2" />
           <span>Add</span>
