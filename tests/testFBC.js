@@ -1,6 +1,10 @@
 /* eslint-disable fp/no-loops */
 const puppeteer = require('puppeteer')
 
+// options
+const tests = 2
+const atwUrl = 'https://fir-test-294020-8181c.web.app/'
+
 const testNPR = async (b, i) => {
   const page = await b.newPage()
   const d1 = new Date()
@@ -16,7 +20,7 @@ const testNPR = async (b, i) => {
 const testATW = async (b, i) => {
   const page = await b.newPage()
   const d1 = new Date()
-  await page.goto('https://fir-test-294020-8181c.web.app/')
+  await page.goto(atwUrl)
   await page.waitForSelector('img.cover-image')
   await page.waitForFunction('document.querySelector("img.cover-image").complete')
   const d2 = new Date()
@@ -24,8 +28,6 @@ const testATW = async (b, i) => {
   await page.close()
   return (d2.getTime() - d1.getTime()) / 1000
 }
-
-const tests = 10
 
 puppeteer.launch().then(async browser => {
   console.log(`start <${tests}> tests`)
