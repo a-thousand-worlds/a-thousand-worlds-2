@@ -42,6 +42,7 @@ export default {
       backgroundColor: bgImage ? 'transparent' : null,
       minHeight: !bgImage ? '200px' : null,
     }" class="book-cover-wrapper bg-secondary">
+      <img :src="bgImage" class="cover-image">
       <div class="cover-shadow" />
       <div class="cover-data">
         <div class="title">{{ book.title }}</div>
