@@ -39,9 +39,18 @@ export default {
     name() {
       return this.$store.state.user.user?.profile.name
     },
-    peopleTags() {
+    // top-level tags used as identities
+    tags() {
       return this.$store.getters[`tags/people/listSorted`]()
-        .filter(tag => tag.showOnPeopleForm)
+        .filter(tag => tag.showOnPeopleForm && !tag.parent)
+    },
+    // gender subtags
+    tagsGender() {
+      const tagGender = this.$store.getters[`tags/people/findBy`]('tag', 'Gender')
+      return tagGender
+        ? this.$store.getters[`tags/people/listSorted`]()
+          .filter(tag => tag.showOnPeopleForm && tag.parent === tagGender.id)
+        : []
     },
     person() {
       /* We used to get the creator through an old person submission.
@@ -219,21 +228,25 @@ export default {
             </label>
 
             <div class="sublabel tablet-columns-2">
-              <div v-for="identity of peopleTags" :key="identity.id" class="control is-flex" style="column-break-inside: avoid;">
-                <input v-model="submission.identities[identity.id]" :id="`identity-${identity.id}`" :false-value="null" type="checkbox" class="checkbox mb-3 mt-1" @input="saveDraftAndRevalidate">
-                <label class="label pl-2 pb-1" :for="`identity-${identity.id}`" style="cursor: pointer;">{{ identity.tag }}</label>
+              <div v-for="tag of tags" :key="tag.id" class="control is-flex" style="column-break-inside: avoid;">
+                <input v-model="submission.identities[tag.id]" :id="`tag-${tag.id}`" :false-value="null" type="checkbox" class="checkbox mb-3 mt-1" @input="saveDraftAndRevalidate">
+                <label class="label pl-2 pb-1" :for="`tag-${tag.id}`" style="cursor: pointer;">{{ tag.tag }}</label>
               </div>
             </div>
           </div>
 
           <!-- gender -->
+          <!-- (stored in identities) -->
           <div class="field">
-            <label class="label" :class="{ 'has-text-danger': hasError('gender') }" style="font-weight: bold; text-transform: uppercase;">Gender<sup class="required">*</sup></label>
+            <label class="label">
+              <b :class="{ 'has-text-danger': hasError('gender') }" style="text-transform: uppercase;">Gender<sup class="required">*</sup></b>
+              <div style="font-weight: normal;">Please select all that apply.</div>
+            </label>
 
             <div class="sublabel tablet-columns-2">
-              <div v-for="gender of genders" :key="gender.id" class="control is-flex" style="column-break-inside: avoid;">
-                <input type="radio" name="gender" :id="`gender-${gender.id}`" v-model="submission.gender" :value="gender.id" class="checkbox mb-3 mt-1">
-                <label class="label pl-2 pb-1 no-user-select" :for="`gender-${gender.id}`" style="cursor: pointer;">{{ gender.text }}</label>
+              <div v-for="tag of tagsGender" :key="tag.id" class="control is-flex" style="column-break-inside: avoid;">
+                <input v-model="submission.identities[tag.id]" :id="`tag-${tag.id}`" :false-value="null" type="checkbox" class="checkbox mb-3 mt-1" @input="saveDraftAndRevalidate">
+                <label class="label pl-2 pb-1" :for="`tag-${tag.id}`" style="cursor: pointer;">{{ tag.tag }}</label>
               </div>
             </div>
           </div>
