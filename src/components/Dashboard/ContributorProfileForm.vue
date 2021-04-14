@@ -79,9 +79,19 @@ export default {
   },
   computed: {
 
-    identityOptions() {
+    // top-level tags used as identities
+    tags() {
       return this.$store.getters[`tags/people/listSorted`]()
-        .filter(tag => tag.showOnContributorSignup)
+        .filter(tag => tag.showOnContributorForm && !tag.parent)
+    },
+
+    // gender subtags
+    tagsGender() {
+      const tagGender = this.$store.getters[`tags/people/findBy`]('tag', 'Gender')
+      return tagGender
+        ? this.$store.getters[`tags/people/listSorted`]()
+          .filter(tag => tag.showOnContributorForm && tag.parent === tagGender.id)
+        : []
     },
 
   },
@@ -222,9 +232,9 @@ export default {
           <input v-model="affiliations.organizationLink" @input="revalidate" class="input" type="text">
         </div>
 
-        <div v-if="admin || welcome">
+        <div v-if="admin || welcome || true">
 
-          <h2 v-if="!admin" class="mt-50 mb-30">ATW is based on raising the voices of diverse identities. We'd love to know your identity. This information will not be made public.</h2>
+          <h2 v-if="!admin" class="mt-50 mb-30">ATW is based on raising the voices of diverse identities. We'd love to know how you identify. This information will not be made public.</h2>
 
           <!-- identities -->
           <div v-if="!admin" class="field" divider-30>
@@ -234,16 +244,32 @@ export default {
             </label>
 
             <div class="sublabel tablet-columns-2">
-              <div v-for="identity of identityOptions" :key="identity.id" class="control is-flex" style="column-break-inside: avoid;">
-                <input v-model="identities[identity.id]" :id="`identity-${identity.id}`" type="checkbox" :false-value="null" class="checkbox mb-3 mt-1" @change="revalidate">
-                <label class="label pl-2 pb-1" :for="`identity-${identity.id}`" style="cursor: pointer;">{{ identity.tag }}</label>
+              <div v-for="tag of tags" :key="tag.id" class="control is-flex" style="column-break-inside: avoid;">
+                <input v-model="identities[tag.id]" :id="`tag-${tag.id}`" type="checkbox" :false-value="null" class="checkbox mb-3 mt-1" @change="revalidate">
+                <label class="label pl-2 pb-1" :for="`tag-${tag.id}`" style="cursor: pointer;">{{ tag.tag }}</label>
               </div>
               <div>
-                <input v-model="identities.other" id="identity-other" type="checkbox" :false-value="null" class="checkbox mr-2 mb-3" @change="revalidate">
-                <label for="identity-other" class="label is-inline">Other</label>
+                <input v-model="identities.other" id="tag-other" type="checkbox" :false-value="null" class="checkbox mr-2 mb-3" @change="revalidate">
+                <label for="tag-other" class="label is-inline">Other</label>
                 <div>
                   <input v-model="otherIdentity" @input="revalidate" class="input" style="max-width: 200px;" type="text">
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- genders -->
+          <!-- (stored in identities) -->
+          <div v-if="!admin && tagsGender.length > 0" class="field" divider-30>
+            <label class="label">
+              <span :class="{ 'has-text-danger': hasError('gender') }" style="text-transform: uppercase;">Gender<sup v-if="!admin" class="required">*</sup></span>
+              <div style="font-weight: normal;">Please select all that apply</div>
+            </label>
+
+            <div class="sublabel tablet-columns-2">
+              <div v-for="tag of tagsGender" :key="tag.id" class="control is-flex" style="column-break-inside: avoid;">
+                <input v-model="identities[tag.id]" :id="`tag-${tag.id}`" type="checkbox" :false-value="null" class="checkbox mb-3 mt-1" @change="revalidate">
+                <label class="label pl-2 pb-1" :for="`tag-${tag.id}`" style="cursor: pointer;">{{ tag.tag }}</label>
               </div>
             </div>
           </div>
