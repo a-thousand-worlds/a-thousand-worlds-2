@@ -11,9 +11,11 @@ const module = () => ({
       state.filters = []
     },
     toggleFilter(state, filter) {
-      state.filters = state.filters.some(activeFilter => activeFilter.id === filter.id && (!activeFilter.submenu || activeFilter.submenu.id === filter.submenu?.id))
+      state.filters = state.filters.some(activeFilter => activeFilter.id === filter.id)
+        // toggle off
         ? state.filters.filter(activeFilter => activeFilter.id !== filter.id)
-        : [...filter.submenu ? state.filters.filter(activeFilter => activeFilter.id !== filter.id) : state.filters, filter]
+        // toggle on
+        : [...state.filters, filter]
     },
     setFilters(state, filters) {
       state.filters = filters
@@ -35,7 +37,7 @@ const module = () => ({
             : typeof value === 'string' ? [value]
             : typeof value === 'object' ? Object.keys(value)
             : []
-          return itemFilters.some(itemFilter => itemFilter === (filter.submenu?.id || filter.id))
+          return itemFilters.includes(filter.id)
         })
       )
     }
@@ -49,12 +51,12 @@ const module = () => ({
       commit('setFilters', filters)
       dispatch('updateUrl')
     },
-    setFiltersFromUrl({ state, commit, rootGetters }, type) {
+    setFiltersFromUrl({ state, commit, rootGetters }) {
       const urlParams = new URLSearchParams(window.location.search)
       const urlFilters = (urlParams.get('filters') || '').split(',')
 
       if (urlFilters.length > 0) {
-        const tags = rootGetters[`tags/${type}/list`]()
+        const tags = rootGetters[`tags/${state.name}/list`]()
         const tagsSelected = urlFilters
           .map(urlFilter => {
             const [filterKey] = urlFilter.split('/')
@@ -74,10 +76,12 @@ const module = () => ({
       dispatch('updateUrl')
     },
     updateUrl({ state }) {
-      router.replace({
-        ...router.currentRoute,
+      const filtersUrlComponent = state.filters.map(activeFilter => slugify(activeFilter.tag) + (activeFilter.submenu ? `/${slugify(activeFilter.submenu.text)}` : '')).join(',')
+      const page = state.name === 'books' ? 'Home' : 'People'
+      router[router.currentRoute.name === page ? 'replace' : 'push']({
+        name: page,
         query: state.filters.length > 0 ? {
-          filters: state.filters.map(activeFilter => slugify(activeFilter.tag) + (activeFilter.submenu ? `/${slugify(activeFilter.submenu.text)}` : '')).join(',')
+          filters: filtersUrlComponent
         } : {}
       })
     }

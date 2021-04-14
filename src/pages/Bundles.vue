@@ -27,7 +27,7 @@ export default {
     bundleTags(next, prev) {
       // load filters from url when tags/bundles are first loaded
       if (Object.keys(prev).length === 0 && Object.keys(next).length > 0) {
-        this.$store.dispatch('bundles/setFiltersFromUrl', 'bundles')
+        this.$store.dispatch('bundles/setFiltersFromUrl')
       }
     }
   },

@@ -19,6 +19,7 @@ const collectionModule = name => ({
   state: {
     data: {},
     loaded: false,
+    name,
   },
   mutations: {
     set(state, data) {

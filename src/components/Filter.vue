@@ -52,7 +52,7 @@ export default {
     },
     isFiltered(filter) {
       return this.$store.state[this.type]?.filters?.some(activeFilter =>
-        activeFilter.id === filter.id && (!filter.submenu || activeFilter.submenu?.id === filter.submenu?.id)
+        activeFilter.id === filter.id || activeFilter.parent === filter.id
       )
     },
     /** Returns true if a tag has subtags */
@@ -61,7 +61,6 @@ export default {
     },
     resetFilters() {
       this.$store.dispatch(`${this.type}/resetFilters`)
-      this.$router.replace({ name: this.routerType })
     },
     /** Sets custom offsets on the selection icon to vertically center it on long tags. */
     selectedIconStyle(name) {
@@ -78,9 +77,6 @@ export default {
     },
     toggleFilter(filter) {
       this.$store.dispatch(`${this.type}/toggleFilter`, filter)
-      // const tags = this.$store.state.tags[this.type].data
-      // handle hardcoded special filters
-      // const tagLabel = (this.specialFilters?.find(({ id }) => id === filter.id) || tags[filter.id]).tag
     },
   }
 }

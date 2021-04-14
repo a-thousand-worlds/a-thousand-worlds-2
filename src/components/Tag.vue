@@ -38,7 +38,7 @@ export default {
   },
   methods: {
     goToFilter() {
-      this.$store.commit(`${this.type}/setFilters`, [this.tag.id])
+      this.$store.commit(`${this.type}/setFilters`, [this.tag])
       this.$router.push({ name: this.routerType, query: { filters: slugify(this.tag.tag) } })
     },
     goToManager() {

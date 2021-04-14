@@ -35,7 +35,7 @@ export default {
     peopleTags(next, prev) {
       // load filters from url when tags/people are first loaded
       if (Object.keys(prev).length === 0 && Object.keys(next).length > 0) {
-        this.$store.dispatch('people/setFiltersFromUrl', 'people')
+        this.$store.dispatch('people/setFiltersFromUrl')
       }
     }
   },
