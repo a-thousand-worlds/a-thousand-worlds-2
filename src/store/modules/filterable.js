@@ -11,11 +11,22 @@ const module = () => ({
       state.filters = []
     },
     toggleFilter(state, filter) {
-      state.filters = state.filters.some(activeFilter => activeFilter.id === filter.id)
-        // toggle off
-        ? state.filters.filter(activeFilter => activeFilter.id !== filter.id)
-        // toggle on
-        : [...state.filters, filter]
+
+      const isFilterOn = state.filters.some(activeFilter => activeFilter.id === filter.id)
+
+      // toggle off filter
+      if (isFilterOn) {
+        state.filters = state.filters.filter(activeFilter => activeFilter.id !== filter.id)
+      }
+      // toggle on filter
+      else {
+        // toggle off subtags with same parent
+        const filtersNoOtherSubtags = state.filters.filter(
+          activeFilter => !activeFilter.parent || activeFilter.parent !== filter.parent
+        )
+        state.filters = [...filtersNoOtherSubtags, filter]
+      }
+
     },
     setFilters(state, filters) {
       state.filters = filters
