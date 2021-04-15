@@ -42,25 +42,28 @@ export default {
 
     const isbn = router.currentRoute._value.params.isbn
 
+    const titleComputed = computed(() => {
+      const book = store.state.books.loaded
+        ? Object.values(store.state.books.data).find(book => book.isbn === isbn)
+        : null
+      return book ? book.title : null
+    })
+
+    const imageComputed = computed(() => {
+      const book = store.state.books.loaded
+        ? Object.values(store.state.books.data).find(book => book.isbn === isbn)
+        : null
+      const url = book?.cover?.src || book?.cover?.url || book?.cover
+      return url || null
+    })
+
     useHead({
-      title: computed(() => {
-        if (console) return null
-        const book = store.state.books.loaded
-          ? Object.values(store.state.books.data).find(book => book.isbn === isbn)
-          : null
-        return book ? book.title : null
-      }),
+      title: titleComputed,
       meta: [
-        {
-          name: 'og:image',
-          content: computed(() => {
-            const book = store.state.books.loaded
-              ? Object.values(store.state.books.data).find(book => book.isbn === isbn)
-              : null
-            const url = book?.cover?.src || book?.cover?.url || book?.cover
-            return url || null
-          }),
-        },
+        { name: 'og:image', content: imageComputed },
+        { name: 'og:title', content: titleComputed },
+        { name: 'twitter:image', content: imageComputed },
+        { name: 'twitter:title', content: titleComputed },
       ],
     })
 

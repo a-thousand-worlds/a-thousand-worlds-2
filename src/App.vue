@@ -14,7 +14,6 @@ import Loader from '@/components/Loader'
 
 const description = 'Colorful Reads X Colorful People'
 const image = '/social/home.png'
-const logo = '/logo/red.png'
 const title = 'A Thousand Worlds'
 const twitter = 'worlds_thousand'
 
@@ -44,7 +43,7 @@ export default ({
         { name: 'og:image', content: `${window.location.origin}${image}?fbreset=1` },
         { name: 'og:title', content: title },
         { name: 'og:type', content: 'article' },
-        { name: 'og:url', content: window.location.origin },
+        { name: 'og:url', content: window.location.href },
 
         // twitter
         { name: 'twitter:card', content: 'summary_large_image' },
@@ -52,7 +51,7 @@ export default ({
         { name: 'twitter:image', content: `${window.location.origin}${image}` },
         { name: 'twitter:site', content: '@' + twitter },
         { name: 'twitter:title', content: title },
-        { name: 'twitter:url', content: window.location.origin },
+        { name: 'twitter:url', content: window.location.href },
 
         // facebook
         { name: 'fb:pages', content: '102421671707042' },
@@ -67,7 +66,6 @@ export default ({
       baseUrl: window.location.origin,
       description,
       image,
-      logo,
       title,
       twitter,
     }
@@ -117,7 +115,7 @@ export default ({
         name: this.title,
         logo: {
           '@type': 'ImageObject',
-          url: this.baseUrl + this.logo,
+          url: `${this.baseUrl}/logo/logo${this.$store.state.theme}.png`,
           width: 2176,
           height: 725,
         }
