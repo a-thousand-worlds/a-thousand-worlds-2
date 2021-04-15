@@ -136,7 +136,7 @@ export default ({
 
 <template>
   <!-- a special page to generate a book cover collage -->
-  <div v-if="$route?.name === 'SocialImage'">
+  <div v-if="$route?.layout">
     <router-view />
   </div>
   <!-- full website -->
