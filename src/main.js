@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import { createHead } from '@vueuse/head'
 import VueTippy from 'vue-tippy'
 import 'tippy.js/dist/tippy.css'
 import CKEditor from '@ckeditor/ckeditor5-vue'
@@ -54,6 +55,7 @@ window.addEventListener('unhandledrejection', function(e) {
 })
 
 const app = createApp(App)
+  .use(createHead())
   .use(store)
   .use(router)
   .use(CKEditor)

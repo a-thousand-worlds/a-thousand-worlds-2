@@ -31,6 +31,7 @@
     "@ckeditor/ckeditor5-build-balloon": "^24.0.0",
     "@ckeditor/ckeditor5-vue": "git+https://github.com/raineorshine/ckeditor5-vue.git#emits",
     "@sindresorhus/slugify": "^1.1.0",
+    "@vueuse/head": "^0.5.1",
     "axios": "^0.21.1",
     "bulma": "^0.9.1",
     "clipboard": "^2.0.6",

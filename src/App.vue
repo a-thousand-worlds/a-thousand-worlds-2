@@ -1,5 +1,6 @@
 <script>
 
+import { useHead } from '@vueuse/head'
 import BookmarksView from '@/components/BookmarksView'
 import Confirm from '@/components/ui/Confirm'
 import LeftBar from '@/components/LeftBar.vue'
@@ -10,6 +11,12 @@ import Prompt from '@/components/ui/Prompt'
 import RightBar from '@/components/RightBar.vue'
 import WelcomeDismissable from '@/components/WelcomeDismissable'
 import Loader from '@/components/Loader'
+
+const description = 'Colorful Reads X Colorful People'
+const image = '/social/home.png'
+const logo = '/logo/red.png'
+const title = 'A Thousand Worlds'
+const twitter = 'worlds_thousand'
 
 export default ({
   name: 'App',
@@ -24,6 +31,46 @@ export default ({
     Prompt,
     RightBar,
     WelcomeDismissable,
+  },
+  setup() {
+
+    // default meta tags
+    useHead({
+      title: 'A Thousand Worlds',
+      meta: [
+
+        // open graph
+        { name: 'og:description', content: description },
+        { name: 'og:image', content: `${window.location.origin}${image}?fbreset=1` },
+        { name: 'og:title', content: title },
+        { name: 'og:type', content: 'article' },
+        { name: 'og:url', content: window.location.origin },
+
+        // twitter
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:description', content: description },
+        { name: 'twitter:image', content: `${window.location.origin}${image}` },
+        { name: 'twitter:site', content: '@' + twitter },
+        { name: 'twitter:title', content: title },
+        { name: 'twitter:url', content: window.location.origin },
+
+        // facebook
+        { name: 'fb:pages', content: '102421671707042' },
+        { name: 'article:opinion', content: 'false' },
+        { name: 'article:content_tier', content: 'free' },
+
+      ],
+    })
+  },
+  data() {
+    return {
+      baseUrl: window.location.origin,
+      description,
+      image,
+      logo,
+      title,
+      twitter,
+    }
   },
   computed: {
     showRightBar() {
@@ -46,6 +93,44 @@ export default ({
     }
   },
   async created() {
+
+    // set Google structured data
+    const now = new Date()
+    const structuredData = {
+      '@context': 'http://schema.org',
+      '@type': 'NewsArticle',
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': this.baseUrl,
+      },
+      headline: this.title,
+      image: {
+        '@type': 'ImageObject',
+        url: this.baseUrl + this.image,
+      },
+      author: {
+        '@type': 'Person',
+        name: 'Staff',
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: this.title,
+        logo: {
+          '@type': 'ImageObject',
+          url: this.baseUrl + this.logo,
+          width: 2176,
+          height: 725,
+        }
+      },
+      description: this.description,
+      datePublished: now.toISOString()
+    }
+    const script = document.createElement('script')
+    script.type = 'application/ld+json'
+    script.textContent = JSON.stringify(structuredData, null, 2)
+    document.head.appendChild(script)
+
+    // initialize store subscriptions
     this.$store.dispatch('subscribe')
   },
 })
@@ -94,6 +179,7 @@ export default ({
 
     <MobileFooter class="is-hidden-tablet" />
   </div>
+
 </template>
 
 <style lang="scss">

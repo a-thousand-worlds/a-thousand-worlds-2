@@ -1,6 +1,10 @@
 <script>
+import { computed } from 'vue'
+import { useHead } from '@vueuse/head'
 import sortBy from 'lodash/sortBy'
 import Clipboard from 'clipboard'
+import store from '@/store'
+import router from '@/router'
 import BookDetailFooter from '@/components/BookDetailFooter'
 import BookmarkButton from '@/components/BookmarkButton'
 import Filter from '@/components/Filter'
@@ -33,6 +37,33 @@ export default {
       this.$store.commit('ui/setLastVisited', new Date())
     }
     next()
+  },
+  setup() {
+
+    const isbn = router.currentRoute._value.params.isbn
+
+    useHead({
+      title: computed(() => {
+        if (console) return null
+        const book = store.state.books.loaded
+          ? Object.values(store.state.books.data).find(book => book.isbn === isbn)
+          : null
+        return book ? book.title : null
+      }),
+      meta: [
+        {
+          name: 'og:image',
+          content: computed(() => {
+            const book = store.state.books.loaded
+              ? Object.values(store.state.books.data).find(book => book.isbn === isbn)
+              : null
+            const url = book?.cover?.src || book?.cover?.url || book?.cover
+            return url || null
+          }),
+        },
+      ],
+    })
+
   },
   data() {
     return {
