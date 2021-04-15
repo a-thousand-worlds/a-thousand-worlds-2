@@ -53,7 +53,7 @@ export default {
     </div>
 
     <!-- add -->
-    <Tag :tag="{ tag: 'ADD CREATOR' }" nolink buttonClass="add-tag is-outlined" tagStyle="border-color: #000; cursor: pointer;" v-click-outside="closeDropdown" @click.prevent.stop="dropdownActive = !dropdownActive" />
+    <Tag :tag="{ tag: 'ADD CREATOR' }" nolink buttonClass="add-tag is-outlined" tagStyle="border-color: #000; cursor: pointer;" v-click-outside="closeDropdown" @click="dropdownActive = !dropdownActive" />
 
   </div>
 
