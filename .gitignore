@@ -28,3 +28,6 @@ pnpm-debug.log*
 
 # https://firebase.google.com/docs/cli#source_control_aliases
 .firebaserc
+
+# Databse cache
+public/dbcache.js

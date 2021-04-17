@@ -29,7 +29,7 @@ const module = () => ({
   mutations: {
     shuffle(state, { idProp, weights }) {
 
-      if (!state.loaded) return
+      // if (!state.loaded) return
 
       if (!state.isShuffled) {
         const weightedIds = Object.values(state.data).reduce((accum, item) => ({

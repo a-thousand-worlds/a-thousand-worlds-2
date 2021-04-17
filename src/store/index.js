@@ -37,11 +37,22 @@ const store = createStore({
 
       // shuffle by tag weight
       const shuffle = type => {
-        if (!state[type].loaded || !state.tags[type].loaded) return
+        // if (!state[type].loaded || !state.tags[type].loaded) return
         commit(`${type}/shuffle`, {
           idProp: type === 'people' ? 'identities' : 'tags',
           weights: state.tags[type].data
         })
+      }
+      if (window.dbcache) {
+        dispatch('content/loadCache', window.dbcache.content)
+        dispatch('books/loadCache', window.dbcache.books)
+        dispatch('people/loadCache', window.dbcache.people)
+        dispatch('tags/books/loadCache', window.dbcache.tags.books)
+        dispatch('tags/people/loadCache', window.dbcache.tags.people)
+        dispatch('tags/bundles/loadCache', window.dbcache.tags.bundles)
+
+        shuffle('books')
+        shuffle('people')
       }
 
       dispatch('bundles/subscribe')
@@ -52,12 +63,14 @@ const store = createStore({
       dispatch('users/subscribe')
 
       // subscribe to books and people and shuffle on load
+      /**/
       dispatch('books/subscribe', { onValue: () => shuffle('books') })
       dispatch('people/subscribe', { onValue: () => shuffle('people') })
       dispatch('tags/subscribe', { people: { onValue: () => {
         shuffle('books')
         shuffle('people')
       } } })
+      /**/
 
     },
 

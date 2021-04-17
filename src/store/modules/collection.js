@@ -17,7 +17,7 @@ export const firebaseGet = refString => new Promise((resolve, reject) => {
 const collectionModule = name => ({
   namespaced: true,
   state: {
-    data: {},
+    data: window.dbcache && window.dbcache[name] ? window.dbcache[name] : {},
     loaded: false,
     name,
   },
@@ -70,6 +70,11 @@ const collectionModule = name => ({
       : [],
   },
   actions: {
+    /** Loads the collection from cache */
+    loadCache(context, cache) {
+      const valueNotNull = cache || {}
+      context.commit('set', valueNotNull)
+    },
     /** Loads the collection from Firebase. */
     async load(context) {
       const value = await firebaseGet(name)

@@ -34,7 +34,7 @@ const module = () => ({
   },
   getters: {
     filtered: state => (items, tagName = 'tags') => {
-      if (!state.loaded) return []
+      // if (!state.loaded) return []
 
       if (!Array.isArray(state.filters) || state.filters.length === 0) return items
 
