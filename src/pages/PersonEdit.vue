@@ -71,8 +71,7 @@ export default {
     tags() {
       const peopleTags = this.$store.state.tags.people.data || {}
       return Object.keys(this.person?.identities || [])
-        .map(id => peopleTags[id])
-        .filter(x => x)
+        .map(id => peopleTags[id] || { id, tag: 'invalid' })
     },
     tagOptions() {
       return this.$store.getters['tags/people/listSorted']()
@@ -219,9 +218,11 @@ export default {
 
             <!-- tags -->
             <div class="tags mt-20">
-              <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="people" @remove="updatePerson('identities', { [tag.id]: null })" button-class="is-outlined" editable />
 
-              <!-- add tag -->
+              <!-- tag -->
+              <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="people" @remove="updatePerson('identities', { [tag.id]: null })" button-class="is-outlined" :tagStyle="tag.tag === 'invalid' ? 'background-color: #fff; border-color: red; color: red !important; cursor: pointer;' : null" editable />
+
+              <!-- add tag dropdown -->
               <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': tagsDropdownActive }" style="text-align: left;">
                 <div id="dropdown-menu" class="dropdown-menu" role="menu">
                   <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
@@ -232,7 +233,7 @@ export default {
                 </div>
               </div>
 
-              <!-- tag -->
+              <!-- add tag -->
               <Tag :tag="{ tag: 'ADD TAG' }" nolink tagStyle="background-color: #fff; border-color: #000; color: #000 !important; cursor: pointer;" v-click-outside="closeTagsDropdown" @click="tagsDropdownActive = !tagsDropdownActive" />
 
             </div>
