@@ -1,6 +1,7 @@
 <script>
 import pick from 'lodash/pick'
 import debounce from 'lodash/debounce'
+import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import validator from '@/mixins/validator'
 import creatorTitles from '@/store/constants/creatorTitles'
 import pronouns from '@/store/constants/pronouns'
@@ -15,7 +16,6 @@ export default {
     validator(function() {
       return [
         !this.submission.bio && { name: 'bio', message: 'Bio required' },
-        !this.submission.gender && { name: 'gender', message: 'Gender required' },
         Object.values(this.submission.identities || {}).length === 0 && { name: 'identity', message: 'Identity required' },
         !this.submission.name && { name: 'name', message: 'Name required' },
         !this.submission.photo && { name: 'photo', message: 'Photo required' },
@@ -26,8 +26,10 @@ export default {
   ],
   data() {
     return {
-      draftSaved: null,
+      ckConfig: {},
       creatorTitles,
+      draftSaved: null,
+      editor: BalloonEditor,
       pronouns,
       submission: this.newSubmission(),
     }
@@ -114,7 +116,6 @@ export default {
         name: this.name,
         // copy all relevant fields from person
         ...pick(this.person, Object.keys(emptySubmission)),
-        ...this.person?.bio ? { bio: this.person.bio.replace(/<\/?p>/g, '') } : null,
         // copy identities object, otherwise editing the form will update the person identities object by reference
         identities: this.person?.identities ? { ...this.person.identities } : {},
         ...this.person?.id ? { personId: this.person?.id } : {},
@@ -134,16 +135,9 @@ export default {
 
       if (!this.validate()) return
 
-      /** Replaces line breaks with paragraphs */
-      const insertParagraphs = s =>
-        s.replace(/([^\n]+)\n|([^\n]+)$/g, text => `<p>${text.replace('\n', '')}</p>\n`)
-
       this.$store.commit('ui/setBusy', true)
       try {
-        await this.$store.dispatch('submissions/people/submit', {
-          ...this.submission,
-          ...this.submission.bio ? { bio: insertParagraphs(this.submission.bio) } : null,
-        })
+        await this.$store.dispatch('submissions/people/submit', this.submission)
         this.$store.commit('ui/setBusy', false)
         this.$router.push({ name: 'Dashboard' })
       }
@@ -252,9 +246,9 @@ export default {
           </div>
 
           <!-- bio -->
-          <div class="field">
-            <label class="label is-uppercase" :class="{ 'has-text-danger': hasError('gender') }"><b>Bio</b><sup class="required">*</sup></label>
-            <textarea class="textarea" v-model="submission.bio" @input="saveDraftAndRevalidate" />
+          <div class="field bio">
+            <label class="label is-uppercase" :class="{ 'has-text-danger': hasError('bio') }"><b>Bio</b><sup class="required">*</sup></label>
+            <ckeditor @update:modelValue="saveDraftAndRevalidate" v-model="submission.bio" :editor="editor" :config="ckConfig" class="editor" />
           </div>
 
           <!-- awards -->
@@ -336,6 +330,13 @@ export default {
   width: 100%;
 }
 
+.bio .editor {
+  border-radius: 5px !important;
+  border: solid 1px #ddd;
+  min-height: 10rem;
+  padding: 10px;
+}
+
 .search-wrap {
   position: relative;
 
@@ -363,5 +364,12 @@ export default {
     }
 
   }
+}
+</style>
+
+<style lang="scss">
+// compensate for CKEditor paragraph so that it exactly matches normal paragraph spacing
+.bio .ck.ck-editor__editable_inline>:first-child {
+  margin: -1px -2px -1px -1px;
 }
 </style>

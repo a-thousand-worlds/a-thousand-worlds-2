@@ -125,7 +125,8 @@ export default {
     getTags(person) {
       const tagsState = this.$store.state.tags.people
       return tagsState.loaded
-        ? Object.keys(person.identities || {}).map(tagId => tagsState.data[tagId])
+        ? Object.keys(person.identities || {})
+          .map(tagId => tagsState.data[tagId] || { id: tagId, tag: 'invalid' })
         : null
     },
 
