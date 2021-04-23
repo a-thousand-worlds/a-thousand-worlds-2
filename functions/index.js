@@ -20,6 +20,8 @@ const watchPeopleDelete = require('./watchPeople/onDelete')
 
 const watchUsers = require('./watchUsers')
 
+const buildCacheCron = require('./buildCacheCron')
+
 /** HTTP Services */
 
 exports.coverImageByISBN = functions.https.onRequest(coverImageByISBN())
@@ -52,3 +54,23 @@ exports.watchCreatorsSubmissionUpdate = watchCreatorsSubmissionUpdate
 exports.watchCreatorsSubmissionDelete = watchCreatorsSubmissionDelete
 
 exports.watchUsers = watchUsers
+
+/* Cache functions */
+/*
+// use for manual update
+const buildCache = require('./buildCache')
+exports.buildCache = functions
+  .runWith({
+    timeoutSeconds: 300,
+    memory: '1GB'
+  })
+  .https.onRequest(buildCache())
+/**/
+
+exports.buildCacheCron = functions
+  .runWith({
+    timeoutSeconds: 300,
+    memory: '1GB',
+  })
+  .pubsub.schedule('0 0 * * *').timeZone('America/New_York')
+  .onRun(buildCacheCron)
