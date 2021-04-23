@@ -17,8 +17,8 @@ export default {
       return Object.values(this.$store.state.books?.filters || {})
     },
     loading() {
-      return false
-      // return !this.$store.state.books.loaded || !this.$store.state.tags.books.loaded
+      // return false
+      return !this.$store.state.books.loaded || !this.$store.state.tags.books.loaded
     },
   },
   methods: {

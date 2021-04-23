@@ -56,7 +56,7 @@ exports.watchCreatorsSubmissionDelete = watchCreatorsSubmissionDelete
 exports.watchUsers = watchUsers
 
 /* Cache functions */
-/*
+/**/
 // use for manual update
 const buildCache = require('./buildCache')
 exports.buildCache = functions

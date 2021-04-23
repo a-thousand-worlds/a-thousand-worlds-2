@@ -19,7 +19,7 @@ export default {
       return this.book.coverHeight / this.book.coverWidth * 100
     },
     bgImage() {
-      if (this.updatedCover) return this.book.cover?.url
+      if (this.updatedCover) return this.book.cover.cache || this.book.cover.url
       // return this.$store.state.images[this.book.cover] || ''
       return this.book.cover || ''
     },

@@ -26,7 +26,7 @@ export default {
     },
     bgImage() {
       if (!this.book) return null
-      if (this.updatedCover) return this.book.cover.url
+      if (this.updatedCover) return this.book.cover.cache || this.book.cover.url
       return this.book.cover || ''
     },
     updatedCover() {

@@ -43,16 +43,22 @@ const store = createStore({
           weights: state.tags[type].data
         })
       }
-      if (window.dbcache) {
-        dispatch('content/loadCache', window.dbcache.content)
-        dispatch('books/loadCache', window.dbcache.books)
-        dispatch('people/loadCache', window.dbcache.people)
-        dispatch('tags/books/loadCache', window.dbcache.tags.books)
-        dispatch('tags/people/loadCache', window.dbcache.tags.people)
-        dispatch('tags/bundles/loadCache', window.dbcache.tags.bundles)
 
-        shuffle('books')
-        shuffle('people')
+      if (window.dbcache) {
+        if (window.dbcache.content) dispatch('content/loadCache', window.dbcache.content)
+        if (window.dbcache.books) {
+          dispatch('books/loadCache', window.dbcache.books)
+          shuffle('books')
+        }
+        if (window.dbcache.people) {
+          dispatch('people/loadCache', window.dbcache.people)
+          shuffle('people')
+        }
+        if (window.dbcache.tags) {
+          if (window.dbcache.tags.books) dispatch('tags/books/loadCache', window.dbcache.tags.books)
+          if (window.dbcache.tags.people) dispatch('tags/people/loadCache', window.dbcache.tags.people)
+          if (window.dbcache.tags.bundles) dispatch('tags/bundles/loadCache', window.dbcache.tags.bundles)
+        }
       }
 
       dispatch('bundles/subscribe')

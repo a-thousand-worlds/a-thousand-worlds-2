@@ -123,7 +123,7 @@ const rebuildCache = async () => {
     }
   })
 
-  // In a perfect way here we need request operation status and wait it to be done
+  // TODO: In a perfect way here we need request operation status and wait it to be done
   // but version cloning goes fast and ready on next step already
 
   const versionsReq = await api.sites.versions.list({
@@ -145,8 +145,8 @@ const rebuildCache = async () => {
 
   // collect books covers to cache
   const cacheBooks = Object.values(db.books).map(book => {
-    if (!book || !book.cover) return null
-    if (!book.cover.url || book.cover.cache) return null
+    if (!book || !book.cover || !book.cover.url) return null
+    // TODO: to be fully correct here need compare existing cache with downloaded file
     return book
   }).filter(x => !!x)
 

@@ -3,7 +3,7 @@ export default {
   props: ['src'],
   computed: {
     url() {
-      return this.src?.url || this.src || ''
+      return this.src?.cache || this.src?.url || this.src || ''
     }
   }
 }
