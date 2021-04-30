@@ -76,10 +76,24 @@ const clearNotFinalizedVersions = async (api, site) => {
   return await Promise.all(all)
 }
 
+/** get cache/clean value */
+const getCacheClean = () => new Promise((resolve, reject) => {
+  const ref = admin.database().ref('cache/clean')
+  ref.once('value', snap => {
+    resolve(snap.val())
+  })
+})
+
 /** main working function */
 const rebuildCache = async () => {
+
+  const cacheClean = await getCacheClean()
+  if (cacheClean) {
+    console.log('Cache is clean, nothing to be done.')
+    return
+  }
+
   const client = getAuthorizedClient()
-  // console.log('auth client', client)
 
   const api = google.firebasehosting({
     version: 'v1beta1',
@@ -123,9 +137,6 @@ const rebuildCache = async () => {
     }
   })
 
-  // TODO: In a perfect way here we need request operation status and wait it to be done
-  // but version cloning goes fast and ready on next step already
-
   const versionsReq = await api.sites.versions.list({
     parent: site.name,
     filter: 'status="CREATED"'
@@ -139,6 +150,7 @@ const rebuildCache = async () => {
 
   const newFiles = {}
   const hashMap = {}
+  const pathMap = {}
 
   const db = await cacheDatabase(admin.database())
   db.cacheDate = new Date()
@@ -146,7 +158,6 @@ const rebuildCache = async () => {
   // collect books covers to cache
   const cacheBooks = Object.values(db.books).map(book => {
     if (!book || !book.cover || !book.cover.url) return null
-    // TODO: to be fully correct here need compare existing cache with downloaded file
     return book
   }).filter(x => !!x)
 
@@ -160,13 +171,16 @@ const rebuildCache = async () => {
       .then(gzip => {
         newFiles[cacheUrl] = gzip
         hashMap[cacheUrl] = gzip.hash
+        pathMap[gzip.hash] = cacheUrl
       })
   }))
 
   const dbCacheJs = `window.dbcache = ${JSON.stringify(db)}`
   newFiles['/dbcache.js'] = await gzipAndHash(Buffer.from(dbCacheJs))
   hashMap['/dbcache.js'] = newFiles['/dbcache.js'].hash
+  pathMap[newFiles['/dbcache.js'].hash] = '/dbcache.js'
 
+  /**/
   const uploadInfoReq = await api.sites.versions.populateFiles({
     parent: nextVersion.name,
     requestBody: {
@@ -175,18 +189,24 @@ const rebuildCache = async () => {
   })
   const uploadInfo = uploadInfoReq.data
 
-  // uploading files
-  const uploads = await Promise.all(Object.values(newFiles).map(gzip => client.request({
-    url: uploadInfo.uploadUrl + '/' + gzip.hash,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    data: gzip.gzip,
-    auth: true
-  }).catch(err => {
-    console.log('upload error!', gzip.hash, err)
-  })))
+  // uploading only required files
+  // if file already exists in some previous version - google will catch it automatically, so reupload is not required
+  const uploads = await Promise.all(uploadInfo.uploadRequiredHashes.map(hash => {
+    const gzip = newFiles[pathMap[hash]]
+    console.log(`uploading file <${pathMap[hash]}>`)
+    return client.request({
+      url: uploadInfo.uploadUrl + '/' + hash,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      data: gzip.gzip,
+      auth: true
+    })
+  })).catch(err => {
+    console.error('upload error!', JSON.stringify(err))
+    updateSuccess = false
+  })
 
-  if (uploads.find(up => up.status !== 200)) {
+  if (uploads.filter(x => x && x.status).find(up => up.status !== 200)) {
     console.error('Upload files failed')
     updateSuccess = false
   }
@@ -195,6 +215,7 @@ const rebuildCache = async () => {
   }
 
   if (!updateSuccess) {
+    console.error('generating new version failed. some files were not uploaded!')
     console.log(`removing nextVersion <${nextVersion.name}>`)
     await api.sites.versions.delete({ name: nextVersion.name })
     return null
@@ -229,6 +250,9 @@ const rebuildCache = async () => {
     }))
     console.log('database updated')
   }
+
+  const cacheRef = admin.database().ref('cache/clean')
+  await cacheRef.set(true)
 
   console.log('cache done')
 

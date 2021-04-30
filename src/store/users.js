@@ -3,6 +3,7 @@ import * as slugify from '@sindresorhus/slugify'
 // import firebase from '@/firebase'
 import collectionModule, { firebaseGet } from './modules/collection'
 import mergeOne from '@/util/mergeOne'
+import setCacheRequired from '@/util/setCacheRequired'
 const firebaseImport = () => import(/* webpackChunkName: "firebase" */ '@/firebase')
 
 const module = mergeOne(collectionModule('users'), {
@@ -37,6 +38,7 @@ const module = mergeOne(collectionModule('users'), {
           contributor: true,
         },
       })
+      await setCacheRequired()
 
       return uid
 

@@ -1,6 +1,7 @@
 /** A collection that overrides save to provide `createdAt`/`createdBy`, `updatedAt`/`updatedBy`, `reviewedAt`/`reviewedBy` fields. */
 import collection from '@/store/modules/collection'
 import mergeOne from '@/util/mergeOne'
+import setCacheRequired from '@/util/setCacheRequired'
 // import firebase from '@/firebase'
 import dayjs from 'dayjs'
 const firebaseImport = () => import(/* webpackChunkName: "firebase" */ '@/firebase')
@@ -38,6 +39,7 @@ const module = name => {
 
         const firebasem = await firebaseImport()
         const firebase = firebasem.default
+        await setCacheRequired()
         return firebase.database().ref(`${name}/${path}`)[method || 'set'](valueNew)
       },
 

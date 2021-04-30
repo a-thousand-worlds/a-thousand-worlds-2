@@ -1,5 +1,6 @@
 // import firebase from '@/firebase'
 import { get, set } from '@/util/get-set'
+import setCacheRequired from '@/util/setCacheRequired'
 const firebaseImport = () => import(/* webpackChunkName: "firebase" */ '@/firebase')
 
 /** Gets the value of a Firebase reference. */
@@ -97,6 +98,7 @@ const collectionModule = name => ({
       const firebase = firebasem.default
       const ref = firebase.database().ref(`${name}/${path}`)
       await ref.set(value)
+      await setCacheRequired()
     },
     /**
      * Subscribes to the collection in Firebase, syncing with this.data
@@ -127,6 +129,7 @@ const collectionModule = name => ({
       const firebase = firebasem.default
       const ref = firebase.database().ref(`${name}/${path}`)
       await ref.remove()
+      await setCacheRequired()
     },
     /** Updates a record in the collection in Firebase. */
     async update(context, { path, value }) {
@@ -136,6 +139,7 @@ const collectionModule = name => ({
       const firebase = firebasem.default
       const ref = firebase.database().ref(`${name}/${path}`)
       await ref.update(value)
+      await setCacheRequired()
     },
   },
 })
