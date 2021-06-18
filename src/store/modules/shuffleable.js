@@ -11,8 +11,8 @@ const getShuffleWeight = (item, tagProp, weightSpec) => {
   // get the weight of each of the item's identities
   const weights = Object.keys(ids || {})
     .map(id => {
-      if (!(id in weightSpec)) {
-        console.warn(`Invalid tag: ${id}`, item)
+      if (!(id in weightSpec) && Object.keys(weightSpec).length > 0) {
+        console.warn(`Tag id missing from weightSpec when shuffling by ${tagProp}: ${id}. This could mean that a tag was deleted from the tags collection but not deleted from a book/person.`, item)
       }
       return weightSpec[id]?.weight || 1
     })
@@ -32,6 +32,9 @@ const module = () => ({
       // if (!state.loaded) return
 
       if (!state.isShuffled) {
+        if (Object.values(state.data).length > 0 && Object.keys(weights).length === 0) {
+          console.warn('Trying to shuffle but no tags found to determine shuffle weights. Make sure tags are loaded before shuffling.')
+        }
         const weightedIds = Object.values(state.data).reduce((accum, item) => ({
           ...accum,
           [item.id]: getShuffleWeight(item, idProp, weights)

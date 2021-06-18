@@ -45,7 +45,15 @@ const store = createStore({
       }
 
       if (window.dbcache) {
-        if (window.dbcache.content) dispatch('content/loadCache', window.dbcache.content)
+        if (window.dbcache.content) {
+          dispatch('content/loadCache', window.dbcache.content)
+        }
+        if (window.dbcache.tags) {
+          if (window.dbcache.tags.books) dispatch('tags/books/loadCache', window.dbcache.tags.books)
+          if (window.dbcache.tags.people) dispatch('tags/people/loadCache', window.dbcache.tags.people)
+          if (window.dbcache.tags.bundles) dispatch('tags/bundles/loadCache', window.dbcache.tags.bundles)
+        }
+        // load books and people after tags are loaded so that tag weights are loaded before shuffling
         if (window.dbcache.books) {
           dispatch('books/loadCache', window.dbcache.books)
           shuffle('books')
@@ -53,11 +61,6 @@ const store = createStore({
         if (window.dbcache.people) {
           dispatch('people/loadCache', window.dbcache.people)
           shuffle('people')
-        }
-        if (window.dbcache.tags) {
-          if (window.dbcache.tags.books) dispatch('tags/books/loadCache', window.dbcache.tags.books)
-          if (window.dbcache.tags.people) dispatch('tags/people/loadCache', window.dbcache.tags.people)
-          if (window.dbcache.tags.bundles) dispatch('tags/bundles/loadCache', window.dbcache.tags.bundles)
         }
       }
 
@@ -69,14 +72,12 @@ const store = createStore({
       dispatch('users/subscribe')
 
       // subscribe to books and people and shuffle on load
-      /**/
       dispatch('books/subscribe', { onValue: () => shuffle('books') })
       dispatch('people/subscribe', { onValue: () => shuffle('people') })
       dispatch('tags/subscribe', { people: { onValue: () => {
         shuffle('books')
         shuffle('people')
       } } })
-      /**/
 
     },
 
