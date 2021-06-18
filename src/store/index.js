@@ -54,6 +54,9 @@ const store = createStore({
           dispatch('shuffle', 'people')
         }
       }
+      else {
+        console.warn('The cache has not been generated. Run `npm run update:localcache .env.local` to build the cache from Firebase. Once deployed, the cache will be regenerated directly on Firebase hosting via rebuildCache.js if needed.')
+      }
     },
 
     // shuffle a collection by tag weight of the corresponding tags
