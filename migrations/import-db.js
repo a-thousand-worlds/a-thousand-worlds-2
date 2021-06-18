@@ -92,7 +92,7 @@ const go = async () => {
     },
     contributors,
     content
-  })
+  }, null, 2)
 
   fs.writeFileSync('./public/dbcache.js', `window.dbcache = ${db}`)
 

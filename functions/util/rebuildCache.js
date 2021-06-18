@@ -175,7 +175,7 @@ const rebuildCache = async () => {
       })
   }))
 
-  const dbCacheJs = `window.dbcache = ${JSON.stringify(db)}`
+  const dbCacheJs = `window.dbcache = ${JSON.stringify(db, null, 2)}`
   newFiles['/dbcache.js'] = await gzipAndHash(Buffer.from(dbCacheJs))
   hashMap['/dbcache.js'] = newFiles['/dbcache.js'].hash
   pathMap[newFiles['/dbcache.js'].hash] = '/dbcache.js'
