@@ -129,6 +129,7 @@ export default ({
     document.head.appendChild(script)
 
     // initialize store subscriptions
+    this.$store.dispatch('loadCache')
     this.$store.dispatch('subscribe')
   },
 })

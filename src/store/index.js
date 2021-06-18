@@ -33,17 +33,8 @@ const store = createStore({
   },
   actions: {
 
-    async subscribe({ state, dispatch, commit }) {
-
-      // shuffle by tag weight
-      const shuffle = type => {
-        // if (!state[type].loaded || !state.tags[type].loaded) return
-        commit(`${type}/shuffle`, {
-          idProp: type === 'people' ? 'identities' : 'tags',
-          weights: state.tags[type].data
-        })
-      }
-
+    // loads all collections from the cache
+    loadCache({ state, dispatch }) {
       if (window.dbcache) {
         if (window.dbcache.content) {
           dispatch('content/loadCache', window.dbcache.content)
@@ -56,13 +47,25 @@ const store = createStore({
         // load books and people after tags are loaded so that tag weights are loaded before shuffling
         if (window.dbcache.books) {
           dispatch('books/loadCache', window.dbcache.books)
-          shuffle('books')
+          dispatch('shuffle', 'books')
         }
         if (window.dbcache.people) {
           dispatch('people/loadCache', window.dbcache.people)
-          shuffle('people')
+          dispatch('shuffle', 'people')
         }
       }
+    },
+
+    // shuffle a collection by tag weight of the corresponding tags
+    shuffle({ state, commit }, type) {
+      commit(`${type}/shuffle`, {
+        idProp: type === 'people' ? 'identities' : 'tags',
+        weights: state.tags[type].data
+      })
+    },
+
+    // subscribes to all collections
+    async subscribe({ state, dispatch, commit }) {
 
       dispatch('bundles/subscribe')
       dispatch('content/subscribe')
@@ -72,11 +75,11 @@ const store = createStore({
       dispatch('users/subscribe')
 
       // subscribe to books and people and shuffle on load
-      dispatch('books/subscribe', { onValue: () => shuffle('books') })
-      dispatch('people/subscribe', { onValue: () => shuffle('people') })
+      dispatch('books/subscribe', { onValue: () => dispatch('shuffle', 'books') })
+      dispatch('people/subscribe', { onValue: () => dispatch('shuffle', 'people') })
       dispatch('tags/subscribe', { people: { onValue: () => {
-        shuffle('books')
-        shuffle('people')
+        dispatch('shuffle', 'books')
+        dispatch('shuffle', 'people')
       } } })
 
     },
