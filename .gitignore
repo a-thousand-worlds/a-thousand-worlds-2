@@ -31,3 +31,4 @@ pnpm-debug.log*
 
 # Databse cache
 public/dbcache.js
+public/img/*
