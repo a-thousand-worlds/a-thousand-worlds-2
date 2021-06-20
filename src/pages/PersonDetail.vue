@@ -1,6 +1,7 @@
 <script>
 import * as slugify from '@sindresorhus/slugify'
 import creatorTitles from '@/store/constants/creatorTitles'
+import pronounOptions from '@/store/constants/pronouns'
 import BookListView from '@/components/BookListView'
 import Filter from '@/components/Filter'
 import Loader from '@/components/Loader'
@@ -29,6 +30,7 @@ export default {
     return {
       creatorTitles,
       editOnClick: false,
+      pronounOptions,
     }
   },
   computed: {
@@ -54,6 +56,10 @@ export default {
       const person = this.$store.getters['people/findBy']('name', name => slugify(name) === this.name)
       this.$store.dispatch('debug', { person })
       return person
+    },
+    pronouns() {
+      const pronounOption = this.pronounOptions.find(option => option.id === this.person?.pronouns)
+      return pronounOption?.text || null
     },
     tags() {
       const peopleTags = this.$store.state.tags.people.data || {}
@@ -136,6 +142,7 @@ export default {
             <h1 class="title mt-5">
               <a @click.prevent="adminEditClick" style="color: inherit;" :style="{ cursor: editOnClick ? 'context-menu' : 'default', 'user-select': editOnClick ? 'none' : null }">{{ person.name }}</a>
             </h1>
+            <div v-if="pronouns" class="prounouns">{{ pronouns }}</div>
             <div v-if="tags" class="tags mt-20">
               <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="people" button-class="is-outlined" />
             </div>
