@@ -31,6 +31,13 @@ export default {
     }
   },
   computed: {
+    // returns the id of the last top level tag in the list which serves as the initial parent of a newly created subtag
+    defaultSubtagParent() {
+      if (!this.tags) return null
+      const topLevelTags = this.tags.filter(tag => !tag.parent)
+      if (topLevelTags.length === 0) return null
+      return topLevelTags[topLevelTags.length - 1].id
+    },
     specialFilters() {
       return specialFilters[this.type]
     },
@@ -412,7 +419,7 @@ export default {
         <a class="button" style="border: solid 1px #dbdbdb; border-left: 0;">
           <label style="cursor: pointer; user-select: none;">
             <span class="mr-2">Subtag</span>
-            <input v-model="newTag.parent" type="checkbox" :false-value="null" class="checkbox">
+            <input v-model="newTag.parent" type="checkbox" :false-value="null" :true-value="defaultSubtagParent" class="checkbox">
           </label>
         </a>
       </p>
