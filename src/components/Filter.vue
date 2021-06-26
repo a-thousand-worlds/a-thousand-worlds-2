@@ -96,12 +96,14 @@ export default {
       <!-- filters -->
       <li v-for="filter in tags" :key="filter.id" @mouseenter="isParent(filter) && toggleSubmenu(filter)" @mouseleave="isParent(filter) && toggleSubmenu(null)" @click.stop="!isParent(filter) && toggleFilter(filter)" style="position: relative;">
 
-        <button v-if="filter.showOnFront" :class="{ active: isFiltered(filter) || (isParent(filter) && submenuActive)}" class="pb-2" style="padding-left: 2px;">
+        <!-- tag -->
+        <button v-if="filter.showOnFront" :class="{ active: isFiltered(filter) || submenuActive === filter}" class="pb-2" style="padding-left: 2px;">
           <span style="display: inline-block;" :innerHTML="formatTag(filter.tag)" />
-          <span v-if="isFiltered(filter)" class="remove-tag" :style="selectedIconStyle(filter.tag)">{{ '—' }}</span></button>
+          <span v-if="isFiltered(filter)" class="remove-tag" :style="selectedIconStyle(filter.tag)">{{ '—' }}</span>
+        </button>
 
-        <!-- subtags -->
-        <div v-if="submenuActive && isParent(filter)" v-click-outside="closeSubmenu" class="subtag-menu p-2" style="position: absolute; z-index: 1; background-color: #fff; top: -5px; left: 80px; min-width: 168px;">
+        <!-- subtag -->
+        <div v-if="submenuActive === filter" v-click-outside="closeSubmenu" class="subtag-menu p-2" style="position: absolute; z-index: 1; background-color: #fff; top: -5px; left: 80px; min-width: 168px;">
           <div v-for="subtag of subtags(filter)" :key="subtag.id" @click="toggleFilter(subtag)">
             <button :class="{ active: isFiltered(subtag) }" class="pb-2" style="padding-left: 2px;">
               <span style="display: inline-block;" :innerHTML="subtag.tag" />
