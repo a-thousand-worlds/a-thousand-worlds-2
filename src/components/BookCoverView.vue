@@ -71,9 +71,6 @@ export default {
 @import '@/assets/style/vars.scss';
 
 .book-cover-wrapper {
-  position: relative;
-  top: 0;
-  left: 0;
   margin-bottom: 10px;
   background-size: contain;
   background-repeat: no-repeat;
@@ -87,8 +84,10 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    // set no width and height until hovered
+    // see &:hover below
+    width: 0;
+    height: 0;
   }
 
   .cover-data {
@@ -106,10 +105,23 @@ export default {
     background: #fff;
   }
 
+  // only set position to relative and set width and height of .cover-shadow and .cover-data on hover
+  // otherwise, the book cover overlaps tag submenus regardless of z-index due to source order
   &:hover {
+    position: relative;
+    top: 0;
+    left: 0;
     .bookmark { opacity: 1; }
-    .cover-shadow { opacity: 0.8; }
-    .cover-data { opacity: 1; }
+    .cover-shadow {
+      opacity: 0.8;
+    }
+    .cover-data {
+      opacity: 1;
+    }
+    .cover-shadow, .cover-data {
+      width: 100%;
+      height: 100%;
+    }
   }
 
   .bookmark {
