@@ -4,6 +4,7 @@ import * as slugify from '@sindresorhus/slugify'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import creatorTitles from '@/store/constants/creatorTitles'
 import pronounOptions from '@/store/constants/pronouns'
+import linkCreatorInBio from '@/util/linkCreatorInBio'
 import BookListView from '@/components/BookListView'
 import Filter from '@/components/Filter'
 import Loader from '@/components/Loader'
@@ -34,6 +35,8 @@ export default {
   },
   data() {
     return {
+      // track if the bio CKEditor is focused to prevent the auto-linked bio from being saved to the database
+      bioFocused: false,
       ckConfig: {
         placeholder: 'Enter bio',
       },
@@ -57,6 +60,13 @@ export default {
         : this.person.photo.url?.startsWith('http')
           ? this.person.photo.url
           : ''
+    },
+    // link the first instance of the person's name in their bio to their website
+    // when the bio editable is focused, the raw bio should be returned for edits
+    bio() {
+      return this.bioFocused
+        ? this.person?.bio
+        : linkCreatorInBio(this.person)
     },
     books() {
       return this.person ? this.$store.getters['books/list']().filter(book =>
@@ -118,6 +128,14 @@ export default {
       this.$router.push({ name: 'PersonDetail', params: this.$route.params })
     },
 
+    bioBlur() {
+      this.bioFocused = false
+    },
+
+    bioFocus() {
+      this.bioFocused = true
+    },
+
     closePronounsDropdown() {
       this.pronounsDropdownActive = false
     },
@@ -151,6 +169,12 @@ export default {
         .catch(() => {
           this.uploadingPhoto = false
         })
+    },
+
+    updateBio(value) {
+      // updateBio gets incorrectly triggered once on blur with the auto-linked bio, so we need to ignore it
+      if (!this.bioFocused) return
+      this.updatePerson({ bio: value })
     },
 
     updatePerson(field, value) {
@@ -275,7 +299,7 @@ export default {
           </div>
 
           <!-- bio -->
-          <ckeditor @update:modelValue="updatePerson({ bio: $event })" v-model="person.bio" :editor="editor" :config="ckConfig" class="person-bio" style="padding: 0;" />
+          <ckeditor @update:modelValue="updateBio($event)" :model-value="bio" :editor="editor" :config="ckConfig" @focus="bioFocus" @blur="bioBlur" class="person-bio" style="padding: 0;" />
 
           <!-- text-align: left needed to override centered content in tablet view. -->
           <table class="my-20" style="text-align: left;">
@@ -312,7 +336,6 @@ export default {
                 <a v-if="person?.website" :href="person.website" target="_blank">↗</a>
               </td>
             </tr>
-
 
           </table>
 
@@ -415,5 +438,12 @@ export default {
     border-bottom: none;
     padding-bottom: 0.5rem;
   }
+}
+</style>
+
+<style lang="scss">
+// override background color of injected creator link in bio
+.ck .ck-link_selected {
+  background: inherit;
 }
 </style>

@@ -2,6 +2,7 @@
 import * as slugify from '@sindresorhus/slugify'
 import creatorTitles from '@/store/constants/creatorTitles'
 import pronounOptions from '@/store/constants/pronouns'
+import linkCreatorInBio from '@/util/linkCreatorInBio'
 import BookListView from '@/components/BookListView'
 import Filter from '@/components/Filter'
 import Loader from '@/components/Loader'
@@ -41,6 +42,10 @@ export default {
         : this.person.photo.url?.startsWith('http')
           ? this.person.photo.url
           : ''
+    },
+    // link the first instance of the person's name in their bio to their website
+    bio() {
+      return linkCreatorInBio(this.person)
     },
     books() {
       return this.person ? this.$store.getters['books/list']().filter(book =>
@@ -148,7 +153,7 @@ export default {
             </div>
           </div>
 
-          <p v-if="person.bio" class="person-bio" :innerHTML="person.bio" />
+          <p v-if="person?.bio" class="person-bio" :innerHTML="bio" />
 
         </div>
 
