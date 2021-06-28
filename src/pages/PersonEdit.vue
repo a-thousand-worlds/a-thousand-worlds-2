@@ -2,6 +2,7 @@
 import * as slugify from '@sindresorhus/slugify'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import creatorTitles from '@/store/constants/creatorTitles'
+import pronounOptions from '@/store/constants/pronouns'
 import BookListView from '@/components/BookListView'
 import Filter from '@/components/Filter'
 import Loader from '@/components/Loader'
@@ -39,8 +40,10 @@ export default {
       editor: BalloonEditor,
       editOnClick: false,
       tagsDropdownActive: false,
-      titleDropdownActive: false,
       pageUrl: window.location.href,
+      pronounOptions,
+      pronounsDropdownActive: false,
+      titleDropdownActive: false,
       uploadingPhoto: false,
     }
   },
@@ -67,6 +70,9 @@ export default {
       const person = this.$store.getters['people/findBy']('name', name => slugify(name) === this.name)
       this.$store.dispatch('debug', { person })
       return person
+    },
+    pronouns() {
+      return this.pronounOptions.find(option => option.id === this.person?.pronouns)
     },
     tags() {
       const peopleTags = this.$store.state.tags.people.data || {}
@@ -100,6 +106,10 @@ export default {
       // use e.shiftKey instead of editOnClick in case shift key is held down from previous page
       if (!this.$iam('owner') || !e.shiftKey) return
       this.$router.push({ name: 'PersonDetail', params: this.$route.params })
+    },
+
+    closePronounsDropdown() {
+      this.pronounsDropdownActive = false
     },
 
     closeTagsDropdown() {
@@ -215,6 +225,20 @@ export default {
                 <SimpleInput v-if="person" @update:modelValue="saveName" v-model="person.name" placeholder="Enter Name" unstyled />
               </a>
             </h1>
+
+            <!-- pronouns dropdown -->
+            <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': pronounsDropdownActive }">
+              <div id="dropdown-menu" class="dropdown-menu" role="menu">
+                <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
+                  <a v-for="pronounOption in pronounOptions" :key="pronounOption.id" class="dropdown-item is-capitalized" @click.prevent="updatePerson({ pronouns: pronounOption.id })">
+                    {{ pronounOption.text }}
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- pronouns -->
+            <a v-if="pronouns" @click.prevent.stop="pronounsDropdownActive = !pronounsDropdownActive" v-click-outside="closePronounsDropdown" class="primary-hover no-user-select" :class="{ 'is-primary': pronounsDropdownActive }">{{ pronouns.text }}</a>
 
             <!-- tags -->
             <div class="tags mt-20">
