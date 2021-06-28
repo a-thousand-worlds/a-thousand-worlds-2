@@ -1,4 +1,5 @@
 <script>
+import dayjs from 'dayjs'
 import * as slugify from '@sindresorhus/slugify'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import creatorTitles from '@/store/constants/creatorTitles'
@@ -37,6 +38,7 @@ export default {
         placeholder: 'Enter bio',
       },
       creatorTitles,
+      dayjs,
       editor: BalloonEditor,
       editOnClick: false,
       tagsDropdownActive: false,
@@ -62,6 +64,14 @@ export default {
         (book.illustrators || []).includes(this.person.name) ||
         Object.keys(book.creators || {}).includes(this.person.id)
       ) : []
+    },
+    createdByName() {
+      const user = this.$store.getters['users/get'](this.person?.createdBy)
+      return user?.profile?.name || 'admin'
+    },
+    updatedByName() {
+      const user = this.$store.getters['users/get'](this.person?.updatedBy)
+      return user?.profile?.name || 'admin'
     },
     name() {
       return this.$route.params.name
@@ -266,6 +276,45 @@ export default {
 
           <!-- bio -->
           <ckeditor @update:modelValue="updatePerson({ bio: $event })" v-model="person.bio" :editor="editor" :config="ckConfig" class="person-bio" style="padding: 0;" />
+
+          <!-- text-align: left needed to override centered content in tablet view. -->
+          <table class="my-20" style="text-align: left;">
+
+            <!-- Submitted by -->
+            <tr>
+              <th class="has-text-right"><b class="mr-3">submitted by</b></th>
+              <td><span style="opacity: 0.5;">{{ createdByName }}</span></td>
+            </tr>
+
+            <!-- Submitted on -->
+            <tr>
+              <th class="has-text-right"><b class="mr-3">submitted on</b></th>
+              <td><span style="opacity: 0.5;">{{ dayjs(person?.createdAt).format('M/D/YYYY') }}</span></td>
+            </tr>
+
+            <!-- Updated by -->
+            <tr>
+              <th class="has-text-right"><b class="mr-3">updated by</b></th>
+              <td><span style="opacity: 0.5;">{{ updatedByName }}</span></td>
+            </tr>
+
+            <!-- Updated on -->
+            <tr>
+              <th class="has-text-right"><b class="mr-3">updated on</b></th>
+              <td><span style="opacity: 0.5;">{{ dayjs(person?.updatedAt).format('M/D/YYYY') }}</span></td>
+            </tr>
+
+            <!-- Website -->
+            <tr>
+              <th class="has-text-right"><b class="mr-3">website</b></th>
+              <td>
+                <SimpleInput v-if="person" @update:modelValue="updatePerson({ website: $event })" v-model="person.website" placeholder="Enter a website" style="display: inline-block; margin-right: 0.5em;" />
+                <a v-if="person?.website" :href="person.website" target="_blank">↗</a>
+              </td>
+            </tr>
+
+
+          </table>
 
         </div>
 
