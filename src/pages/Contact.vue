@@ -23,17 +23,18 @@ export default {
     const ret = {
       name: query.get('from') || '',
       email: query.get('email') || '',
-      // subject: query.get('subject') || Object.keys(variants)[0],
       subject: query.get('subject') || '',
       message: query.get('message') || '',
       dropdown: ''
     }
-    // ret.dropdown = Object.keys(variants).includes(ret.subject) ? ret.subject : 'Other'
     return ret
   },
   computed: {
     subjectVariants() {
       return Object.keys(variants)
+    },
+    subjectVariantsSelectable() {
+      return Object.keys(variants).filter(v => v !== 'Other')
     },
     messagePlaceholder() {
       return variants[this.subject] || 'Message'
@@ -77,17 +78,15 @@ export default {
 
   <div class="columns m-20">
     <div class="column p-0 is-half-desktop is-offset-one-quarter-desktop">
-      <Content name="contact/title" class="contact-page-title page-title is-uppercase" format="inline">We want to hear from you!</Content>
+      <Content name="contact/title" class="contact-page-title page-title is-uppercase" format="multiline">We want to hear from you!</Content>
       <div class="columns is-mobile">
-        <div class="column is-3-tablet is-6-mobile is-offset-1-tablet"><HeartIcon class="fill-primary p-5" width="140px" height="140px" /></div>
+        <div class="column is-4-tablet is-6-mobile is-offset-1-desktop has-text-centered"><HeartIcon class="fill-primary p-5" width="140px" height="140px" /></div>
         <div class="column">
-          <Content name="contact/header" format="multiline" placeholder="Type here">
-            <p>Nominate a Leader</p>
-            <p>Say Hello</p>
-            <p>Ask a Question</p>
-            <p>Report a Bug</p>
-            <p>Partner with Us</p>
-          </Content>
+          <p><a href="#" @click.prevent.stop="dropdown = subjectVariants[0]; setSubject()">Nominate a Leader</a></p>
+          <p><a href="#" @click.prevent.stop="dropdown = subjectVariants[1]; setSubject()">Say Hello</a></p>
+          <p><a href="#" @click.prevent.stop="dropdown = subjectVariants[2]; setSubject()">Partner with Us</a></p>
+          <p><a href="#" @click.prevent.stop="dropdown = subjectVariants[3]; setSubject()">Ask a Question</a></p>
+          <p><a href="#" @click.prevent.stop="dropdown = subjectVariants[4]; setSubject()">Report a Bug</a></p>
         </div>
       </div>
     </div>
