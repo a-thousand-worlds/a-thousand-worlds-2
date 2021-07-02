@@ -82,11 +82,11 @@ export default {
       <div class="columns is-mobile">
         <div class="column is-4-tablet is-6-mobile is-offset-1-desktop has-text-centered"><HeartIcon class="fill-primary p-5" width="140px" height="140px" /></div>
         <div class="column">
-          <p><a href="#" @click.prevent.stop="dropdown = subjectVariants[0]; setSubject()">Nominate a Leader</a></p>
-          <p><a href="#" @click.prevent.stop="dropdown = subjectVariants[1]; setSubject()">Say Hello</a></p>
-          <p><a href="#" @click.prevent.stop="dropdown = subjectVariants[2]; setSubject()">Partner with Us</a></p>
-          <p><a href="#" @click.prevent.stop="dropdown = subjectVariants[3]; setSubject()">Ask a Question</a></p>
-          <p><a href="#" @click.prevent.stop="dropdown = subjectVariants[4]; setSubject()">Report a Bug</a></p>
+          <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[0] }" @click.prevent.stop="dropdown = subjectVariants[0]; setSubject()">Nominate a Leader</a></p>
+          <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[1] }" @click.prevent.stop="dropdown = subjectVariants[1]; setSubject()">Say Hello</a></p>
+          <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[2] }" @click.prevent.stop="dropdown = subjectVariants[2]; setSubject()">Partner with Us</a></p>
+          <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[3] }" @click.prevent.stop="dropdown = subjectVariants[3]; setSubject()">Ask a Question</a></p>
+          <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[4] }" @click.prevent.stop="dropdown = subjectVariants[4]; setSubject()">Report a Bug</a></p>
         </div>
       </div>
     </div>
@@ -150,5 +150,8 @@ option {
 }
 ::placeholder {
   color: $placeholderColor !important;
+}
+.is-text-color {
+  color: black !important;
 }
 </style>
