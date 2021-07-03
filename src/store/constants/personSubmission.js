@@ -4,7 +4,6 @@ const personSubmission = () => ({
   bio: '',
   bonus: '',
   curateInterest: '',
-  gender: '',
   identities: {},
   name: '',
   photo: '',

@@ -42,9 +42,11 @@ export default {
       return this.$store.state.user.user?.profile.name
     },
     // top-level tags used as identities
+    // exclude gender since gender is specified by its subtags
     tags() {
+      const tagGender = this.$store.getters[`tags/people/findBy`]('tag', 'Gender')
       return this.$store.getters[`tags/people/listSorted`]()
-        .filter(tag => tag.showOnPeopleForm && !tag.parent)
+        .filter(tag => tag.showOnPeopleForm && !tag.parent && tag.id !== tagGender.id)
     },
     // gender subtags
     tagsGender() {
