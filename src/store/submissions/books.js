@@ -114,37 +114,42 @@ const module = mergeOne(managed('submits/books'), {
     approveBook: async (context, sub) => {
 
       // collect creators and create not existing people
-      const authors = sub.authors.split(/[,;&]| and /g).map(x => x.trim()).filter(x => x)
-      const illustrators = sub.illustrators.split(/[,;&]| and /g).map(x => x.trim()).filter(x => x)
-        // convert "same" text to creator name
-        .map(illustrator => isSame(illustrator) ? authors[0] : illustrator)
+      const authors = sub.authors.split(/[,;&]| and /g)
+        .map(x => x.trim())
+        .filter(x => x)
+      const illustrators = sub.illustrators.split(/[,;&]| and /g)
+        .map(x => x.trim())
+        // filter out "same" illustrators so the creator is only added once
+        .filter(illustrator => illustrator && !isSame(illustrator) && !authors.includes(illustrator))
       const creators = {}
 
       // add author creators
       // use ids of existing authors if their names match
       // otherwise create a new author
-      await authors.forEach(async author => {
+      await Promise.all(authors.map(async author => {
         let cid = context.rootGetters['people/list']()
           .find(person => almostEqual(person.name, author))?.id
         if (!cid) {
           cid = uid()
           await context.dispatch('people/save', { path: cid, value: { id: cid, name: author, reviewedBy: context.rootState.user.user.uid } }, { root: true })
         }
-        creators[cid] = creators[cid] ? 'author-illustrator' : 'author'
-      })
+        // add the author as an author-illustrator if illustrator is marked as "same"
+        creators[cid] = isSame(sub.illustrators) ? 'author-illustrator' : 'author'
+      }))
 
       // add illustrator creators
       // use ids of existing illustrators if their names match
       // otherwise create a new illustrator
-      await illustrators.forEach(async illustrator => {
+      await Promise.all(illustrators.map(async illustrator => {
         let cid = context.rootGetters['people/list']()
           .find(person => almostEqual(person.name, illustrator))?.id
         if (!cid) {
           cid = uid()
+          console.log('new illustrator', cid, illustrator)
           await context.dispatch('people/save', { path: cid, value: { id: cid, name: illustrator, reviewedBy: context.rootState.user.user.uid } }, { root: true })
         }
         creators[cid] = creators[cid] ? 'author-illustrator' : 'illustrator'
-      })
+      }))
 
       // save book
       const bookId = uid()
@@ -156,7 +161,7 @@ const module = mergeOne(managed('submits/books'), {
 
       await context.dispatch('books/save', { path: bookId, value: {
         createdBy: sub.createdBy,
-        creators: creators,
+        creators,
         goodreads: sub.goodreads || '',
         id: bookId,
         isbn: sub.isbn,
