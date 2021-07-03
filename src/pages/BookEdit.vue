@@ -3,6 +3,7 @@ import sortBy from 'lodash/sortBy'
 import dayjs from 'dayjs'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import AddCreator from '@/components/AddCreator'
+import AddTag from '@/components/AddTag'
 import BookDetailLink from '@/components/BookDetailLink'
 import Filter from '@/components/Filter'
 import Clipboard from 'clipboard'
@@ -22,6 +23,7 @@ export default {
   name: 'BookDetail',
   components: {
     AddCreator,
+    AddTag,
     BookDetailLink,
     CreatorCard,
     Filter,
@@ -47,7 +49,6 @@ export default {
       dayjs,
       editOnClick: false,
       editor: BalloonEditor,
-      tagsDropdownActive: false,
     }
   },
   computed: {
@@ -76,9 +77,6 @@ export default {
       const user = this.$store.getters['users/get'](this.book?.createdBy)
       return user?.profile?.name
     },
-    tagOptions() {
-      return this.$store.getters['tags/books/listSorted']()
-    },
   },
   created() {
     window.addEventListener('keydown', this.keydown)
@@ -104,10 +102,6 @@ export default {
       // use e.shiftKey instead of editOnClick in case shift key is held down from previous page
       if (!e.shiftKey) return
       this.$router.push({ name: 'BookDetail', params: this.$route.params })
-    },
-
-    closeTagsDropdown() {
-      this.tagsDropdownActive = false
     },
 
     formatDate,
@@ -171,7 +165,6 @@ export default {
         value = field
         field = ''
       }
-      this.closeTagsDropdown()
       this.$store.dispatch('books/update', {
         path: `${this.book.id}/${field}`,
         value,
@@ -216,19 +209,7 @@ export default {
 
             <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="books" @remove="updateBook('tags', { [tag.id]: null })" button-class="is-outlined" editable />
 
-            <!-- add tag dropdown -->
-            <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': tagsDropdownActive }">
-              <div id="dropdown-menu" class="dropdown-menu" role="menu">
-                <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
-                  <a v-for="tag in tagOptions" :key="tag.id" @click.prevent="updateBook('tags', { [tag.id]: true })" :class="{ 'ml-20': tag.parent }" class="dropdown-item is-capitalized">
-                    {{ tag.tag }}
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <!-- add tag -->
-            <Tag :tag="{ tag: 'ADD TAG' }" nolink tagStyle="background-color: #fff; border-color: #000; color: #000 !important; cursor: pointer" v-click-outside="closeTagsDropdown" @click="tagsDropdownActive = !tagsDropdownActive" />
+            <AddTag :bookId="book.id" />
 
           </div>
 
