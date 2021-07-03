@@ -5,6 +5,7 @@ import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import creatorTitles from '@/store/constants/creatorTitles'
 import pronounOptions from '@/store/constants/pronouns'
 import linkCreatorInBio from '@/util/linkCreatorInBio'
+import AddTag from '@/components/AddTag'
 import BookListView from '@/components/BookListView'
 import Filter from '@/components/Filter'
 import Loader from '@/components/Loader'
@@ -16,6 +17,7 @@ import SimpleInput from '@/components/fields/SimpleInput'
 
 export default {
   components: {
+    AddTag,
     BookListView,
     Filter,
     Loader,
@@ -44,7 +46,6 @@ export default {
       dayjs,
       editor: BalloonEditor,
       editOnClick: false,
-      tagsDropdownActive: false,
       pageUrl: window.location.href,
       pronounOptions,
       pronounsDropdownActive: false,
@@ -99,9 +100,6 @@ export default {
       return Object.keys(this.person?.identities || [])
         .map(id => peopleTags[id] || { id, tag: 'invalid' })
     },
-    tagOptions() {
-      return this.$store.getters['tags/people/listSorted']()
-    },
     /** Get the person's creatorTitle. */
     title() {
       if (!this.person) return null
@@ -138,10 +136,6 @@ export default {
 
     closePronounsDropdown() {
       this.pronounsDropdownActive = false
-    },
-
-    closeTagsDropdown() {
-      this.tagsDropdownActive = false
     },
 
     closeTitleDropdown() {
@@ -182,7 +176,6 @@ export default {
         value = field
         field = ''
       }
-      this.closeTagsDropdown()
       return this.$store.dispatch('people/update', {
         path: `${this.person.id}/${field}`,
         value,
@@ -284,22 +277,11 @@ export default {
             <!-- tags -->
             <div class="tags mt-20">
 
-              <!-- tag -->
+              <!-- tags -->
               <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="people" @remove="updatePerson('identities', { [tag.id]: null })" button-class="is-outlined" :tagStyle="tag.tag === 'invalid' ? 'background-color: #fff; border-color: red; color: red !important; cursor: pointer;' : null" editable />
 
               <!-- add tag dropdown -->
-              <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': tagsDropdownActive }" style="text-align: left;">
-                <div id="dropdown-menu" class="dropdown-menu" role="menu">
-                  <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
-                    <a v-for="tag in tagOptions" :key="tag.id" @click.prevent="updatePerson('identities', { [tag.id]: true })" :class="{ 'ml-20': tag.parent }" class="dropdown-item is-capitalized">
-                      {{ tag.tag }}
-                    </a>
-                  </div>
-                </div>
-              </div>
-
-              <!-- add tag -->
-              <Tag :tag="{ tag: 'ADD TAG' }" nolink tagStyle="background-color: #fff; border-color: #000; color: #000 !important; cursor: pointer;" v-click-outside="closeTagsDropdown" @click="tagsDropdownActive = !tagsDropdownActive" />
+              <AddTag type="people" @add="updatePerson('identities', { [$event.id]: true })" />
 
             </div>
 

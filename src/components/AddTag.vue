@@ -6,9 +6,10 @@ export default {
     Tag,
   },
   props: {
-    bookId: {
+    type: {
       type: String,
       required: true,
+      validator: value => ['books', 'bundles', 'people'].includes(value),
     }
   },
   emits: ['add'],
@@ -19,7 +20,7 @@ export default {
   },
   computed: {
     tagOptions() {
-      return this.$store.getters['tags/books/listSorted']()
+      return this.$store.getters[`tags/${this.type}/listSorted`]()
     },
   },
   methods: {
@@ -29,14 +30,10 @@ export default {
       this.dropdownActive = false
     },
 
-    /** Adds a tag to the book. */
-    add(tagId) {
+    /** Emits the add event with the selected tag. */
+    add(tag) {
       this.closeDropdown()
-      this.$emit('add', tagId)
-      this.$store.dispatch('books/update', {
-        path: `${this.book.id}/tags`,
-        value: tagId,
-      })
+      this.$emit('add', tag)
     },
 
   },
@@ -48,10 +45,10 @@ export default {
   <span>
 
     <!-- dropdown -->
-    <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': dropdownActive }">
+    <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': dropdownActive }" style="text-align: left;">
       <div id="dropdown-menu" class="dropdown-menu" role="menu">
         <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
-          <a v-for="tag in tagOptions" :key="tag.id" @click.prevent="add(tag.id)" :class="{ 'ml-20': tag.parent }" class="dropdown-item is-capitalized" style="color: #000;">
+          <a v-for="tag in tagOptions" :key="tag.id" @click.prevent="add(tag)" :class="{ 'ml-20': tag.parent }" class="dropdown-item is-capitalized" style="color: #000;">
             {{ tag.tag }}
           </a>
         </div>

@@ -209,7 +209,7 @@ export default {
 
             <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="books" @remove="updateBook('tags', { [tag.id]: null })" button-class="is-outlined" editable />
 
-            <AddTag :bookId="book.id" />
+            <AddTag type="books" @add="updateBook('tags', { [$event.id]: true })" />
 
           </div>
 
