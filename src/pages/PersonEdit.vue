@@ -307,9 +307,10 @@ export default {
 
           <!-- bio -->
           <ckeditor @update:modelValue="updateBio($event)" :model-value="bio" :editor="editor" :config="ckConfig" @focus="bioFocus" @blur="bioBlur" class="person-bio" style="padding: 0;" />
+          <div class="divider-30" />
 
           <!-- text-align: left needed to override centered content in tablet view. -->
-          <table class="my-20" style="text-align: left;">
+          <table style="text-align: left;">
 
             <!-- Submitted by -->
             <tr>
@@ -345,6 +346,8 @@ export default {
             </tr>
 
           </table>
+
+          <div class="divider-30 is-hidden-widescreen" />
 
         </div>
 
@@ -432,23 +435,20 @@ export default {
 }
 
 .person-bio {
-  border: none;
-  @include primary(border-color);
   font-size: 22px;
   text-align: justify;
-  padding-bottom: 30px;
-  margin-bottom: 30px;
-  border-bottom: solid 1px #ddd;
 
   @include from($widescreen) {
     text-align: left;
-    border-bottom: none;
     padding-bottom: 0.5rem;
   }
 }
 </style>
 
 <style lang="scss">
+.person-bio.ck.ck-editor__editable_inline>:last-child {
+  margin-bottom: 0px;
+}
 // override background color of injected creator link in bio
 .ck .ck-link_selected {
   background: inherit;

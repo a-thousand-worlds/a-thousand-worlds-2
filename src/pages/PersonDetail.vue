@@ -161,6 +161,7 @@ export default {
 
           <!-- bio -->
           <p v-if="person?.bio" class="person-bio" :innerHTML="bio" />
+          <div class="divider-30 is-hidden-widescreen" />
 
         </div>
 
@@ -254,16 +255,11 @@ export default {
 }
 
 .person-bio {
-  @include primary(border-color);
   font-size: 22px;
   text-align: justify;
-  padding-bottom: 30px;
-  margin-bottom: 30px;
-  border-bottom: solid 1px #ddd;
 
   @include from($widescreen) {
     text-align: left;
-    border-bottom: none;
     padding-bottom: 0.5rem;
   }
 }
