@@ -160,8 +160,10 @@ export default {
           </div>
 
           <!-- bio -->
-          <p v-if="person?.bio" class="person-bio" :innerHTML="bio" />
-          <div class="divider-30 is-hidden-widescreen" />
+          <div v-if="person?.bio">
+            <p class="person-bio" :innerHTML="bio" />
+            <div class="divider-30 is-hidden-widescreen" />
+          </div>
 
         </div>
 
