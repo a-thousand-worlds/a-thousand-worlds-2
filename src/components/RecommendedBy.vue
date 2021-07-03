@@ -71,7 +71,11 @@ export default {
 
     name() {
       if (!this.profile) return ''
-      return this.profile.name || (this.profile.firstName ? `${this.profile.firstName || ''} ${this.profile.lastName || ''}` : 'anonymous')
+      const fullName = this.profile.name || (this.profile.firstName ? `${this.profile.firstName || ''} ${this.profile.lastName || ''}`.trim() : '')
+      if (!fullName) {
+        console.warn('User profile is missing name', this.profile)
+      }
+      return fullName || 'anonymous'
     },
 
     title() {
