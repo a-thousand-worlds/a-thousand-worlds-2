@@ -41,7 +41,7 @@ export default {
       <div id="dropdown-menu" class="dropdown-menu" role="menu" style="margin-left: -10px;">
         <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
 
-          <span class="dropdown-item">To add a creator that is not yet in the system, use the People Submission Form.</span>
+          <span class="dropdown-item">To add a creator that is not yet in the system, use the <router-link :to="{ name: 'PersonSubmissionForm' }">People Submission Form</router-link>.</span>
           <hr class="dropdown-divider">
 
           <a v-for="creator in creators" :key="creator.id" class="dropdown-item is-capitalized" @click.prevent="$emit('update', creator.id)" style="color: #000;">
