@@ -163,7 +163,7 @@ export default {
           <a @click.prevent="$router.back" class="is-uppercase is-primary">&lt; Back</a>
         </div>
 
-        <h1 class="title page-title divider-bottom">{{ person ? 'Edit public profile' : 'Create a profile' }}</h1>
+        <h1 class="title page-title divider-bottom">{{ person ? 'Edit public profile' : $iam('owner') ? 'New Person' : 'Create a profile' }}</h1>
 
         <section class="basic-information">
 
@@ -176,7 +176,7 @@ export default {
 
               <!-- name -->
               <div class="field">
-                <label class="label" :class="{ 'has-text-danger': hasError('name') }" style="font-weight: bold; text-transform: uppercase;">Your Name<sup class="required">*</sup></label>
+                <label class="label" :class="{ 'has-text-danger': hasError('name') }" style="font-weight: bold; text-transform: uppercase;">{{ !$iam('owner') ? 'Your ' : '' }}Name<sup class="required">*</sup></label>
                 <input type="text" class="input" v-model="submission.name" @input="saveDraftAndRevalidate">
               </div>
 
@@ -194,7 +194,7 @@ export default {
 
               <!-- title -->
               <div class="field">
-                <label class="label" :class="{ 'has-text-danger': hasError('title') }" style="font-weight: bold; text-transform: uppercase;">Your Title<sup class="required">*</sup></label>
+                <label class="label" :class="{ 'has-text-danger': hasError('title') }" style="font-weight: bold; text-transform: uppercase;">{{ !$iam('owner') ? 'Your ' : '' }}Title<sup class="required">*</sup></label>
 
                 <div v-for="title of creatorTitles" :key="title.id" class="control is-flex">
                   <label style="cursor: pointer;">
@@ -210,7 +210,7 @@ export default {
 
           <!-- website -->
           <div class="field">
-            <label class="label is-uppercase" :class="{ 'has-text-danger': hasError('website') }"><b>Your website or social media URL<sup class="required">*</sup></b></label>
+            <label class="label is-uppercase" :class="{ 'has-text-danger': hasError('website') }"><b>{{ !$iam('owner') ? 'Your ' : '' }}Website or social media URL<sup class="required">*</sup></b></label>
             <input type="text" v-model="submission.website" @input="saveDraftAndRevalidate" class="input">
           </div>
 
@@ -253,18 +253,18 @@ export default {
 
           <!-- awards -->
           <div class="field">
-            <label class="label"><b>List of awards and recognition that you would like us to highlight</b> (optional)</label>
+            <label class="label"><b>List of awards and recognition{{ !$iam('owner') ? ' that you would like us to highlight' : '' }}</b> (optional)</label>
             <textarea class="textarea" v-model="submission.awards" @input="saveDraftAndRevalidate" style="min-height: 6em;" />
           </div>
 
           <!-- bonus -->
           <div class="field">
-            <label class="label"><b>Links to bonus material relevant to you</b> (optional)</label>
+            <label class="label"><b>Links to bonus material{{ !$iam('owner') ? ' relevant to you' : '' }}</b> (optional)</label>
             <textarea class="input" v-model="submission.bonus" @input="saveDraftAndRevalidate" style="min-height: 6em;" />
           </div>
 
           <!-- curateInterest -->
-          <div class="field">
+          <div v-if="!$iam('owner')" class="field">
             <label class="label"><b>Would you be in interested in curating a picture book bundle?</b>
               <br>This entails listing your favorite 3-5 picture books (by other BIPOC creatives) that represent a theme of your choosing and writing a paragraph about this book collection.</label>
             <div class="control">
@@ -292,7 +292,7 @@ export default {
         <hr>
 
         <div class="field is-grouped">
-          <button :class="{'is-loading': $uiBusy}" class="button is-rounded is-primary mr-20" @click.prevent="submitForReview">Submit for review</button>
+          <button :class="{'is-loading': $uiBusy}" class="button is-rounded is-primary mr-20" @click.prevent="submitForReview">Submit{{ !$iam('owner') ? ' for review' : '' }}</button>
           <button class="button is-rounded" @click.prevent="reset">Reset</button>
           <button v-if="draftSaved" class="button is-flat" @click.prevent="saveDraftAndRevalidate" style="cursor: text;">Draft Saved</button>
         </div>

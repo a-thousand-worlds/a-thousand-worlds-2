@@ -5,6 +5,7 @@ import * as slugify from '@sindresorhus/slugify'
 import managed from '@/store/modules/managed'
 import personSubmission from '@/store/constants/personSubmission'
 import almostEqual from '@/util/almostEqual'
+import iam from '@/util/iam'
 import mergeOne from '@/util/mergeOne'
 import sendEmail from '@/util/sendEmail'
 
@@ -37,6 +38,15 @@ const module = mergeOne(managed('submits/people'), {
         }
       }
       await context.dispatch('user/saveProfile', profileNew, { root: true })
+
+      // auto approve submission by owner
+      if (iam(context.rootState, 'owner')) {
+        // approvePerson depends on sub.createdBy
+        // submissionApprovable does not have createdBy
+        // get the submission from the store now that it has been saved by the collection and it will have createdBy
+        const submissionCreated = context.getters.get(id)
+        await context.dispatch('approvePerson', submissionCreated)
+      }
     },
 
     /** Update submission status */

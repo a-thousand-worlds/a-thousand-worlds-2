@@ -94,8 +94,7 @@ export default {
             <div class="control">
               <router-link class="button is-outlined is-primary" :to="{name:'BookSubmissionForm'}">Book</router-link>
             </div>
-            <!-- disable show person submission button for owner until it can support submitting a profile for someone else rather than yourself -->
-            <div v-if="$can('submitPerson') && !$iam('owner')" class="control">
+            <div v-if="$can('submitPerson')" class="control">
               <router-link class="button is-outlined is-primary" :to="{name:'PersonSubmissionForm'}">Person</router-link>
             </div>
             <!-- <div class="control">
