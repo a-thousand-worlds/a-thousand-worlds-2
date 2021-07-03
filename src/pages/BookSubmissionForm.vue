@@ -105,9 +105,17 @@ export default {
 
       this.$store.commit('ui/setBusy', true)
 
+      // fill in missing createdBy if submitted by the owner
+      const submissions = this.$iam('owner')
+        ? this.submissions.map(sub => ({
+          ...sub,
+          createdBy: sub.createdBy || this.$store.state.user.user?.uid || null,
+        }))
+        : this.submissions
+
       try {
-        await this.submissions.forEach(async (_, sid) => this.updateMetadata(sid))
-        await this.$store.dispatch('submissions/books/submit', this.submissions)
+        await submissions.forEach(async (_, sid) => this.updateMetadata(sid))
+        await this.$store.dispatch('submissions/books/submit', submissions)
       }
       finally {
         this.$store.commit('ui/setBusy', false)
@@ -135,13 +143,23 @@ export default {
       // user should be defined for all normal use
       // it may be undefined in unit tests
       if (!this.$store.state.user.user) return
+
+      // fill in missing createdBy if submitted by the owner
+      const submissions = this.$iam('owner')
+        ? this.submissions.map(sub => ({
+          ...sub,
+          createdBy: sub.createdBy || this.$store.state.user.user?.uid || null,
+        }))
+        : this.submissions
+
       clearTimeout(this.draftSaved)
-      this.$store.dispatch('user/saveBookSubmissionsDraft', this.submissions)
+      this.$store.dispatch('user/saveBookSubmissionsDraft', submissions)
       this.draftSaved = setTimeout(() => {
         this.draftSaved = null
       }, 3000)
     }, 500),
     newSubmissionObject() {
+      // cannot add createdBy here since auto login may not have completed yet
       return {
         attempts: 0,
         authors: '',
@@ -155,7 +173,6 @@ export default {
         title: '',
         year: '',
         loadingMetadata: false,
-        ...this.$iam('owner') ? { createdBy: this.$store.state.user.user?.uid } : null,
       }
     },
     addMoreSubmission() {
