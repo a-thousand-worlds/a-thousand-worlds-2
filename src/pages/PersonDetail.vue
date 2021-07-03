@@ -143,16 +143,23 @@ export default {
           </div>
 
           <div class="title-container divider-30">
+
+            <!-- title -->
             <div class="name">{{ title.text }}</div>
             <h1 class="title mt-5">
               <a @click.prevent="adminEditClick" style="color: inherit;" :style="{ cursor: editOnClick ? 'context-menu' : 'default', 'user-select': editOnClick ? 'none' : null }">{{ person.name }}</a>
             </h1>
-            <div v-if="pronouns" class="prounouns">{{ pronouns }}</div>
+
+            <!-- pronouns -->
+            <div v-if="pronouns" class="prounouns mt-2">{{ pronouns }}</div>
+
+            <!-- tags -->
             <div v-if="tags" class="tags mt-20">
               <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="people" button-class="is-outlined" />
             </div>
           </div>
 
+          <!-- bio -->
           <p v-if="person?.bio" class="person-bio" :innerHTML="bio" />
 
         </div>

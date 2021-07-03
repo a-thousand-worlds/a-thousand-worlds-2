@@ -261,7 +261,7 @@ export default {
             </h1>
 
             <!-- pronouns dropdown -->
-            <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': pronounsDropdownActive }">
+            <div class="dropdown mt-5 no-user-select" :class="{ 'is-active': pronounsDropdownActive }" style="position: absolute;">
               <div id="dropdown-menu" class="dropdown-menu" role="menu">
                 <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
                   <a v-for="pronounOption in pronounOptions" :key="pronounOption.id" class="dropdown-item is-capitalized" @click.prevent="updatePerson({ pronouns: pronounOption.id })">
@@ -272,7 +272,12 @@ export default {
             </div>
 
             <!-- pronouns -->
-            <a v-if="pronouns" @click.prevent.stop="pronounsDropdownActive = !pronounsDropdownActive" v-click-outside="closePronounsDropdown" class="primary-hover no-user-select" :class="{ 'is-primary': pronounsDropdownActive }">{{ pronouns.text }}</a>
+            <div class="mt-2">
+              <a @click.prevent.stop="pronounsDropdownActive = !pronounsDropdownActive" v-click-outside="closePronounsDropdown" :class="{ 'is-primary': pronounsDropdownActive }" class="primary-hover no-user-select">
+                <span v-if="pronouns">{{ pronouns.text }}</span>
+                <span v-else style="font-style: italic; color: #aaa">Choose pronouns</span>
+              </a>
+            </div>
 
             <!-- tags -->
             <div class="tags mt-20">
