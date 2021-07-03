@@ -264,6 +264,8 @@ export default {
             <div class="dropdown mt-5 no-user-select" :class="{ 'is-active': pronounsDropdownActive }" style="position: absolute;">
               <div id="dropdown-menu" class="dropdown-menu" role="menu">
                 <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
+                  <a class="dropdown-item is-capitalized is-uppercase" @click.prevent="updatePerson({ pronouns: null })">None</a>
+                  <hr class="dropdown-divider">
                   <a v-for="pronounOption in pronounOptions" :key="pronounOption.id" class="dropdown-item is-capitalized" @click.prevent="updatePerson({ pronouns: pronounOption.id })">
                     {{ pronounOption.text }}
                   </a>
