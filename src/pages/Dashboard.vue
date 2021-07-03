@@ -89,7 +89,7 @@ export default {
 
         <div v-if="!hasPendingContributorProfile">
 
-          <h2>Suggest a book<!--  or bundle --></h2>
+          <h2>Suggest a book{{ $can('submitPerson') ? ' or person' : '' }}<!--  or bundle --></h2>
           <div class="field is-grouped">
             <div class="control">
               <router-link class="button is-outlined is-primary" :to="{name:'BookSubmissionForm'}">Book</router-link>
