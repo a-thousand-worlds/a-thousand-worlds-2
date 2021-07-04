@@ -111,6 +111,12 @@ export default {
 
         <h1 class="title page-title divider-bottom">Curate a Book Bundle</h1>
 
+        <div class="bg-secondary p-20 mb-20" style="display: inline-block; border-radius: 10px; font-size: 20px;">
+          <h2 class="field">Getting Started</h2>
+          <p class="field">This is the <b>Bundle Submission Form</b>. Fill out this form to submit a collection of 4-7 books based on one theme. The BOOK BUNDLE is an opportunity to spotlight a certain theme, support a BIPOC bookstore and also to showcase you. Your bio and picture will be included in the BUNDLE as well. The BUNDLE form will be reviewed by the ATW curatorial team and entered into the BOOK BUNDLE directory upon approval.</p>
+          <button class="button is-rounded is-primary">Okay, got it</button>
+        </div>
+
         <div>
           <section class="section">
 

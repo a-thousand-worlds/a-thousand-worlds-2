@@ -8,6 +8,13 @@ import ManageCollectionsPreview from '@/components/Dashboard/ManageCollectionsPr
 import ReviewSubmissionsPreview from '@/components/Dashboard/ReviewSubmissionsPreview'
 import YourBookSubmissions from '@/components/Dashboard/YourBookSubmissions'
 
+// help step enum
+const HelpStep = {
+  Welcome: 'Welcome',
+  CuratorialProcess: 'CuratorialProcess',
+  Done: 'Done',
+}
+
 export default {
   components: {
     ContributorProfileForm,
@@ -21,6 +28,9 @@ export default {
   },
   data() {
     return {
+      HelpStep,
+      help: localStorage.getItem('dashboardHelp') || HelpStep.Welcome,
+      helpCompleted: localStorage.getItem('dashboardHelpCompleted'),
       templates: {
         showEmailTemplates: false,
       },
@@ -57,6 +67,20 @@ export default {
     })
     Promise.all(preloads)
   },
+  methods: {
+    setHelp(step) {
+      this.help = step
+      localStorage.setItem('dashboardHelp', step)
+      if (step === HelpStep.Done) {
+        this.helpCompleted = true
+        localStorage.setItem('dashboardHelpCompleted', true)
+      }
+    },
+    toggleHelp() {
+      const step = this.help === HelpStep.Done ? HelpStep.Welcome : HelpStep.Done
+      this.setHelp(step)
+    },
+  }
 }
 
 </script>
@@ -89,15 +113,30 @@ export default {
 
         <div v-if="!hasPendingContributorProfile">
 
-          <h2 v-if="$can('submitPerson')">Submission Forms</h2>
-          <h2 v-else>Suggest a book</h2>
+          <div v-if="help !== HelpStep.Done" class="bg-secondary p-20 mb-20" style="display: inline-block; border-radius: 10px; font-size: 20px;">
 
-          <div class="bg-secondary p-20 mb-20" style="display: inline-block; border-radius: 10px; font-size: 20px;">
-            <h2 class="field">Getting Started</h2>
-            <p class="field">To submit picture books click on <b>BOOKS</b>. The BOOK Submission Form will allow you to submit multiple picture books to be reviewed by the ATW curatorial team and entered into the BOOK directory upon approval.</p>
-            <p class="field">To submit a book bundle click on <b>BUNDLE</b>. The BUNDLE Submission Form will allow you to submit a collection of 4-7 books based on one theme.  The BOOK BUNDLE is an opportunity to spotlight a certain theme, support a BIPOC bookstore and also to showcase you. Your bio and picture will be included in the BUNDLE as well. The BUNDLE form will be reviewed by the ATW curatorial team and entered into the BOOK BUNDLE directory upon approval.</p>
-            <button class="button is-rounded is-primary">Okay, got it</button>
+            <div v-if="help === HelpStep.Welcome">
+              <h2 class="field">Welcome!</h2>
+              <p class="field">As a leader in the industry and a contributor to ATW you have special access to two Submission Forms: <b>BOOKS</b> and <b>BUNDLES</b>. Both forms are available for you to use as many times as you like and at any time. The world is full of beautiful picture books—we want to hear what has captured your heart! To that end we hope that you spread the love and include picture books that are not in-house and you have not personally worked on.</p>
+              <p class="field">You can access the forms via your log-in information, which is unique to you, and should not be shared. Your public profile will be linked to each of your book recommendations. Your personal email will not be shared.</p>
+              <button @click.prevent="setHelp(HelpStep.CuratorialProcess)" class="button is-rounded is-primary">Next</button>
+            </div>
+
+            <div v-else-if="help === HelpStep.CuratorialProcess">
+              <h2 class="field">Curatorial Process</h2>
+              <p class="field">
+                Our vision is to create a directory that exemplifies beautiful art and innovative storytelling. Our mission is to amplify BIPOC voices and create a space for BIPOC creators and leaders. To that end <b>we are creating a space dedicated to only BIPOC creators. All picture books submitted for consideration need to have both BIPOC illustrator AND BIPOC author</b>. We also have a separate ATW Curatorial team consisting of BIPOC leaders who is tasked with a final curation of all submissions. This means that some of your picture books may not be included in the directory, but know that we always welcome more submissions from you. Thank you.
+              </p>
+              <button @click.prevent="setHelp(HelpStep.Done)" class="button is-rounded is-primary">Okay!</button>
+            </div>
+
           </div>
+
+          <h2 v-if="$can('submitPerson')">
+            Submission Forms
+            <span v-if="helpCompleted" @click.prevent="toggleHelp" v-tippy="{ content: 'Help' }" class="has-text-right" style="margin-left: 10px; font-size: 14px; white-space: nowrap; cursor: pointer; vertical-align: middle;"><i class="far fa-question-circle" /></span>
+          </h2>
+          <h2 v-else>Suggest a book</h2>
 
           <div class="field is-grouped">
             <div class="control">
