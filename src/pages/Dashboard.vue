@@ -23,6 +23,7 @@ export default {
   },
   data() {
     return {
+      inviteMessageCompleted: false,
       submissionFormMessageCompleted: false,
       templates: {
         showEmailTemplates: false,
@@ -107,6 +108,12 @@ export default {
               </p>
             </template>
 
+            <template>
+              <p class="field">
+                When you're ready, click on the BOOK button below to submit a book!
+              </p>
+            </template>
+
           </MessageSequence>
 
           <h2 v-if="$can('submitPerson')">
@@ -132,7 +139,23 @@ export default {
       </section>
 
       <section v-if="$can('invite') && !hasPendingContributorProfile" class="section bordered-top">
-        <h2>Invite Users</h2>
+        <h2>
+          Invite Users
+          <span v-if="inviteMessageCompleted" @click.prevent="$refs.inviteMessage.toggle" v-tippy="{ content: 'Help' }" class="has-text-right" style="margin-left: 10px; font-size: 14px; white-space: nowrap; cursor: pointer; vertical-align: middle;"><i class="far fa-question-circle" /></span>
+        </h2>
+
+        <MessageSequence ref="inviteMessage" storageKey="dashboardInviteMessage" @load="inviteMessageCompleted = $event.completed" @completed="inviteMessageCompleted = $event">
+          <template>
+            <h2 class="field">Other Ways to Contribute</h2>
+            <p class="field">
+              Also you will see on your Dashboard that there is an INVITE USERS window. This is a place where you can easily invite people to use ATW. Just type in the names - emails of anyone you think should know about A THOUSAND WORLDS and click send. This is not a mailing list, they will receive only one email notification from ATW saying hello and letting them know about us. If you are as in love with our mission please consider helping us spread the word!
+            </p>
+            <p class="field">
+              To nominate other BIPOC leaders to contribute please go to the <router-link :to="{ name: 'Contact' }">Contact</router-link> page and click on "Nominate a leader" to send an email to ATW.
+            </p>
+          </template>
+        </MessageSequence>
+
         <InviteWidget ref="invite" />
         <ul class="my-20">
           <li v-if="$can('editEmailTemplates')"><router-link :to="{ name: 'EmailTemplates' }">Edit email templates</router-link></li>
