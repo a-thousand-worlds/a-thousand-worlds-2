@@ -5,15 +5,9 @@ import CreatorProfilePreview from '@/components/Dashboard/CreatorProfilePreview'
 import InviteWidget from '@/components/InviteWidget'
 import Loader from '@/components/Loader'
 import ManageCollectionsPreview from '@/components/Dashboard/ManageCollectionsPreview'
+import MessageSequence from '@/components/MessageSequence'
 import ReviewSubmissionsPreview from '@/components/Dashboard/ReviewSubmissionsPreview'
 import YourBookSubmissions from '@/components/Dashboard/YourBookSubmissions'
-
-// help step enum
-const HelpStep = {
-  Welcome: 'Welcome',
-  CuratorialProcess: 'CuratorialProcess',
-  Done: 'Done',
-}
 
 export default {
   components: {
@@ -23,14 +17,13 @@ export default {
     Loader,
     InviteWidget,
     ManageCollectionsPreview,
+    MessageSequence,
     ReviewSubmissionsPreview,
     YourBookSubmissions,
   },
   data() {
     return {
-      HelpStep,
-      help: localStorage.getItem('dashboardHelp') || HelpStep.Welcome,
-      helpCompleted: localStorage.getItem('dashboardHelpCompleted'),
+      submissionFormMessageCompleted: false,
       templates: {
         showEmailTemplates: false,
       },
@@ -67,20 +60,6 @@ export default {
     })
     Promise.all(preloads)
   },
-  methods: {
-    setHelp(step) {
-      this.help = step
-      localStorage.setItem('dashboardHelp', step)
-      if (step === HelpStep.Done) {
-        this.helpCompleted = true
-        localStorage.setItem('dashboardHelpCompleted', true)
-      }
-    },
-    toggleHelp() {
-      const step = this.help === HelpStep.Done ? HelpStep.Welcome : HelpStep.Done
-      this.setHelp(step)
-    },
-  }
 }
 
 </script>
@@ -113,28 +92,26 @@ export default {
 
         <div v-if="!hasPendingContributorProfile">
 
-          <div v-if="help !== HelpStep.Done" class="bg-secondary p-20 mb-20" style="display: inline-block; border-radius: 10px; font-size: 20px;">
+          <MessageSequence ref="submissionFormMessage" storageKey="dashboardSubmissionForms" @load="submissionFormMessageCompleted = $event.completed" @completed="submissionFormMessageCompleted = $event">
 
-            <div v-if="help === HelpStep.Welcome">
+            <template>
               <h2 class="field">Welcome!</h2>
               <p class="field">As a leader in the industry and a contributor to ATW you have special access to two Submission Forms: <b>BOOKS</b> and <b>BUNDLES</b>. Both forms are available for you to use as many times as you like and at any time. The world is full of beautiful picture books—we want to hear what has captured your heart! To that end we hope that you spread the love and include picture books that are not in-house and you have not personally worked on.</p>
               <p class="field">You can access the forms via your log-in information, which is unique to you, and should not be shared. Your public profile will be linked to each of your book recommendations. Your personal email will not be shared.</p>
-              <button @click.prevent="setHelp(HelpStep.CuratorialProcess)" class="button is-rounded is-primary">Next</button>
-            </div>
+            </template>
 
-            <div v-else-if="help === HelpStep.CuratorialProcess">
+            <template>
               <h2 class="field">Curatorial Process</h2>
               <p class="field">
                 Our vision is to create a directory that exemplifies beautiful art and innovative storytelling. Our mission is to amplify BIPOC voices and create a space for BIPOC creators and leaders. To that end <b>we are creating a space dedicated to only BIPOC creators. All picture books submitted for consideration need to have both BIPOC illustrator AND BIPOC author</b>. We also have a separate ATW Curatorial team consisting of BIPOC leaders who is tasked with a final curation of all submissions. This means that some of your picture books may not be included in the directory, but know that we always welcome more submissions from you. Thank you.
               </p>
-              <button @click.prevent="setHelp(HelpStep.Done)" class="button is-rounded is-primary">Okay!</button>
-            </div>
+            </template>
 
-          </div>
+          </MessageSequence>
 
           <h2 v-if="$can('submitPerson')">
             Submission Forms
-            <span v-if="helpCompleted" @click.prevent="toggleHelp" v-tippy="{ content: 'Help' }" class="has-text-right" style="margin-left: 10px; font-size: 14px; white-space: nowrap; cursor: pointer; vertical-align: middle;"><i class="far fa-question-circle" /></span>
+            <span v-if="submissionFormMessageCompleted" @click.prevent="$refs.submissionFormMessage.toggle" v-tippy="{ content: 'Help' }" class="has-text-right" style="margin-left: 10px; font-size: 14px; white-space: nowrap; cursor: pointer; vertical-align: middle;"><i class="far fa-question-circle" /></span>
           </h2>
           <h2 v-else>Suggest a book</h2>
 
