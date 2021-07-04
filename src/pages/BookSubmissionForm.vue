@@ -11,12 +11,14 @@ import validator from '@/mixins/validator'
 
 import BookTitleField from '@/components/fields/BookTitle'
 import LogarithmicProgressBar from '@/components/LogarithmicProgressBar'
+import MessageSequence from '@/components/MessageSequence'
 import RecommendedBy from '@/components/RecommendedBy'
 
 export default {
   components: {
     BookTitleField,
     LogarithmicProgressBar,
+    MessageSequence,
     RecommendedBy,
   },
   mixins: [
@@ -35,6 +37,7 @@ export default {
       confirms: [],
       draftSaved: null,
       findBookByKeywordNonce: 0,
+      helpCompleted: null,
       loadingBook: [],
       submissions: [],
       titleId: uid(),
@@ -348,7 +351,17 @@ export default {
           <a @click.prevent="$router.back" class="is-uppercase is-primary">&lt; Back</a>
         </div>
 
-        <h1 class="title page-title divider-bottom">Submit a book</h1>
+        <h1 class="title page-title divider-bottom" style="position: relative;">
+          Submit a book
+          <span v-if="helpCompleted" @click.prevent="$refs.help.toggle" v-tippy="{ content: 'Help' }" class="has-text-right" style="position: absolute; right:  0; bottom: 20px; font-size: 16px; white-space: nowrap; cursor: pointer;"><i class="far fa-question-circle" /></span>
+        </h1>
+
+        <MessageSequence ref="help" storageKey="bookSubmissionFormHelp" @load="helpCompleted = $event.completed" @completed="helpCompleted = $event">
+          <template>
+            <h2 class="field">Getting Started</h2>
+            <p class="field">This is the <b>Book Submission Form</b>. Fill out this form to submit one or more picture books to be reviewed by the ATW curatorial team and entered into the book directory upon approval.</p>
+          </template>
+        </MessageSequence>
 
         <div v-for="(sub, si) of submissions" :key="si">
           <section class="basic-information">

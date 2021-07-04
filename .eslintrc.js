@@ -23,6 +23,7 @@ module.exports = {
     'vue/html-closing-bracket-newline': 0,
     'vue/max-attributes-per-line': 0,
     'vue/multiline-html-element-content-newline': 0,
+    'vue/no-lone-template': 0,
     'vue/require-default-prop': 0,
     'vue/require-prop-types': 0,
     'vue/singleline-html-element-content-newline': 0,
