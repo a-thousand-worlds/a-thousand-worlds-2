@@ -10,13 +10,17 @@ const routes = [
   }, {
     path: '/social-image',
     name: 'SocialImage',
-    layout: false,
-    component: () => import(/* webpackChunkName: "other" */ './pages/SocialImage.vue')
+    component: () => import(/* webpackChunkName: "other" */ './pages/SocialImage.vue'),
+    meta: {
+      noLayout: true,
+    },
   }, {
     path: '/social-people',
     name: 'SocialPeople',
-    layout: false,
-    component: () => import(/* webpackChunkName: "other" */ './pages/SocialPeople.vue')
+    component: () => import(/* webpackChunkName: "other" */ './pages/SocialPeople.vue'),
+    meta: {
+      noLayout: true,
+    },
   }, {
     path: '/bundles',
     name: 'Bundles',

@@ -136,11 +136,13 @@ export default ({
 </script>
 
 <template>
-  <!-- a special page to generate a book cover collage -->
-  <div v-if="$route?.layout">
+
+  <!-- Render the page without any layout. Used by social-image collage.-->
+  <div v-if="$route.meta?.noLayout">
     <router-view />
   </div>
-  <!-- full website -->
+
+  <!-- Full Website -->
   <div v-else :class="`theme${$store.state.theme}`">
 
     <MobileHeader class="is-hidden-tablet" />
