@@ -1,9 +1,9 @@
 <script>
-import { computed } from 'vue'
 import { useHead } from '@vueuse/head'
+import computedFromState from '@/util/computedFromState'
+import writtenList from '@/util/writtenList'
 import sortBy from 'lodash/sortBy'
 import Clipboard from 'clipboard'
-import store from '@/store'
 import router from '@/router'
 import BookDetailFooter from '@/components/BookDetailFooter'
 import BookmarkButton from '@/components/BookmarkButton'
@@ -15,6 +15,41 @@ import NotFound from '@/pages/NotFound'
 import PrevNext from '@/components/PrevNext'
 import RecommendedBy from '@/components/RecommendedBy'
 import Tag from '@/components/Tag'
+
+/** Gets the detail page book object. */
+const getBook = state =>
+  state.books.loaded
+    ? Object.values(state.books.data).find(book => book.isbn === router.currentRoute._value.params.isbn)
+    : null
+
+/** Gets the social title for the detail page book. */
+const getTitle = state => {
+  const book = getBook(state)
+  // const creators = creatorsPhrase(state, book)
+  return book ? `${book.title} @ A Thousand Worlds` : null
+}
+
+/** Gets the social description for the detail page book. */
+const getDescription = state => {
+  const book = getBook(state)
+  const creators = creatorsPhrase(state, book)
+  return book ? `Read "${book.title}" by ${creators} at A Thousand Worlds` : null
+}
+
+/** Gets the image of the detail page book. */
+const getImage = state => {
+  const book = getBook(state)
+  const url = book?.cover?.src || book?.cover?.url || book?.cover
+  return url || null
+}
+
+/** Generates a written phrase of the creators of a book. */
+const creatorsPhrase = (state, book) => {
+  if (!book) return ''
+  const names = sortBy(Object.keys(book.creators || {}), id => book.creators[id])
+    .map(id => state.people.data?.[id].name)
+  return writtenList(names)
+}
 
 export default {
   name: 'BookDetail',
@@ -40,28 +75,17 @@ export default {
   },
   setup() {
 
-    const isbn = router.currentRoute._value.params.isbn
-
-    const titleComputed = computed(() => {
-      const book = store.state.books.loaded
-        ? Object.values(store.state.books.data).find(book => book.isbn === isbn)
-        : null
-      return book ? book.title : null
-    })
-
-    const imageComputed = computed(() => {
-      const book = store.state.books.loaded
-        ? Object.values(store.state.books.data).find(book => book.isbn === isbn)
-        : null
-      const url = book?.cover?.src || book?.cover?.url || book?.cover
-      return url || null
-    })
+    const descriptionComputed = computedFromState(getDescription)
+    const imageComputed = computedFromState(getImage)
+    const titleComputed = computedFromState(getTitle)
 
     useHead({
       title: titleComputed,
       meta: [
+        { name: 'og:description', content: descriptionComputed },
         { name: 'og:image', content: imageComputed },
         { name: 'og:title', content: titleComputed },
+        { name: 'twitter:description', content: descriptionComputed },
         { name: 'twitter:image', content: imageComputed },
         { name: 'twitter:title', content: titleComputed },
       ],
@@ -75,9 +99,7 @@ export default {
   },
   computed: {
     book() {
-      const book = this.$store.state.books.loaded
-        ? Object.values(this.$store.state.books.data).find(book => book.isbn === this.isbn)
-        : null
+      const book = getBook(this.$store.state)
       this.$store.dispatch('debug', { book })
       return book
     },

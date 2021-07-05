@@ -1,6 +1,26 @@
 <script>
+import { useHead } from '@vueuse/head'
+import computedFromState from '@/util/computedFromState'
+import writtenList from '@/util/writtenList'
 import BooksView from '../components/BooksView.vue'
 import Filter from '../components/Filter.vue'
+
+const getFilterPhrase = state => {
+  const filters = state.books.filters
+
+  // remove "Picture book" and "Board book" from the filters and use them in place of "books"
+  const filterNames = filters
+    .filter(tag => tag.tag !== 'Picture book' && tag.tag !== 'Board book')
+    .map(tag => tag.tag)
+  const booksAdjective = filters.find(filter => filter.tag === 'Picture book') ? 'Picture ' :
+    filters.find(filter => filter.tag === 'Board book') ? 'Board ' :
+    ''
+
+  return `${writtenList(filterNames)} ${booksAdjective}books @ A Thousand Worlds`
+}
+
+const getDescription = state => `Read ${getFilterPhrase(state)} at A Thousand Worlds`
+const getTitle = state => `${getFilterPhrase(state)} @ A Thousand Worlds`
 
 export default {
   name: 'HomePage',
@@ -15,6 +35,22 @@ export default {
       this.$store.commit('ui/setLastVisited', new Date())
     }
     next()
+  },
+  setup() {
+
+    const descriptionComputed = computedFromState(getDescription)
+    const titleComputed = computedFromState(getTitle)
+
+    useHead({
+      title: titleComputed,
+      meta: [
+        { name: 'og:description', content: descriptionComputed },
+        { name: 'og:title', content: titleComputed },
+        { name: 'twitter:description', content: descriptionComputed },
+        { name: 'twitter:title', content: titleComputed },
+      ],
+    })
+
   },
   computed: {
     bookTags() {
