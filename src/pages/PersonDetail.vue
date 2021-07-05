@@ -1,5 +1,9 @@
 <script>
 import * as slugify from '@sindresorhus/slugify'
+import { useHead } from '@vueuse/head'
+import computedFromState from '@/util/computedFromState'
+import store from '@/store'
+import router from '@/router'
 import creatorTitles from '@/store/constants/creatorTitles'
 import pronounOptions from '@/store/constants/pronouns'
 import linkCreatorInBio from '@/util/linkCreatorInBio'
@@ -9,6 +13,18 @@ import Loader from '@/components/Loader'
 import NotFound from '@/pages/NotFound'
 import PrevNext from '@/components/PrevNext'
 import Tag from '@/components/Tag'
+
+/** Gets the person object from the url params. */
+const getPerson = () =>
+  store.getters['people/findBy']('name', name => slugify(name) === router.currentRoute._value.params.name)
+
+/** Gets the photo url of a person. */
+const getPersonPhoto = person => {
+  if (!person?.photo) return ''
+  return typeof person.photo === 'string' ? person.photo
+    : person.photo.url?.startsWith('http') ? person.photo.url
+    : ''
+}
 
 export default {
   components: {
@@ -27,6 +43,43 @@ export default {
     }
     next()
   },
+  setup() {
+
+    /** Gets the social title for the person. */
+    const getTitle = state => {
+      const person = getPerson()
+      return person ? `${person.name} @ A Thousand Worlds` : null
+    }
+
+    /** Gets the social description for the person. */
+    const getDescription = state => {
+      const person = getPerson()
+      return person ? `Read books by ${person.name} at A Thousand Worlds` : null
+    }
+
+    /** Gets the social image of the person. */
+    const getImage = state => {
+      const person = getPerson()
+      return getPersonPhoto(person) || null
+    }
+
+    const descriptionComputed = computedFromState(getDescription)
+    const imageComputed = computedFromState(getImage)
+    const titleComputed = computedFromState(getTitle)
+
+    useHead({
+      title: titleComputed,
+      meta: [
+        { name: 'og:description', content: descriptionComputed },
+        { name: 'og:image', content: imageComputed },
+        { name: 'og:title', content: titleComputed },
+        { name: 'twitter:description', content: descriptionComputed },
+        { name: 'twitter:image', content: imageComputed },
+        { name: 'twitter:title', content: titleComputed },
+      ],
+    })
+
+  },
   data() {
     return {
       creatorTitles,
@@ -36,12 +89,7 @@ export default {
   },
   computed: {
     bgImage() {
-      if (!this.person.photo) return ''
-      return typeof this.person.photo === 'string'
-        ? this.person.photo
-        : this.person.photo.url?.startsWith('http')
-          ? this.person.photo.url
-          : ''
+      return this.person && getPersonPhoto(this.person)
     },
     // link the first instance of the person's name in their bio to their website
     bio() {
@@ -58,7 +106,7 @@ export default {
       return this.$route.params.name
     },
     person() {
-      const person = this.$store.getters['people/findBy']('name', name => slugify(name) === this.name)
+      const person = getPerson()
       this.$store.dispatch('debug', { person })
       return person
     },

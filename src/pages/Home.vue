@@ -5,23 +5,6 @@ import writtenList from '@/util/writtenList'
 import BooksView from '../components/BooksView.vue'
 import Filter from '../components/Filter.vue'
 
-const getFilterPhrase = state => {
-  const filters = state.books.filters
-
-  // remove "Picture book" and "Board book" from the filters and use them in place of "books"
-  const filterNames = filters
-    .filter(tag => tag.tag !== 'Picture book' && tag.tag !== 'Board book')
-    .map(tag => tag.tag)
-  const booksAdjective = filters.find(filter => filter.tag === 'Picture book') ? 'Picture ' :
-    filters.find(filter => filter.tag === 'Board book') ? 'Board ' :
-    ''
-
-  return `${writtenList(filterNames)} ${booksAdjective}books @ A Thousand Worlds`
-}
-
-const getDescription = state => `Read ${getFilterPhrase(state)} at A Thousand Worlds`
-const getTitle = state => `${getFilterPhrase(state)} @ A Thousand Worlds`
-
 export default {
   name: 'HomePage',
   components: {
@@ -37,6 +20,27 @@ export default {
     next()
   },
   setup() {
+
+    const getFilterPhrase = state => {
+      const filters = state.books.filters
+
+      // remove "Picture book" and "Board book" from the filters and use them in place of "books"
+      const filterNames = filters
+        .filter(tag => tag.tag !== 'Picture book' && tag.tag !== 'Board book')
+        .map(tag => tag.tag)
+      const booksAdjective = filters.find(filter => filter.tag === 'Picture book') ? 'Picture ' :
+        filters.find(filter => filter.tag === 'Board book') ? 'Board ' :
+        ''
+
+      return `${writtenList(filterNames)} ${booksAdjective}books`
+    }
+
+    const getDescription = state => state.books.filters.length > 0
+      ? `Read ${getFilterPhrase(state)} at A Thousand Worlds`
+      : 'Colorful Reads X Colorful People'
+    const getTitle = state => state.books.filters.length > 0
+      ? `${getFilterPhrase(state)} @ A Thousand Worlds`
+      : 'A Thousand Worlds'
 
     const descriptionComputed = computedFromState(getDescription)
     const titleComputed = computedFromState(getTitle)

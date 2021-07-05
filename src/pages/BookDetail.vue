@@ -22,35 +22,6 @@ const getBook = state =>
     ? Object.values(state.books.data).find(book => book.isbn === router.currentRoute._value.params.isbn)
     : null
 
-/** Gets the social title for the detail page book. */
-const getTitle = state => {
-  const book = getBook(state)
-  // const creators = creatorsPhrase(state, book)
-  return book ? `${book.title} @ A Thousand Worlds` : null
-}
-
-/** Gets the social description for the detail page book. */
-const getDescription = state => {
-  const book = getBook(state)
-  const creators = creatorsPhrase(state, book)
-  return book ? `Read "${book.title}" by ${creators} at A Thousand Worlds` : null
-}
-
-/** Gets the image of the detail page book. */
-const getImage = state => {
-  const book = getBook(state)
-  const url = book?.cover?.src || book?.cover?.url || book?.cover
-  return url || null
-}
-
-/** Generates a written phrase of the creators of a book. */
-const creatorsPhrase = (state, book) => {
-  if (!book) return ''
-  const names = sortBy(Object.keys(book.creators || {}), id => book.creators[id])
-    .map(id => state.people.data?.[id].name)
-  return writtenList(names)
-}
-
 export default {
   name: 'BookDetail',
   components: {
@@ -74,6 +45,38 @@ export default {
     next()
   },
   setup() {
+
+    /** Gets the social title for the book. */
+    const getTitle = state => {
+      const book = getBook(state)
+      // TODO: null should cause @vueuse/head to ignore this computed value afaik
+      // (https://github.com/raineorshine/head/blob/main/src/index.ts#L143)
+      // but for some reason it is gettind rendered as undefined.
+      // I forked @vueuse/head but it is causing an injectHead error when I try to npm link it to the app
+      return book ? `${book.title} @ A Thousand Worlds` : null
+    }
+
+    /** Gets the social description for the book. */
+    const getDescription = state => {
+      const book = getBook(state)
+      const creators = creatorsPhrase(state, book)
+      return book ? `Read ${book.title} by ${creators} at A Thousand Worlds` : null
+    }
+
+    /** Gets the image of the book. */
+    const getImage = state => {
+      const book = getBook(state)
+      const url = book?.cover?.src || book?.cover?.url || book?.cover
+      return url || null
+    }
+
+    /** Generates a written phrase of the creators of a book. */
+    const creatorsPhrase = (state, book) => {
+      if (!book) return ''
+      const names = sortBy(Object.keys(book.creators || {}), id => book.creators[id])
+        .map(id => state.people.data?.[id].name)
+      return writtenList(names)
+    }
 
     const descriptionComputed = computedFromState(getDescription)
     const imageComputed = computedFromState(getImage)
