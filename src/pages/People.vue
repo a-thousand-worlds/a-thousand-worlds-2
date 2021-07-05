@@ -1,4 +1,6 @@
 <script>
+import { useHead } from '@vueuse/head'
+import computedFromState from '@/util/computedFromState'
 import Filter from '../components/Filter.vue'
 import Loader from '@/components/Loader'
 import PersonCard from '@/components/PersonCard'
@@ -16,6 +18,39 @@ export default {
       this.$store.commit('ui/setLastVisited', new Date())
     }
     next()
+  },
+  setup() {
+
+    const getFilterPhrase = state => {
+      const filters = state.people.filters
+      const filterNames = filters.map(tag => tag.tag).join(', ')
+      return `${filterNames} creators`
+    }
+
+    const getDescription = state => state.people.filters.length > 0
+      ? `Read books by ${getFilterPhrase(state)} at A Thousand Worlds`
+      : 'Colorful Reads X Colorful People'
+    const getTitle = state => state.people.filters.length > 0
+      ? `${getFilterPhrase(state)} @ A Thousand Worlds`
+      : 'A Thousand Worlds'
+
+    const descriptionComputed = computedFromState(getDescription)
+    // TODO: Commit people collage once we have all the people photos
+    // const image = `${window.location.origin}/social/people.png`
+    const titleComputed = computedFromState(getTitle)
+
+    useHead({
+      title: titleComputed,
+      meta: [
+        { name: 'og:description', content: descriptionComputed },
+        // { name: 'og:image', content: `${image}?fbreset=1` },
+        { name: 'og:title', content: titleComputed },
+        { name: 'twitter:description', content: descriptionComputed },
+        // { name: 'twitter:image', content: image },
+        { name: 'twitter:title', content: titleComputed },
+      ],
+    })
+
   },
   computed: {
     people() {
