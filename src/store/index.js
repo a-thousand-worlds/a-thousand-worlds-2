@@ -3,8 +3,9 @@ import books from '@/store/books'
 import bundles from '@/store/bundles'
 import content from '@/store/content'
 import debug from '@/store/debug'
-import people from '@/store/people'
 import invites from '@/store/invites'
+import people from '@/store/people'
+import structuredData from '@/store/structuredData'
 import submissions from '@/store/submissions'
 import tags from '@/store/tags'
 import ui from '@/store/ui'
@@ -21,6 +22,7 @@ const store = createStore({
     debug,
     invites,
     people,
+    structuredData,
     submissions,
     tags,
     ui,

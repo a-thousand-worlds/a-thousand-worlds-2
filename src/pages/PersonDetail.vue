@@ -1,5 +1,6 @@
 <script>
 import * as slugify from '@sindresorhus/slugify'
+import { watchEffect } from 'vue'
 import { useHead } from '@vueuse/head'
 import computedFromState from '@/util/computedFromState'
 import store from '@/store'
@@ -78,6 +79,10 @@ export default {
         { name: 'twitter:title', content: titleComputed },
       ],
     })
+
+    watchEffect(() => store.dispatch('structuredData/set', { path: 'description', value: descriptionComputed.value }))
+    watchEffect(() => store.dispatch('structuredData/set', { path: 'image.url', value: imageComputed.value }))
+    watchEffect(() => store.dispatch('structuredData/set', { path: 'headline', value: titleComputed.value }))
 
   },
   data() {

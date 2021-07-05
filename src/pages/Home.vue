@@ -1,5 +1,7 @@
 <script>
+import { watchEffect } from 'vue'
 import { useHead } from '@vueuse/head'
+import store from '@/store'
 import computedFromState from '@/util/computedFromState'
 import writtenList from '@/util/writtenList'
 import BooksView from '../components/BooksView.vue'
@@ -54,6 +56,9 @@ export default {
         { name: 'twitter:title', content: titleComputed },
       ],
     })
+
+    watchEffect(() => store.dispatch('structuredData/set', { path: 'description', value: descriptionComputed.value }))
+    watchEffect(() => store.dispatch('structuredData/set', { path: 'headline', value: titleComputed.value }))
 
   },
   computed: {

@@ -1,10 +1,12 @@
 <script>
+import { watchEffect } from 'vue'
 import { useHead } from '@vueuse/head'
 import computedFromState from '@/util/computedFromState'
 import writtenList from '@/util/writtenList'
 import sortBy from 'lodash/sortBy'
 import Clipboard from 'clipboard'
 import router from '@/router'
+import store from '@/store'
 import BookDetailFooter from '@/components/BookDetailFooter'
 import BookmarkButton from '@/components/BookmarkButton'
 import Filter from '@/components/Filter'
@@ -93,6 +95,10 @@ export default {
         { name: 'twitter:title', content: titleComputed },
       ],
     })
+
+    watchEffect(() => store.dispatch('structuredData/set', { path: 'description', value: descriptionComputed.value }))
+    watchEffect(() => store.dispatch('structuredData/set', { path: 'image.url', value: imageComputed.value }))
+    watchEffect(() => store.dispatch('structuredData/set', { path: 'headline', value: titleComputed.value }))
 
   },
   data() {

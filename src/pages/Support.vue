@@ -1,5 +1,6 @@
 <script>
 import { useHead } from '@vueuse/head'
+import store from '@/store'
 import Content from '@/components/Content'
 import HeartIcon from '@/assets/icons/heart.svg'
 
@@ -25,6 +26,7 @@ export default {
         { name: 'twitter:description', content: description },
       ],
     })
+    store.dispatch('structuredData/set', { path: 'description', value: description })
   },
   data: () => ({
     PaypalButtons,

@@ -1,5 +1,6 @@
 <script>
 import { useHead } from '@vueuse/head'
+import store from '@/store'
 import Content from '@/components/Content'
 import HeartIcon from '@/assets/icons/heart.svg'
 import sendEmail from '@/util/sendEmail'
@@ -27,6 +28,7 @@ export default {
         { name: 'twitter:description', content: description },
       ],
     })
+    store.dispatch('structuredData/set', { path: 'description', value: description })
   },
   data() {
     const query = new URLSearchParams(decodeURI(window.location.search))

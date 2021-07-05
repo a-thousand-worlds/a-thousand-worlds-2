@@ -1,5 +1,7 @@
 <script>
 import { useHead } from '@vueuse/head'
+import { watchEffect } from 'vue'
+import store from '@/store'
 import computedFromState from '@/util/computedFromState'
 import Filter from '../components/Filter.vue'
 import Loader from '@/components/Loader'
@@ -50,6 +52,9 @@ export default {
         { name: 'twitter:title', content: titleComputed },
       ],
     })
+    watchEffect(() => store.dispatch('structuredData/set', { path: 'description', value: descriptionComputed.value }))
+    // watchEffect(() => store.dispatch('structuredData/set', { path: 'image.url', value: imageComputed.value }))
+    watchEffect(() => store.dispatch('structuredData/set', { path: 'headline', value: titleComputed.value }))
 
   },
   computed: {

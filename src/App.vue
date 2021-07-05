@@ -63,7 +63,6 @@ export default ({
   },
   data() {
     return {
-      baseUrl: window.location.origin,
       description,
       image,
       title,
@@ -92,41 +91,17 @@ export default ({
   },
   async created() {
 
-    // set Google structured data
-    const now = new Date()
-    const structuredData = {
-      '@context': 'http://schema.org',
-      '@type': 'NewsArticle',
-      mainEntityOfPage: {
-        '@type': 'WebPage',
-        '@id': this.baseUrl,
-      },
-      headline: this.title,
-      image: {
-        '@type': 'ImageObject',
-        url: this.baseUrl + this.image,
-      },
-      author: {
-        '@type': 'Person',
-        name: 'Staff',
-      },
-      publisher: {
-        '@type': 'Organization',
-        name: this.title,
-        logo: {
-          '@type': 'ImageObject',
-          url: `${this.baseUrl}/logo/logo${this.$store.state.theme}.png`,
-          width: 2176,
-          height: 725,
-        }
-      },
-      description: this.description,
-      datePublished: now.toISOString()
-    }
-    const script = document.createElement('script')
-    script.type = 'application/ld+json'
-    script.textContent = JSON.stringify(structuredData, null, 2)
-    document.head.appendChild(script)
+    // set json+ld structured data
+    const baseUrl = window.location.origin
+    this.$store.dispatch('structuredData/set', { path: 'description', value: this.description })
+    this.$store.dispatch('structuredData/set', { path: 'image.url', value: baseUrl + this.image })
+    this.$store.dispatch('structuredData/set', { path: 'publisher.logo', value: {
+      '@type': 'ImageObject',
+      url: `${baseUrl}/logo/logo${this.$store.state.theme}.png`,
+      width: 2176,
+      height: 725,
+    } })
+    this.$store.dispatch('structuredData/set', { path: 'headline', value: this.title })
 
     // initialize store subscriptions
     this.$store.dispatch('loadCache')
