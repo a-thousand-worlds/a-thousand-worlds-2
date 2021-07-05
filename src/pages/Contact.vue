@@ -1,4 +1,5 @@
 <script>
+import { useHead } from '@vueuse/head'
 import Content from '@/components/Content'
 import HeartIcon from '@/assets/icons/heart.svg'
 import sendEmail from '@/util/sendEmail'
@@ -17,6 +18,15 @@ export default {
   components: {
     Content,
     HeartIcon
+  },
+  setup() {
+    const description = `Contact us! We'd love to hear from you!`
+    useHead({
+      meta: [
+        { name: 'og:description', content: description },
+        { name: 'twitter:description', content: description },
+      ],
+    })
   },
   data() {
     const query = new URLSearchParams(decodeURI(window.location.search))

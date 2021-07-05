@@ -1,4 +1,5 @@
 <script>
+import { useHead } from '@vueuse/head'
 import Content from '@/components/Content'
 import HeartIcon from '@/assets/icons/heart.svg'
 
@@ -15,6 +16,15 @@ export default {
   components: {
     Content,
     HeartIcon
+  },
+  setup() {
+    const description = `Donate to support BIPOC children's book creators!`
+    useHead({
+      meta: [
+        { name: 'og:description', content: description },
+        { name: 'twitter:description', content: description },
+      ],
+    })
   },
   data: () => ({
     PaypalButtons,
