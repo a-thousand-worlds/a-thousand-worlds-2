@@ -8,7 +8,7 @@ const variants = {
   'I am a BIPOC Leader in the book industry': 'You are a superstar! Please share what your title is or how you engage with picture books. Thank you for you interest in contributing to our picture book directory!',
   'Partnership Opportunity': 'Message',
   'Feedback and Questions about A Thousand Worlds': 'Message',
-  'Report a Bug': 'Message',
+  'Report a Bug': 'What I expected to have happen:\n\nWhat actually happened:\n',
   Other: 'Message'
 }
 
@@ -33,9 +33,6 @@ export default {
     subjectVariants() {
       return Object.keys(variants)
     },
-    subjectVariantsSelectable() {
-      return Object.keys(variants).filter(v => v !== 'Other')
-    },
     messagePlaceholder() {
       return variants[this.subject] || 'Message'
     },
@@ -44,7 +41,10 @@ export default {
     }
   },
   methods: {
-    setSubject() {
+    setSubject(i) {
+      if (i !== undefined) {
+        this.dropdown = this.subjectVariants[i]
+      }
       this.subject = this.dropdown === 'Other' ? '' : this.dropdown
     },
     sendEmail() {
@@ -76,31 +76,40 @@ export default {
 
 <template>
 
-  <div class="columns m-20">
+  <div class="columns m-30">
+    <div class="column p-0 is-three-fifths-desktop is-offset-one-fifth-desktop is-text-centered">
+      <Content name="contact/title" class="contact-page-title page-title is-uppercase" format="multiline">
+        We want to hear from you!
+      </Content>
+    </div>
+  </div>
+
+  <div class="columns">
     <div class="column p-0 is-half-desktop is-offset-one-quarter-desktop">
-      <Content name="contact/title" class="contact-page-title page-title is-uppercase" format="multiline">We want to hear from you!</Content>
       <div class="columns is-mobile">
-        <div class="column is-4-tablet is-6-mobile is-offset-1-desktop has-text-centered"><HeartIcon class="fill-primary p-5" width="140px" height="140px" /></div>
-        <div class="column">
-          <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[0] }" @click.prevent.stop="dropdown = subjectVariants[0]; setSubject()">Nominate a Leader</a></p>
-          <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[1] }" @click.prevent.stop="dropdown = subjectVariants[1]; setSubject()">Say Hello</a></p>
-          <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[2] }" @click.prevent.stop="dropdown = subjectVariants[2]; setSubject()">Partner with Us</a></p>
-          <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[3] }" @click.prevent.stop="dropdown = subjectVariants[3]; setSubject()">Ask a Question</a></p>
-          <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[4] }" @click.prevent.stop="dropdown = subjectVariants[4]; setSubject()">Report a Bug</a></p>
+        <div class="column is-6-mobile has-text-right">
+          <HeartIcon class="fill-primary pr-5" width="140px" height="140px" />
+        </div>
+        <div class="column is-flex is-align-items-center">
+          <div>
+            <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[0] }" @click.prevent.stop="setSubject(0)">Nominate a Leader</a></p>
+            <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[1] }" @click.prevent.stop="setSubject(1)">Say Hello</a></p>
+            <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[2] }" @click.prevent.stop="setSubject(2)">Partner with Us</a></p>
+            <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[3] }" @click.prevent.stop="setSubject(3)">Ask a Question</a></p>
+            <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[4] }" @click.prevent.stop="setSubject(4)">Report a Bug</a></p>
+            <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[5] }" @click.prevent.stop="setSubject(5)">Other</a></p>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="columns m-20">
+  <div class="columns m-40">
     <div class="column p-0 is-half-desktop is-offset-one-quarter-desktop">
 
       <div class="field">
         <div class="control has-icons-right">
           <input :disabled="$store.state.ui.busy" class="input" type="text" placeholder="Name" v-model="name">
-          <span class="icon is-right">
-            <i class="fas fa-address-card" />
-          </span>
         </div>
       </div>
 
@@ -108,12 +117,15 @@ export default {
         <input :disabled="$store.state.ui.busy" class="input" type="email" placeholder="Email" v-model="email">
       </div>
 
-      <div class="field subject-field">
-        <select required v-if="dropdown !== 'Other'" :disabled="$store.state.ui.busy" class="input" v-model="dropdown" @change="setSubject()">
+      <div class="field">
+        <select required :disabled="$store.state.ui.busy" class="select" v-model="dropdown" @change="setSubject()">
           <option value="" disabled>Subject</option>
           <option v-for="subj in subjectVariants" :key="subj" @click="setSubject(subj)" class="subject-opt">{{ subj }}</option>
         </select>
-        <input v-else :disabled="$store.state.ui.busy" class="input" type="text" placeholder="Subject" v-model="subject">
+      </div>
+
+      <div v-if="dropdown === 'Other'" class="field">
+        <input :disabled="$store.state.ui.busy" class="input" type="text" placeholder="Subject" v-model="subject">
       </div>
 
       <div class="field">
@@ -130,28 +142,53 @@ export default {
 </template>
 
 <style lang="scss">
+
 $placeholderColor: #a0a0a0;
 
 .contact-page-title {
   font-size: 40px;
+  // not sure why page-title is !important, but we have to override it
+  margin-bottom: 0 !important;
 }
 .fa-address-card {
   padding-top: 11px;
   font-size: 18px;
 }
-select:invalid {
+
+.select {
+  color: #363636;
+  border-color: #dbdbdb;
+  border-radius: 4px;
+  box-shadow: inset 0 0.0625em 0.125em rgb(10 10 10 / 5%);
+  font-size: 1rem;
+  padding: 7px;
+  width: 100%;
+}
+
+.select:invalid {
   color: $placeholderColor;
 }
-option:first-child {
+.select option:first-child {
   display:  none;
 }
-option {
+.select option {
   color: black;
 }
+
 ::placeholder {
   color: $placeholderColor !important;
 }
+
 .is-text-color {
   color: black !important;
+}
+</style>
+
+<style lang="scss">
+.ck.ck-editor__editable_inline>:first-child,
+.ck.ck-editor__editable_inline>:last-child,
+ {
+  margin-top: 0px !important;
+  margin-bottom: 0px !important;
 }
 </style>
