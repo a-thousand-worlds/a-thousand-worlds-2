@@ -12,9 +12,8 @@ export default {
         .map(id => ({ id, type: this.$store.state.user.user.profile.bookmarks[id] }))
     },
     shareLink() {
-      const ids = this.bookmarks.map(bookmark => bookmark.id)
-      // const isbns = this.bookmarks.map(bookmark => this.$store.state.books.data[bookmark.id]?.isbn)
-      return `${window.location.origin}?ids=${ids.join(',')}`
+      const isbns = this.bookmarks.map(bookmark => this.$store.state.books.data[bookmark.id]?.isbn)
+      return `${window.location.origin}?books=${isbns.join(',')}`
     }
   },
   mounted() {

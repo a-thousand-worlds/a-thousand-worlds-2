@@ -12,11 +12,28 @@ const module = mergeOne(
   shuffleable(),
   {
     getters: {
-      // override filterable getters.filtered to filter shuffled
+      // override filtered from filterable module to filter shuffled
       filtered: (state, getters, rootState) =>
-        moduleFilterable.getters.filtered(state)(state.shuffled, 'tags')
+        moduleFilterable.getters.filtered(state)(state.shuffled, 'tags'),
     },
     actions: {
+
+      // override setFiltersFromUrl from filterable module to use isbn instead id
+      setFiltersFromUrl: context => {
+        moduleFilterable.actions.setFiltersFromUrl(context)
+
+        const urlParams = new URLSearchParams(window.location.search)
+        const isbns = urlParams.get('books')?.split(',') || []
+
+        const ids = isbns
+          .map(isbn => context.getters.findBy('isbn', isbn)?.id)
+          .filter(x => x)
+
+        if (ids.length > 0) {
+          context.commit('setIdFilters', ids)
+        }
+      },
+
       remove: async (context, bookId) => {
         if (!bookId) throw new Error('bookId required')
 
