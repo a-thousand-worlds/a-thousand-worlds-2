@@ -1,9 +1,11 @@
 <script>
-import PersonDetailLink from '@/components/PersonDetailLink'
 import creatorTitles from '@/store/constants/creatorTitles'
+import Dropdown from '@/components/Dropdown'
+import PersonDetailLink from '@/components/PersonDetailLink'
 
 export default {
   components: {
+    Dropdown,
     PersonDetailLink,
   },
   props: {
@@ -22,7 +24,7 @@ export default {
   data() {
     return {
       creatorTitles,
-      titleDropdownActive: false,
+      title: this.role,
     }
   },
   computed: {
@@ -41,18 +43,11 @@ export default {
   },
   methods: {
 
-    // function declaration needed for v-click-outside
-    closeTitleDropdown() {
-      this.titleDropdownActive = false
-    },
-
     updateTitle(titleId) {
-      this.closeTitleDropdown()
       this.$emit('updateTitle', titleId)
     },
 
     remove() {
-      this.closeTitleDropdown()
       this.$emit('remove')
     },
 
@@ -83,28 +78,18 @@ export default {
 
     <div class="mt-20">
       <div class="mr-2">
-        <div style="font-weight: bold; white-space: nowrap;">
-          <a v-if="edit" v-click-outside="closeTitleDropdown" @click.prevent.stop="titleDropdownActive = !titleDropdownActive" style="user-select: none;" :class="{ 'primary-hover': edit, 'is-primary': titleDropdownActive }">{{ titleIntro }}</a>
-          <span v-else>{{ titleIntro }}</span>
-        </div>
 
-        <!-- title dropdown -->
-        <div v-if="edit" class="dropdown no-user-select" :class="{ 'is-active': titleDropdownActive }" style="position: absolute;">
-          <div id="dropdown-menu" class="dropdown-menu" role="menu">
-            <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
+        <!-- dropdown -->
+        <Dropdown v-if="edit" v-model="title" :label="titleIntro" labelStyle="font-weight: bold;" :options="creatorTitles" @update:modelValue="updateTitle($event)" style="display: block;">
+          <template #beforeOptions>
+            <a class="dropdown-item" @click.prevent="remove"><b>REMOVE CREATOR</b></a>
+            <hr class="dropdown-divider">
+          </template>
+        </Dropdown>
 
-              <!-- remove -->
-              <a class="dropdown-item" @click.prevent="remove"><b>REMOVE CREATOR</b></a>
-              <hr class="dropdown-divider">
+        <!-- By / Words by / Illutsratored by -->
+        <div v-else style="font-weight: bold; white-space: nowrap;">{{ titleIntro }}</div>
 
-              <!-- title options -->
-              <a v-for="title in creatorTitles" :key="title.id" class="dropdown-item is-capitalized" @click.prevent="updateTitle(title.id)">
-                {{ title.text }}
-              </a>
-
-            </div>
-          </div>
-        </div>
       </div>
 
       <PersonDetailLink v-if="creator" :person="creator" :edit="edit" class="primary-hover">{{ creator.name }}</PersonDetailLink>
@@ -113,9 +98,3 @@ export default {
   </div>
 
 </template>
-
-<style lang="scss" scoped>
-@import "bulma/sass/utilities/_all.sass";
-@import "bulma/sass/components/dropdown.sass";
-@import '@/assets/style/vars.scss';
-</style>
