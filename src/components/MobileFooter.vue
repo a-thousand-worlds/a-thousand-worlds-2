@@ -18,18 +18,14 @@ export default {
     filters() {
       return this.$store.state[this.filterType].filters
     },
-    showFilters() {
-      return this.filterType
-    },
     tags() {
       return this.$store.getters[`tags/${this.filterType}/listSorted`]()
         .filter(tag => tag.showOnFront)
     },
     filterType() {
-      return this.$route.name === 'Home' || this.$route.name === 'BookDetail' ? 'books'
-        : this.$route.name === 'People' || this.$route.name === 'PersonDetail' ? 'people'
+      return this.$route.name === 'People' || this.$route.name === 'PersonDetail' ? 'people'
         : this.$route.name === 'Bundles' || this.$route.name === 'BundleDetail' ? 'bundles'
-        : null
+        : 'books'
     },
   },
   methods: {
@@ -66,7 +62,7 @@ export default {
   <section class="mobile-bottom-nav has-text-centered is-uppercase" :class="{ bookmarksOpen: $store.state.ui.bookmarksOpen }">
     <ul class="menu-list my-10">
 
-      <li v-if="showFilters && !$store.state.ui.bookmarksOpen" style="position: relative;">
+      <li style="position: relative;">
         <select ref="select" @change="setFilters" multiple style="position: absolute; overflow: hidden; left: 0: top: 0; overflow: hidden; min-width: 60px; max-width: 100px; width: 70px; height: 100%; font-size: 20px; cursor: pointer; opacity: 0; text-transform: uppercase;">
           <!-- <option @click="resetFilters" value="_reset">Reset Filter</option> -->
           <optgroup disabled hidden />
