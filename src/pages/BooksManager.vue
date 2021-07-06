@@ -415,7 +415,12 @@ export default {
               </td>
 
               <!-- published -->
-              <td class="has-text-right"><HighlightedText field="published" :search="search">{{ book.year }}</HighlightedText></td>
+              <td class="has-text-right">
+                <SimpleInput v-if="editMode" @update:modelValue="updateBook(book, '', { year: $event })" v-model="book.year" placeholder="Enter Year" unstyled />
+                <HighlightedText v-else field="published" :search="search">
+                  {{ book.year }}
+                </HighlightedText>
+              </td>
 
               <!-- created at -->
               <td class="has-text-right"><HighlightedText field="created" :search="search">{{ formatDate(book.createdAt) }}</HighlightedText></td>
