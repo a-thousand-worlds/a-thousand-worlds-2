@@ -3,7 +3,7 @@ import * as slugify from '@sindresorhus/slugify'
 
 export default {
   props: {
-    buttonClass: String,
+    buttonClass: {},
     editable: Boolean,
     nolink: Boolean,
     tag: {

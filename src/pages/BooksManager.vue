@@ -5,6 +5,7 @@ import debounce from 'lodash/debounce'
 import dayjs from 'dayjs'
 import { remove as diacritics } from 'diacritics'
 
+import AddCreator from '@/components/AddCreator'
 import AddTag from '@/components/AddTag'
 import BookDetailLink from '@/components/BookDetailLink'
 import HighlightedText from '@/components/HighlightedText'
@@ -22,6 +23,7 @@ const sortEmptyToEnd = (s, dir) =>
 export default {
   name: 'BooksManager',
   components: {
+    AddCreator,
     AddTag,
     BookDetailLink,
     HighlightedText,
@@ -230,11 +232,19 @@ export default {
         field = ''
       }
 
+      // console.log('field', field)
+      // console.log('value', value)
+
       // do not update if the field is not changed
       // handle field embedded in complex value, e.g. field === '' and value === { isbn: '1419742256' }
       if (book[field] === value) return
       const extractedField = field === '' && Object.keys(value).length === 1 && Object.keys(value)[0]
-      if (book[extractedField] === value[extractedField]) return
+      if (extractedField && book[extractedField] === value[extractedField]) return
+
+      // console.log('update', {
+      //   path: `${book.id}/${field}`,
+      //   value,
+      // })
 
       this.$store.dispatch('books/update', {
         path: `${book.id}/${field}`,
@@ -327,7 +337,7 @@ export default {
 
               <!-- tags -->
               <td>
-                <Tag v-for="tag of getTags(book)" :key="tag.id" :tag="tag" type="books" @click="editMode ? null : toggleTagSearch" @remove="updateBook(book, 'tags', { [tag.id]: null })" nolink :editable="editMode" button-class="is-outlined pointer"><HighlightedText field="tag" :search="search">{{ tag.tag }}</HighlightedText></Tag>
+                <Tag v-for="tag of getTags(book)" :key="tag.id" :tag="tag" type="books" @click="editMode ? null : toggleTagSearch" @remove="updateBook(book, 'tags', { [tag.id]: null })" nolink :editable="editMode" :button-class="{ 'is-outlined': true, pointer: !editMode }"><HighlightedText field="tag" :search="search">{{ tag.tag }}</HighlightedText></Tag>
                 <AddTag v-if="editMode" type="books" :item="book" />
               </td>
 
@@ -336,6 +346,7 @@ export default {
                 <span v-for="(author, i) of authors(book.creators)" :key="author.id">
                   <span v-if="i !== 0">, </span><PersonDetailLink :person="author" edit><HighlightedText field="author" :search="search">{{ author.name }}</HighlightedText></PersonDetailLink>
                 </span>
+                <AddCreator v-if="editMode" label="Add Author" @update="updateBook(book, 'creators', { [$event]: 'author' })" class="mb-10 ml-1 mr-30" style="width: 100%;" />
               </td>
 
               <!-- illustrator(s) -->
@@ -343,6 +354,7 @@ export default {
                 <span v-for="(illustrator, i) of illustrators(book.creators)" :key="illustrator.id">
                   <span v-if="i !== 0">, </span><PersonDetailLink :person="illustrator" edit><HighlightedText field="illustrator" :search="search">{{ illustrator.name }}</HighlightedText></PersonDetailLink>
                 </span>
+                <AddCreator v-if="editMode" label="Add Illustrator" @update="updateBook(book, 'creators', { [$event]: 'illustrator' })" class="mb-10 ml-1 mr-30" style="width: 100%;" />
               </td>
 
               <!-- contributor -->
