@@ -5,6 +5,7 @@ import debounce from 'lodash/debounce'
 import dayjs from 'dayjs'
 import { remove as diacritics } from 'diacritics'
 
+import AddTag from '@/components/AddTag'
 import BookDetailLink from '@/components/BookDetailLink'
 import HighlightedText from '@/components/HighlightedText'
 import Loader from '@/components/Loader'
@@ -20,6 +21,7 @@ const sortEmptyToEnd = (s, dir) =>
 export default {
   name: 'BooksManager',
   components: {
+    AddTag,
     BookDetailLink,
     HighlightedText,
     Loader,
@@ -31,6 +33,9 @@ export default {
   data() {
     const sortField = this.$route.query?.sort || 'createdAt'
     return {
+      editMode: false,
+      // edit mode takes is slow to render, so show a Loader during the delay
+      loadingEditMode: false,
       search: this.$route.query?.search || '',
       sortConfig: {
         field: sortField,
@@ -195,6 +200,15 @@ export default {
           .some(s => this.isMatch(s, searchValue))
     },
 
+    toggleEditMode() {
+      // show a loader while edit mode is rendering
+      this.loadingEditMode = true
+      setTimeout(() => {
+        this.editMode = !this.editMode
+        this.loadingEditMode = false
+      })
+    },
+
     toggleTagSearch(tag) {
       const term = `tag:${tag.tag}`
 
@@ -206,6 +220,17 @@ export default {
         this.search = term
         // this.search = `${this.search} ${term}`.trim()
       }
+    },
+
+    updateBook(book, field, value) {
+      if (value === undefined) {
+        value = field
+        field = ''
+      }
+      this.$store.dispatch('books/update', {
+        path: `${book.id}/${field}`,
+        value,
+      })
     },
 
   }
@@ -229,6 +254,12 @@ export default {
           <router-link class="mr-20" :to="{ name:'TagsManager' }" style="color: black; line-height: 2.5;">Book Tags</router-link>
         </div>
         <div class="is-flex is-align-items-center">
+          <span style="white-space: nowrap;">
+            <Loader v-if="loadingEditMode" class="mr-1" style="display: inline-block; width: 1em; height: 1em;" />
+            <a @click.prevent="toggleEditMode" class="mr-40">
+              {{ editMode ? 'DONE' : 'EDIT' }}
+            </a>
+          </span>
           <span v-if="loaded" class="mr-40" style="white-space: nowrap">{{ books.length }} book{{ books.length === 1 ? '' : 's' }} <span v-if="search">(filtered)</span></span>
           <span class="has-text-right" v-tippy="{ content: `Search all books. Use 'field:value' to filter by a specific field, e.g. 'illustrator:Ho'` }" style="white-space: nowrap;"><i class="far fa-question-circle" /></span>
           <i class="fas fa-search" style="transform: translateX(23px); z-index: 10; opacity: 0.3;" />
@@ -281,7 +312,8 @@ export default {
 
               <!-- tags -->
               <td>
-                <Tag v-for="tag of getTags(book)" :key="tag.id" :tag="tag" type="books" @click="toggleTagSearch" nolink button-class="is-outlined pointer"><HighlightedText field="tag" :search="search">{{ tag.tag }}</HighlightedText></Tag>
+                <Tag v-for="tag of getTags(book)" :key="tag.id" :tag="tag" type="books" @click="editMode ? null : toggleTagSearch" @remove="updateBook(book, 'tags', { [tag.id]: null })" nolink :editable="editMode" button-class="is-outlined pointer"><HighlightedText field="tag" :search="search">{{ tag.tag }}</HighlightedText></Tag>
+                <AddTag v-if="editMode" type="books" :item="book" />
               </td>
 
               <!-- author(s) -->
