@@ -320,7 +320,10 @@ export default {
               </td>
 
               <!-- title -->
-              <td><BookDetailLink :book="book" edit><HighlightedText field="title" :search="search">{{ book.title }}</HighlightedText></BookDetailLink></td>
+              <td>
+                <SimpleInput v-if="editMode" @update:modelValue="updateBook(book, '', { title: $event })" v-model="book.title" placeholder="Enter Title" unstyled />
+                <BookDetailLink v-else :book="book" edit><HighlightedText field="title" :search="search">{{ book.title }}</HighlightedText></BookDetailLink>
+              </td>
 
               <!-- tags -->
               <td>
