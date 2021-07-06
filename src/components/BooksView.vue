@@ -13,8 +13,8 @@ export default {
     books() {
       return this.$store.getters['books/filtered']
     },
-    filters() {
-      return Object.values(this.$store.state.books?.filters || {})
+    isFiltered() {
+      return this.$store.getters['books/isFiltered']
     },
     loading() {
       // return false
@@ -37,11 +37,19 @@ export default {
     </div>
 
     <div v-else>
-      <div v-if="filters.length && books.length === 0" class="my-50 has-text-centered">
+
+      <!-- no matching books -->
+      <div v-if="isFiltered && books.length === 0" class="my-50 has-text-centered">
         <h2 class="mb-20">No matching books</h2>
         <p><a @click.prevent="resetFilter" class="button is-rounded is-primary">Reset Filter</a></p>
       </div>
 
+      <!-- shared list -->
+      <div v-if="$store.state.books?.idFilters.length > 0" class="mb-30 has-text-centered">
+        <h2 class="mb-20">Someone shared a list of books with you!</h2>
+      </div>
+
+      <!-- books -->
       <div :class="{ masonry: $store.state.ui.viewMode === 'covers', 'with-bookmarks': $store.state.ui.bookmarksOpen }">
         <div v-for="book of books" :key="book.id" :class="{ 'masonry-item': true, ['masonry-item-' + $store.state.ui.viewMode] : true }">
           <BookCoverView v-if="$store.state.ui.viewMode === 'covers'" :book="book" />

@@ -18,6 +18,9 @@ export default {
     allTags() {
       return this.$store.getters[`tags/${this.type}/listSorted`]()
     },
+    hasFilters() {
+      return this.$store.getters[`${this.type}/isFiltered`]
+    },
     filters() {
       return Object.values(this.$store.state[this.type]?.filters || {})
     },
@@ -115,7 +118,7 @@ export default {
       </li>
 
     </ul>
-    <button v-if="filters.length > 0" class="button is-rounded is-primary" @click.prevent="resetFilters">Reset Filter</button>
+    <button v-if="hasFilters" class="button is-rounded is-primary" @click.prevent="resetFilters">Reset Filter</button>
   </aside>
 </template>
 

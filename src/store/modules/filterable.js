@@ -5,9 +5,11 @@ import specialFilters from '@/store/constants/special-filters'
 const module = () => ({
   state: {
     filters: [],
+    idFilters: [],
   },
   mutations: {
     resetFilters(state) {
+      state.idFilters = []
       state.filters = []
     },
     toggleFilter(state, filter) {
@@ -28,15 +30,20 @@ const module = () => ({
       }
 
     },
+    setIdFilters(state, ids) {
+      state.idFilters = ids
+    },
     setFilters(state, filters) {
       state.filters = filters
     },
   },
   getters: {
+    isFiltered: state => {
+      return state.filters?.length > 0 || state.idFilters?.length > 0
+    },
     filtered: state => (items, tagName = 'tags') => {
-      // if (!state.loaded) return []
 
-      if (!Array.isArray(state.filters) || state.filters.length === 0) return items
+      if (!state.filters?.length && !state.idFilters?.length) return items
 
       return items.filter(item =>
         state.filters.every(filter => {
@@ -50,6 +57,8 @@ const module = () => ({
             : []
           return itemFilters.includes(filter.id)
         })
+        // id filters
+        && state.idFilters.includes(item.id)
       )
     }
   },
@@ -64,8 +73,15 @@ const module = () => ({
     },
     setFiltersFromUrl({ state, commit, rootGetters }) {
       const urlParams = new URLSearchParams(window.location.search)
-      const urlFilters = (urlParams.get('filters') || '').split(',')
+      const urlFilters = urlParams.get('filters')?.split(',') || []
+      const urlIds = urlParams.get('ids')?.split(',') || []
 
+      if (!urlFilters.length === 0 && urlIds.length === 0) {
+        commit('resetFilters')
+        return
+      }
+
+      // tag filters
       if (urlFilters.length > 0) {
         const tags = rootGetters[`tags/${state.name}/list`]()
         const tagsSelected = urlFilters
@@ -77,8 +93,10 @@ const module = () => ({
           .filter(x => x)
         commit('setFilters', tagsSelected)
       }
-      else {
-        commit('resetFilters')
+
+      // id filters
+      if (urlIds.length > 0) {
+        commit('setIdFilters', urlIds)
       }
 
     },
