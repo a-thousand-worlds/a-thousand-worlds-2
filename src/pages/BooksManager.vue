@@ -5,9 +5,11 @@ import debounce from 'lodash/debounce'
 import dayjs from 'dayjs'
 import { remove as diacritics } from 'diacritics'
 
+import creatorTitles from '@/store/constants/creatorTitles'
 import AddCreator from '@/components/AddCreator'
 import AddTag from '@/components/AddTag'
 import BookDetailLink from '@/components/BookDetailLink'
+import Dropdown from '@/components/Dropdown'
 import HighlightedText from '@/components/HighlightedText'
 import Loader from '@/components/Loader'
 import PersonDetailLink from '@/components/PersonDetailLink'
@@ -26,6 +28,7 @@ export default {
     AddCreator,
     AddTag,
     BookDetailLink,
+    Dropdown,
     HighlightedText,
     Loader,
     PersonDetailLink,
@@ -37,6 +40,7 @@ export default {
   data() {
     const sortField = this.$route.query?.sort || 'createdAt'
     return {
+      creatorTitles,
       editMode: false,
       // edit mode takes is slow to render, so show a Loader during the delay
       loadingEditMode: false,
@@ -169,7 +173,7 @@ export default {
       return diacritics(value.trim()).toLowerCase().includes(diacritics(search.trim()).toLowerCase())
     },
 
-    async remove(id) {
+    async removeBook(id) {
       this.$store.commit('ui/setBusy', true)
       try {
         await this.$store.dispatch('books/remove', id)
@@ -337,14 +341,25 @@ export default {
 
               <!-- tags -->
               <td>
-                <Tag v-for="tag of getTags(book)" :key="tag.id" :tag="tag" type="books" @click="editMode ? null : toggleTagSearch" @remove="updateBook(book, 'tags', { [tag.id]: null })" nolink :editable="editMode" :button-class="{ 'is-outlined': true, pointer: !editMode }"><HighlightedText field="tag" :search="search">{{ tag.tag }}</HighlightedText></Tag>
+                <Tag v-for="tag of getTags(book)" :key="tag.id" :tag="tag" type="books" @click="editMode ? null : toggleTagSearch" @removeBook="updateBook(book, 'tags', { [tag.id]: null })" nolink :editable="editMode" :button-class="{ 'is-outlined': true, pointer: !editMode }"><HighlightedText field="tag" :search="search">{{ tag.tag }}</HighlightedText></Tag>
                 <AddTag v-if="editMode" type="books" :item="book" />
               </td>
 
               <!-- author(s) -->
               <td>
                 <span v-for="(author, i) of authors(book.creators)" :key="author.id">
-                  <span v-if="i !== 0">, </span><PersonDetailLink :person="author" edit><HighlightedText field="author" :search="search">{{ author.name }}</HighlightedText></PersonDetailLink>
+                  <span v-if="i !== 0">, </span>
+
+                  <!-- edit mode: show title dropdown -->
+                  <Dropdown v-if="editMode" v-model="book.creators[author.id]" :label="author.name" labelStyle="font-weight: bold;" :options="creatorTitles" @update:modelValue="updateBook(book, 'creators', { [author.id]: $event })" style="display: inline;">
+                    <template #beforeOptions>
+                      <a class="dropdown-item" @click.prevent="updateBook(book, 'creators', { [author.id]: null })" style="color: #000;"><b>REMOVE</b></a>
+                      <hr class="dropdown-divider">
+                    </template>
+                  </Dropdown>
+
+                  <PersonDetailLink v-else :person="author" edit><HighlightedText field="author" :search="search">{{ author.name }}</HighlightedText></PersonDetailLink>
+
                 </span>
                 <AddCreator v-if="editMode" label="Add Author" @update="updateBook(book, 'creators', { [$event]: 'author' })" class="mb-10 ml-1 mr-30" style="width: 100%;" />
               </td>
@@ -352,7 +367,19 @@ export default {
               <!-- illustrator(s) -->
               <td>
                 <span v-for="(illustrator, i) of illustrators(book.creators)" :key="illustrator.id">
-                  <span v-if="i !== 0">, </span><PersonDetailLink :person="illustrator" edit><HighlightedText field="illustrator" :search="search">{{ illustrator.name }}</HighlightedText></PersonDetailLink>
+                  <span v-if="i !== 0">, </span>
+
+                  <!-- edit mode: show title dropdown -->
+                  <Dropdown v-if="editMode" v-model="book.creators[illustrator.id]" :label="illustrator.name" labelStyle="font-weight: bold;" :options="creatorTitles" @update:modelValue="updateBook(book, 'creators', { [illustrator.id]: $event })" style="display: inline;">
+                    <template #beforeOptions>
+                      <a class="dropdown-item" @click.prevent="updateBook(book, 'creators', { [illustrator.id]: null })" style="color: #000;"><b>REMOVE</b></a>
+                      <hr class="dropdown-divider">
+                    </template>
+                  </Dropdown>
+
+                  <!-- normal mode: link to PersonEdit page -->
+                  <PersonDetailLink v-else :person="illustrator" edit><HighlightedText field="illustrator" :search="search">{{ illustrator.name }}</HighlightedText></PersonDetailLink>
+
                 </span>
                 <AddCreator v-if="editMode" label="Add Illustrator" @update="updateBook(book, 'creators', { [$event]: 'illustrator' })" class="mb-10 ml-1 mr-30" style="width: 100%;" />
               </td>
@@ -372,7 +399,7 @@ export default {
               <td class="has-text-right">
                 <div class="field is-grouped is-justify-content-flex-end">
                   <p class="control">
-                    <button :disabled="$uiBusy" class="button is-flat" @click.prevent="remove(book.id)">
+                    <button :disabled="$uiBusy" class="button is-flat" @click.prevent="removeBook(book.id)">
                       <i class="fas fa-times" />
                     </button></p>
                 </div>

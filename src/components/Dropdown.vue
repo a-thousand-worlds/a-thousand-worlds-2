@@ -5,6 +5,7 @@ export default {
       type: String,
     },
     labelStyle: {},
+    // selected option id
     modelValue: {
       type: String,
       required: true
@@ -45,7 +46,7 @@ export default {
           <slot name="beforeOptions" />
 
           <!-- options -->
-          <a v-for="option in options" :key="option.id" class="dropdown-item is-capitalized" @click.prevent="$emit('update:modelValue', option.id)">
+          <a v-for="option in options" :key="option.id" class="dropdown-item is-capitalized" @click.prevent="$emit('update:modelValue', option.id)" :class="{ selected: modelValue === option?.id }">
             {{ option.text }}
           </a>
 
@@ -62,4 +63,10 @@ export default {
 <style lang="scss" scoped>
 @import "bulma/sass/utilities/_all.sass";
 @import "bulma/sass/components/dropdown.sass";
+@import '@/assets/style/vars.scss';
+@import '@/assets/style/mixins.scss';
+
+.selected {
+  @include primary(color, !important);
+}
 </style>
