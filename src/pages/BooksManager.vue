@@ -423,7 +423,11 @@ export default {
               </td>
 
               <!-- created at -->
-              <td class="has-text-right"><HighlightedText field="created" :search="search">{{ formatDate(book.createdAt) }}</HighlightedText></td>
+              <td class="has-text-right">
+                <HighlightedText field="created" :search="search" style="opacity: 0.5">
+                  {{ formatDate(book.createdAt) }}
+                </HighlightedText>
+              </td>
 
               <!-- edit/delete -->
               <td class="has-text-right">
