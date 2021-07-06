@@ -161,10 +161,18 @@ export default {
     },
 
     updateBook(field, value) {
+
       if (value === undefined) {
         value = field
         field = ''
       }
+
+      // do not update if the field is not changed
+      // handle field embedded in complex value, e.g. field === '' and value === { isbn: '1419742256' }
+      if (this.book[field] === value) return
+      const extractedField = field === '' && Object.keys(value).length === 1 && Object.keys(value)[0]
+      if (this.book[extractedField] === value[extractedField]) return
+
       this.$store.dispatch('books/update', {
         path: `${this.book.id}/${field}`,
         value,

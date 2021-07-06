@@ -12,6 +12,7 @@ import Loader from '@/components/Loader'
 import PersonDetailLink from '@/components/PersonDetailLink'
 import SortableTableHeading from '@/components/SortableTableHeading'
 import StaticCoverImage from '@/components/StaticCoverImage'
+import SimpleInput from '@/components/fields/SimpleInput'
 import Tag from '@/components/Tag'
 
 /** Generates a sort token that will sort empty strings to the end regardless of sort direction. */
@@ -28,6 +29,7 @@ export default {
     PersonDetailLink,
     SortableTableHeading,
     StaticCoverImage,
+    SimpleInput,
     Tag,
   },
   data() {
@@ -227,6 +229,13 @@ export default {
         value = field
         field = ''
       }
+
+      // do not update if the field is not changed
+      // handle field embedded in complex value, e.g. field === '' and value === { isbn: '1419742256' }
+      if (book[field] === value) return
+      const extractedField = field === '' && Object.keys(value).length === 1 && Object.keys(value)[0]
+      if (book[extractedField] === value[extractedField]) return
+
       this.$store.dispatch('books/update', {
         path: `${book.id}/${field}`,
         value,
@@ -305,7 +314,10 @@ export default {
               </td>
 
               <!-- ISBN -->
-              <td><BookDetailLink :book="book" edit><HighlightedText field="isbn" :search="search">{{ book.isbn }}</HighlightedText></BookDetailLink></td>
+              <td>
+                <SimpleInput v-if="editMode" @update:modelValue="updateBook(book, '', { isbn: $event })" v-model="book.isbn" placeholder="Enter ISBN" />
+                <BookDetailLink v-else :book="book" edit><HighlightedText field="isbn" :search="search">{{ book.isbn }}</HighlightedText></BookDetailLink>
+              </td>
 
               <!-- title -->
               <td><BookDetailLink :book="book" edit><HighlightedText field="title" :search="search">{{ book.title }}</HighlightedText></BookDetailLink></td>
