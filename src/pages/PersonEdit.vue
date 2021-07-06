@@ -281,7 +281,7 @@ export default {
               <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="people" @remove="updatePerson('identities', { [tag.id]: null })" button-class="is-outlined" :tagStyle="tag.tag === 'invalid' ? 'background-color: #fff; border-color: red; color: red !important; cursor: pointer;' : null" editable />
 
               <!-- add tag dropdown -->
-              <AddTag type="people" :selected="tags" @add="updatePerson('identities', { [$event.id]: true })" />
+              <AddTag type="people" :item="person" />
 
             </div>
 
