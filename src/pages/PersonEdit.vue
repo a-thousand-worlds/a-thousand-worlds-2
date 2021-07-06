@@ -291,6 +291,7 @@ export default {
           <ckeditor @update:modelValue="updateBio($event)" :model-value="bio" :editor="editor" :config="ckConfig" @focus="bioFocus" @blur="bioBlur" class="person-bio" style="padding: 0;" />
           <div class="divider-30" />
 
+          <!-- information table -->
           <!-- text-align: left needed to override centered content in tablet view. -->
           <table style="text-align: left;">
 
