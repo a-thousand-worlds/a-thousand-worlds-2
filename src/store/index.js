@@ -49,10 +49,12 @@ const store = createStore({
         // load books and people after tags are loaded so that tag weights are loaded before shuffling
         if (window.dbcache.books) {
           dispatch('books/loadCache', window.dbcache.books)
+          dispatch('books/setFiltersFromUrl')
           dispatch('shuffle', 'books')
         }
         if (window.dbcache.people) {
           dispatch('people/loadCache', window.dbcache.people)
+          dispatch('people/setFiltersFromUrl')
           dispatch('shuffle', 'people')
         }
       }
