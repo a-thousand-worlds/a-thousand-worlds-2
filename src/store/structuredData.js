@@ -1,3 +1,4 @@
+import debounce from 'lodash/debounce'
 import { get, set } from '@/util/get-set'
 
 const now = new Date()
@@ -41,11 +42,13 @@ const structuredData = {
     get: state => path => get(state.data, path),
   },
   actions: {
-    set(context, { path, value }) {
-
-      // update all structured data or only data at a specific path
+    // update all structured data or only data at a specific path
+    set: (context, { path, value }) => {
       context.commit('set', { path, value })
-
+      context.dispatch('updateHead')
+    },
+    // re-write the application/ld+json script
+    updateHead: debounce(context => {
       // save to ld+json script
       let script = document.querySelector('script[type="application/ld+json"]')
       if (!script) {
@@ -54,7 +57,7 @@ const structuredData = {
         document.head.appendChild(script)
       }
       script.textContent = JSON.stringify(context.state.data, null, 2)
-    }
+    }, 0)
   }
 }
 
