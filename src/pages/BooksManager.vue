@@ -88,6 +88,21 @@ export default {
         }))
     },
 
+    // sorted contributor for dropdown menu
+    // accessible by admin only
+    // unauthorized users must access contributors individually
+    contributorOptions() {
+      const contributorList = this.$store.state.users.loaded
+        ? Object.entries(this.$store.state.users.data)
+          .filter(([id, user]) => user.roles?.contributor || user.roles?.owner)
+          .map(([id, user]) => {
+            const fullName = user.profile.name || (user.profile.firstName ? `${user.profile.firstName || ''} ${user.profile.lastName || ''}`.trim() : '')
+            return { id, text: `${fullName}${user.roles.owner ? ' (owner)' : ''}` }
+          })
+        : []
+      return sortBy(contributorList, 'name')
+    },
+
     tags() {
       return this.$store.getters[`tags/books/listSorted`]()
     },
@@ -386,7 +401,17 @@ export default {
 
               <!-- contributor -->
               <td>
-                <HighlightedText field="contributor" :search="search">{{ formatContributor(book.createdBy) }}</HighlightedText>
+
+                <!-- edit mode -->
+                <Dropdown v-if="editMode" v-model="book.createdBy" labelStyle="font-weight: bold;" :options="contributorOptions" @update:modelValue="updateBook(book, '', { createdBy: $event })" style="display: inline;">
+                  <template #beforeOptions>
+                    <span class="dropdown-item">To add or edit a contributor, use the <BookDetailLink :book="book" edit>Book Edit</BookDetailLink> page.</span>
+                    <hr class="dropdown-divider">
+                  </template>
+                </Dropdown>
+
+                <HighlightedText v-else field="contributor" :search="search">{{ formatContributor(book.createdBy) }}</HighlightedText>
+
               </td>
 
               <!-- published -->
