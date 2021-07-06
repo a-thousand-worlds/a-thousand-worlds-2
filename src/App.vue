@@ -91,7 +91,7 @@ export default ({
   },
   async created() {
 
-    // set json+ld structured data
+    // set ld+jsdon structured data
     const baseUrl = window.location.origin
     this.$store.dispatch('structuredData/set', { path: 'description', value: this.description })
     this.$store.dispatch('structuredData/set', { path: 'image.url', value: baseUrl + this.image })
