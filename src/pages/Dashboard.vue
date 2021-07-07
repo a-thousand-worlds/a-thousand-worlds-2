@@ -68,7 +68,7 @@ export default {
 <template>
 
   <div class="is-flex is-justify-content-center">
-    <div class="is-flex-grow-1 mx-20" style="max-width: 1080px; position: relative">
+    <div class="is-flex-grow-1 mx-20" style="max-width: 600px; position: relative">
 
       <h1 class="title page-title">Your Dashboard</h1>
 
@@ -80,10 +80,25 @@ export default {
         <Loader />
       </div>
 
+      <!-- Review Submissions -->
+      <section v-if="$can('review')" class="section my-30 py-0">
+        <h2>Review Submissions</h2>
+        <ReviewSubmissionsPreview />
+      </section>
+
+      <!-- Manage Collections -->
+      <section v-if="$can('manageCollections')" class="section my-30 py-0">
+        <h2>Manage Collections</h2>
+        <ManageCollectionsPreview />
+        <router-link :to="{ name: 'TagsManager' }">Tags Manager</router-link>
+      </section>
+
+      <!-- Creator Profile Preview -->
       <section v-if="$iam('creator')" class="section bordered-top">
         <CreatorProfilePreview />
       </section>
 
+      <!-- Submit Book or Bundle -->
       <section v-if="$can('submitBookOrBundle')" class="section bordered-top">
 
         <div v-if="$iam('contributor')">
@@ -93,6 +108,7 @@ export default {
 
         <div v-if="!hasPendingContributorProfile">
 
+          <!-- Welcome message sequence -->
           <MessageSequence ref="submissionFormMessage" storageKey="dashboardSubmissionForms" @load="submissionFormMessageCompleted = $event.completed" @completed="submissionFormMessageCompleted = $event">
 
             <template>
@@ -138,6 +154,7 @@ export default {
 
       </section>
 
+      <!-- Invite -->
       <section v-if="$can('invite') && !hasPendingContributorProfile" class="section bordered-top">
         <h2>
           Invite Users
@@ -163,19 +180,9 @@ export default {
         </ul>
       </section>
 
+      <!-- Your Book Submissions -->
       <section v-if="$can('submitBookOrBundle') && bookSubmissions.length" class="section my-30 py-0">
         <YourBookSubmissions />
-      </section>
-
-      <section v-if="$can('review')" class="section my-30 py-0">
-        <h2>Review Submissions</h2>
-        <ReviewSubmissionsPreview />
-      </section>
-
-      <section v-if="$can('manageCollections')" class="section my-30 py-0">
-        <h2>Manage Collections</h2>
-        <ManageCollectionsPreview />
-        <router-link :to="{ name: 'TagsManager' }">Tags Manager</router-link>
       </section>
 
     </div>

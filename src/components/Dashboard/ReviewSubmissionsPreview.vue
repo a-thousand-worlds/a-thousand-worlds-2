@@ -54,3 +54,9 @@ export default {
     </div>
   </div>
 </template>
+
+<style scoped lang="scss">
+h3 {
+  font-size: 20px;
+}
+</style>

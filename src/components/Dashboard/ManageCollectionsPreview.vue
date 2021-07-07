@@ -54,6 +54,10 @@ export default {
 @import "bulma/sass/utilities/_all.sass";
 @import '@/assets/style/mixins.scss';
 
+h3 {
+  font-size: 20px;
+}
+
 h3:hover {
   color: white;
 }
