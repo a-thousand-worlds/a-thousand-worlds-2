@@ -50,7 +50,6 @@ export default {
       editOnClick: false,
       pageUrl: window.location.href,
       pronounOptions,
-      titleDropdownActive: false,
       uploadingPhoto: false,
     }
   },
@@ -133,10 +132,6 @@ export default {
 
     bioFocus() {
       this.bioFocused = true
-    },
-
-    closeTitleDropdown() {
-      this.titleDropdownActive = false
     },
 
     keydown(e) {
@@ -229,28 +224,17 @@ export default {
 
           <div class="title-container divider-30">
 
-            <!-- <Dropdown
-              v-if="person.title && editMode"
-              :defaultValue="person.title"
-              labelStyle="font-weight: bold;"
-              :options="creatorTitles"
-              @update:modelValue="updatePerson(person, '', { title: $event })"
-              style="display: inline;"
-            /> -->
-
-            <!-- title dropdown -->
-            <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': titleDropdownActive }">
-              <div id="dropdown-menu" class="dropdown-menu" role="menu">
-                <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
-                  <a v-for="creatorTitle in creatorTitles" :key="creatorTitle.id" class="dropdown-item is-capitalized" @click.prevent="updatePerson({ title: creatorTitle.id })">
-                    {{ creatorTitle.text }}
-                  </a>
-                </div>
-              </div>
-            </div>
-
             <!-- title -->
-            <a v-if="title" @click.prevent.stop="titleDropdownActive = !titleDropdownActive" v-click-outside="closeTitleDropdown" class="primary-hover no-user-select" :class="{ 'is-primary': titleDropdownActive }">{{ title.text }}</a>
+            <Dropdown
+              :defaultValue="person.title"
+              :options="creatorTitles"
+              placeholder="Choose title"
+              @update:modelValue="updatePerson({ title: $event })"
+              style="display: inline;"
+              :labelStyle="{
+                fontStyle: !person.pronouns ? 'italic' : null
+              }"
+            />
 
             <!-- name -->
             <h1 class="title mt-5">
@@ -263,9 +247,9 @@ export default {
             <div class="mt-2">
 
               <Dropdown
-                placeholder="Choose pronouns"
                 :defaultValue="person.pronouns"
                 :options="pronounOptions"
+                placeholder="Choose pronouns"
                 @update:modelValue="updatePerson({ pronouns: $event })"
                 :labelStyle="{
                   fontStyle: !person.pronouns ? 'italic' : null
@@ -277,10 +261,6 @@ export default {
                 </template>
               </Dropdown>
 
-              <!-- <a @click.prevent.stop="pronounsDropdownActive = !pronounsDropdownActive" v-click-outside="closePronounsDropdown" :class="{ 'is-primary': pronounsDropdownActive }" class="primary-hover no-user-select">
-                <span v-if="pronouns">{{ pronouns.text }}</span>
-                <span v-else style="font-style: italic; color: #aaa">Choose pronouns</span>
-              </a> -->
             </div>
 
             <!-- tags -->
@@ -364,7 +344,6 @@ export default {
 
 <style lang="scss" scoped>
 @import "bulma/sass/utilities/_all.sass";
-@import "bulma/sass/components/dropdown.sass";
 @import '@/assets/style/mixins.scss';
 @import '@/assets/style/vars.scss';
 
