@@ -11,7 +11,7 @@ import HighlightedText from '@/components/HighlightedText'
 import Loader from '@/components/Loader'
 import PersonDetailLink from '@/components/PersonDetailLink'
 import SortableTableHeading from '@/components/SortableTableHeading'
-import StaticCoverImage from '@/components/StaticCoverImage'
+import CoverImage from '@/components/CoverImage'
 import Tag from '@/components/Tag'
 
 /** Generates a sort token that will sort empty strings to the end regardless of sort direction. */
@@ -26,7 +26,7 @@ export default {
     Loader,
     PersonDetailLink,
     SortableTableHeading,
-    StaticCoverImage,
+    CoverImage,
     Tag,
   },
   data() {
@@ -227,7 +227,7 @@ export default {
               <!-- photo -->
               <td>
                 <PersonDetailLink :person="person" edit>
-                  <StaticCoverImage :item="person" style="width: 150px; min-width: 50px; min-height: auto; border-radius: 99px;" />
+                  <CoverImage :item="person" style="width: 100px; border-radius: 99px;" />
                 </PersonDetailLink>
               </td>
 

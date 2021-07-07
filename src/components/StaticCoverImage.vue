@@ -1,5 +1,6 @@
 <script>
 
+/** Renders a static cover image preserving its proportions. */
 export default {
   props: ['item'],
   computed: {

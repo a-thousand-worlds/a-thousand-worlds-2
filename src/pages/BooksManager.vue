@@ -14,7 +14,7 @@ import HighlightedText from '@/components/HighlightedText'
 import Loader from '@/components/Loader'
 import PersonDetailLink from '@/components/PersonDetailLink'
 import SortableTableHeading from '@/components/SortableTableHeading'
-import StaticCoverImage from '@/components/StaticCoverImage'
+import CoverImage from '@/components/CoverImage'
 import SimpleInput from '@/components/fields/SimpleInput'
 import Tag from '@/components/Tag'
 
@@ -33,7 +33,7 @@ export default {
     Loader,
     PersonDetailLink,
     SortableTableHeading,
-    StaticCoverImage,
+    CoverImage,
     SimpleInput,
     Tag,
   },
@@ -338,7 +338,7 @@ export default {
               <!-- cover -->
               <td>
                 <BookDetailLink :book="book" edit>
-                  <StaticCoverImage :item="book" style="width: 150px; min-width: 50px; min-height: auto;" />
+                  <CoverImage :item="book" style="width: 125px; min-width: 50px; min-height: auto;" />
                 </BookDetailLink>
               </td>
 

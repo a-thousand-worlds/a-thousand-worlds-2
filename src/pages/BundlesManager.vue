@@ -6,7 +6,7 @@ import dayjs from 'dayjs'
 import Loader from '@/components/Loader'
 import PersonDetailLink from '@/components/PersonDetailLink'
 import SortableTableHeading from '@/components/SortableTableHeading'
-import StaticCoverImage from '@/components/StaticCoverImage'
+import CoverImage from '@/components/CoverImage'
 import { remove as diacritics } from 'diacritics'
 
 /** Generates a sort token that will sort empty strings to the end regardless of sort direction. */
@@ -19,7 +19,7 @@ export default {
     Loader,
     PersonDetailLink,
     SortableTableHeading,
-    StaticCoverImage,
+    CoverImage,
   },
   data() {
     const sortField = this.$route.query?.sort || 'created'
@@ -172,7 +172,7 @@ export default {
               <!-- photo -->
               <td>
                 <PersonDetailLink :bundle="bundle">
-                  <StaticCoverImage :item="bundle" style="width: 150px; min-width: 50px; min-height: auto;" />
+                  <CoverImage :item="bundle" style="width: 125px; min-width: 50px; min-height: auto;" />
                 </PersonDetailLink>
               </td>
 
