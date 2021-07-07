@@ -13,6 +13,7 @@ import Dropdown from '@/components/Dropdown'
 import HighlightedText from '@/components/HighlightedText'
 import Loader from '@/components/Loader'
 import PersonDetailLink from '@/components/PersonDetailLink'
+import SimpleInput from '@/components/fields/SimpleInput'
 import SortableTableHeading from '@/components/SortableTableHeading'
 import Tag from '@/components/Tag'
 
@@ -30,6 +31,7 @@ export default {
     HighlightedText,
     Loader,
     PersonDetailLink,
+    SimpleInput,
     SortableTableHeading,
     Tag,
   },
@@ -288,11 +290,15 @@ export default {
 
               <!-- name -->
               <td>
-                <PersonDetailLink :person="person" edit>
+
+                <PersonDetailLink v-if="editMode" :person="person" edit>
                   <HighlightedText field="name" :search="search">
                     {{ person.name }}
                   </HighlightedText>
                 </PersonDetailLink>
+
+                <SimpleInput v-else @update:modelValue="updatePerson(person, '', { name: $event })" v-model="person.name" placeholder="Enter Name" unstyled />
+
               </td>
 
               <!-- tags -->
