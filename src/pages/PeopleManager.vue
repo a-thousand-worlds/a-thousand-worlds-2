@@ -291,13 +291,13 @@ export default {
               <!-- name -->
               <td>
 
-                <PersonDetailLink v-if="editMode" :person="person" edit>
+                <SimpleInput v-if="editMode" @update:modelValue="updatePerson(person, '', { name: $event })" v-model="person.name" placeholder="Enter Name" unstyled />
+
+                <PersonDetailLink v-else :person="person" edit>
                   <HighlightedText field="name" :search="search">
                     {{ person.name }}
                   </HighlightedText>
                 </PersonDetailLink>
-
-                <SimpleInput v-else @update:modelValue="updatePerson(person, '', { name: $event })" v-model="person.name" placeholder="Enter Name" unstyled />
 
               </td>
 
@@ -324,7 +324,26 @@ export default {
               <!-- title -->
               <td>
 
-                <Dropdown v-if="person.title && editMode" :defaultValue="person.title" labelStyle="font-weight: bold;" :options="creatorTitles" @update:modelValue="updatePerson(person, '', { title: $event })" style="display: inline;" />
+                <Dropdown
+                  v-if="editMode"
+                  :defaultValue="person.title"
+                  :options="creatorTitles"
+                  placeholder="Choose pronouns"
+                  @update:modelValue="updatePerson(person, '', { title: $event })"
+                  :labelStyle="{
+                    fontStyle: !person.title ? 'italic' : null,
+                  }"
+                  style="display: inline;"
+                >
+                  <template #beforeOptions>
+                    <a
+                      @click.prevent="updatePerson(person, '', { title: null })"
+                      class="dropdown-item is-capitalized is-uppercase"
+                      :style="{ color: person.title ? '#000' : null }"
+                    >None</a>
+                    <hr class="dropdown-divider">
+                  </template>
+                </Dropdown>
 
                 <HighlightedText v-else field="title" :search="search">
                   {{ formatTitle(person) }}

@@ -7,6 +7,7 @@ import pronounOptions from '@/store/constants/pronouns'
 import linkCreatorInBio from '@/util/linkCreatorInBio'
 import AddTag from '@/components/AddTag'
 import BookListView from '@/components/BookListView'
+import Dropdown from '@/components/Dropdown'
 import Filter from '@/components/Filter'
 import Loader from '@/components/Loader'
 import NotFound from '@/pages/NotFound'
@@ -19,6 +20,7 @@ export default {
   components: {
     AddTag,
     BookListView,
+    Dropdown,
     Filter,
     Loader,
     NotFound,
@@ -48,7 +50,6 @@ export default {
       editOnClick: false,
       pageUrl: window.location.href,
       pronounOptions,
-      pronounsDropdownActive: false,
       titleDropdownActive: false,
       uploadingPhoto: false,
     }
@@ -132,10 +133,6 @@ export default {
 
     bioFocus() {
       this.bioFocused = true
-    },
-
-    closePronounsDropdown() {
-      this.pronounsDropdownActive = false
     },
 
     closeTitleDropdown() {
@@ -232,6 +229,15 @@ export default {
 
           <div class="title-container divider-30">
 
+            <!-- <Dropdown
+              v-if="person.title && editMode"
+              :defaultValue="person.title"
+              labelStyle="font-weight: bold;"
+              :options="creatorTitles"
+              @update:modelValue="updatePerson(person, '', { title: $event })"
+              style="display: inline;"
+            /> -->
+
             <!-- title dropdown -->
             <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': titleDropdownActive }">
               <div id="dropdown-menu" class="dropdown-menu" role="menu">
@@ -253,25 +259,28 @@ export default {
               </a>
             </h1>
 
-            <!-- pronouns dropdown -->
-            <div class="dropdown mt-5 no-user-select" :class="{ 'is-active': pronounsDropdownActive }" style="position: absolute;">
-              <div id="dropdown-menu" class="dropdown-menu" role="menu">
-                <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
-                  <a class="dropdown-item is-capitalized is-uppercase" @click.prevent="updatePerson({ pronouns: null })">None</a>
-                  <hr class="dropdown-divider">
-                  <a v-for="pronounOption in pronounOptions" :key="pronounOption.id" class="dropdown-item is-capitalized" @click.prevent="updatePerson({ pronouns: pronounOption.id })">
-                    {{ pronounOption.text }}
-                  </a>
-                </div>
-              </div>
-            </div>
-
             <!-- pronouns -->
             <div class="mt-2">
-              <a @click.prevent.stop="pronounsDropdownActive = !pronounsDropdownActive" v-click-outside="closePronounsDropdown" :class="{ 'is-primary': pronounsDropdownActive }" class="primary-hover no-user-select">
+
+              <Dropdown
+                placeholder="Choose pronouns"
+                :defaultValue="person.pronouns"
+                :options="pronounOptions"
+                @update:modelValue="updatePerson({ pronouns: $event })"
+                :labelStyle="{
+                  fontStyle: !person.pronouns ? 'italic' : null
+                }"
+              >
+                <template #beforeOptions>
+                  <a class="dropdown-item is-capitalized is-uppercase" @click.prevent="updatePerson({ pronouns: null })">None</a>
+                  <hr class="dropdown-divider">
+                </template>
+              </Dropdown>
+
+              <!-- <a @click.prevent.stop="pronounsDropdownActive = !pronounsDropdownActive" v-click-outside="closePronounsDropdown" :class="{ 'is-primary': pronounsDropdownActive }" class="primary-hover no-user-select">
                 <span v-if="pronouns">{{ pronouns.text }}</span>
                 <span v-else style="font-style: italic; color: #aaa">Choose pronouns</span>
-              </a>
+              </a> -->
             </div>
 
             <!-- tags -->

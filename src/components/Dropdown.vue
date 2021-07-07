@@ -18,6 +18,9 @@ export default {
       required: true,
       validator: arr => arr && arr.every(option => option.id != null && option.text != null),
     },
+    placeholder: {
+      type: String,
+    },
   },
   emits: ['update:modelValue'],
   data() {
@@ -25,12 +28,15 @@ export default {
       active: false,
     }
   },
+  computed: {
+    labelFormatted() {
+      const id = this.modelValue ?? this.defaultValue
+      return this.label || this.options.find(option => option.id === id)?.text
+    },
+  },
   methods: {
     close() {
       this.active = false
-    },
-    getLabel(id) {
-      return this.options.find(option => option.id === id)?.text
     },
   }
 }
@@ -58,7 +64,7 @@ export default {
     </div>
 
     <!-- link -->
-    <a @click.prevent.stop="active = !active" v-click-outside="close" :class="{ 'is-primary': active }" class="primary-hover no-user-select" :style="labelStyle">{{ label || getLabel(modelValue ?? defaultValue) }}</a>
+    <a @click.prevent.stop="active = !active" v-click-outside="close" :class="{ 'is-primary': active }" class="primary-hover no-user-select" :style="labelStyle">{{ labelFormatted || placeholder }}</a>
   </div>
 
 </template>
