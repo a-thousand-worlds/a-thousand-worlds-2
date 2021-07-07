@@ -285,21 +285,24 @@ export default {
         <a @click.prevent="$router.back" class="is-uppercase is-primary">&lt; Back</a>
       </div>
 
-      <h1 class="title divider-bottom mb-30">Books Manager</h1>
+      <div class="is-flex is-justify-content-space-between is-align-items-flex-end divider-bottom">
+        <h1 class="title mb-0" style="display: inline;">Books Manager</h1>
+
+        <!-- EDIT/DONE link -->
+        <span style="white-space: nowrap; line-height: 55px;">
+          <Loader v-if="loadingEditMode" class="mr-1" style="display: inline-block; width: 1em; height: 1em;" />
+          <a @click.prevent="toggleEditMode">
+            {{ editMode ? 'DONE' : 'EDIT' }}
+          </a>
+        </span>
+
+      </div>
 
       <div class="mb-30 is-flex is-justify-content-space-between">
         <div>
           <router-link class="mr-20" :to="{ name:'TagsManager' }" style="color: black; line-height: 2.5;">Book Tags</router-link>
         </div>
         <div class="is-flex is-align-items-center">
-
-          <!-- EDIT/DONE link -->
-          <span style="white-space: nowrap;">
-            <Loader v-if="loadingEditMode" class="mr-1" style="display: inline-block; width: 1em; height: 1em;" />
-            <a @click.prevent="toggleEditMode" class="mr-40">
-              {{ editMode ? 'DONE' : 'EDIT' }}
-            </a>
-          </span>
 
           <!-- # books -->
           <span v-if="loaded" class="mr-40" style="white-space: nowrap">{{ books.length }} book{{ books.length === 1 ? '' : 's' }} <span v-if="search">(filtered)</span></span>
