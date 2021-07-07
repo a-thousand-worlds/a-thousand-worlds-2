@@ -327,7 +327,7 @@ export default {
 
               <!-- created -->
               <td class="has-text-right">
-                <HighlightedText field="created" :search="search">
+                <HighlightedText field="created" :search="search" style="opacity: 0.5;">
                   {{ formatDate(person.created) }}
                 </HighlightedText>
               </td>
