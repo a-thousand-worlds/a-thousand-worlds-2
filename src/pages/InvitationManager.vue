@@ -26,7 +26,7 @@ export default {
       // eslint-disable-next-line fp/no-mutating-methods
       return Object.values(this.invites)
         .filter(invite => !invite.used && !invite.cancelled)
-        .sort(compareBy('created', 'desc'))
+        .sort(compareBy('createdAt', 'desc'))
     },
     acceptedInvites() {
       // eslint-disable-next-line fp/no-mutating-methods

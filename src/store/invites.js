@@ -72,7 +72,7 @@ const module = mergeOne(collectionModule('invites'), {
         if (!invites[code]) {
           invites[code] = {
             code,
-            created: Date.now(),
+            createdAt: Date.now(),
             email,
             firstName,
             lastName,

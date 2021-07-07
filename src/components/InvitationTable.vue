@@ -6,9 +6,9 @@ export default {
     invites: Array,
     fields: {
       type: Array,
-      default: () => ['created', 'email', 'firstName', 'lastName', 'role'],
+      default: () => ['createdAt', 'email', 'firstName', 'lastName', 'role'],
       // possible values
-      // ['created', 'used', 'cancelled', 'email', 'firstName', 'lastName', 'role', 'resend', 'cancel'],
+      // ['createdAt', 'used', 'cancelled', 'email', 'firstName', 'lastName', 'role', 'resend', 'cancel'],
     }
   },
   emits: ['cancel', 'resend'],
@@ -36,7 +36,7 @@ export default {
     date(invite) {
       const dateField = this.fields.includes('cancelled') ? 'cancelled'
         : this.fields.includes('used') ? 'used'
-        : 'created'
+        : 'createdAt'
       return invite[dateField]
         ? this.format(invite[dateField])
         : null

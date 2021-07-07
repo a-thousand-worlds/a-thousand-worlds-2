@@ -36,7 +36,7 @@ export default {
     Tag,
   },
   data() {
-    const sortField = this.$route.query?.sort || 'created'
+    const sortField = this.$route.query?.sort || 'submitted'
     return {
       creatorTitles,
       editMode: false,
@@ -45,7 +45,7 @@ export default {
       search: this.$route.query?.search || '',
       sortConfig: {
         field: sortField,
-        dir: this.$route.query?.dir || (sortField === 'created' ? 'desc' : 'asc'),
+        dir: this.$route.query?.dir || (sortField === 'submitted' ? 'desc' : 'asc'),
       },
     }
   },
@@ -62,9 +62,9 @@ export default {
       const sort = people => {
         const sorted = sortBy(people, [
           person => this.sortConfig.field === 'title' ? sortEmptyToEnd((person.title || person.role || '').toLowerCase(), this.sortConfig.dir)
-          : this.sortConfig.field === 'created' ? dayjs(person.created)
+          : this.sortConfig.field === 'submitted' ? dayjs(person.createdAt)
           : this.sortConfig.field === 'tags' ? sortEmptyToEnd(this.getTags(person).map(tag => tag.tag).join(' '), this.sortConfig.dir)
-          : this.sortConfig.field === 'updated' ? dayjs(person.updated)
+          : this.sortConfig.field === 'updated' ? dayjs(person.updatedAt)
           : (person[this.sortConfig.field] || '').toLowerCase(),
           'nameLower'
         ])
@@ -123,7 +123,7 @@ export default {
   methods: {
 
     formatDate(d) {
-      return dayjs(d).format('M/D/YYYY hh:mm')
+      return d ? dayjs(d).format('M/D/YYYY hh:mm') : null
     },
 
     formatTitle(person) {
@@ -154,7 +154,7 @@ export default {
       // map fields to formating functions
       const format = {
         name: person.name,
-        created: this.formatDate(person.created),
+        submitted: this.formatDate(person.createdAt),
         title: this.formatTitle(person),
         tag: this.getTags(person).map(tag => tag.tag).join(' ')
       }
@@ -276,7 +276,7 @@ export default {
               <SortableTableHeading id="nameLower" v-model="sortConfig">Name</SortableTableHeading>
               <SortableTableHeading id="tags" v-model="sortConfig">Tags</SortableTableHeading>
               <SortableTableHeading id="title" v-model="sortConfig">Title</SortableTableHeading>
-              <SortableTableHeading id="created" v-model="sortConfig" default="desc" class="has-text-right pr-20">Created</SortableTableHeading>
+              <SortableTableHeading id="createdAt" v-model="sortConfig" default="desc" class="has-text-right pr-20">Submitted</SortableTableHeading>
               <th class="has-text-right">Delete</th>
             </tr>
           </thead>
@@ -353,10 +353,10 @@ export default {
                 </HighlightedText>
               </td>
 
-              <!-- created -->
+              <!-- submitted (createdAt) -->
               <td class="has-text-right">
-                <HighlightedText field="created" :search="search" style="opacity: 0.5;">
-                  {{ formatDate(person.created) }}
+                <HighlightedText field="submitted" :search="search" style="opacity: 0.5;">
+                  {{ formatDate(person.createdAt) }}
                 </HighlightedText>
               </td>
 

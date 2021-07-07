@@ -38,7 +38,7 @@ export default {
     Tag,
   },
   data() {
-    const sortField = this.$route.query?.sort || 'createdAt'
+    const sortField = this.$route.query?.sort || 'submitted'
     return {
       creatorTitles,
       editMode: false,
@@ -47,7 +47,7 @@ export default {
       search: this.$route.query?.search || '',
       sortConfig: {
         field: sortField,
-        dir: this.$route.query?.dir || (sortField === 'createdAt' ? 'desc' : 'asc'),
+        dir: this.$route.query?.dir || (sortField === 'submitted' ? 'desc' : 'asc'),
       },
     }
   },
@@ -209,7 +209,7 @@ export default {
       const format = {
         author: this.formatAuthors(book.creators),
         contributor: this.formatContributor(book.createdBy),
-        created: this.formatDate(book.createdAt),
+        submitted: this.formatDate(book.createdAt),
         illustrator: this.formatIllustrators(book.creators),
         isbn: book.isbn,
         tag: this.getTags(book).map(tag => tag.tag).join(' '),
@@ -337,7 +337,7 @@ export default {
               <SortableTableHeading id="illustrators" v-model="sortConfig">Illustrator(s)</SortableTableHeading>
               <SortableTableHeading id="contributor" v-model="sortConfig">Contributor</SortableTableHeading>
               <SortableTableHeading id="year" v-model="sortConfig" default="desc" class="has-text-right">Published</SortableTableHeading>
-              <SortableTableHeading id="createdAt" v-model="sortConfig" default="desc" class="has-text-right">Created</SortableTableHeading>
+              <SortableTableHeading id="submitted" v-model="sortConfig" default="desc" class="has-text-right">Submitted</SortableTableHeading>
               <th class="has-text-right">Delete</th>
             </tr>
           </thead>
@@ -444,9 +444,9 @@ export default {
                 </HighlightedText>
               </td>
 
-              <!-- created at -->
+              <!-- submitted (createdAt) -->
               <td class="has-text-right">
-                <HighlightedText field="created" :search="search" style="opacity: 0.5">
+                <HighlightedText field="submitted" :search="search" style="opacity: 0.5">
                   {{ formatDate(book.createdAt) }}
                 </HighlightedText>
               </td>

@@ -14,7 +14,7 @@ export default {
       bundle: {
         id: null,
         books: {},
-        created: '',
+        createdAt: '',
         curator: '',
         description: '',
         name: '',

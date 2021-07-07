@@ -22,12 +22,12 @@ export default {
     CoverImage,
   },
   data() {
-    const sortField = this.$route.query?.sort || 'created'
+    const sortField = this.$route.query?.sort || 'submitted'
     return {
       search: this.$route.query?.search || '',
       sortConfig: {
         field: sortField,
-        dir: this.$route.query?.dir || (sortField === 'created' ? 'desc' : 'asc'),
+        dir: this.$route.query?.dir || (sortField === 'submitted' ? 'desc' : 'asc'),
       },
     }
   },
@@ -44,8 +44,8 @@ export default {
       const sort = list => {
         const sorted = sortBy(list, [
           bundle => this.sortConfig.field === 'title' ? sortEmptyToEnd((bundle.title || bundle.role || '').toLowerCase(), this.sortConfig.dir)
-          : this.sortConfig.field === 'created' ? dayjs(bundle.created)
-          : this.sortConfig.field === 'updated' ? dayjs(bundle.updated)
+          : this.sortConfig.field === 'submitted' ? dayjs(bundle.createdAt)
+          : this.sortConfig.field === 'updated' ? dayjs(bundle.updatedAt)
           : (bundle[this.sortConfig.field] || '').toLowerCase(),
           'nameLower'
         ])
@@ -55,7 +55,7 @@ export default {
       // filter bundles by the active search
       const filter = list => this.search
         ? list.filter(bundle => diacritics([
-          bundle.created,
+          bundle.createdAt,
           bundle.name,
           bundle.title,
           bundle.role,
@@ -161,7 +161,7 @@ export default {
               <td />
               <SortableTableHeading id="nameLower" v-model="sortConfig">Name</SortableTableHeading>
               <SortableTableHeading id="title" v-model="sortConfig">Title</SortableTableHeading>
-              <SortableTableHeading id="created" v-model="sortConfig" default="desc" class="has-text-right pr-20">Created</SortableTableHeading>
+              <SortableTableHeading id="submitted" v-model="sortConfig" default="desc" class="has-text-right pr-20">Created</SortableTableHeading>
               <th class="has-text-right">Delete</th>
             </tr>
           </thead>
@@ -182,8 +182,8 @@ export default {
               <!-- title -->
               <td>{{ bundle.title || bundle.role }}</td>
 
-              <!-- created -->
-              <td class="has-text-right">{{ formatDate(bundle.created) }}</td>
+              <!-- submitted -->
+              <td class="has-text-right">{{ formatDate(bundle.submitted) }}</td>
 
               <!-- edit/delete -->
               <td class="has-text-right">

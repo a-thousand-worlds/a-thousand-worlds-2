@@ -10,7 +10,7 @@ export default {
   },
   computed: {
     books() {
-      return reverse(sortBy(this.$store.getters['books/list'](), 'created'))
+      return reverse(sortBy(this.$store.getters['books/list'](), 'createdAt'))
     },
   },
 }
