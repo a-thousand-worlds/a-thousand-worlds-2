@@ -292,16 +292,23 @@ export default {
           <router-link class="mr-20" :to="{ name:'TagsManager' }" style="color: black; line-height: 2.5;">Book Tags</router-link>
         </div>
         <div class="is-flex is-align-items-center">
+
+          <!-- EDIT/DONE link -->
           <span style="white-space: nowrap;">
             <Loader v-if="loadingEditMode" class="mr-1" style="display: inline-block; width: 1em; height: 1em;" />
             <a @click.prevent="toggleEditMode" class="mr-40">
               {{ editMode ? 'DONE' : 'EDIT' }}
             </a>
           </span>
+
+          <!-- # books -->
           <span v-if="loaded" class="mr-40" style="white-space: nowrap">{{ books.length }} book{{ books.length === 1 ? '' : 's' }} <span v-if="search">(filtered)</span></span>
+
+          <!-- search -->
           <span class="has-text-right" v-tippy="{ content: `Search all books. Use 'field:value' to filter by a specific field, e.g. 'illustrator:Ho'` }" style="white-space: nowrap;"><i class="far fa-question-circle" /></span>
           <i class="fas fa-search" style="transform: translateX(23px); z-index: 10; opacity: 0.3;" />
           <input v-model="search" placeholder="Search" class="input pl-30">
+
         </div>
       </div>
 
@@ -356,7 +363,19 @@ export default {
 
               <!-- tags -->
               <td>
-                <Tag v-for="tag of getTags(book)" :key="tag.id" :tag="tag" type="books" @click="editMode ? null : toggleTagSearch" @removeBook="updateBook(book, 'tags', { [tag.id]: null })" nolink :editable="editMode" :button-class="{ 'is-outlined': true, pointer: !editMode }"><HighlightedText field="tag" :search="search">{{ tag.tag }}</HighlightedText></Tag>
+                <Tag
+                  v-for="tag of getTags(book)"
+                  :key="tag.id"
+                  :tag="tag"
+                  type="books"
+                  @click="editMode ? null : toggleTagSearch"
+                  @remove="updateBook(book, 'tags', { [tag.id]: null })"
+                  nolink
+                  :editable="editMode"
+                  :button-class="{ 'is-outlined': true, pointer: !editMode }"
+                >
+                  <HighlightedText field="tag" :search="search">{{ tag.tag }}</HighlightedText>
+                </Tag>
                 <AddTag v-if="editMode" type="books" :item="book" />
               </td>
 

@@ -6,12 +6,13 @@ import dayjs from 'dayjs'
 import { remove as diacritics } from 'diacritics'
 import creatorTitles from '@/store/constants/creatorTitles'
 
+import AddTag from '@/components/AddTag'
+import CoverImage from '@/components/CoverImage'
 import DeletePersonButton from '@/components/DeletePersonButton'
 import HighlightedText from '@/components/HighlightedText'
 import Loader from '@/components/Loader'
 import PersonDetailLink from '@/components/PersonDetailLink'
 import SortableTableHeading from '@/components/SortableTableHeading'
-import CoverImage from '@/components/CoverImage'
 import Tag from '@/components/Tag'
 
 /** Generates a sort token that will sort empty strings to the end regardless of sort direction. */
@@ -21,18 +22,22 @@ const sortEmptyToEnd = (s, dir) =>
 export default {
   name: 'PeopleManager',
   components: {
+    AddTag,
+    CoverImage,
     DeletePersonButton,
     HighlightedText,
     Loader,
     PersonDetailLink,
     SortableTableHeading,
-    CoverImage,
     Tag,
   },
   data() {
     const sortField = this.$route.query?.sort || 'created'
     return {
       creatorTitles,
+      editMode: false,
+      // edit mode takes is slow to render, so show a Loader during the delay
+      loadingEditMode: false,
       search: this.$route.query?.search || '',
       sortConfig: {
         field: sortField,
@@ -157,6 +162,15 @@ export default {
           .some(s => this.isMatch(s, searchValue))
     },
 
+    toggleEditMode() {
+      // show a loader while edit mode is rendering
+      this.loadingEditMode = true
+      setTimeout(() => {
+        this.editMode = !this.editMode
+        this.loadingEditMode = false
+      })
+    },
+
     toggleTagSearch(tag) {
       const term = `tag:${tag.tag}`
 
@@ -168,6 +182,32 @@ export default {
         this.search = term
         // this.search = `${this.search} ${term}`.trim()
       }
+    },
+
+    updatePerson(person, field, value) {
+      if (value === undefined) {
+        value = field
+        field = ''
+      }
+
+      // console.log('field', field)
+      // console.log('value', value)
+
+      // do not update if the field is not changed
+      // handle field embedded in complex value, e.g. field === '' and value === { isbn: '1419742256' }
+      if (person[field] === value) return
+      const extractedField = field === '' && Object.keys(value).length === 1 && Object.keys(value)[0]
+      if (extractedField && person[extractedField] === value[extractedField]) return
+
+      // console.log('update', {
+      //   path: `${person.id}/${field}`,
+      //   value,
+      // })
+
+      this.$store.dispatch('people/update', {
+        path: `${person.id}/${field}`,
+        value,
+      })
     },
 
   },
@@ -191,10 +231,23 @@ export default {
           <router-link class="mr-20" :to="{ name:'TagsManager', query: { active: 'people' } }" style="color: black; line-height: 2.5;">People Tags</router-link>
         </div>
         <div class="is-flex is-align-items-center">
+
+          <!-- EDIT/DONE link -->
+          <span style="white-space: nowrap;">
+            <Loader v-if="loadingEditMode" class="mr-1" style="display: inline-block; width: 1em; height: 1em;" />
+            <a @click.prevent="toggleEditMode" class="mr-40">
+              {{ editMode ? 'DONE' : 'EDIT' }}
+            </a>
+          </span>
+
+          <!-- # creators -->
           <span v-if="loaded" class="mr-40" style="white-space: nowrap">{{ people.length }} creator{{ people.length === 1 ? '' : 's' }} <span v-if="search">(filtered)</span></span>
+
+          <!-- search -->
           <span class="has-text-right" v-tippy="{ content: `Search all creators. Use 'field:value' to filter by a specific field, e.g. 'tag:Asian'` }" style="white-space: nowrap;"><i class="far fa-question-circle" /></span>
           <i class="fas fa-search" style="transform: translateX(23px); z-index: 10; opacity: 0.3;" />
           <input v-model="search" placeholder="Search" class="input pl-30">
+
         </div>
       </div>
 
@@ -240,7 +293,20 @@ export default {
 
               <!-- tags -->
               <td>
-                <Tag v-for="tag of getTags(person)" :key="tag.id" :tag="tag" type="people" @click="toggleTagSearch" nolink button-class="is-outlined pointer"><HighlightedText field="tag" :search="search">{{ tag.tag }}</HighlightedText></Tag>
+                <Tag
+                  v-for="tag of getTags(person)"
+                  :key="tag.id"
+                  :tag="tag"
+                  type="people"
+                  @click="editMode ? null : toggleTagSearch"
+                  @remove="updatePerson(person, 'identities', { [tag.id]: null })"
+                  nolink
+                  :editable="editMode"
+                  :button-class="{ 'is-outlined': true, pointer: !editMode }"
+                >
+                  <HighlightedText field="tag" :search="search">{{ tag.tag }}</HighlightedText>
+                </Tag>
+                <AddTag v-if="editMode" type="people" :item="person" />
               </td>
 
               <!-- title -->
@@ -250,7 +316,6 @@ export default {
               <td class="has-text-right"><HighlightedText field="created" :search="search">{{ formatDate(person.created) }}</HighlightedText></td>
 
               <!-- delete -->
-              <!-- disable until better syncing of books and user account is implemented -->
               <td class="has-text-right">
                 <div class="field is-grouped is-justify-content-flex-end">
                   <p class="control">
