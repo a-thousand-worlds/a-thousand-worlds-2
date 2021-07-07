@@ -9,6 +9,7 @@ import creatorTitles from '@/store/constants/creatorTitles'
 import AddTag from '@/components/AddTag'
 import CoverImage from '@/components/CoverImage'
 import DeletePersonButton from '@/components/DeletePersonButton'
+import Dropdown from '@/components/Dropdown'
 import HighlightedText from '@/components/HighlightedText'
 import Loader from '@/components/Loader'
 import PersonDetailLink from '@/components/PersonDetailLink'
@@ -25,6 +26,7 @@ export default {
     AddTag,
     CoverImage,
     DeletePersonButton,
+    Dropdown,
     HighlightedText,
     Loader,
     PersonDetailLink,
@@ -287,7 +289,9 @@ export default {
               <!-- name -->
               <td>
                 <PersonDetailLink :person="person" edit>
-                  <HighlightedText field="name" :search="search">{{ person.name }}</HighlightedText>
+                  <HighlightedText field="name" :search="search">
+                    {{ person.name }}
+                  </HighlightedText>
                 </PersonDetailLink>
               </td>
 
@@ -304,16 +308,29 @@ export default {
                   :editable="editMode"
                   :button-class="{ 'is-outlined': true, pointer: !editMode }"
                 >
-                  <HighlightedText field="tag" :search="search">{{ tag.tag }}</HighlightedText>
+                  <HighlightedText field="tag" :search="search">
+                    {{ tag.tag }}
+                  </HighlightedText>
                 </Tag>
                 <AddTag v-if="editMode" type="people" :item="person" />
               </td>
 
               <!-- title -->
-              <td><HighlightedText field="title" :search="search">{{ formatTitle(person) }}</HighlightedText></td>
+              <td>
+
+                <Dropdown v-if="person.title && editMode" :defaultValue="person.title" labelStyle="font-weight: bold;" :options="creatorTitles" @update:modelValue="updatePerson(person, '', { title: $event })" style="display: inline;" />
+
+                <HighlightedText v-else field="title" :search="search">
+                  {{ formatTitle(person) }}
+                </HighlightedText>
+              </td>
 
               <!-- created -->
-              <td class="has-text-right"><HighlightedText field="created" :search="search">{{ formatDate(person.created) }}</HighlightedText></td>
+              <td class="has-text-right">
+                <HighlightedText field="created" :search="search">
+                  {{ formatDate(person.created) }}
+                </HighlightedText>
+              </td>
 
               <!-- delete -->
               <td class="has-text-right">

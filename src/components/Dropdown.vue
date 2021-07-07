@@ -5,10 +5,13 @@ export default {
       type: String,
     },
     labelStyle: {},
-    // selected option id
+    // Unbinded initial selected id
+    defaultValue: {
+      type: String,
+    },
+    // Bound initial selected id
     modelValue: {
       type: String,
-      required: true
     },
     options: {
       type: Array,
@@ -46,7 +49,7 @@ export default {
           <slot name="beforeOptions" />
 
           <!-- options -->
-          <a v-for="option in options" :key="option.id" class="dropdown-item is-capitalized" @click.prevent="$emit('update:modelValue', option.id)" :class="{ selected: modelValue === option?.id }">
+          <a v-for="option in options" :key="option.id" class="dropdown-item is-capitalized" @click.prevent="$emit('update:modelValue', option.id)" :class="{ selected: (modelValue ?? defaultValue) === option?.id }">
             {{ option.text }}
           </a>
 
@@ -55,7 +58,7 @@ export default {
     </div>
 
     <!-- link -->
-    <a @click.prevent.stop="active = !active" v-click-outside="close" :class="{ 'is-primary': active }" class="primary-hover no-user-select" :style="labelStyle">{{ label || getLabel(modelValue) }}</a>
+    <a @click.prevent.stop="active = !active" v-click-outside="close" :class="{ 'is-primary': active }" class="primary-hover no-user-select" :style="labelStyle">{{ label || getLabel(modelValue ?? defaultValue) }}</a>
   </div>
 
 </template>
