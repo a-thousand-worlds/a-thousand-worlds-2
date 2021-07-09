@@ -5,6 +5,7 @@ import Content from '@/components/Content'
 import HeartIcon from '@/assets/icons/heart.svg'
 
 const PaypalButtons = {
+  any: process.env.VUE_APP_SUPPORT_PAYPAL_ANY,
   3: process.env.VUE_APP_SUPPORT_PAYPAL_3,
   5: process.env.VUE_APP_SUPPORT_PAYPAL_5,
   7: process.env.VUE_APP_SUPPORT_PAYPAL_7,
@@ -30,7 +31,7 @@ export default {
   },
   data: () => ({
     PaypalButtons,
-    monthly: null,
+    monthly: 'any',
   }),
   computed: {
     btcAddress: () => process.env.VUE_APP_SUPPORT_BITCOIN || null
@@ -82,7 +83,11 @@ export default {
       <h3 class="is-uppercase divider-bottom mt-6">One-time donation</h3>
       <p>You can also support with a one-time donation in any time</p>
       <div class="field">
-        <button class="button is-primary is-uppercase is-rounded mt-2">Give now</button>
+        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" class="field">
+          <input type="hidden" name="cmd" value="_s-xclick">
+          <input type="hidden" name="hosted_button_id" :value="PaypalButtons.any">
+          <button type="submit" class="button is-primary is-uppercase is-rounded mt-2">Give now</button>
+        </form>
       </div>
       <div v-if="btcAddress">
         <h3 class="is-uppercase divider-bottom mt-6">Donate with bitcoins</h3>
@@ -94,10 +99,10 @@ export default {
       <h2>Participate</h2>
       <h3 class="is-uppercase divider-bottom">Submit a book recommendation</h3>
       <div class="field">
-        <button class="button is-primary is-uppercase is-rounded">You are a BIPOC Leader</button>
+        <button @click="$router.push({name: 'Contact', query: { subject: 'I am a BIPOC Leader in the book industry' }})" class="button is-primary is-uppercase is-rounded">You are a BIPOC Leader</button>
       </div>
       <div class="field">
-        <button class="button is-primary is-uppercase is-rounded mt-2">You know a BIPOC Leader</button>
+        <button @click="$router.push({name: 'Contact', query: { subject: 'Nominate BIPOC Leader(s) to A Thousand Worlds' }})" class="button is-primary is-uppercase is-rounded mt-2">You know a BIPOC Leader</button>
       </div>
     </div>
   </div>

@@ -37,7 +37,7 @@ export default {
       email: query.get('email') || '',
       subject: query.get('subject') || '',
       message: query.get('message') || '',
-      dropdown: ''
+      dropdown: query.get('subject') || ''
     }
     return ret
   },
