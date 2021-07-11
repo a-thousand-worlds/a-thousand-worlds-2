@@ -70,12 +70,17 @@ export default {
   <div class="is-flex is-justify-content-center">
     <div class="is-flex-grow-1 mx-20" style="max-width: 600px; position: relative">
 
-      <h1 class="title page-title">Your Dashboard</h1>
+      <!-- page title -->
+      <h1 class="title page-title divider-bottom">
+        Your Dashboard
+      </h1>
 
+      <!-- your account -->
       <div v-if="!hasPendingContributorProfile" class="header-options mr-10">
         <router-link :to="{ name: 'Account' }" style="color: black;">Your Account</router-link>
       </div>
 
+      <!-- loader -->
       <div v-if="!loaded" class="has-text-centered" style="margin-top: 20vh;">
         <Loader />
       </div>
@@ -94,12 +99,12 @@ export default {
       </section>
 
       <!-- Creator Profile Preview -->
-      <section v-if="$iam('creator')" class="section bordered-top">
+      <section v-if="$iam('creator')" class="section">
         <CreatorProfilePreview />
       </section>
 
       <!-- Submit Book or Bundle -->
-      <section v-if="$can('submitBookOrBundle')" class="section bordered-top">
+      <section v-if="$can('submitBookOrBundle')" class="section">
 
         <div v-if="$iam('contributor')">
           <ContributorProfileForm v-if="hasPendingContributorProfile" welcome />
@@ -208,12 +213,6 @@ h2.title {
 .header-options {
   display: flex;
   justify-content: center;
-
-  @include from($desktop) {
-    position: absolute;
-    top: 35px;
-    right: 0;
-  }
 }
 
 .bordered-top {
