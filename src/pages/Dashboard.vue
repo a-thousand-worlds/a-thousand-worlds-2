@@ -86,23 +86,31 @@ export default {
         <Loader />
       </div>
 
-      <!-- Review Submissions -->
-      <section v-if="$can('review')" class="section my-30 py-0">
-        <h2>Review Submissions</h2>
-        <ReviewSubmissionsPreview />
-      </section>
+      <div v-if="submissionFormMessageCompleted">
+        <!-- Review Submissions -->
+        <section
+          v-if="$can('review')"
+          class="section my-30 py-0"
+          :class="{ 'divider-bottom': !$can('manageCollections') }"
+        >
+          <h2>Review Submissions</h2>
+          <ReviewSubmissionsPreview />
+        </section>
 
-      <!-- Manage Collections -->
-      <section v-if="$can('manageCollections')" class="section my-30 py-0">
-        <h2>Manage Collections</h2>
-        <ManageCollectionsPreview />
-        <router-link :to="{ name: 'TagsManager' }">Tags Manager</router-link>
-      </section>
+        <!-- Manage Collections -->
+        <section v-if="$can('manageCollections')" class="section my-30 py-0 divider-bottom">
+          <h2>Manage Collections</h2>
+          <ManageCollectionsPreview />
+          <div class="mb-30">
+            <router-link :to="{ name: 'TagsManager' }">Tags Manager</router-link>
+          </div>
+        </section>
 
-      <!-- Creator Profile Preview -->
-      <section v-if="$iam('creator')" class="section">
-        <CreatorProfilePreview />
-      </section>
+        <!-- Creator Profile Preview -->
+        <section v-if="$iam('creator')" class="section divider-bottom">
+          <CreatorProfilePreview />
+        </section>
+      </div>
 
       <!-- Submit Book or Bundle -->
       <section v-if="$can('submitBookOrBundle')" class="section">
@@ -160,8 +168,8 @@ export default {
             </template>
           </MessageSequence>
 
-          <h2 v-if="$can('submitPerson')">
-            Submission Forms
+          <h2>
+            {{ $can('submitPerson') ? 'Submission Forms' : 'Suggest a book' }}
             <span
               v-if="submissionFormMessageCompleted"
               @click.prevent="$refs.submissionFormMessage.toggle"
@@ -177,7 +185,6 @@ export default {
               ><i class="far fa-question-circle"
             /></span>
           </h2>
-          <h2 v-else>Suggest a book</h2>
 
           <div class="field is-grouped">
             <div class="control">
@@ -202,7 +209,10 @@ export default {
       </section>
 
       <!-- Invite -->
-      <section v-if="$can('invite') && !hasPendingContributorProfile" class="section bordered-top">
+      <section
+        v-if="$can('invite') && !hasPendingContributorProfile && submissionFormMessageCompleted"
+        class="section bordered-top"
+      >
         <h2>
           Invite Users
           <span
