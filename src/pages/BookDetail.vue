@@ -21,7 +21,9 @@ import Tag from '@/components/Tag'
 /** Gets the detail page book object. */
 const getBook = state =>
   state.books.loaded
-    ? Object.values(state.books.data).find(book => book.isbn === router.currentRoute._value.params.isbn)
+    ? Object.values(state.books.data).find(
+        book => book.isbn === router.currentRoute._value.params.isbn,
+      )
     : null
 
 export default {
@@ -47,7 +49,6 @@ export default {
     next()
   },
   setup() {
-
     /** Gets the social title for the book. */
     const getTitle = state => {
       const book = getBook(state)
@@ -75,8 +76,9 @@ export default {
     /** Generates a written phrase of the creators of a book. */
     const creatorsPhrase = (state, book) => {
       if (!book) return ''
-      const names = sortBy(Object.keys(book.creators || {}), id => book.creators[id])
-        .map(id => state.people.data?.[id].name)
+      const names = sortBy(Object.keys(book.creators || {}), id => book.creators[id]).map(
+        id => state.people.data?.[id].name,
+      )
       return writtenList(names)
     }
 
@@ -96,10 +98,18 @@ export default {
       ],
     })
 
-    watchEffect(() => store.dispatch('structuredData/set', { path: 'description', value: descriptionComputed.value }))
-    watchEffect(() => store.dispatch('structuredData/set', { path: 'image.url', value: imageComputed.value }))
-    watchEffect(() => store.dispatch('structuredData/set', { path: 'headline', value: titleComputed.value }))
-
+    watchEffect(() =>
+      store.dispatch('structuredData/set', {
+        path: 'description',
+        value: descriptionComputed.value,
+      }),
+    )
+    watchEffect(() =>
+      store.dispatch('structuredData/set', { path: 'image.url', value: imageComputed.value }),
+    )
+    watchEffect(() =>
+      store.dispatch('structuredData/set', { path: 'headline', value: titleComputed.value }),
+    )
   },
   data() {
     return {
@@ -160,19 +170,15 @@ export default {
     },
   },
 }
-
 </script>
 
 <template>
-
   <teleport to="#books-filter-menu">
     <Filter type="books" />
   </teleport>
 
   <div class="book-detail" :data-book-id="book?.id">
-
     <div class="columns mb-5">
-
       <div class="column is-narrow">
         <a @click.prevent="$router.back" class="is-uppercase is-primary">&lt; Back</a>
       </div>
@@ -181,27 +187,43 @@ export default {
     </div>
 
     <div class="columns">
-
       <div class="column column1 mr-0 is-two-fifths">
         <div v-if="book">
           <div class="book-cover-wrapper text-centered mb-20">
-            <a @click.prevent="adminEditClick" :style="{ cursor: editOnClick ? 'context-menu' : 'default' }"><LazyImage class="cover" :src="book.cover" /></a>
+            <a
+              @click.prevent="adminEditClick"
+              :style="{ cursor: editOnClick ? 'context-menu' : 'default' }"
+              ><LazyImage class="cover" :src="book.cover"
+            /></a>
           </div>
           <div class="tags">
-            <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="books" button-class="is-outlined" />
+            <Tag
+              v-for="tag of tags"
+              :key="tag.id"
+              :tag="tag"
+              type="books"
+              button-class="is-outlined"
+            />
           </div>
         </div>
       </div>
 
       <div class="column">
-
         <div v-if="!$store.state.books.loaded" class="my-50">
           <Loader />
         </div>
         <div v-else-if="book">
           <div class="title-container divider-bottom is-flex is-justify-content-space-between">
             <h1 class="title">
-              <a @click.prevent="adminEditClick" style="color: inherit;" :style="{ cursor: editOnClick ? 'context-menu' : 'default', 'user-select': editOnClick ? 'none' : null }">{{ book.title }}</a>
+              <a
+                @click.prevent="adminEditClick"
+                style="color: inherit"
+                :style="{
+                  cursor: editOnClick ? 'context-menu' : 'default',
+                  'user-select': editOnClick ? 'none' : null,
+                }"
+                >{{ book.title }}</a
+              >
             </h1>
             <!-- set padding-top and height so that the icon lines up with the top of the title text and the bottom of its baseline -->
             <BookmarkButton :book="book" iconStyle="margin-top: 6.5px; height: 27px;" />
@@ -209,36 +231,43 @@ export default {
 
           <!-- use negative right margin to avoid wrapping creators until margin is used up -->
           <div class="creators divider-bottom">
-            <div class=" is-flex is-flex-wrap-wrap" style="margin-right: -30px;">
-              <CreatorCard v-for="id in creators" :key="id" :id="id" :role="book.creators[id]" class="mb-20 mr-30" style="min-width: 33%;" />
+            <div class="is-flex is-flex-wrap-wrap" style="margin-right: -30px">
+              <CreatorCard
+                v-for="id in creators"
+                :key="id"
+                :id="id"
+                :role="book.creators[id]"
+                class="mb-20 mr-30"
+                style="min-width: 33%"
+              />
             </div>
           </div>
 
           <!-- summary is edited with ckeditor and may contain html -->
           <p class="summary" :innerHTML="book.summary || book.description" />
 
-          <RecommendedBy v-if="book.createdBy" v-model="book.createdBy" class="mt-10" style="font-size: 16px;" />
-
+          <RecommendedBy
+            v-if="book.createdBy"
+            v-model="book.createdBy"
+            class="mt-10"
+            style="font-size: 16px"
+          />
         </div>
         <div v-else>
           <NotFound />
         </div>
-
       </div>
-
     </div>
 
     <!-- Add a bottom spacer so that fixed position footer clears content when scrolled to the bottom. -->
     <div class="mb-7" />
-
   </div>
 
   <BookDetailFooter v-if="book" :book="book" />
-
 </template>
 
 <style lang="scss" scoped>
-@import "bulma/sass/utilities/_all.sass";
+@import 'bulma/sass/utilities/_all.sass';
 @import '@/assets/style/vars.scss';
 
 .book-detail {
@@ -278,5 +307,4 @@ export default {
   font-size: 16px;
   line-height: 1.75;
 }
-
 </style>

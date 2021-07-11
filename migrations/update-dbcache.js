@@ -31,7 +31,9 @@ const cacheDatabase = async db => {
   const tagsBundles = await loadCollection(db, 'tags/bundles')
   const people = await loadCollection(db, 'people')
   const users = await loadCollection(db, 'users')
-  const contributors = Object.values(users).filter(user => user.roles && (user.roles.contributor || user.roles.owner))
+  const contributors = Object.values(users).filter(
+    user => user.roles && (user.roles.contributor || user.roles.owner),
+  )
   const content = await loadCollection(db, 'content')
 
   return {
@@ -40,10 +42,10 @@ const cacheDatabase = async db => {
     tags: {
       books: tagsBooks,
       people: tagsPeople,
-      bundles: tagsBundles
+      bundles: tagsBundles,
     },
     contributors,
-    content
+    content,
   }
 }
 
@@ -60,7 +62,7 @@ const initFirebase = () => {
     storageBucket: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET,
     messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID,
     appId: process.env.VUE_APP_FIREBASE_APP_ID,
-    measurementId: process.env.VUE_APP_FIREBASE_MEASURMENT_ID
+    measurementId: process.env.VUE_APP_FIREBASE_MEASURMENT_ID,
   }
   firebase.initializeApp(firebaseConfig)
   return firebase
@@ -76,8 +78,7 @@ const go = async () => {
   let credentials = null
   try {
     credentials = await firebase.auth().signInWithEmailAndPassword(usr, pwd)
-  }
-  catch (err) {
+  } catch (err) {
     credentials = null
   }
   if (!credentials) {
@@ -90,10 +91,12 @@ const go = async () => {
   db.cacheDate = new Date()
 
   // collect books covers to cache
-  const cacheBooks = Object.values(db.books).map(book => {
-    if (!book || !book.cover || !book.cover.url) return null
-    return book
-  }).filter(x => !!x)
+  const cacheBooks = Object.values(db.books)
+    .map(book => {
+      if (!book || !book.cover || !book.cover.url) return null
+      return book
+    })
+    .filter(x => !!x)
 
   // create images directory if not exists
   if (!fs.existsSync('./public/img')) {
@@ -101,15 +104,18 @@ const go = async () => {
   }
 
   // download cover images
-  await Promise.all(cacheBooks.map(book => {
-    // updating cached db cuz we need calculate later hash of file with cached urls
-    const cacheUrl = `/img/${book.id}.png`
-    const localPath = `./public/img/${book.id}.png`
-    db.books[book.id].cover.cache = cacheUrl
-    console.log(`downloading book cover <${book.title}> id: <${book.id}>`)
-    return axios.get(book.cover.url, { responseType: 'arraybuffer' })
-      .then(res => fs.writeFileSync(localPath, Buffer.from(res.data)))
-  }))
+  await Promise.all(
+    cacheBooks.map(book => {
+      // updating cached db cuz we need calculate later hash of file with cached urls
+      const cacheUrl = `/img/${book.id}.png`
+      const localPath = `./public/img/${book.id}.png`
+      db.books[book.id].cover.cache = cacheUrl
+      console.log(`downloading book cover <${book.title}> id: <${book.id}>`)
+      return axios
+        .get(book.cover.url, { responseType: 'arraybuffer' })
+        .then(res => fs.writeFileSync(localPath, Buffer.from(res.data)))
+    }),
+  )
 
   const dbCacheJs = `window.dbcache = ${JSON.stringify(db)}`
   fs.writeFileSync('./public/dbcache.js', dbCacheJs)

@@ -6,8 +6,11 @@ const linkCreatorInBio = person => {
   const isAlreadyLinked = !!matches?.[1]
   return isAlreadyLinked
     ? person.bio
-    // custom attributes and classes are stripped by CKEditor
-    : person.bio.replace(person.name, `<a href="${person.website}" target="_blank">${person.name}</a>`)
+    : // custom attributes and classes are stripped by CKEditor
+      person.bio.replace(
+        person.name,
+        `<a href="${person.website}" target="_blank">${person.name}</a>`,
+      )
 }
 
 export default linkCreatorInBio

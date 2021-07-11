@@ -14,7 +14,6 @@ const watchBooks = functions
   })
   .database.ref('/books/{id}')
   .onUpdate(async (change, context) => {
-
     const snap = change.after
     const book = snap.val()
     if (book.findingCover === true) {
@@ -33,16 +32,21 @@ const watchBooks = functions
     if (attempts >= 5) {
       const project = functions.config().project
       // let's send notification email to project admin
-      const mail = await sendEmail(project.admin_email, 'Attention! Book cover search failed!', `<p>Searching cover image for book <b>${book.title}</b> (isbn: ${book.isbn}) failed after 5 attempts!</p><p> - Sincerely, project Bot</p>`)
-      console.log(`Find cover for <${book.isbn}> failed after 5 times. Notification email send to <${project.admin_email}> with id <${mail.messageId}>`)
+      const mail = await sendEmail(
+        project.admin_email,
+        'Attention! Book cover search failed!',
+        `<p>Searching cover image for book <b>${book.title}</b> (isbn: ${book.isbn}) failed after 5 attempts!</p><p> - Sincerely, project Bot</p>`,
+      )
+      console.log(
+        `Find cover for <${book.isbn}> failed after 5 times. Notification email send to <${project.admin_email}> with id <${mail.messageId}>`,
+      )
       return
     }
     await snap.ref.child('findingCover').set(true)
     if (!cover) {
       try {
         cover = await coverImageByISBN(book.isbn, 400)
-      }
-      catch (err) {
+      } catch (err) {
         console.error('coverImageByISBN error', err)
         cover = null
       }
@@ -50,8 +54,7 @@ const watchBooks = functions
     if (cover && cover.downloadUrl) {
       try {
         cover = await loadImage(cover.downloadUrl, 400)
-      }
-      catch (err) {
+      } catch (err) {
         console.error('loadImage error', err)
         cover = null
       }
@@ -66,26 +69,24 @@ const watchBooks = functions
       const id = uid()
       const fname = `books/${context.params.id}`
       const file = await bucket.file(fname)
-      await file
-        .save(cover.buffer, {
+      await file.save(cover.buffer, {
+        metadata: {
+          contentType: 'image/png',
+          cacheControl: 'public,max-age=31536000',
           metadata: {
-            contentType: 'image/png',
-            cacheControl: 'public,max-age=31536000',
-            metadata: {
-              firebaseStorageDownloadTokens: id
-            }
-          }
-        })
+            firebaseStorageDownloadTokens: id,
+          },
+        },
+      })
       const url = getDownloadUrl(fname, bucket.name, id)
 
       await snap.ref.child('cover').set({
         url,
         width: cover.width,
-        height: cover.height
+        height: cover.height,
       })
       console.log('Book cover saved:', book.title, book.isbn, url)
-    }
-    else {
+    } else {
       await snap.ref.child('findingCoverAttemps').set(attempts + 1)
       await snap.ref.child('findingCover').remove()
       console.log('book processed without cover image', book.title, book.isbn)

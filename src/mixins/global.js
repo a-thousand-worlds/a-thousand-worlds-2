@@ -4,7 +4,10 @@ import can from '@/util/can'
 import allowedInviteeRoles from '@/util/allowedInviteeRoles'
 import store from '@/store'
 
-const withState = f => (...args) => f(store.state, ...args)
+const withState =
+  f =>
+  (...args) =>
+    f(store.state, ...args)
 
 const mixins = {
   methods: {
@@ -14,13 +17,13 @@ const mixins = {
     $dateFormat(date) {
       const d = dayjs(date)
       return d.format('D MMM YY')
-    }
+    },
   },
   computed: {
     $uiBusy() {
       return this.$store.state.ui.busy
-    }
-  }
+    },
+  },
 }
 
 export default mixins

@@ -17,13 +17,18 @@ import Tag from '@/components/Tag'
 
 /** Gets the person object from the url params. */
 const getPerson = () =>
-  store.getters['people/findBy']('name', name => slugify(name) === router.currentRoute._value.params.name)
+  store.getters['people/findBy'](
+    'name',
+    name => slugify(name) === router.currentRoute._value.params.name,
+  )
 
 /** Gets the photo url of a person. */
 const getPersonPhoto = person => {
   if (!person?.photo) return ''
-  return typeof person.photo === 'string' ? person.photo
-    : person.photo.url?.startsWith('http') ? person.photo.url
+  return typeof person.photo === 'string'
+    ? person.photo
+    : person.photo.url?.startsWith('http')
+    ? person.photo.url
     : ''
 }
 
@@ -45,7 +50,6 @@ export default {
     next()
   },
   setup() {
-
     /** Gets the social title for the person. */
     const getTitle = state => {
       const person = getPerson()
@@ -80,10 +84,18 @@ export default {
       ],
     })
 
-    watchEffect(() => store.dispatch('structuredData/set', { path: 'description', value: descriptionComputed.value }))
-    watchEffect(() => store.dispatch('structuredData/set', { path: 'image.url', value: imageComputed.value }))
-    watchEffect(() => store.dispatch('structuredData/set', { path: 'headline', value: titleComputed.value }))
-
+    watchEffect(() =>
+      store.dispatch('structuredData/set', {
+        path: 'description',
+        value: descriptionComputed.value,
+      }),
+    )
+    watchEffect(() =>
+      store.dispatch('structuredData/set', { path: 'image.url', value: imageComputed.value }),
+    )
+    watchEffect(() =>
+      store.dispatch('structuredData/set', { path: 'headline', value: titleComputed.value }),
+    )
   },
   data() {
     return {
@@ -101,11 +113,14 @@ export default {
       return linkCreatorInBio(this.person)
     },
     books() {
-      return this.person ? this.$store.getters['books/list']().filter(book =>
-        (book.authors || []).includes(this.person.name) ||
-        (book.illustrators || []).includes(this.person.name) ||
-        Object.keys(book.creators || {}).includes(this.person.id)
-      ) : []
+      return this.person
+        ? this.$store.getters['books/list']().filter(
+            book =>
+              (book.authors || []).includes(this.person.name) ||
+              (book.illustrators || []).includes(this.person.name) ||
+              Object.keys(book.creators || {}).includes(this.person.id),
+          )
+        : []
     },
     name() {
       return this.$route.params.name
@@ -161,11 +176,9 @@ export default {
     },
   },
 }
-
 </script>
 
 <template>
-
   <teleport to="#people-filter-menu">
     <Filter type="people" />
   </teleport>
@@ -174,10 +187,8 @@ export default {
     <Loader />
   </div>
   <div v-else-if="person" class="mx-5" :data-person-id="person.id">
-
     <div class="wide-page">
       <div class="columns mb-5">
-
         <div class="column is-narrow">
           <a @click.prevent="$router.back" class="is-uppercase is-primary">&lt; Back</a>
         </div>
@@ -186,21 +197,34 @@ export default {
       </div>
 
       <div class="is-flex is-flex-direction-row is-flex-wrap-wrap">
-        <div class="column-person" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
+        <div class="column-person" :class="{ 'with-bookmarks': $store.state.ui.bookmarksOpen }">
           <div class="cover-wrapper mb-20">
-            <div v-if="bgImage.length" @click.prevent="adminEditClick" class="cover-photo bg-secondary" :style="{
-              backgroundImage: `url(${bgImage})`,
-              cursor: editOnClick ? 'context-menu' : 'default',
-              'user-select': editOnClick ? 'none' : null
-            }" style="color: inherit;" />
+            <div
+              v-if="bgImage.length"
+              @click.prevent="adminEditClick"
+              class="cover-photo bg-secondary"
+              :style="{
+                backgroundImage: `url(${bgImage})`,
+                cursor: editOnClick ? 'context-menu' : 'default',
+                'user-select': editOnClick ? 'none' : null,
+              }"
+              style="color: inherit"
+            />
           </div>
 
           <div class="title-container divider-30">
-
             <!-- title -->
             <div class="name">{{ title.text }}</div>
             <h1 class="title mt-5">
-              <a @click.prevent="adminEditClick" style="color: inherit;" :style="{ cursor: editOnClick ? 'context-menu' : 'default', 'user-select': editOnClick ? 'none' : null }">{{ person.name }}</a>
+              <a
+                @click.prevent="adminEditClick"
+                style="color: inherit"
+                :style="{
+                  cursor: editOnClick ? 'context-menu' : 'default',
+                  'user-select': editOnClick ? 'none' : null,
+                }"
+                >{{ person.name }}</a
+              >
             </h1>
 
             <!-- pronouns -->
@@ -208,7 +232,13 @@ export default {
 
             <!-- tags -->
             <div v-if="tags" class="tags mt-20">
-              <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="people" button-class="is-outlined" />
+              <Tag
+                v-for="tag of tags"
+                :key="tag.id"
+                :tag="tag"
+                type="people"
+                button-class="is-outlined"
+              />
             </div>
           </div>
 
@@ -217,15 +247,12 @@ export default {
             <p class="person-bio" :innerHTML="bio" />
             <div class="divider-30 is-hidden-widescreen" />
           </div>
-
         </div>
 
-        <div class="column-books" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
+        <div class="column-books" :class="{ 'with-bookmarks': $store.state.ui.bookmarksOpen }">
           <BookListView v-for="book of books" :key="book.id" :book="book" />
         </div>
-
       </div>
-
     </div>
   </div>
 
@@ -236,11 +263,10 @@ export default {
 
   <!-- Add a bottom spacer so that fixed position footer clears content when scrolled to the bottom. -->
   <div class="mb-7" />
-
 </template>
 
 <style lang="scss" scoped>
-@import "bulma/sass/utilities/_all.sass";
+@import 'bulma/sass/utilities/_all.sass';
 @import '@/assets/style/mixins.scss';
 @import '@/assets/style/vars.scss';
 
@@ -321,7 +347,7 @@ export default {
 </style>
 
 <style lang="scss">
-.person-bio.ck.ck-editor__editable_inline>:first-child {
+.person-bio.ck.ck-editor__editable_inline > :first-child {
   margin-top: 0px;
   margin-left: 0px;
 }

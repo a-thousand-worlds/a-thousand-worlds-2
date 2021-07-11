@@ -6,7 +6,7 @@ test('case insensitive', () => {
 
 test('punctuation', () => {
   expect(almostEqual('Thousand', 'Thou-sand'))
-  expect(almostEqual('Thousand', 'Thou\'sand'))
+  expect(almostEqual('Thousand', "Thou'sand"))
   expect(almostEqual('Thousand', 'Thou_sand'))
 })
 

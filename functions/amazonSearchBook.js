@@ -6,7 +6,10 @@ const cheerio = require('cheerio')
 
 // amazon uses '+' char to separate keywords in url, not %20 encoded 'space'
 const amazonSearchUrl = keywords =>
-  `https://www.amazon.com/s?k=${keywords.split(' ').map(el => encodeURIComponent(el)).join('+')}&i=stripbooks&s=relevanceexprank&unfiltered=1&ref=sr_adv_b`
+  `https://www.amazon.com/s?k=${keywords
+    .split(' ')
+    .map(el => encodeURIComponent(el))
+    .join('+')}&i=stripbooks&s=relevanceexprank&unfiltered=1&ref=sr_adv_b`
 
 const parseSrcset = srcset => {
   if (!srcset) return null
@@ -38,14 +41,14 @@ module.exports = () => {
 
     const browser = await puppeteer.launch({
       defaultViewport: { width: 800, height: 600, deviceScaleFactor: 3 },
-      args: ['--no-sandbox']
+      args: ['--no-sandbox'],
     })
     const page = await browser.newPage()
     let result = null
     try {
       console.log('URL: ', amazonSearchUrl(keywords))
       await page.goto(amazonSearchUrl(keywords), {
-        waitUntil: 'domcontentloaded'
+        waitUntil: 'domcontentloaded',
       })
       const pageHtml = await page.content()
       const $ = cheerio.load(pageHtml)
@@ -61,8 +64,7 @@ module.exports = () => {
       })
       if (!isbn || !$el) {
         console.log('nothing found', keywords)
-      }
-      else {
+      } else {
         const $imgSpan = $('span[data-component-type="s-product-image"]', $el)
         const $a = $('a', $imgSpan)
         const bookUrl = $a.attr('href')
@@ -78,12 +80,11 @@ module.exports = () => {
             title: title.trim(),
             url: `https://amazon.com${bookUrl.split('?')[0]}`,
             isbn: isbn,
-            thumbnail: maxCover
+            thumbnail: maxCover,
           }
         }
       }
-    }
-    catch (err) {
+    } catch (err) {
       console.error('error on amazon scraping', err)
       result = null
     }

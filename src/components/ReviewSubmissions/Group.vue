@@ -21,12 +21,12 @@ export default {
       type: String,
       required: true,
       validator: value => ['books', 'bundles', 'people'].indexOf(value) !== -1,
-    }
+    },
   },
   data() {
     return {
       submitter: null,
-      submitterLoading: true
+      submitterLoading: true,
     }
   },
   computed: {
@@ -54,16 +54,19 @@ export default {
       return this.submitter.affiliations.organization
     },
     submitterOrganizationLink() {
-      if (this.submitterLoading || !this.submitter.affiliations?.organizationLink?.startsWith('http')) return null
+      if (
+        this.submitterLoading ||
+        !this.submitter.affiliations?.organizationLink?.startsWith('http')
+      )
+        return null
       return this.submitter.affiliations.organizationLink
-    }
+    },
   },
   created() {
-    this.$store.dispatch('users/loadOne', this.group.by)
-      .then(submitter => {
-        this.submitter = submitter.profile
-        this.submitterLoading = false
-      })
+    this.$store.dispatch('users/loadOne', this.group.by).then(submitter => {
+      this.submitter = submitter.profile
+      this.submitterLoading = false
+    })
   },
   methods: {
     async approveGroup() {
@@ -72,18 +75,15 @@ export default {
       this.$store.commit('ui/setBusy', false)
       this.$store.dispatch('ui/popup', 'Submission approved')
     },
-  }
+  },
 }
 </script>
 
 <template>
-
   <div>
-
-    <p v-if="!group?.[type]?.length" style="font-size: 20px;">No submissions to review</p>
+    <p v-if="!group?.[type]?.length" style="font-size: 20px">No submissions to review</p>
 
     <div v-else>
-
       <!-- approve -->
       <div v-if="status !== 'approved'">
         <button
@@ -91,7 +91,9 @@ export default {
           :disabled="$uiBusy"
           class="level-item is-flat is-underlined is-uppercase"
           v-tippy="{ content: `Approve submission and add to public directory` }"
-        >Approve</button>
+        >
+          Approve
+        </button>
       </div>
 
       <!-- book/person review -->
@@ -103,18 +105,24 @@ export default {
       <!-- submitter -->
       <div v-if="type !== 'people'" class="has-text-right mt-20">
         <span v-tippy="{ content: `Submitted by` }">
-          <a v-if="submitterwebsite" target="_blank" :href="submitterwebsite">{{ submitterName }}</a><span v-else>{{ submitterName }}</span>{{ submitterRoles ? `, ${submitterRoles}` : '' }}
+          <a v-if="submitterwebsite" target="_blank" :href="submitterwebsite">{{ submitterName }}</a
+          ><span v-else>{{ submitterName }}</span
+          >{{ submitterRoles ? `, ${submitterRoles}` : '' }}
           <span v-if="submitterOrganization">
             <span class="ml-1">at</span>
-            <a target="_blank" class="ml-1" v-if="submitterOrganizationLink" :href="submitterOrganizationLink">{{ submitterOrganization }}</a>
+            <a
+              target="_blank"
+              class="ml-1"
+              v-if="submitterOrganizationLink"
+              :href="submitterOrganizationLink"
+              >{{ submitterOrganization }}</a
+            >
             <span class="ml-1" v-else>{{ submitterOrganization }}</span>
           </span>
         </span>
       </div>
     </div>
-
   </div>
-
 </template>
 
 <style scoped lang="scss">
@@ -122,6 +130,5 @@ export default {
 @import '@/assets/style/vars.scss';
 .level-item:hover {
   @include primary(color);
-
 }
 </style>

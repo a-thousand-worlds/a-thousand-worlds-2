@@ -8,7 +8,7 @@ export default {
   },
   data() {
     return {
-      active: this.$route.query?.active || 'books'
+      active: this.$route.query?.active || 'books',
     }
   },
   methods: {
@@ -17,20 +17,17 @@ export default {
       this.$router.replace({
         name: this.$route.name,
         query: {
-          active: value
-        }
+          active: value,
+        },
       })
     },
   },
 }
-
 </script>
 
 <template>
-
   <div class="m-20 is-flex is-justify-content-center">
-    <div class="is-flex-grow-1 mx-20" style="max-width: 760px;">
-
+    <div class="is-flex-grow-1 mx-20" style="max-width: 760px">
       <div class="mb-5">
         <a @click.prevent="$router.back" class="is-uppercase is-primary">&lt; Back</a>
       </div>
@@ -39,23 +36,27 @@ export default {
 
       <div class="tabs">
         <ul>
-          <li :class="{ 'is-active': active === 'books' }"><a @click.prevent="setActive('books')">Books</a></li>
-          <li :class="{ 'is-active': active === 'people' }"><a @click.prevent="setActive('people')">People</a></li>
-          <li :class="{ 'is-active': active === 'bundles' }"><a @click.prevent="setActive('bundles')">Bundles</a></li>
+          <li :class="{ 'is-active': active === 'books' }">
+            <a @click.prevent="setActive('books')">Books</a>
+          </li>
+          <li :class="{ 'is-active': active === 'people' }">
+            <a @click.prevent="setActive('people')">People</a>
+          </li>
+          <li :class="{ 'is-active': active === 'bundles' }">
+            <a @click.prevent="setActive('bundles')">Bundles</a>
+          </li>
         </ul>
       </div>
 
       <TagsTable :type="active" />
-
     </div>
   </div>
-
 </template>
 
 <style lang="scss">
-@import "bulma/sass/utilities/_all.sass";
-@import "bulma/sass/elements/table.sass";
-@import "bulma/sass/form/shared.sass";
-@import "bulma/sass/form/checkbox-radio.sass";
+@import 'bulma/sass/utilities/_all.sass';
+@import 'bulma/sass/elements/table.sass';
+@import 'bulma/sass/form/shared.sass';
+@import 'bulma/sass/form/checkbox-radio.sass';
 @import '@/assets/style/tabs.scss';
 </style>

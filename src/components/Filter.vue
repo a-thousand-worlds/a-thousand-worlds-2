@@ -7,7 +7,7 @@ export default {
       type: String,
       required: true,
       validator: value => ['books', 'bundles', 'people'].indexOf(value) !== -1,
-    }
+    },
   },
   data() {
     return {
@@ -26,9 +26,12 @@ export default {
     },
     // map the prop type to the router type
     routerType() {
-      return this.type === 'books' ? 'Home'
-        : this.type === 'people' ? 'People'
-        : this.type === 'bundles' ? 'Bundles'
+      return this.type === 'books'
+        ? 'Home'
+        : this.type === 'people'
+        ? 'People'
+        : this.type === 'bundles'
+        ? 'Bundles'
         : null
     },
     specialFilters() {
@@ -54,8 +57,8 @@ export default {
         : `${name.slice(0, firstSpace)}<br/>${name.slice(firstSpace)}`
     },
     isFiltered(filter) {
-      return this.$store.state[this.type]?.filters?.some(activeFilter =>
-        activeFilter.id === filter.id || activeFilter.parent === filter.id
+      return this.$store.state[this.type]?.filters?.some(
+        activeFilter => activeFilter.id === filter.id || activeFilter.parent === filter.id,
       )
     },
     /** Returns true if a tag has subtags */
@@ -81,50 +84,83 @@ export default {
     toggleFilter(filter) {
       this.$store.dispatch(`${this.type}/toggleFilter`, filter)
     },
-  }
+  },
 }
 </script>
 
 <template>
   <aside v-if="tags.length" class="menu mb-5">
     <ul class="menu-list submenu">
-
       <!-- special filters -->
       <li v-for="filter in specialFilters" :key="filter.id" @click="toggleFilter(filter)">
-        <button :class="{ active: isFiltered(filter)}" class="pb-2" style="padding-left: 2px;">
-          <span style="display: inline-block;" :innerHTML="formatTag(filter.tag)" />
-          <span v-if="isFiltered(filter)" class="remove-tag" :style="selectedIconStyle(filter.tag)">{{ '—' }}</span></button>
+        <button :class="{ active: isFiltered(filter) }" class="pb-2" style="padding-left: 2px">
+          <span style="display: inline-block" :innerHTML="formatTag(filter.tag)" />
+          <span
+            v-if="isFiltered(filter)"
+            class="remove-tag"
+            :style="selectedIconStyle(filter.tag)"
+            >{{ '—' }}</span
+          >
+        </button>
       </li>
 
       <!-- filters -->
-      <li v-for="filter in tags" :key="filter.id" @mouseenter="isParent(filter) && toggleSubmenu(filter)" @mouseleave="isParent(filter) && toggleSubmenu(null)" @click.stop="!isParent(filter) && toggleFilter(filter)" style="position: relative;">
-
+      <li
+        v-for="filter in tags"
+        :key="filter.id"
+        @mouseenter="isParent(filter) && toggleSubmenu(filter)"
+        @mouseleave="isParent(filter) && toggleSubmenu(null)"
+        @click.stop="!isParent(filter) && toggleFilter(filter)"
+        style="position: relative"
+      >
         <!-- tag -->
-        <button v-if="filter.showOnFront" :class="{ active: isFiltered(filter) || submenuActive === filter}" class="pb-2" style="padding-left: 2px;">
-          <span style="display: inline-block;" :innerHTML="formatTag(filter.tag)" />
-          <span v-if="isFiltered(filter)" class="remove-tag" :style="selectedIconStyle(filter.tag)">{{ '—' }}</span>
+        <button
+          v-if="filter.showOnFront"
+          :class="{ active: isFiltered(filter) || submenuActive === filter }"
+          class="pb-2"
+          style="padding-left: 2px"
+        >
+          <span style="display: inline-block" :innerHTML="formatTag(filter.tag)" />
+          <span
+            v-if="isFiltered(filter)"
+            class="remove-tag"
+            :style="selectedIconStyle(filter.tag)"
+            >{{ '—' }}</span
+          >
         </button>
 
         <!-- subtag -->
-        <div v-if="submenuActive === filter" v-click-outside="closeSubmenu" class="subtag-menu p-2" style="position: absolute; z-index: 1; background-color: #fff; top: -5px; left: 80px; min-width: 168px;">
+        <div
+          v-if="submenuActive === filter"
+          v-click-outside="closeSubmenu"
+          class="subtag-menu p-2"
+          style="
+            position: absolute;
+            z-index: 1;
+            background-color: #fff;
+            top: -5px;
+            left: 80px;
+            min-width: 168px;
+          "
+        >
           <div v-for="subtag of subtags(filter)" :key="subtag.id" @click="toggleFilter(subtag)">
-            <button :class="{ active: isFiltered(subtag) }" class="pb-2" style="padding-left: 2px;">
-              <span style="display: inline-block;" :innerHTML="subtag.tag" />
-              <span v-if="isFiltered(subtag)" class="remove-tag">{{ '—' }}</span></button>
+            <button :class="{ active: isFiltered(subtag) }" class="pb-2" style="padding-left: 2px">
+              <span style="display: inline-block" :innerHTML="subtag.tag" />
+              <span v-if="isFiltered(subtag)" class="remove-tag">{{ '—' }}</span>
+            </button>
           </div>
-
         </div>
-
       </li>
-
     </ul>
-    <button v-if="hasFilters" class="button is-rounded is-primary" @click.prevent="resetFilters">Reset Filter</button>
+    <button v-if="hasFilters" class="button is-rounded is-primary" @click.prevent="resetFilters">
+      Reset Filter
+    </button>
   </aside>
 </template>
 
 <style scoped lang="scss">
-@import "bulma/sass/utilities/_all.sass";
-@import "bulma/sass/elements/box.sass";
+@import 'bulma/sass/utilities/_all.sass';
+@import 'bulma/sass/elements/box.sass';
 @import '@/assets/style/mixins.scss';
 @import '@/assets/style/vars.scss';
 
@@ -152,11 +188,13 @@ a {
     text-align: left;
     text-transform: uppercase;
 
-    &:focus, &:active {
+    &:focus,
+    &:active {
       outline: 0;
     }
 
-    &:hover, &.active  {
+    &:hover,
+    &.active {
       @include primary(color);
       border: 0;
     }
@@ -185,5 +223,4 @@ a {
   border: solid 1px;
   box-shadow: $box-shadow;
 }
-
 </style>

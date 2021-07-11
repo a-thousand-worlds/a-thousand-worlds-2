@@ -4,15 +4,16 @@ import setCacheRequired from '@/util/setCacheRequired'
 const firebaseImport = () => import(/* webpackChunkName: "firebase" */ '@/firebase')
 
 /** Gets the value of a Firebase reference. */
-export const firebaseGet = refString => new Promise((resolve, reject) => {
-  firebaseImport().then(firebasem => {
-    const firebase = firebasem.default
-    const ref = firebase.database().ref(refString)
-    ref.once('value', snap => {
-      resolve(snap.val())
+export const firebaseGet = refString =>
+  new Promise((resolve, reject) => {
+    firebaseImport().then(firebasem => {
+      const firebase = firebasem.default
+      const ref = firebase.database().ref(refString)
+      ref.once('value', snap => {
+        resolve(snap.val())
+      })
     })
   })
-})
 
 /** Wraps a Firebase collection in vuex module. */
 const collectionModule = name => ({
@@ -31,7 +32,7 @@ const collectionModule = name => ({
       set(state.data, path, value)
       // marking collection as loaded cuz we have at least one record
       state.loaded = true
-    }
+    },
   },
   getters: {
     /** Gets the value at the given path. */
@@ -49,26 +50,19 @@ const collectionModule = name => ({
      * @param value  The value to match. Accepts a predicate that takes the deep value returned by the key expression.
      */
     findBy: state => (path, value) => {
-
       // optional initial argument
       if (value === undefined) {
         value = path
         path = ''
       }
 
-      const entry = Object.entries(state.data).find(
-        ([entryKey, entryValue]) => {
-          const deepValue = get(entryValue, path)
-          return typeof value === 'function'
-            ? value(deepValue)
-            : deepValue === value
-        }
-      )
+      const entry = Object.entries(state.data).find(([entryKey, entryValue]) => {
+        const deepValue = get(entryValue, path)
+        return typeof value === 'function' ? value(deepValue) : deepValue === value
+      })
       return entry ? entry[1] : null
     },
-    list: state => () => state.loaded
-      ? Object.values(state.data)
-      : [],
+    list: state => () => state.loaded ? Object.values(state.data) : [],
   },
   actions: {
     /** Loads the collection from cache */

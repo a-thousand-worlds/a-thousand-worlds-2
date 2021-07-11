@@ -1,9 +1,7 @@
 <script>
-
 export default {
-  data: () => ({ answer: '' })
+  data: () => ({ answer: '' }),
 }
-
 </script>
 
 <template>
@@ -15,15 +13,28 @@ export default {
         <div class="message-body">
           {{ $store.state.ui.dlgPrompt.text }}
           <div class="field">
-            <input v-model="answer" class="input" type="text" @keypress.enter.prevent="$store.commit('ui/prompt', answer)">
+            <input
+              v-model="answer"
+              class="input"
+              type="text"
+              @keypress.enter.prevent="$store.commit('ui/prompt', answer)"
+            />
           </div>
         </div>
         <div class="field is-grouped is-justify-content-flex-end p-3">
           <div class="control">
-            <button class="button is-secondary" @click.prevent="$store.commit('ui/prompt', null)">Cancel</button>
+            <button class="button is-secondary" @click.prevent="$store.commit('ui/prompt', null)">
+              Cancel
+            </button>
           </div>
           <div class="control">
-            <button :disabled="!answer.length" class="button is-primary" @click.prevent="$store.commit('ui/prompt', answer)">Ok</button>
+            <button
+              :disabled="!answer.length"
+              class="button is-primary"
+              @click.prevent="$store.commit('ui/prompt', answer)"
+            >
+              Ok
+            </button>
           </div>
         </div>
       </div>

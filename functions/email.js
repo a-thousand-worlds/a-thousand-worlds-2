@@ -10,8 +10,7 @@ const sendEmail = require('./util/sendEmail')
 const handleError = routeHandler => async (req, res) => {
   try {
     await routeHandler(req, res)
-  }
-  catch (err) {
+  } catch (err) {
     console.error(err)
     res.setHeader('content-type', 'text/plain')
     res.status(500)
@@ -20,7 +19,6 @@ const handleError = routeHandler => async (req, res) => {
 }
 
 module.exports = () => {
-
   const adminConfig = {
     ...JSON.parse(process.env.FIREBASE_CONFIG),
     credential: admin.credential.cert(serviceAccount),
@@ -29,73 +27,76 @@ module.exports = () => {
   const app = express()
   app.use(cors)
 
-  app.get('/', handleError(async (req, res) => {
+  app.get(
+    '/',
+    handleError(async (req, res) => {
+      const { to, html, subject } = req.query
 
-    const { to, html, subject } = req.query
-
-    if (!to || !html || !subject) {
-      res.status(500).send('Insufficient query parameters. to, subject, and html required.')
-      return
-    }
-
-    // can send emails to admin without authorization
-    const config = functions.config()
-    if (to === config.project.admin_email) {
-      const info = await sendEmail(to, subject, html)
-      if (info.error) {
-        console.log(`Sending email to <${to}> error: ${info.error}`)
-        res.status(500).send(info.error)
-        return
-      }
-      const id = info.messageId
-      console.log(`Email sent: <${to}> ${subject} [${id}]`)
-      res.status(200).json({ id })
-      return
-    }
-
-    // if it's not to admin - authorization is required
-    if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
-      res.status(401).send('Not authorized.')
-      return
-    }
-
-    const token = req.headers.authorization.split('Bearer ')[1]
-    let user = null
-    try {
-      user = await admin.auth().verifyIdToken(token)
-    }
-    catch (err) {
-      console.log('verifying token error', err)
-      user = null
-    }
-
-    if (!user) {
-      res.status(401).send('Not authorized.')
-      return
-    }
-
-    admin.database().ref(`users/${user.uid}/roles`).once('value', async rolesSnap => {
-      const roles = rolesSnap.val()
-
-      // here is a point we testing user permission to send emails
-      if (!roles || (!roles.owner && !roles.advisor && !roles.contributor && !roles.creator)) {
-        console.log('user attempt to send email without permission!', user)
-        res.status(403).send('Not authorized.')
+      if (!to || !html || !subject) {
+        res.status(500).send('Insufficient query parameters. to, subject, and html required.')
         return
       }
 
-      const info = await sendEmail(to, subject, html)
-      if (info.error) {
-        console.log(`Sending email to <${to}> error: ${info.error}`)
-        res.status(500).send(info.error)
+      // can send emails to admin without authorization
+      const config = functions.config()
+      if (to === config.project.admin_email) {
+        const info = await sendEmail(to, subject, html)
+        if (info.error) {
+          console.log(`Sending email to <${to}> error: ${info.error}`)
+          res.status(500).send(info.error)
+          return
+        }
+        const id = info.messageId
+        console.log(`Email sent: <${to}> ${subject} [${id}]`)
+        res.status(200).json({ id })
         return
       }
-      const id = info.messageId
-      console.log(`Email sent: <${to}> ${subject} [${id}]`)
-      res.status(200).json({ id })
-    })
 
-  }))
+      // if it's not to admin - authorization is required
+      if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
+        res.status(401).send('Not authorized.')
+        return
+      }
+
+      const token = req.headers.authorization.split('Bearer ')[1]
+      let user = null
+      try {
+        user = await admin.auth().verifyIdToken(token)
+      } catch (err) {
+        console.log('verifying token error', err)
+        user = null
+      }
+
+      if (!user) {
+        res.status(401).send('Not authorized.')
+        return
+      }
+
+      admin
+        .database()
+        .ref(`users/${user.uid}/roles`)
+        .once('value', async rolesSnap => {
+          const roles = rolesSnap.val()
+
+          // here is a point we testing user permission to send emails
+          if (!roles || (!roles.owner && !roles.advisor && !roles.contributor && !roles.creator)) {
+            console.log('user attempt to send email without permission!', user)
+            res.status(403).send('Not authorized.')
+            return
+          }
+
+          const info = await sendEmail(to, subject, html)
+          if (info.error) {
+            console.log(`Sending email to <${to}> error: ${info.error}`)
+            res.status(500).send(info.error)
+            return
+          }
+          const id = info.messageId
+          console.log(`Email sent: <${to}> ${subject} [${id}]`)
+          res.status(200).json({ id })
+        })
+    }),
+  )
 
   return app
 }

@@ -1,5 +1,4 @@
 <script>
-
 export default {
   props: ['modelValue', 'disabled', 'searchDb'],
   emits: ['update:modelValue', 'person-selected'],
@@ -7,7 +6,7 @@ export default {
     return {
       person: this.modelValue || { name: '', role: 'author' },
       searches: [],
-      mode: 'view'
+      mode: 'view',
     }
   },
   computed: {
@@ -15,12 +14,12 @@ export default {
       return {
         toolbar: [],
       }
-    }
+    },
   },
   watch: {
     modelValue(next, prev) {
       this.person = next
-    }
+    },
   },
   created() {
     console.log(this.ckeditor)
@@ -36,8 +35,12 @@ export default {
       const search = e.target.value.toLowerCase()
       this.$emit('update:modelValue', this.person)
       this.book = null
-      this.searches = this.$store.state.peopleList
-        .filter(person => search.length && person.name.toLowerCase().includes(search) && person.role === this.person.role)
+      this.searches = this.$store.state.peopleList.filter(
+        person =>
+          search.length &&
+          person.name.toLowerCase().includes(search) &&
+          person.role === this.person.role,
+      )
     },
     hideSearch() {
       this.searches = []
@@ -83,13 +86,12 @@ export default {
         return
       }
       this.mode = 'view'
-    }
-  }
+    },
+  },
 }
 </script>
 
 <template>
-
   <div class="control">
     <div class="field is-grouped">
       <div class="control">
@@ -109,25 +111,36 @@ export default {
           @blur="onInputBlur"
           @keyup.enter="onEnter"
           @keyup.escape="onEsc"
-          @input="doSearch">
+          @input="doSearch"
+        />
         <div v-if="searches.length" v-click-outside="onClickOutside" class="search-wrap">
           <div class="search-results">
-            <div v-for="res of searches" :key="res.id" class="media p-2" @click.prevent="fillPerson(res)">
-              <b>{{ res.name }}</b><br>
+            <div
+              v-for="res of searches"
+              :key="res.id"
+              class="media p-2"
+              @click.prevent="fillPerson(res)"
+            >
+              <b>{{ res.name }}</b
+              ><br />
             </div>
           </div>
         </div>
       </div>
       <div v-if="mode === 'view' && person.name.length && !person.id" class="control">
-        <i class="fas fa-exclamation-triangle fa-danger" v-tippy="{ content: 'Person not exists in database and will be automatically approved and created without biography' }" />
+        <i
+          class="fas fa-exclamation-triangle fa-danger"
+          v-tippy="{
+            content:
+              'Person not exists in database and will be automatically approved and created without biography',
+          }"
+        />
       </div>
     </div>
   </div>
-
 </template>
 
 <style lang="scss" scoped>
-
 .input {
   margin-top: -0.25rem;
   margin-left: -0.25rem;
@@ -170,5 +183,4 @@ export default {
     }
   }
 }
-
 </style>

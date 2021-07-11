@@ -20,10 +20,13 @@ export default {
     },
     userBookSubmissions() {
       const submissions = this.$store.state.user.user.profile.submissions || {}
-      return Object.keys(submissions).reduce((accum, id) => ({
-        ...accum,
-        ...this.bookSubmission(id) ? { [id]: submissions[id] } : null
-      }), {})
+      return Object.keys(submissions).reduce(
+        (accum, id) => ({
+          ...accum,
+          ...(this.bookSubmission(id) ? { [id]: submissions[id] } : null),
+        }),
+        {},
+      )
     },
   },
   methods: {
@@ -37,9 +40,8 @@ export default {
         .filter(([sid, v]) => v === value)
         .map(([sid, v]) => sid)
     },
-  }
+  },
 }
-
 </script>
 
 <template>
@@ -74,6 +76,5 @@ export default {
         </template>
       </Toggle>
     </div>
-
   </div>
 </template>

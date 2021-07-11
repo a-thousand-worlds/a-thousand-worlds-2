@@ -7,7 +7,7 @@ const specialFilters = {
   people: creatorTitles.map(({ id, text }) => ({
     id,
     tag: text,
-  }))
+  })),
 }
 
 export default specialFilters

@@ -1,5 +1,4 @@
 <script>
-
 import { useHead } from '@vueuse/head'
 import BookmarksView from '@/components/BookmarksView'
 import Confirm from '@/components/ui/Confirm'
@@ -17,7 +16,7 @@ const image = '/social/home.png'
 const title = 'A Thousand Worlds'
 const twitter = 'worlds_thousand'
 
-export default ({
+export default {
   name: 'App',
   components: {
     BookmarksView,
@@ -32,12 +31,10 @@ export default ({
     WelcomeDismissable,
   },
   setup() {
-
     // default meta tags
     useHead({
       title: 'A Thousand Worlds',
       meta: [
-
         // open graph
         { name: 'og:description', content: description },
         { name: 'og:image', content: `${window.location.origin}${image}?fbreset=1` },
@@ -57,7 +54,6 @@ export default ({
         { name: 'fb:pages', content: '102421671707042' },
         { name: 'article:opinion', content: 'false' },
         { name: 'article:content_tier', content: 'free' },
-
       ],
     })
   },
@@ -71,47 +67,54 @@ export default ({
   },
   computed: {
     showRightBar() {
-      return !this.$route?.meta?.access ||
+      return (
+        !this.$route?.meta?.access ||
         this.$route?.name === 'BookEdit' ||
         this.$route?.name === 'PersonEdit' ||
         this.$route?.name === 'BundleEdit'
+      )
     },
     showWelcome() {
       // do not show welcome banner until route is loaded
       // $route.name is undefined on initial load
       // window.location.pathname is available immediately
-      return (window.location.pathname === '/' || this.$route.name)
-        && !this.$store.state.ui.lastVisited && !this.$route.meta?.access && this.$route.name !== 'Login'
+      return (
+        (window.location.pathname === '/' || this.$route.name) &&
+        !this.$store.state.ui.lastVisited &&
+        !this.$route.meta?.access &&
+        this.$route.name !== 'Login'
+      )
     },
   },
   watch: {
-    '$route'(next) {
+    $route(next) {
       this.showMobileFilter = next.name === 'Home' || next.name === 'Bundles'
-    }
+    },
   },
   async created() {
-
     // set ld+jsdon structured data
     const baseUrl = window.location.origin
     this.$store.dispatch('structuredData/set', { path: 'description', value: this.description })
     this.$store.dispatch('structuredData/set', { path: 'image.url', value: baseUrl + this.image })
-    this.$store.dispatch('structuredData/set', { path: 'publisher.logo', value: {
-      '@type': 'ImageObject',
-      url: `${baseUrl}/logo/logo${this.$store.state.theme}.png`,
-      width: 2176,
-      height: 725,
-    } })
+    this.$store.dispatch('structuredData/set', {
+      path: 'publisher.logo',
+      value: {
+        '@type': 'ImageObject',
+        url: `${baseUrl}/logo/logo${this.$store.state.theme}.png`,
+        width: 2176,
+        height: 725,
+      },
+    })
     this.$store.dispatch('structuredData/set', { path: 'headline', value: this.title })
 
     // initialize store subscriptions
     this.$store.dispatch('loadCache')
     this.$store.dispatch('subscribe')
   },
-})
+}
 </script>
 
 <template>
-
   <!-- Render the page without any layout. Used by social-image collage.-->
   <div v-if="$route.meta?.noLayout">
     <router-view />
@@ -119,20 +122,22 @@ export default ({
 
   <!-- Full Website -->
   <div v-else :class="`theme${$store.state.theme}`">
-
     <MobileHeader class="is-hidden-tablet" />
 
     <WelcomeDismissable v-if="showWelcome" />
 
-    <div class="site columns m-0" :class="{ 'border-top':showWelcome}">
+    <div class="site columns m-0" :class="{ 'border-top': showWelcome }">
       <section class="leftbar column is-narrow is-hidden-mobile px-20 py-30">
         <LeftBar :animateLogo="showWelcome" />
       </section>
-      <section class="main column px-0 pb-20" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
+      <section
+        class="main column px-0 pb-20"
+        :class="{ 'with-bookmarks': $store.state.ui.bookmarksOpen }"
+      >
         <Popups />
         <Confirm />
         <Prompt />
-        <div v-if="$store.state.ui.pageLoading" class="has-text-centered" style="margin-top: 20vh;">
+        <div v-if="$store.state.ui.pageLoading" class="has-text-centered" style="margin-top: 20vh">
           <Loader />
         </div>
         <router-view />
@@ -144,7 +149,6 @@ export default ({
 
       <!-- add the rightbar-border to main instead of rightbar itself in order to get correct z-indexing with welcome banner -->
       <div v-if="showRightBar" class="rightbar-border is-hidden-mobile" />
-
     </div>
 
     <!-- do not show rightbar on dashboard pages -->
@@ -155,11 +159,9 @@ export default ({
 
     <MobileFooter class="is-hidden-tablet" />
   </div>
-
 </template>
 
 <style lang="scss">
-
 html {
   min-height: 100%;
 }
@@ -175,7 +177,7 @@ body {
 </style>
 
 <style lang="scss" scoped>
-@import "bulma/sass/utilities/_all.sass";
+@import 'bulma/sass/utilities/_all.sass';
 @import '@/assets/style/vars.scss';
 @import '@/assets/style/mixins.scss';
 
@@ -259,5 +261,4 @@ body {
   @include primary(border-top-color);
   border-top: solid 1px;
 }
-
 </style>

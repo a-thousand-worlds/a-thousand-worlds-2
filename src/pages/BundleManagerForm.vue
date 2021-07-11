@@ -1,12 +1,11 @@
 <script>
-
 import BookField from '@/components/BookField'
 import UserField from '@/components/UserField'
 
 export default {
   components: {
     'field-book': BookField,
-    'field-user': UserField
+    'field-user': UserField,
   },
   data() {
     return {
@@ -22,7 +21,7 @@ export default {
         reviewedBy: '',
         status: 'pending',
         updated: '',
-      }
+      },
     }
   },
   computed: {
@@ -31,7 +30,7 @@ export default {
     },
     booksIDs() {
       return Object.keys(this.bundle.books)
-    }
+    },
   },
   created() {
     if (this.$router.currentRoute._value.name === 'BundleManagerUpdateForm') {
@@ -51,26 +50,23 @@ export default {
     addBook() {
       this.bundle.books[''] = true
     },
-    delBook(bid) {
-
-    }
-  }
+    delBook(bid) {},
+  },
 }
 </script>
 
 <template>
-  <h1 v-if="mode==='new'" class="title page-title">Add Bundle</h1>
-  <h1 v-if="mode!=='new'" class="title page-title">Update Bundle</h1>
+  <h1 v-if="mode === 'new'" class="title page-title">Add Bundle</h1>
+  <h1 v-if="mode !== 'new'" class="title page-title">Update Bundle</h1>
 
   <section class="section">
     <form @submit.prevent="save">
       <div class="columns">
         <div class="column">
-
           <div class="field">
             <label class="label">Name</label>
             <div class="control">
-              <input v-model="bundle.name" type="text" class="input">
+              <input v-model="bundle.name" type="text" class="input" />
             </div>
           </div>
 
@@ -96,16 +92,16 @@ export default {
             </button>
             <field-book v-for="bid of booksIDs" :key="bid" :bookID="bid" />
           </div>
-
         </div>
       </div>
       <div class="">
-        <input type="submit" class="button is-primary" value="Save">
-        <router-link class="button is-secondary ml-3" :to="{name: 'BundlesManager'}">Cancel</router-link>
+        <input type="submit" class="button is-primary" value="Save" />
+        <router-link class="button is-secondary ml-3" :to="{ name: 'BundlesManager' }"
+          >Cancel</router-link
+        >
       </div>
     </form>
   </section>
-
 </template>
 
 <style scoped lang="scss">

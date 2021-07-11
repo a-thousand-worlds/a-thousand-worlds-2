@@ -21,10 +21,10 @@ export default {
       return {
         name: this.edit ? 'PersonEdit' : 'PersonDetail',
         params: {
-          name: slugify(this.person.name)
-        }
+          name: slugify(this.person.name),
+        },
       }
-    }
+    },
   },
   created() {
     window.addEventListener('keydown', this.keydown)
@@ -39,7 +39,7 @@ export default {
     onClick(e) {
       this.$router.push({
         ...this.route,
-        ...this.editOnClick ? { name: 'PersonEdit' } : null
+        ...(this.editOnClick ? { name: 'PersonEdit' } : null),
       })
     },
     keydown(e) {
@@ -54,7 +54,6 @@ export default {
     },
   },
 }
-
 </script>
 
 <template>

@@ -28,25 +28,31 @@ export default {
     }
   },
   computed: {
-
     /** Precalculate parents for O(1) lookup. */
     parents() {
-      return this.options.reduce((accum, option) => ({
-        ...accum,
-        ...option.parent ? { [option.parent]: true } : null,
-      }), {})
+      return this.options.reduce(
+        (accum, option) => ({
+          ...accum,
+          ...(option.parent ? { [option.parent]: true } : null),
+        }),
+        {},
+      )
     },
 
     // convert the selected options to an id object that can be looked up in O(1)
     selectedIds() {
-      return this.selected?.reduce((accum, option) => ({
-        ...accum,
-        [option.id]: true,
-      }), {}) || {}
+      return (
+        this.selected?.reduce(
+          (accum, option) => ({
+            ...accum,
+            [option.id]: true,
+          }),
+          {},
+        ) || {}
+      )
     },
   },
   methods: {
-
     // function declaration needed for v-click-outside
     closeDropdown() {
       this.dropdownActive = false
@@ -62,19 +68,20 @@ export default {
       this.closeDropdown()
       this.$emit('select', { option, value: !this.selectedIds[option.id] })
     },
-
   },
 }
 </script>
 
 <template>
-
   <span>
-
     <!-- dropdown -->
-    <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': dropdownActive }" style="text-align: left;">
+    <div
+      class="dropdown mt-4 no-user-select"
+      :class="{ 'is-active': dropdownActive }"
+      style="text-align: left"
+    >
       <div id="dropdown-menu" class="dropdown-menu" role="menu">
-        <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
+        <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll">
           <a
             v-for="option in options"
             :key="option.id"
@@ -105,14 +112,12 @@ export default {
       v-click-outside="closeDropdown"
       @click="dropdownActive = !dropdownActive"
     />
-
   </span>
-
 </template>
 
 <style lang="scss">
-@import "bulma/sass/utilities/_all.sass";
-@import "bulma/sass/components/dropdown.sass";
+@import 'bulma/sass/utilities/_all.sass';
+@import 'bulma/sass/components/dropdown.sass';
 @import '@/assets/style/vars.scss';
 @import '@/assets/style/mixins.scss';
 
@@ -121,8 +126,8 @@ hr.dropdown-divider {
 }
 
 .add-tag {
-
-  span, a {
+  span,
+  a {
     color: #000;
   }
 

@@ -22,7 +22,6 @@ export default {
   methods: {
     // once the banner is scrolled completely out of view, hide the welcome banner
     onScroll() {
-
       // wait till initial scroll to set height
       // logo is not loaded in mounted so height is incorrect then
       if (!this.height) {
@@ -34,10 +33,9 @@ export default {
         this.$store.commit('ui/setLastVisited', new Date())
         window.removeEventListener('scroll', this.onScroll)
       }
-    }
-  }
+    },
+  },
 }
-
 </script>
 
 <template>

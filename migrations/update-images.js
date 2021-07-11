@@ -23,8 +23,7 @@ let books = null
 
 try {
   books = JSON.parse(fs.readFileSync('/tmp/atw/books.json'))
-}
-catch (e) {
+} catch (e) {
   console.error('reading data files error. breaking', e)
   process.exit(1)
 }
@@ -43,25 +42,22 @@ booksIds.forEach(bookId => {
 
   if (!book.cover) {
     console.log('book without cover?', book)
-  }
-  else {
+  } else {
     if (typeof book.cover === 'string') {
       book.cover = {
         url: book.cover,
         width: book.coverWidth,
-        height: book.coverHeight
+        height: book.coverHeight,
       }
       delete book.coverWidth
       delete book.coverHeight
       console.log('book completely updated', book.title)
-    }
-    else {
+    } else {
       // console.log(['book cover base64', book.cover.base64, typeof book.cover.base64 !== 'undefined'])
       if (typeof book.cover.base64 !== 'undefined') {
         delete book.cover.base64
         console.log('book updated - base64 removed', book.title)
-      }
-      else {
+      } else {
         console.log('book is ok', book.title, book.cover)
       }
     }
@@ -71,4 +67,6 @@ booksIds.forEach(bookId => {
 })
 
 fs.writeFileSync('./books.rebuilded.json', JSON.stringify(nextBooks, null, 2))
-console.log('Old books version saved at /tmp/atw/books.json, and updated file saved to ./books.updated.json - you need manually import it to Firebase. There is no reason to track this file with git, it is saved here just to find it easy - remove it after import is complete')
+console.log(
+  'Old books version saved at /tmp/atw/books.json, and updated file saved to ./books.updated.json - you need manually import it to Firebase. There is no reason to track this file with git, it is saved here just to find it easy - remove it after import is complete',
+)

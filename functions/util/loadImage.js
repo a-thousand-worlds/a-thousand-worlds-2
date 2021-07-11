@@ -5,10 +5,9 @@ async function loadImage(url, scaleToMaxWidth = 0) {
   let res = null
   try {
     res = await axios.get(url, {
-      responseType: 'arraybuffer'
+      responseType: 'arraybuffer',
     })
-  }
-  catch (e) {
+  } catch (e) {
     console.error(e, 'loadImage error')
     res = null
   }
@@ -29,7 +28,7 @@ async function loadImage(url, scaleToMaxWidth = 0) {
     buffer,
     base64: 'data:image/png;base64,' + buffer.toString('base64'),
     width: meta.width,
-    height: meta.height
+    height: meta.height,
   }
 }
 

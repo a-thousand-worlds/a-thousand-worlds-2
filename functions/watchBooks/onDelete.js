@@ -8,14 +8,12 @@ const watchBooks = functions
   })
   .database.ref('/books/{id}')
   .onDelete(async (snap, context) => {
-
     const book = snap.val()
     console.log('deleting books cover', book.title, book.isbn)
     const bucket = admin.storage().bucket()
     const fname = `books/${context.params.id}`
     const file = await bucket.file(fname)
     await file.delete()
-
   })
 
 module.exports = watchBooks

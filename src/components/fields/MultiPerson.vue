@@ -1,20 +1,22 @@
 <script>
-
 export default {
   props: ['modelValue', 'disabled', 'preText', 'searchDb', 'role', 'placeholder'],
   emits: ['update:modelValue', 'person-selected', 'person-removed'],
   data() {
     return {
       names: this.modelValue || '',
-      people: this.modelValue && this.modelValue.length ? this.modelValue.split(/[,;&]| and /g).map(x => x.trim()) : [],
+      people:
+        this.modelValue && this.modelValue.length
+          ? this.modelValue.split(/[,;&]| and /g).map(x => x.trim())
+          : [],
       searches: [],
-      mode: 'view'
+      mode: 'view',
     }
   },
   watch: {
     modelValue(next, prev) {
       this.names = next
-    }
+    },
   },
   methods: {
     doSearch(e) {
@@ -23,8 +25,10 @@ export default {
         return
       }
       const search = this.names
-      this.searches = this.$store.getters['people/list']()
-        .filter(person => search.length && person.name.toLowerCase().includes(search) && person.role === this.role)
+      this.searches = this.$store.getters['people/list']().filter(
+        person =>
+          search.length && person.name.toLowerCase().includes(search) && person.role === this.role,
+      )
     },
     fillPerson(p) {
       this.searches = []
@@ -73,28 +77,33 @@ export default {
         return
       }
       this.mode = 'view'
-    }
-  }
+    },
+  },
 }
 </script>
 
 <template>
-
   <div class="control">
     <div class="field is-grouped">
       <div class="control is-flex is-flex-wrap-wrap w-100">
-        <div class="mr-1" style="white-space: nowrap; font-weight: bold;">{{ preText }}</div>
+        <div class="mr-1" style="white-space: nowrap; font-weight: bold">{{ preText }}</div>
         <div
           v-if="mode === 'view' && !names?.length && placeholder?.length"
-          :class="{disabled:disabled}"
+          :class="{ disabled: disabled }"
           class="w-50 pointer placeholder"
-          @click="onDivClick">{{ placeholder }}</div>
+          @click="onDivClick"
+        >
+          {{ placeholder }}
+        </div>
         <div
           v-if="mode === 'view' && names?.length"
-          :class="{disabled:disabled}"
+          :class="{ disabled: disabled }"
           class="pointer"
           :title="placeholder"
-          @click="onDivClick">{{ names }}</div>
+          @click="onDivClick"
+        >
+          {{ names }}
+        </div>
         <input
           v-if="mode === 'edit'"
           ref="input"
@@ -104,18 +113,24 @@ export default {
           @blur="onInputBlur"
           @keyup.enter="onEnter"
           @keyup.escape="onEsc"
-          @input="doSearch">
+          @input="doSearch"
+        />
         <div v-if="searches.length" v-click-outside="onClickOutside" class="search-wrap">
           <div class="search-results">
-            <div v-for="res of searches" :key="res.id" class="media p-2" @click.prevent="fillPerson(res)">
-              <b>{{ res.name }}</b><br>
+            <div
+              v-for="res of searches"
+              :key="res.id"
+              class="media p-2"
+              @click.prevent="fillPerson(res)"
+            >
+              <b>{{ res.name }}</b
+              ><br />
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -172,5 +187,4 @@ export default {
     }
   }
 }
-
 </style>

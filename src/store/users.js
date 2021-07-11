@@ -8,11 +8,9 @@ const firebaseImport = () => import(/* webpackChunkName: "firebase" */ '@/fireba
 
 const module = mergeOne(collectionModule('users'), {
   actions: {
-
     // saves a new contributor user profile that is not attached to a login and cannot be authenticated
     // useful for manually adding contributor information to books that are already in the directory when the contributor doesn't have an account yet
     async saveContributor(ctx, profile) {
-
       if (!profile.name) {
         throw new Error('User name required')
       }
@@ -29,22 +27,23 @@ const module = mergeOne(collectionModule('users'), {
 
       const firebasem = await firebaseImport()
       const firebase = firebasem.default
-      await firebase.database().ref(newUserPath).set({
-        profile: {
-          ...profile,
-          noLogin: true,
-        },
-        roles: {
-          contributor: true,
-        },
-      })
+      await firebase
+        .database()
+        .ref(newUserPath)
+        .set({
+          profile: {
+            ...profile,
+            noLogin: true,
+          },
+          roles: {
+            contributor: true,
+          },
+        })
       await setCacheRequired()
 
       return uid
-
     },
-
-  }
+  },
 })
 
 export default module

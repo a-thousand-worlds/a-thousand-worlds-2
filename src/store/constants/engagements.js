@@ -5,7 +5,7 @@ const engagements = [
   { id: 'educator', text: 'Educator' },
   { id: 'publisher', text: 'Publisher' },
   { id: 'reader', text: 'Reader' },
-  { id: 'parent-caregiver', text: 'Parent/Caregiver' }
+  { id: 'parent-caregiver', text: 'Parent/Caregiver' },
 ]
 
 export default engagements

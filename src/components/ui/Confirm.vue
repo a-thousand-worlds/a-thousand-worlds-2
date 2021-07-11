@@ -1,8 +1,5 @@
 <script>
-
-export default {
-}
-
+export default {}
 </script>
 
 <template>
@@ -16,10 +13,14 @@ export default {
         </div>
         <div class="field is-grouped is-justify-content-flex-end p-3">
           <div class="control">
-            <button class="button is-secondary" @click.prevent="$store.commit('ui/confirm', false)">Cancel</button>
+            <button class="button is-secondary" @click.prevent="$store.commit('ui/confirm', false)">
+              Cancel
+            </button>
           </div>
           <div class="control">
-            <button class="button is-primary" @click.prevent="$store.commit('ui/confirm', true)">Ok</button>
+            <button class="button is-primary" @click.prevent="$store.commit('ui/confirm', true)">
+              Ok
+            </button>
           </div>
         </div>
       </div>
@@ -29,5 +30,4 @@ export default {
 
 <style scoped lang="scss">
 @import '@/assets/style/vars.scss';
-
 </style>

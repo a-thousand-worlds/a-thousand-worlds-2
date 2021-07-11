@@ -7,57 +7,87 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 test('show loader after typing in title and author', async () => {
   const component = render(BookSubmissionForm)
-  await fireEvent.update(component.getByLabelText('Title', { exact: false }), 'The Bear and the Moon')
+  await fireEvent.update(
+    component.getByLabelText('Title', { exact: false }),
+    'The Bear and the Moon',
+  )
   await fireEvent.update(component.getByLabelText('Author(s)', { exact: false }), 'Matthew Burgess')
   expect(await component.findByRole('loading', {}, { timeout: 1000 }))
 })
 
 test('show loader after typing in title and illustrator', async () => {
   const component = render(BookSubmissionForm)
-  await fireEvent.update(component.getByLabelText('Title', { exact: false }), 'The Bear and the Moon')
-  await fireEvent.update(component.getByLabelText('Illustrator(s)', { exact: false }), 'Catia Chien')
+  await fireEvent.update(
+    component.getByLabelText('Title', { exact: false }),
+    'The Bear and the Moon',
+  )
+  await fireEvent.update(
+    component.getByLabelText('Illustrator(s)', { exact: false }),
+    'Catia Chien',
+  )
   expect(await component.findByRole('loading', {}, { timeout: 1000 }))
 })
 
 test('search for isbn after typing in title and author', async () => {
   const component = render(BookSubmissionForm)
-  await fireEvent.update(component.getByLabelText('Title', { exact: false }), 'The Bear and the Moon')
+  await fireEvent.update(
+    component.getByLabelText('Title', { exact: false }),
+    'The Bear and the Moon',
+  )
   await fireEvent.update(component.getByLabelText('Author(s)', { exact: false }), 'Matthew Burgess')
   expect(await component.findByText('Is this your book?', {}, { timeout: 30000 }))
 })
 
 test('search for isbn after typing in title and illustrator', async () => {
   const component = render(BookSubmissionForm)
-  await fireEvent.update(component.getByLabelText('Title', { exact: false }), 'The Bear and the Moon')
-  await fireEvent.update(component.getByLabelText('Illustrator(s)', { exact: false }), 'Catia Chien')
+  await fireEvent.update(
+    component.getByLabelText('Title', { exact: false }),
+    'The Bear and the Moon',
+  )
+  await fireEvent.update(
+    component.getByLabelText('Illustrator(s)', { exact: false }),
+    'Catia Chien',
+  )
   expect(await component.findByText('Is this your book?', {}, { timeout: 30000 }))
 })
 
 test('do not search for isbn after typing in author and illustrator', async () => {
   const component = render(BookSubmissionForm)
   await fireEvent.update(component.getByLabelText('Author(s)', { exact: false }), 'Matthew Burgess')
-  await fireEvent.update(component.getByLabelText('Illustrator(s)', { exact: false }), 'Catia Chien')
+  await fireEvent.update(
+    component.getByLabelText('Illustrator(s)', { exact: false }),
+    'Catia Chien',
+  )
   await delay(1000) // wait for input debounce
   expect(component.queryByRole('loading')).toBe(null)
 })
 
 test('do not search for isbn after typing in only title', async () => {
   const component = render(BookSubmissionForm)
-  await fireEvent.update(component.getByLabelText('Title', { exact: false }), 'The Bear and the Moon')
+  await fireEvent.update(
+    component.getByLabelText('Title', { exact: false }),
+    'The Bear and the Moon',
+  )
   await delay(1000) // wait for input debounce
   expect(component.queryByRole('loading')).toBe(null)
 })
 
 test('do not search for isbn after typing in only author', async () => {
   const component = render(BookSubmissionForm)
-  await fireEvent.update(component.getByLabelText('Title', { exact: false }), 'The Bear and the Moon')
+  await fireEvent.update(
+    component.getByLabelText('Title', { exact: false }),
+    'The Bear and the Moon',
+  )
   await delay(1000) // wait for input debounce
   expect(component.queryByRole('loading')).toBe(null)
 })
 
 test('do not search for isbn after typing in only illustrator', async () => {
   const component = render(BookSubmissionForm)
-  await fireEvent.update(component.getByLabelText('Title', { exact: false }), 'The Bear and the Moon')
+  await fireEvent.update(
+    component.getByLabelText('Title', { exact: false }),
+    'The Bear and the Moon',
+  )
   await delay(1000) // wait for input debounce
   expect(component.queryByRole('loading')).toBe(null)
 })
@@ -67,14 +97,19 @@ test('show the thumbnail after it has loaded', async () => {
   await fireEvent.update(component.getByLabelText('Title', { exact: false }), 'bear')
   await fireEvent.update(component.getByLabelText('Author(s)', { exact: false }), 'm')
   expect(await component.findByText('Is this your book?', {}, { timeout: 30000 }))
-  expect(component.getByAltText('thumbnail'))
-    .not.toHaveStyle({ visibility: 'hidden' })
+  expect(component.getByAltText('thumbnail')).not.toHaveStyle({ visibility: 'hidden' })
 })
 
 test('thank the user if they confirm it is their book', async () => {
   const component = render(BookSubmissionForm)
-  await fireEvent.update(component.getByLabelText('Title', { exact: false }), 'The Bear and the Moon')
-  await fireEvent.update(component.getByLabelText('Illustrator(s)', { exact: false }), 'Catia Chien')
+  await fireEvent.update(
+    component.getByLabelText('Title', { exact: false }),
+    'The Bear and the Moon',
+  )
+  await fireEvent.update(
+    component.getByLabelText('Illustrator(s)', { exact: false }),
+    'Catia Chien',
+  )
   expect(await component.findByText('Is this your book?', {}, { timeout: 30000 }))
   await fireEvent.click(component.getByText('Yes'))
   expect(component.getByText('Great - Thanks!'))
@@ -82,8 +117,14 @@ test('thank the user if they confirm it is their book', async () => {
 
 test('ask for the isbn if the book is not theirs', async () => {
   const component = render(BookSubmissionForm)
-  await fireEvent.update(component.getByLabelText('Title', { exact: false }), 'The Bear and the Moon')
-  await fireEvent.update(component.getByLabelText('Illustrator(s)', { exact: false }), 'Catia Chien')
+  await fireEvent.update(
+    component.getByLabelText('Title', { exact: false }),
+    'The Bear and the Moon',
+  )
+  await fireEvent.update(
+    component.getByLabelText('Illustrator(s)', { exact: false }),
+    'Catia Chien',
+  )
   expect(await component.findByText('Is this your book?', {}, { timeout: 30000 }))
   await fireEvent.click(component.getByText('No'))
   expect(component.getByText('Okay, please enter the ISBN:'))
@@ -91,29 +132,45 @@ test('ask for the isbn if the book is not theirs', async () => {
 
 test('hide the thumbnail if the book is not theirs', async () => {
   const component = render(BookSubmissionForm)
-  await fireEvent.update(component.getByLabelText('Title', { exact: false }), 'The Bear and the Moon')
-  await fireEvent.update(component.getByLabelText('Illustrator(s)', { exact: false }), 'Catia Chien')
+  await fireEvent.update(
+    component.getByLabelText('Title', { exact: false }),
+    'The Bear and the Moon',
+  )
+  await fireEvent.update(
+    component.getByLabelText('Illustrator(s)', { exact: false }),
+    'Catia Chien',
+  )
   expect(await component.findByText('Is this your book?', {}, { timeout: 30000 }))
   await fireEvent.click(component.getByText('No'))
-  expect(component.getByAltText('thumbnail'))
-    .toHaveStyle({ visibility: 'hidden' })
+  expect(component.getByAltText('thumbnail')).toHaveStyle({ visibility: 'hidden' })
 })
 
 test('re-show the thumbnail if they hit cancel after saying that the book is not theirs', async () => {
   const component = render(BookSubmissionForm)
-  await fireEvent.update(component.getByLabelText('Title', { exact: false }), 'The Bear and the Moon')
-  await fireEvent.update(component.getByLabelText('Illustrator(s)', { exact: false }), 'Catia Chien')
+  await fireEvent.update(
+    component.getByLabelText('Title', { exact: false }),
+    'The Bear and the Moon',
+  )
+  await fireEvent.update(
+    component.getByLabelText('Illustrator(s)', { exact: false }),
+    'Catia Chien',
+  )
   expect(await component.findByText('Is this your book?', {}, { timeout: 30000 }))
   await fireEvent.click(component.getByText('No'))
   await fireEvent.click(component.getByText('Cancel'))
-  expect(component.getByAltText('thumbnail'))
-    .not.toHaveStyle({ visibility: 'hidden' })
+  expect(component.getByAltText('thumbnail')).not.toHaveStyle({ visibility: 'hidden' })
 })
 
 test('remove suggestion if they clear the title', async () => {
   const component = render(BookSubmissionForm)
-  await fireEvent.update(component.getByLabelText('Title', { exact: false }), 'The Bear and the Moon')
-  await fireEvent.update(component.getByLabelText('Illustrator(s)', { exact: false }), 'Catia Chien')
+  await fireEvent.update(
+    component.getByLabelText('Title', { exact: false }),
+    'The Bear and the Moon',
+  )
+  await fireEvent.update(
+    component.getByLabelText('Illustrator(s)', { exact: false }),
+    'Catia Chien',
+  )
   expect(await component.findByText('Is this your book?', {}, { timeout: 30000 }))
   await fireEvent.update(component.getByLabelText('Title', { exact: false }), '')
   await delay(1000) // wait for input debounce
@@ -128,13 +185,15 @@ test('search for thumbnail after typing in ISBN', async () => {
   await fireEvent.update(component.getByLabelText('Author(s)', { exact: false }), 'm')
   expect(await component.findByText('Is this your book?', {}, { timeout: 30000 }))
   await fireEvent.click(component.getByText('No'))
-  await fireEvent.update(component.getByLabelText('Okay, please enter the ISBN:', { exact: false }), '1452171912')
+  await fireEvent.update(
+    component.getByLabelText('Okay, please enter the ISBN:', { exact: false }),
+    '1452171912',
+  )
   await fireEvent.click(component.getByText('Search'))
   expect(component.queryByText('Okay, please enter the ISBN:')).toBe(null)
   expect(await component.findByRole('loading', {}, { timeout: 1000 }))
   expect(await component.findByText('Is this your book?', {}, { timeout: 30000 }))
-  expect(component.getByAltText('thumbnail'))
-    .not.toHaveStyle({ visibility: 'hidden' })
+  expect(component.getByAltText('thumbnail')).not.toHaveStyle({ visibility: 'hidden' })
 })
 
 test('thank you after clicking "No, but keep anyway"', async () => {
@@ -143,7 +202,10 @@ test('thank you after clicking "No, but keep anyway"', async () => {
   await fireEvent.update(component.getByLabelText('Author(s)', { exact: false }), 'm')
   expect(await component.findByText('Is this your book?', {}, { timeout: 30000 }))
   await fireEvent.click(component.getByText('No'))
-  await fireEvent.update(component.getByLabelText('Okay, please enter the ISBN:', { exact: false }), '1452171912')
+  await fireEvent.update(
+    component.getByLabelText('Okay, please enter the ISBN:', { exact: false }),
+    '1452171912',
+  )
   await fireEvent.click(component.getByText('Search'))
   expect(component.queryByText('Okay, please enter the ISBN:')).toBe(null)
   expect(await component.findByText('Is this your book?', {}, { timeout: 30000 }))

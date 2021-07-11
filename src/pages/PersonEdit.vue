@@ -59,22 +59,23 @@ export default {
       return typeof this.person.photo === 'string'
         ? this.person.photo
         : this.person.photo.url?.startsWith('http')
-          ? this.person.photo.url
-          : ''
+        ? this.person.photo.url
+        : ''
     },
     // link the first instance of the person's name in their bio to their website
     // when the bio editable is focused, the raw bio should be returned for edits
     bio() {
-      return this.bioFocused
-        ? this.person?.bio
-        : linkCreatorInBio(this.person)
+      return this.bioFocused ? this.person?.bio : linkCreatorInBio(this.person)
     },
     books() {
-      return this.person ? this.$store.getters['books/list']().filter(book =>
-        (book.authors || []).includes(this.person.name) ||
-        (book.illustrators || []).includes(this.person.name) ||
-        Object.keys(book.creators || {}).includes(this.person.id)
-      ) : []
+      return this.person
+        ? this.$store.getters['books/list']().filter(
+            book =>
+              (book.authors || []).includes(this.person.name) ||
+              (book.illustrators || []).includes(this.person.name) ||
+              Object.keys(book.creators || {}).includes(this.person.id),
+          )
+        : []
     },
     createdByName() {
       const user = this.$store.getters['users/get'](this.person?.createdBy)
@@ -88,7 +89,10 @@ export default {
       return this.$route.params.name
     },
     person() {
-      const person = this.$store.getters['people/findBy']('name', name => slugify(name) === this.name)
+      const person = this.$store.getters['people/findBy'](
+        'name',
+        name => slugify(name) === this.name,
+      )
       this.$store.dispatch('debug', { person })
       return person
     },
@@ -97,8 +101,9 @@ export default {
     },
     tags() {
       const peopleTags = this.$store.state.tags.people.data || {}
-      return Object.keys(this.person?.identities || [])
-        .map(id => peopleTags[id] || { id, tag: 'invalid' })
+      return Object.keys(this.person?.identities || []).map(
+        id => peopleTags[id] || { id, tag: 'invalid' },
+      )
     },
     /** Get the person's creatorTitle. */
     title() {
@@ -119,7 +124,6 @@ export default {
     window.removeEventListener('keyup', this.keyup)
   },
   methods: {
-
     adminEditClick(e) {
       // use e.shiftKey instead of editOnClick in case shift key is held down from previous page
       if (!this.$iam('owner') || !e.shiftKey) return
@@ -175,7 +179,6 @@ export default {
     },
 
     saveName(name) {
-
       this.updatePerson({ name })
 
       // update route since it is includes the person's name
@@ -186,14 +189,11 @@ export default {
         },
       })
     },
-
   },
 }
-
 </script>
 
 <template>
-
   <teleport to="#people-filter-menu">
     <Filter type="people" />
   </teleport>
@@ -202,133 +202,179 @@ export default {
     <Loader />
   </div>
   <div v-else-if="person" class="mx-5" :data-person-id="person.id">
-
     <div class="wide-page">
-
       <!-- back and view buttons -->
       <div class="is-flex is-justify-content-space-between mb-3">
-
         <div class="mb-5 is-narrow">
           <a @click.prevent="$router.back" class="is-uppercase is-primary">&lt; Back</a>
         </div>
 
-        <PersonDetailLink v-if="person" :person="person" class="button is-rounded is-primary">View Person</PersonDetailLink>
-
+        <PersonDetailLink v-if="person" :person="person" class="button is-rounded is-primary"
+          >View Person</PersonDetailLink
+        >
       </div>
 
       <div class="is-flex is-flex-direction-row is-flex-wrap-wrap">
-        <div class="column-person" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
+        <div class="column-person" :class="{ 'with-bookmarks': $store.state.ui.bookmarksOpen }">
           <div class="cover-wrapper mb-20">
-            <PhotoUpload v-model="person.photo" @update:modelValue="updatePhoto" noremove noMinimumSize :style="{ opacity: uploadingPhoto ? 0.5 : null }" />
+            <PhotoUpload
+              v-model="person.photo"
+              @update:modelValue="updatePhoto"
+              noremove
+              noMinimumSize
+              :style="{ opacity: uploadingPhoto ? 0.5 : null }"
+            />
           </div>
 
           <div class="title-container divider-30">
-
             <!-- title -->
             <Dropdown
               :defaultValue="person.title"
               :options="creatorTitles"
               placeholder="Choose title"
               @update:modelValue="updatePerson({ title: $event })"
-              style="display: inline;"
+              style="display: inline"
               :labelStyle="{
-                fontStyle: !person.pronouns ? 'italic' : null
+                fontStyle: !person.pronouns ? 'italic' : null,
               }"
             />
 
             <!-- name -->
             <h1 class="title mt-5">
-              <a @click.prevent="adminEditClick" style="color: inherit;" :style="{ cursor: editOnClick ? 'context-menu' : 'default', 'user-select': editOnClick ? 'none' : null }">
-                <SimpleInput v-if="person" @update:modelValue="saveName" v-model="person.name" placeholder="Enter Name" unstyled />
+              <a
+                @click.prevent="adminEditClick"
+                style="color: inherit"
+                :style="{
+                  cursor: editOnClick ? 'context-menu' : 'default',
+                  'user-select': editOnClick ? 'none' : null,
+                }"
+              >
+                <SimpleInput
+                  v-if="person"
+                  @update:modelValue="saveName"
+                  v-model="person.name"
+                  placeholder="Enter Name"
+                  unstyled
+                />
               </a>
             </h1>
 
             <!-- pronouns -->
             <div class="mt-2">
-
               <Dropdown
                 :defaultValue="person.pronouns"
                 :options="pronounOptions"
                 placeholder="Choose pronouns"
                 @update:modelValue="updatePerson({ pronouns: $event })"
                 :labelStyle="{
-                  fontStyle: !person.pronouns ? 'italic' : null
+                  fontStyle: !person.pronouns ? 'italic' : null,
                 }"
               >
                 <template #beforeOptions>
-                  <a class="dropdown-item is-capitalized is-uppercase" @click.prevent="updatePerson({ pronouns: null })">None</a>
-                  <hr class="dropdown-divider">
+                  <a
+                    class="dropdown-item is-capitalized is-uppercase"
+                    @click.prevent="updatePerson({ pronouns: null })"
+                    >None</a
+                  >
+                  <hr class="dropdown-divider" />
                 </template>
               </Dropdown>
-
             </div>
 
             <!-- tags -->
             <div class="tags mt-20">
-
               <!-- tags -->
-              <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="people" @remove="updatePerson('identities', { [tag.id]: null })" button-class="is-outlined" :tagStyle="tag.tag === 'invalid' ? 'background-color: #fff; border-color: red; color: red !important; cursor: pointer;' : null" editable />
+              <Tag
+                v-for="tag of tags"
+                :key="tag.id"
+                :tag="tag"
+                type="people"
+                @remove="updatePerson('identities', { [tag.id]: null })"
+                button-class="is-outlined"
+                :tagStyle="
+                  tag.tag === 'invalid'
+                    ? 'background-color: #fff; border-color: red; color: red !important; cursor: pointer;'
+                    : null
+                "
+                editable
+              />
 
               <!-- add tag dropdown -->
               <AddTag type="people" :item="person" />
-
             </div>
-
           </div>
 
           <!-- bio -->
-          <ckeditor @update:modelValue="updateBio($event)" :model-value="bio" :editor="editor" :config="ckConfig" @focus="bioFocus" @blur="bioBlur" class="person-bio" style="padding: 0;" />
+          <ckeditor
+            @update:modelValue="updateBio($event)"
+            :model-value="bio"
+            :editor="editor"
+            :config="ckConfig"
+            @focus="bioFocus"
+            @blur="bioBlur"
+            class="person-bio"
+            style="padding: 0"
+          />
           <div class="divider-30" />
 
           <!-- information table -->
           <!-- text-align: left needed to override centered content in tablet view. -->
-          <table style="text-align: left;">
-
+          <table style="text-align: left">
             <!-- Submitted by -->
             <tr>
               <th class="has-text-right"><b class="mr-3">submitted by</b></th>
-              <td><span style="opacity: 0.5;">{{ createdByName }}</span></td>
+              <td>
+                <span style="opacity: 0.5">{{ createdByName }}</span>
+              </td>
             </tr>
 
             <!-- Submitted on -->
             <tr>
               <th class="has-text-right"><b class="mr-3">submitted on</b></th>
-              <td><span style="opacity: 0.5;">{{ dayjs(person?.createdAt).format('M/D/YYYY') }}</span></td>
+              <td>
+                <span style="opacity: 0.5">{{ dayjs(person?.createdAt).format('M/D/YYYY') }}</span>
+              </td>
             </tr>
 
             <!-- Updated by -->
             <tr>
               <th class="has-text-right"><b class="mr-3">updated by</b></th>
-              <td><span style="opacity: 0.5;">{{ updatedByName }}</span></td>
+              <td>
+                <span style="opacity: 0.5">{{ updatedByName }}</span>
+              </td>
             </tr>
 
             <!-- Updated on -->
             <tr>
               <th class="has-text-right"><b class="mr-3">updated on</b></th>
-              <td><span style="opacity: 0.5;">{{ dayjs(person?.updatedAt).format('M/D/YYYY') }}</span></td>
+              <td>
+                <span style="opacity: 0.5">{{ dayjs(person?.updatedAt).format('M/D/YYYY') }}</span>
+              </td>
             </tr>
 
             <!-- Website -->
             <tr>
               <th class="has-text-right"><b class="mr-3">website</b></th>
               <td>
-                <SimpleInput v-if="person" @update:modelValue="updatePerson({ website: $event })" v-model="person.website" placeholder="Enter a website" style="display: inline-block; margin-right: 0.5em;" />
+                <SimpleInput
+                  v-if="person"
+                  @update:modelValue="updatePerson({ website: $event })"
+                  v-model="person.website"
+                  placeholder="Enter a website"
+                  style="display: inline-block; margin-right: 0.5em"
+                />
                 <a v-if="person?.website" :href="person.website" target="_blank">↗</a>
               </td>
             </tr>
-
           </table>
 
           <div class="divider-30 is-hidden-widescreen" />
-
         </div>
 
-        <div class="column-books" :class="{'with-bookmarks': $store.state.ui.bookmarksOpen}">
+        <div class="column-books" :class="{ 'with-bookmarks': $store.state.ui.bookmarksOpen }">
           <BookListView v-for="book of books" :key="book.id" :book="book" edit />
         </div>
-
       </div>
-
     </div>
   </div>
 
@@ -339,11 +385,10 @@ export default {
 
   <!-- Add a bottom spacer so that fixed position footer clears content when scrolled to the bottom. -->
   <div class="mb-7" />
-
 </template>
 
 <style lang="scss" scoped>
-@import "bulma/sass/utilities/_all.sass";
+@import 'bulma/sass/utilities/_all.sass';
 @import '@/assets/style/mixins.scss';
 @import '@/assets/style/vars.scss';
 
@@ -417,7 +462,7 @@ export default {
 </style>
 
 <style lang="scss">
-.person-bio.ck.ck-editor__editable_inline>:last-child {
+.person-bio.ck.ck-editor__editable_inline > :last-child {
   margin-bottom: 0px;
 }
 // override background color of injected creator link in bio

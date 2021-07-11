@@ -18,51 +18,61 @@ export default {
     return {
       busy: false,
       ckConfig: {
-        placeholder: 'No summary'
+        placeholder: 'No summary',
       },
       sub: this.submission || {},
       editor: BalloonEditor,
       cover: null,
-      people: []
+      people: [],
     }
   },
   computed: {
     coverRatio() {
-      return this.sub.cover?.height / this.sub.cover?.width * 100 || 100
+      return (this.sub.cover?.height / this.sub.cover?.width) * 100 || 100
     },
     coverUrl() {
-      return this.sub.thumbnail ||
+      return (
+        this.sub.thumbnail ||
         this.sub.cover?.url ||
-        (this.sub.cover?.base64 ? this.sub.cover.base64.startsWith('data:image')
-          ? this.sub.cover?.base64
-          : `data:image/png;base64,${this.sub.cover.base64}`
-        : '')
+        (this.sub.cover?.base64
+          ? this.sub.cover.base64.startsWith('data:image')
+            ? this.sub.cover?.base64
+            : `data:image/png;base64,${this.sub.cover.base64}`
+          : '')
+      )
     },
     /** Returns true if all authors exist in the people directory already. */
     authorsExist() {
       if (!this.sub) return null
-      const authors = (this.sub.authors || '').split(/[,;&]| and /g).map(x => x && x.trim()).filter(x => x)
-      return authors.every(name => this.$store.getters['people/findBy'](person =>
-        almostEqual(name, person.name)
-      ))
+      const authors = (this.sub.authors || '')
+        .split(/[,;&]| and /g)
+        .map(x => x && x.trim())
+        .filter(x => x)
+      return authors.every(name =>
+        this.$store.getters['people/findBy'](person => almostEqual(name, person.name)),
+      )
     },
     /** Returns true if all authors exist in the people directory already. */
     illustratorsExist() {
       if (!this.sub) return null
-      const illustrators = (this.sub.illustrators || '').split(/[,;&]| and /g).map(x => x && x.trim()).filter(x => x)
-      return illustrators.every(name => this.$store.getters['people/findBy'](person =>
-        almostEqual(name, person.name)
-      ))
+      const illustrators = (this.sub.illustrators || '')
+        .split(/[,;&]| and /g)
+        .map(x => x && x.trim())
+        .filter(x => x)
+      return illustrators.every(name =>
+        this.$store.getters['people/findBy'](person => almostEqual(name, person.name)),
+      )
     },
     tags() {
-      return this.$store.getters['tags/books/listSorted']()
-        .filter(tag => this.sub.tags && this.sub.tags[tag.id])
+      return this.$store.getters['tags/books/listSorted']().filter(
+        tag => this.sub.tags && this.sub.tags[tag.id],
+      )
     },
   },
   watch: {
     submission(next) {
       this.sub = next
-    }
+    },
   },
   methods: {
     async reject() {
@@ -71,10 +81,10 @@ export default {
       await this.$store.commit('ui/setBusy', false)
       this.$store.dispatch('ui/popup', 'Submission rejected')
     },
-    save: debounce(async function() {
+    save: debounce(async function () {
       await this.$store.dispatch('submissions/books/save', {
         path: this.sub.id,
-        value: { ...this.sub }
+        value: { ...this.sub },
       })
     }, 500),
     fileChange(e) {
@@ -99,8 +109,8 @@ export default {
         console.error('FileReader error', err)
       }
       reader.readAsDataURL(file)
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -115,22 +125,29 @@ export default {
 
       <!-- cover -->
       <div class="column is-2 is-offset-1">
-        <div class="bg-secondary cover-wrapper" :style="{'padding-top': coverRatio +'%', 'background-image': `url(${coverUrl})`}">
+        <div
+          class="bg-secondary cover-wrapper"
+          :style="{ 'padding-top': coverRatio + '%', 'background-image': `url(${coverUrl})` }"
+        >
           <div v-if="busy" class="upload-icon loading">
             <i class="fas fa-spinner fa-pulse fa-fw" />
           </div>
           <label v-if="!busy" class="upload-icon" for="cover-upload">
             <i class="fas fa-file-upload fa-fw" />
           </label>
-          <input id="cover-upload" type="file" class="cover-file-uploader" @change.prevent="fileChange($event)">
+          <input
+            id="cover-upload"
+            type="file"
+            class="cover-file-uploader"
+            @change.prevent="fileChange($event)"
+          />
         </div>
       </div>
 
       <!-- title, authors, illustrators -->
       <div class="column is-3">
-
         <!-- title -->
-        <div style="font-weight: bold;">
+        <div style="font-weight: bold">
           <SimpleInput
             v-model="sub.title"
             @update:modelValue="save"
@@ -153,7 +170,15 @@ export default {
             :class="!authorsExist && 'mr-1'"
             :style="!authorsExist && { display: 'inline-block' }"
           />
-          <Tag v-if="!authorsExist" :tag="{ tag: 'NEW' }" nolink v-tippy="{ content: 'This author is new! When the book is approved, they will be added to the people directory.' }" />
+          <Tag
+            v-if="!authorsExist"
+            :tag="{ tag: 'NEW' }"
+            nolink
+            v-tippy="{
+              content:
+                'This author is new! When the book is approved, they will be added to the people directory.',
+            }"
+          />
         </div>
 
         <!-- illustrator(s) -->
@@ -169,7 +194,15 @@ export default {
             :class="!authorsExist && 'mr-1'"
             :style="!illustratorsExist && { display: 'inline-block' }"
           />
-          <Tag v-if="!illustratorsExist" :tag="{ tag: 'NEW' }" nolink v-tippy="{ content: 'This illustrator is new! When the book is approved, they will be added to the people directory.' }" />
+          <Tag
+            v-if="!illustratorsExist"
+            :tag="{ tag: 'NEW' }"
+            nolink
+            v-tippy="{
+              content:
+                'This illustrator is new! When the book is approved, they will be added to the people directory.',
+            }"
+          />
         </div>
 
         <!-- ISBN -->
@@ -191,7 +224,7 @@ export default {
             @update:modelValue="save"
             :disabled="busy"
             placeholder="Enter Year"
-            style="display: inline-block;"
+            style="display: inline-block"
           />
         </div>
 
@@ -205,29 +238,52 @@ export default {
           />
         </div>
         -->
-
       </div>
 
-      <div class="column is-5" style="margin-top: -20px;">
+      <div class="column is-5" style="margin-top: -20px">
         <!-- summary -->
-        <div class="mb-10" style="max-height: 25rem; overflow: scroll;">
-          <ckeditor @update:modelValue="save" v-model="sub.summary" :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" style="padding: 0;" />
+        <div class="mb-10" style="max-height: 25rem; overflow: scroll">
+          <ckeditor
+            @update:modelValue="save"
+            v-model="sub.summary"
+            :disabled="busy"
+            class="oneline"
+            :editor="editor"
+            :config="ckConfig"
+            style="padding: 0"
+          />
         </div>
         <!-- tags -->
         <div class="tags">
-          <Tag v-for="tag of tags" :key="tag.id" :tag="tag" type="books" linkToManager class="mr-1 mb-1" v-tippy="{ content: 'Edit book tags' }" />
+          <Tag
+            v-for="tag of tags"
+            :key="tag.id"
+            :tag="tag"
+            type="books"
+            linkToManager
+            class="mr-1 mb-1"
+            v-tippy="{ content: 'Edit book tags' }"
+          />
         </div>
       </div>
 
       <!-- reject -->
       <div v-if="sub?.status !== 'rejected'" class="column is-1 has-text-right">
-        <button :class="{disabled:busy}" :disabled="busy" class="is-flat is-uppercase is-underlined" @click="reject">
-          <i class="fas fa-times" style="font-size: 20px;" v-tippy="{ content: `Reject submission` }" />
+        <button
+          :class="{ disabled: busy }"
+          :disabled="busy"
+          class="is-flat is-uppercase is-underlined"
+          @click="reject"
+        >
+          <i
+            class="fas fa-times"
+            style="font-size: 20px"
+            v-tippy="{ content: `Reject submission` }"
+          />
         </button>
       </div>
     </div>
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -241,7 +297,7 @@ h3.title {
   font-size: 110%;
 }
 
-input[type="checkbox"] {
+input[type='checkbox'] {
   width: 25px;
   height: 25px;
 }
@@ -273,7 +329,6 @@ input[type="checkbox"] {
       cursor: pointer;
     }
   }
-
 }
 
 #cover-upload {

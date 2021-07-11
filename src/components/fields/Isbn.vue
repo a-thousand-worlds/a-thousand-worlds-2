@@ -6,7 +6,7 @@ import CreatorsWidget from '@/components/CreatorsWidget'
 
 export default {
   components: {
-    CreatorsWidget
+    CreatorsWidget,
   },
   props: ['modelValue', 'disabled', 'searchDb', 'searchOnStart'],
   emits: ['update:modelValue', 'book-selected', 'isbn-search-state', 'isbn-search-result'],
@@ -15,13 +15,13 @@ export default {
       isbn: this.modelValue || '',
       loading: false,
       searches: [],
-      mode: 'view'
+      mode: 'view',
     }
   },
   watch: {
     modelValue(next, prev) {
       this.isbn = next
-    }
+    },
   },
   methods: {
     searchGlobal() {
@@ -48,8 +48,9 @@ export default {
       this.isbn = search
       this.$emit('update:modelValue', search)
       this.book = null
-      this.searches = this.$store.state.booksList
-        .filter(book => search.length && book.isbn.includes(search))
+      this.searches = this.$store.state.booksList.filter(
+        book => search.length && book.isbn.includes(search),
+      )
     },
     hideSearch() {
       this.searches = []
@@ -95,22 +96,33 @@ export default {
         return
       }
       this.mode = 'view'
-    }
+    },
   },
 }
 </script>
 
 <template>
-
   <div class="control">
     <div class="field is-grouped">
       <div class="control">
-        <button :disabled="disabled || loading || !isbn.length" :class="{'is-loading': loading}" class="is-flat" @click="searchGlobal">
+        <button
+          :disabled="disabled || loading || !isbn.length"
+          :class="{ 'is-loading': loading }"
+          class="is-flat"
+          @click="searchGlobal"
+        >
           <i class="fas fa-search" />
         </button>
       </div>
       <div class="control w-50">
-        <div v-if="mode === 'view'" class="w-50 pointer" :class="{disabled:disabled}" @click="onDivClick">{{ isbn }}</div>
+        <div
+          v-if="mode === 'view'"
+          class="w-50 pointer"
+          :class="{ disabled: disabled }"
+          @click="onDivClick"
+        >
+          {{ isbn }}
+        </div>
         <input
           v-if="mode === 'edit'"
           ref="input"
@@ -120,16 +132,24 @@ export default {
           @blur="onInputBlur"
           @keyup.enter="onEnter"
           @keyup.escape="onEsc"
-          @input="doSearch">
+          @input="doSearch"
+        />
         <div v-if="searches.length" v-click-outside="onClickOutside" class="search-wrap">
           <div class="search-results">
-            <div v-for="res of searches" :key="res.id" class="media p-2" @click.prevent="fillBook(res, si)">
+            <div
+              v-for="res of searches"
+              :key="res.id"
+              class="media p-2"
+              @click.prevent="fillBook(res, si)"
+            >
               <div class="media-left">
-                <img :src="res.cover">
+                <img :src="res.cover" />
               </div>
               <div class="media-right">
-                <b>{{ res.title }}</b><br>
-                <small>{{ res.isbn }}</small><br>
+                <b>{{ res.title }}</b
+                ><br />
+                <small>{{ res.isbn }}</small
+                ><br />
                 <CreatorsWidget :name="res.authors[0]" />
               </div>
             </div>
@@ -138,11 +158,9 @@ export default {
       </div>
     </div>
   </div>
-
 </template>
 
 <style lang="scss" scoped>
-
 .is-flat {
   margin-left: -9px;
 }
@@ -201,5 +219,4 @@ export default {
     }
   }
 }
-
 </style>

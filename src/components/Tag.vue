@@ -13,23 +13,29 @@ export default {
     type: {
       type: String,
       validator: value => ['books', 'bundles', 'people'].indexOf(value) !== -1,
-    }
+    },
   },
   emits: ['click', 'remove'],
   computed: {
     // map the prop type to the router type
     routerType() {
-      return this.type === 'books' ? 'Home'
-        : this.type === 'people' ? 'People'
-        : this.type === 'bundles' ? 'Bundles'
+      return this.type === 'books'
+        ? 'Home'
+        : this.type === 'people'
+        ? 'People'
+        : this.type === 'bundles'
+        ? 'Bundles'
         : null
     },
     singleType() {
-      return this.type === 'books' ? 'book'
-        : this.type === 'people' ? 'person'
-        : this.type === 'bundles' ? 'bundle'
+      return this.type === 'books'
+        ? 'book'
+        : this.type === 'people'
+        ? 'person'
+        : this.type === 'bundles'
+        ? 'bundle'
         : null
-    }
+    },
   },
   created() {
     if (!this.nolink && !this.type) {
@@ -50,38 +56,82 @@ export default {
     removeTag() {
       this.$emit('remove', this.tag)
     },
-  }
+  },
 }
-
 </script>
 
 <template>
-  <div v-if="tag" class="mr-1" style="display: inline-block;">
-
-    <span v-if="nolink" @click="onClick" :class="buttonClass" class="button is-primary is-rounded is-mini nolink" style="cursor: default; font-size: 10px;" :style="tagStyle">
-      <span><slot>{{ tag.tag }}</slot></span>
-      <span v-if="editable" class="close" v-tippy="{ content: `Remove tag from ${singleType}` }" @click="removeTag">✕</span>
+  <div v-if="tag" class="mr-1" style="display: inline-block">
+    <span
+      v-if="nolink"
+      @click="onClick"
+      :class="buttonClass"
+      class="button is-primary is-rounded is-mini nolink"
+      style="cursor: default; font-size: 10px"
+      :style="tagStyle"
+    >
+      <span
+        ><slot>{{ tag.tag }}</slot></span
+      >
+      <span
+        v-if="editable"
+        class="close"
+        v-tippy="{ content: `Remove tag from ${singleType}` }"
+        @click="removeTag"
+        >✕</span
+      >
     </span>
 
-    <button v-else-if="editable" @click="onClick" :class="buttonClass" class="button is-primary is-rounded is-mini" style="cursor: default; font-size: 10px;" :style="tagStyle">
+    <button
+      v-else-if="editable"
+      @click="onClick"
+      :class="buttonClass"
+      class="button is-primary is-rounded is-mini"
+      style="cursor: default; font-size: 10px"
+      :style="tagStyle"
+    >
       <!-- reset color to inherit, otherwise it will become the primary color on hover and disappear on the primary colored background -->
-      <a @click.prevent.stop="goToManager" style="color: inherit;">{{ tag.tag }}</a>
-      <span v-if="editable" class="close" v-tippy="{ content: `Remove tag from ${singleType}` }" @click="removeTag">✕</span>
+      <a @click.prevent.stop="goToManager" style="color: inherit">{{ tag.tag }}</a>
+      <span
+        v-if="editable"
+        class="close"
+        v-tippy="{ content: `Remove tag from ${singleType}` }"
+        @click="removeTag"
+        >✕</span
+      >
     </button>
 
-    <button v-else :class="buttonClass" @click="onClick" class="button is-primary is-rounded is-mini mb-1" style="display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; font-size: 11px;" :style="tagStyle">
+    <button
+      v-else
+      :class="buttonClass"
+      @click="onClick"
+      class="button is-primary is-rounded is-mini mb-1"
+      style="
+        display: inline-block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 11px;
+      "
+      :style="tagStyle"
+    >
       <span @click="goToFilter">{{ tag.tag }}</span>
-      <span v-if="editable" class="close" v-tippy="{ content: 'Remove tag from book' }" @click="removeTag">✕</span>
+      <span
+        v-if="editable"
+        class="close"
+        v-tippy="{ content: 'Remove tag from book' }"
+        @click="removeTag"
+        >✕</span
+      >
     </button>
-
   </div>
 </template>
 
 <style lang="scss" scoped>
-@import "bulma/sass/utilities/_all.sass";
+@import 'bulma/sass/utilities/_all.sass';
 @import '@/assets/style/vars.scss';
 @import '@/assets/style/mixins.scss';
-@import "bulma/sass/elements/table.sass";
+@import 'bulma/sass/elements/table.sass';
 
 .close {
   background-color: rgba(0, 0, 0, 0.25);
@@ -104,5 +154,4 @@ export default {
   @include primary(color, !important);
   background-color: inherit !important;
 }
-
 </style>

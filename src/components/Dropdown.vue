@@ -38,40 +38,48 @@ export default {
     close() {
       this.active = false
     },
-  }
+  },
 }
 </script>
 
 <template>
-
   <div>
-
     <!-- dropdown -->
     <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': active }">
       <div id="dropdown-menu" class="dropdown-menu" role="menu">
-        <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll;">
-
+        <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll">
           <!-- pre-options -->
           <slot name="beforeOptions" />
 
           <!-- options -->
-          <a v-for="option in options" :key="option.id" class="dropdown-item is-capitalized" @click.prevent="$emit('update:modelValue', option.id)" :class="{ selected: (modelValue ?? defaultValue) === option?.id }">
+          <a
+            v-for="option in options"
+            :key="option.id"
+            class="dropdown-item is-capitalized"
+            @click.prevent="$emit('update:modelValue', option.id)"
+            :class="{ selected: (modelValue ?? defaultValue) === option?.id }"
+          >
             {{ option.text }}
           </a>
-
         </div>
       </div>
     </div>
 
     <!-- link -->
-    <a @click.prevent.stop="active = !active" v-click-outside="close" :class="{ 'is-primary': active }" class="primary-hover no-user-select" :style="labelStyle">{{ labelFormatted || placeholder }}</a>
+    <a
+      @click.prevent.stop="active = !active"
+      v-click-outside="close"
+      :class="{ 'is-primary': active }"
+      class="primary-hover no-user-select"
+      :style="labelStyle"
+      >{{ labelFormatted || placeholder }}</a
+    >
   </div>
-
 </template>
 
 <style lang="scss" scoped>
-@import "bulma/sass/utilities/_all.sass";
-@import "bulma/sass/components/dropdown.sass";
+@import 'bulma/sass/utilities/_all.sass';
+@import 'bulma/sass/components/dropdown.sass';
 @import '@/assets/style/vars.scss';
 @import '@/assets/style/mixins.scss';
 

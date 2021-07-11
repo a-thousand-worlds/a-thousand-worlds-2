@@ -25,18 +25,17 @@ const structuredData = {
         '@type': 'Organization',
         name: 'A Thousand Worlds',
       },
-      datePublished: now.toISOString()
+      datePublished: now.toISOString(),
     },
   },
   mutations: {
     set(state, { path, value }) {
       if (path) {
         set(state.data, path, value)
-      }
-      else {
+      } else {
         state.data = value
       }
-    }
+    },
   },
   getters: {
     get: state => path => get(state.data, path),
@@ -57,8 +56,8 @@ const structuredData = {
         document.head.appendChild(script)
       }
       script.textContent = JSON.stringify(context.state.data, null, 2)
-    }, 0)
-  }
+    }, 0),
+  },
 }
 
 export default structuredData

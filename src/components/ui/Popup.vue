@@ -1,14 +1,12 @@
 <script>
-
 export default {
   props: ['popup'],
   methods: {
     close() {
       this.$store.dispatch('ui/close', this.popup.id)
-    }
+    },
   },
 }
-
 </script>
 
 <template>
@@ -21,10 +19,10 @@ export default {
 </template>
 
 <style scoped lang="scss">
-@import "bulma/sass/utilities/_all.sass";
-@import "bulma/sass/elements/box.sass";
-@import "bulma/sass/elements/notification.sass";
-@import "bulma/sass/elements/other.sass"; // needed for notification delete button
+@import 'bulma/sass/utilities/_all.sass';
+@import 'bulma/sass/elements/box.sass';
+@import 'bulma/sass/elements/notification.sass';
+@import 'bulma/sass/elements/other.sass'; // needed for notification delete button
 @import '@/assets/style/vars.scss';
 @import '@/assets/style/mixins.scss';
 
@@ -38,5 +36,4 @@ export default {
 .has-shadow {
   box-shadow: $box-shadow;
 }
-
 </style>

@@ -1,5 +1,4 @@
 <script>
-
 export default {
   props: ['userID'],
   emits: ['changed'],
@@ -7,7 +6,7 @@ export default {
     return {
       user: null,
       search: '',
-      id: this.userID || ''
+      id: this.userID || '',
     }
   },
   watch: {
@@ -39,25 +38,20 @@ export default {
     }
     this.$emit('changed', this.id)
     */
-  }
+  },
 }
-
 </script>
 
 <template>
-
   <div class="field is-grouped">
     <div class="control">
-      <input v-model="search" type="text" class="input">
+      <input v-model="search" type="text" class="input" />
     </div>
     <div class="control">
-      <button v-if="!user" class="button is-static">
-        Search user by email or userID
-      </button>
+      <button v-if="!user" class="button is-static">Search user by email or userID</button>
       <button v-if="user" class="button is-static">
         {{ user.email }}
       </button>
     </div>
   </div>
-
 </template>

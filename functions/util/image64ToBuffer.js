@@ -13,7 +13,7 @@ async function image64ToBuffer(base64, scaleToMaxWidth = 0) {
   return {
     buffer,
     width: meta.width,
-    height: meta.height
+    height: meta.height,
   }
 }
 

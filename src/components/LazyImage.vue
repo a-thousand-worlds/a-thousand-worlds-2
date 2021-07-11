@@ -4,11 +4,11 @@ export default {
   computed: {
     url() {
       return this.src?.cache || this.src?.url || this.src || ''
-    }
-  }
+    },
+  },
 }
 </script>
 
 <template>
-  <img v-if="url.length" :src="url">
+  <img v-if="url.length" :src="url" />
 </template>

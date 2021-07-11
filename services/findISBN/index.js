@@ -10,8 +10,7 @@ const isSponsored = product => product.title.startsWith('Sponsored Ad')
 const handleError = routeHandler => async (req, res) => {
   try {
     await routeHandler(req, res)
-  }
-  catch (err) {
+  } catch (err) {
     res.setHeader('content-type', 'text/plain')
     res.status(500)
     res.send(err.stack)
@@ -20,48 +19,53 @@ const handleError = routeHandler => async (req, res) => {
 
 const app = express()
 
-app.get('/', handleError(async (req, res) => {
+app.get(
+  '/',
+  handleError(async (req, res) => {
+    res.header('Access-Control-Allow-Origin', '*')
 
-  res.header('Access-Control-Allow-Origin', '*')
+    const { keyword, number } = req.query
 
-  const { keyword, number } = req.query
+    if (!keyword) {
+      res.status(500).send('"keyword" query parameter required')
+      return
+    }
 
-  if (!keyword) {
-    res.status(500).send('"keyword" query parameter required')
-    return
-  }
+    // fetch products using amazon-buddy API
+    const products = await amazon.products({
+      keyword,
+      number: number || 1,
+      category: 'stripbooks',
+    })
 
-  // fetch products using amazon-buddy API
-  const products = await amazon.products({
-    keyword,
-    number: number || 1,
-    category: 'stripbooks',
-  })
+    console.log('products', products)
 
-  console.log('products', products)
-
-  // find the first non-sponsored product with a valid ISBN extracted from its url
-  const product = products.result
-    .find(product => {
+    // find the first non-sponsored product with a valid ISBN extracted from its url
+    const product = products.result.find(product => {
       if (isSponsored(product)) return false
       const isbn = isbnFromUrl(product.url)
       return validate(isbn)
     })
 
-  if (!product) {
-    res.json(null)
-    console.log(new Date(), `Query: "${req.query.keyword}" (${products.result.length === 0 ? 'no results' : products.result.length} results)${ products.result.length > 0 ? ': No products with valid ISBN' : ''}`)
-    return
-  }
+    if (!product) {
+      res.json(null)
+      console.log(
+        new Date(),
+        `Query: "${req.query.keyword}" (${
+          products.result.length === 0 ? 'no results' : products.result.length
+        } results)${products.result.length > 0 ? ': No products with valid ISBN' : ''}`,
+      )
+      return
+    }
 
-  const isbn = isbnFromUrl(product.url)
+    const isbn = isbnFromUrl(product.url)
 
-  console.log(new Date(), `Query: "${req.query.keyword}" (${products.result.length} results)`)
-  console.log({ isbn, ...product })
+    console.log(new Date(), `Query: "${req.query.keyword}" (${products.result.length} results)`)
+    console.log({ isbn, ...product })
 
-  res.json({ isbn, ..._.pick(product, ['isbn', 'thumbnail', 'title', 'url']) })
-
-}))
+    res.json({ isbn, ..._.pick(product, ['isbn', 'thumbnail', 'title', 'url']) })
+  }),
+)
 
 app.listen(3001, () => {
   console.log(`findISBN started on port ${3001}`)

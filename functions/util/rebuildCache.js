@@ -7,11 +7,12 @@ const zlib = require('zlib')
 const crypto = require('crypto')
 
 /** Creates authorized client for googleapi calls */
-const getAuthorizedClient = () => new JWT({
-  email: key.client_email,
-  key: key.private_key,
-  scopes: ['https://www.googleapis.com/auth/firebase.hosting']
-})
+const getAuthorizedClient = () =>
+  new JWT({
+    email: key.client_email,
+    key: key.private_key,
+    scopes: ['https://www.googleapis.com/auth/firebase.hosting'],
+  })
 
 /** loading firebase website "collection" */
 const loadCollection = (db, path) => {
@@ -32,7 +33,9 @@ const cacheDatabase = async db => {
   const tagsBundles = await loadCollection(db, 'tags/bundles')
   const people = await loadCollection(db, 'people')
   const users = await loadCollection(db, 'users')
-  const contributors = Object.values(users).filter(user => user.roles && (user.roles.contributor || user.roles.owner))
+  const contributors = Object.values(users).filter(
+    user => user.roles && (user.roles.contributor || user.roles.owner),
+  )
   const content = await loadCollection(db, 'content')
 
   return {
@@ -41,34 +44,35 @@ const cacheDatabase = async db => {
     tags: {
       books: tagsBooks,
       people: tagsPeople,
-      bundles: tagsBundles
+      bundles: tagsBundles,
     },
     contributors,
-    content
+    content,
   }
 }
 
 /** gzip and hash entry buffer */
-const gzipAndHash = buff => new Promise((resolve, reject) => {
-  zlib.gzip(buff, { level: 9 }, (err, res) => {
-    if (err) {
-      reject(err)
-      return
-    }
-    const hasher = crypto.createHash('sha256')
-    hasher.update(res)
-    resolve({
-      gzip: res,
-      hash: hasher.digest('hex')
+const gzipAndHash = buff =>
+  new Promise((resolve, reject) => {
+    zlib.gzip(buff, { level: 9 }, (err, res) => {
+      if (err) {
+        reject(err)
+        return
+      }
+      const hasher = crypto.createHash('sha256')
+      hasher.update(res)
+      resolve({
+        gzip: res,
+        hash: hasher.digest('hex'),
+      })
     })
   })
-})
 
 /** clear not finalized versions - may happens if previous caching failed (and usefull for development */
 const clearNotFinalizedVersions = async (api, site) => {
   const req = await api.sites.versions.list({
     parent: site.name,
-    filter: 'status="CREATED"'
+    filter: 'status="CREATED"',
   })
   if (!Array.isArray(req.data.versions) || !req.data.versions.length) return
   console.log('not finalized versions: ', req.data.versions)
@@ -77,16 +81,16 @@ const clearNotFinalizedVersions = async (api, site) => {
 }
 
 /** get cache/clean value */
-const getCacheClean = () => new Promise((resolve, reject) => {
-  const ref = admin.database().ref('cache/clean')
-  ref.once('value', snap => {
-    resolve(snap.val())
+const getCacheClean = () =>
+  new Promise((resolve, reject) => {
+    const ref = admin.database().ref('cache/clean')
+    ref.once('value', snap => {
+      resolve(snap.val())
+    })
   })
-})
 
 /** main working function */
 const rebuildCache = async () => {
-
   const cacheClean = await getCacheClean()
   if (cacheClean) {
     console.log('Cache is clean, nothing to be done.')
@@ -97,12 +101,12 @@ const rebuildCache = async () => {
 
   const api = google.firebasehosting({
     version: 'v1beta1',
-    auth: client
+    auth: client,
   })
 
   console.log(`requiesting sites for project <${key.project_id}>`)
   const reqSites = await api.projects.sites.list({
-    parent: `projects/${key.project_id}`
+    parent: `projects/${key.project_id}`,
   })
   if (!reqSites.data.sites || !Array.isArray(reqSites.data.sites) || !reqSites.data.sites.length) {
     console.error('Sites not found!')
@@ -114,9 +118,13 @@ const rebuildCache = async () => {
 
   console.log(`requiesting releases for site <${site.name}>`)
   const reqReleases = await api.sites.releases.list({
-    parent: site.name
+    parent: site.name,
   })
-  if (!reqReleases.data.releases || !Array.isArray(reqReleases.data.releases) || !reqReleases.data.releases.length) {
+  if (
+    !reqReleases.data.releases ||
+    !Array.isArray(reqReleases.data.releases) ||
+    !reqReleases.data.releases.length
+  ) {
     console.error('Releases not found!')
     return null
   }
@@ -132,16 +140,20 @@ const rebuildCache = async () => {
       sourceVersion: release.version.name,
       finalize: false,
       exclude: {
-        regexes: ['dbcache.js']
-      }
-    }
+        regexes: ['dbcache.js'],
+      },
+    },
   })
 
   const versionsReq = await api.sites.versions.list({
     parent: site.name,
-    filter: 'status="CREATED"'
+    filter: 'status="CREATED"',
   })
-  if (!versionsReq.data.versions || !Array.isArray(versionsReq.data.versions) || !versionsReq.data.versions.length) {
+  if (
+    !versionsReq.data.versions ||
+    !Array.isArray(versionsReq.data.versions) ||
+    !versionsReq.data.versions.length
+  ) {
     console.error('created version not found! exiting')
     return null
   }
@@ -156,24 +168,29 @@ const rebuildCache = async () => {
   db.cacheDate = new Date()
 
   // collect books covers to cache
-  const cacheBooks = Object.values(db.books).map(book => {
-    if (!book || !book.cover || !book.cover.url) return null
-    return book
-  }).filter(x => !!x)
+  const cacheBooks = Object.values(db.books)
+    .map(book => {
+      if (!book || !book.cover || !book.cover.url) return null
+      return book
+    })
+    .filter(x => !!x)
 
-  await Promise.all(cacheBooks.map(book => {
-    // updating cached db cuz we need calculate later hash of file with cached urls
-    const cacheUrl = `/img/${book.id}.png`
-    db.books[book.id].cover.cache = cacheUrl
-    console.log(`downloading book cover <${book.title}> id: <${book.id}>`)
-    return axios.get(book.cover.url, { responseType: 'arraybuffer' })
-      .then(res => gzipAndHash(Buffer.from(res.data)))
-      .then(gzip => {
-        newFiles[cacheUrl] = gzip
-        hashMap[cacheUrl] = gzip.hash
-        pathMap[gzip.hash] = cacheUrl
-      })
-  }))
+  await Promise.all(
+    cacheBooks.map(book => {
+      // updating cached db cuz we need calculate later hash of file with cached urls
+      const cacheUrl = `/img/${book.id}.png`
+      db.books[book.id].cover.cache = cacheUrl
+      console.log(`downloading book cover <${book.title}> id: <${book.id}>`)
+      return axios
+        .get(book.cover.url, { responseType: 'arraybuffer' })
+        .then(res => gzipAndHash(Buffer.from(res.data)))
+        .then(gzip => {
+          newFiles[cacheUrl] = gzip
+          hashMap[cacheUrl] = gzip.hash
+          pathMap[gzip.hash] = cacheUrl
+        })
+    }),
+  )
 
   const dbCacheJs = `window.dbcache = ${JSON.stringify(db, null, 2)}`
   newFiles['/dbcache.js'] = await gzipAndHash(Buffer.from(dbCacheJs))
@@ -184,24 +201,26 @@ const rebuildCache = async () => {
   const uploadInfoReq = await api.sites.versions.populateFiles({
     parent: nextVersion.name,
     requestBody: {
-      files: hashMap
-    }
+      files: hashMap,
+    },
   })
   const uploadInfo = uploadInfoReq.data
 
   // uploading only required files
   // if file already exists in some previous version - google will catch it automatically, so reupload is not required
-  const uploads = await Promise.all(uploadInfo.uploadRequiredHashes.map(hash => {
-    const gzip = newFiles[pathMap[hash]]
-    console.log(`uploading file <${pathMap[hash]}>`)
-    return client.request({
-      url: uploadInfo.uploadUrl + '/' + hash,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      data: gzip.gzip,
-      auth: true
-    })
-  })).catch(err => {
+  const uploads = await Promise.all(
+    uploadInfo.uploadRequiredHashes.map(hash => {
+      const gzip = newFiles[pathMap[hash]]
+      console.log(`uploading file <${pathMap[hash]}>`)
+      return client.request({
+        url: uploadInfo.uploadUrl + '/' + hash,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        data: gzip.gzip,
+        auth: true,
+      })
+    }),
+  ).catch(err => {
     console.error('upload error!', JSON.stringify(err))
     updateSuccess = false
   })
@@ -209,8 +228,7 @@ const rebuildCache = async () => {
   if (uploads.filter(x => x && x.status).find(up => up.status !== 200)) {
     console.error('Upload files failed')
     updateSuccess = false
-  }
-  else {
+  } else {
     console.log('New files uploaded')
   }
 
@@ -226,8 +244,8 @@ const rebuildCache = async () => {
     name: nextVersion.name,
     updateMask: 'status',
     requestBody: {
-      status: 'FINALIZED'
-    }
+      status: 'FINALIZED',
+    },
   })
   if (patchReq.status !== 200) {
     console.log(`finalization failed. removing nextVersion <${nextVersion.name}>`)
@@ -238,16 +256,18 @@ const rebuildCache = async () => {
   console.log(`releasing version <${nextVersion.name}>`)
   const nextReleaseReq = await api.sites.releases.create({
     parent: site.name,
-    versionName: nextVersion.name
+    versionName: nextVersion.name,
   })
   console.log(`released <${nextReleaseReq.data.name}>`)
 
   if (cacheBooks.length) {
     console.log('updating database with cached cover url')
-    await Promise.all(cacheBooks.map(book => {
-      const ref = admin.database().ref(`books/${book.id}/cover/cache`)
-      return ref.set(`/img/${book.id}.png`)
-    }))
+    await Promise.all(
+      cacheBooks.map(book => {
+        const ref = admin.database().ref(`books/${book.id}/cover/cache`)
+        return ref.set(`/img/${book.id}.png`)
+      }),
+    )
     console.log('database updated')
   }
 

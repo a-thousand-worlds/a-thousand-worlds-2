@@ -12,7 +12,6 @@ const watch = functions
   })
   .database.ref('/people/{id}')
   .onUpdate(async (change, context) => {
-
     const snap = change.after
     const person = snap.val()
 
@@ -32,8 +31,7 @@ const watch = functions
     if (photo.downloadUrl && photo.downloadUrl.startsWith('http')) {
       try {
         img = await loadImage(photo.downloadUrl, 400)
-      }
-      catch (err) {
+      } catch (err) {
         console.error('loadImage error', err)
         img = null
       }
@@ -42,8 +40,7 @@ const watch = functions
     if (!img && photo.base64) {
       try {
         img = await image64ToBuffer(photo.base64, 400)
-      }
-      catch (err) {
+      } catch (err) {
         console.error('converting image error', err)
         img = null
       }
@@ -58,25 +55,23 @@ const watch = functions
     const uuid = UUID.v4()
     const fname = `people/${context.params.id}`
     const file = await bucket.file(fname)
-    await file
-      .save(img.buffer, {
+    await file.save(img.buffer, {
+      metadata: {
+        contentType: 'image/png',
+        cacheControl: 'public,max-age=31536000',
         metadata: {
-          contentType: 'image/png',
-          cacheControl: 'public,max-age=31536000',
-          metadata: {
-            firebaseStorageDownloadTokens: uuid
-          }
-        }
-      })
+          firebaseStorageDownloadTokens: uuid,
+        },
+      },
+    })
     const url = getDownloadUrl(fname, bucket.name, uuid)
 
     await snap.ref.child('photo').set({
       url,
       width: img.width,
-      height: img.height
+      height: img.height,
     })
     console.log('Person photo updated', person.name, url)
-
   })
 
 module.exports = watch

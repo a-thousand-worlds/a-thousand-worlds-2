@@ -9,8 +9,8 @@ const module = {
       for (const key in o) {
         window.atw[key] = o[key]
       }
-    }
-  }
+    },
+  },
 }
 
 export default module

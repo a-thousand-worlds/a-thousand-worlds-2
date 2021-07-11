@@ -48,16 +48,18 @@ export default {
   watch: {
     type(next) {
       this.resetNewTag()
-    }
+    },
   },
   created() {
     this.resetNewTag()
   },
   methods: {
-
     async addTag() {
       const id = uid()
-      await this.$store.dispatch(`tags/${this.type}/save`, { path: id, value: { id, ...this.newTag } })
+      await this.$store.dispatch(`tags/${this.type}/save`, {
+        path: id,
+        value: { id, ...this.newTag },
+      })
       this.resetNewTag()
     },
 
@@ -118,13 +120,15 @@ export default {
       const moveDown = tagOld.sortOrder < tagNew.sortOrder
       const parentOld = this.getParent(tagOld)
       const parentNew = parentOld
-        // allow subtags to be moved into another tag
-        ? tagNew.parent
+        ? // allow subtags to be moved into another tag
+          tagNew.parent
           ? this.getParent(tagNew)
           : moveDown
-            ? tagNew
-            // handle dragging a subtag to the last position within a tag
-            : tagPrev.parent ? this.getParent(tagPrev) : tagPrev
+          ? tagNew
+          : // handle dragging a subtag to the last position within a tag
+          tagPrev.parent
+          ? this.getParent(tagPrev)
+          : tagPrev
         : null
 
       // do not allow subtags to be moved to the top level
@@ -142,42 +146,47 @@ export default {
       // update tag sortOrders
       // subtags use 0.01 increment
       const increment = parentOld ? 0.01 : 1
-      const updatesTags = tagsToResort.reduce((accum, tag, i) => ({
-        ...accum,
-        [`${tag.id}/sortOrder`]: moveDown
-          // shift up
-          ? i === 0
-            // move first item to the end
-            ? startSortOrder + (tagsToResort.length - 1) * increment
-            // shift other items up
-            : startSortOrder + (i - 1) * increment
-          // shift down
-          : i === tagsToResort.length - 1
-            // move last item to the beginning
-            ? startSortOrder
-            // shift other items down
-            : startSortOrder + (i + 1) * increment
-      }), {})
+      const updatesTags = tagsToResort.reduce(
+        (accum, tag, i) => ({
+          ...accum,
+          [`${tag.id}/sortOrder`]: moveDown
+            ? // shift up
+              i === 0
+              ? // move first item to the end
+                startSortOrder + (tagsToResort.length - 1) * increment
+              : // shift other items up
+                startSortOrder + (i - 1) * increment
+            : // shift down
+            i === tagsToResort.length - 1
+            ? // move last item to the beginning
+              startSortOrder
+            : // shift other items down
+              startSortOrder + (i + 1) * increment,
+        }),
+        {},
+      )
 
       // re-order subtags with parent.sortOrder + 0.01 increments
       // only when moving a top-level tag across the subtag list
       // ensures no conflicts with other tags
       // re-order all subtags that are affected by the move
-      const updatesSubtags = !parentOld ? this.tags
-        .filter(tag => tag.parent)
-        .reduce((accum, tag, i) => {
-          // const parentSortOrder = updatesTags[`${parentOld ? tag.parent : tagOld.id}/sortOrder`]
-          const parentSortOrder = updatesTags[`${tag.parent}/sortOrder`] || this.getParent(tag).sortOrder
-          return {
-            ...accum,
-            [`${tag.id}/sortOrder`]: parentSortOrder + (i + 1) * 0.01
-          }
-        }, {})
+      const updatesSubtags = !parentOld
+        ? this.tags
+            .filter(tag => tag.parent)
+            .reduce((accum, tag, i) => {
+              // const parentSortOrder = updatesTags[`${parentOld ? tag.parent : tagOld.id}/sortOrder`]
+              const parentSortOrder =
+                updatesTags[`${tag.parent}/sortOrder`] || this.getParent(tag).sortOrder
+              return {
+                ...accum,
+                [`${tag.id}/sortOrder`]: parentSortOrder + (i + 1) * 0.01,
+              }
+            }, {})
         : []
 
       // update parent if moving a subtag to a new parent
       const updatesParent = parentOld !== parentNew && {
-        [`${tagOld.id}/parent`]: parentNew?.id || null
+        [`${tagOld.id}/parent`]: parentNew?.id || null,
       }
 
       try {
@@ -187,11 +196,14 @@ export default {
             ...updatesTags,
             ...updatesSubtags,
             ...updatesParent,
-          }
+          },
         })
-      }
-      catch (e) {
-        await this.$store.dispatch('ui/popup', { text: e.toString(), type: 'error', autoclose: false })
+      } catch (e) {
+        await this.$store.dispatch('ui/popup', {
+          text: e.toString(),
+          type: 'error',
+          autoclose: false,
+        })
       }
     },
 
@@ -199,10 +211,11 @@ export default {
     getParent(tag) {
       const tagIndex = this.tags.indexOf(tag)
       return tag.parent && tagIndex !== -1
-        // eslint-disable-next-line fp/no-mutating-methods
-        ? this.tags.slice(0, tagIndex)
-          .reverse()
-          .find(tag => !tag.parent)
+        ? // eslint-disable-next-line fp/no-mutating-methods
+          this.tags
+            .slice(0, tagIndex)
+            .reverse()
+            .find(tag => !tag.parent)
         : null
     },
 
@@ -232,9 +245,7 @@ export default {
         showOnContributorForm: true,
         showOnPeopleForm: true,
         showOnFront: true,
-        sortOrder: this.tags.length > 0
-          ? (this.tags[this.tags.length - 1].sortOrder || 0) + 1
-          : 1,
+        sortOrder: this.tags.length > 0 ? (this.tags[this.tags.length - 1].sortOrder || 0) + 1 : 1,
         weight: 1,
       }
     },
@@ -248,7 +259,7 @@ export default {
       tag.showOnContributorForm = !tag.showOnContributorForm || null
       await this.$store.dispatch(`tags/${this.type}/save`, {
         path: `${id}/showOnContributorForm`,
-        value: tag.showOnContributorForm
+        value: tag.showOnContributorForm,
       })
     },
 
@@ -257,7 +268,7 @@ export default {
       tag.showOnPeopleForm = !tag.showOnPeopleForm || null
       await this.$store.dispatch(`tags/${this.type}/save`, {
         path: `${id}/showOnPeopleForm`,
-        value: tag.showOnPeopleForm
+        value: tag.showOnPeopleForm,
       })
     },
 
@@ -266,7 +277,7 @@ export default {
       tag.showOnFront = !tag.showOnFront || null
       await this.$store.dispatch(`tags/${this.type}/save`, {
         path: `${id}/showOnFront`,
-        value: tag.showOnFront
+        value: tag.showOnFront,
       })
     },
 
@@ -275,28 +286,56 @@ export default {
       this.$store.commit('ui/setBusy', true)
       try {
         await this.$store.dispatch(`tags/${this.type}/save`, { path: tagid, value: tag })
-      }
-      finally {
+      } finally {
         this.$store.commit('ui/setBusy', false)
       }
       this.edits[tagid] = null
     },
-
   },
 }
-
 </script>
 
 <template>
-
   <table class="table w-100">
     <thead>
       <tr>
-        <th style="width: 100%;">Tag</th>
-        <th class="has-text-centered" v-tippy="{ content: `Adjust the likelihood of ${type} being sorted to the top. For example, a person that has a tag with a weight of 10 means the person is 10 times more likely to be sorted to the top than a person that has a tag with a weight of 1.` }" style="white-space: nowrap;">Weight <i class="far fa-question-circle" /></th>
-        <th v-if="type === 'people'" class="has-text-centered" v-tippy="{ content: `Show this tag as one of the identity options on the People Submission Form.` }" style="white-space: nowrap;">Creator <i class="far fa-question-circle" /></th>
-        <th v-if="type === 'people'" class="has-text-centered" v-tippy="{ content: `Show this tag as one of the identity options on the Contributor Profile Form.` }" style="white-space: nowrap;">Contributor <i class="far fa-question-circle" /></th>
-        <th class="has-text-centered" v-tippy="{ content: `Show this tag in the ${type} filter menu` }" style="white-space: nowrap;">Show <i class="far fa-question-circle" /></th>
+        <th style="width: 100%">Tag</th>
+        <th
+          class="has-text-centered"
+          v-tippy="{
+            content: `Adjust the likelihood of ${type} being sorted to the top. For example, a person that has a tag with a weight of 10 means the person is 10 times more likely to be sorted to the top than a person that has a tag with a weight of 1.`,
+          }"
+          style="white-space: nowrap"
+        >
+          Weight <i class="far fa-question-circle" />
+        </th>
+        <th
+          v-if="type === 'people'"
+          class="has-text-centered"
+          v-tippy="{
+            content: `Show this tag as one of the identity options on the People Submission Form.`,
+          }"
+          style="white-space: nowrap"
+        >
+          Creator <i class="far fa-question-circle" />
+        </th>
+        <th
+          v-if="type === 'people'"
+          class="has-text-centered"
+          v-tippy="{
+            content: `Show this tag as one of the identity options on the Contributor Profile Form.`,
+          }"
+          style="white-space: nowrap"
+        >
+          Contributor <i class="far fa-question-circle" />
+        </th>
+        <th
+          class="has-text-centered"
+          v-tippy="{ content: `Show this tag in the ${type} filter menu` }"
+          style="white-space: nowrap"
+        >
+          Show <i class="far fa-question-circle" />
+        </th>
         <th>Edit/Delete</th>
       </tr>
     </thead>
@@ -306,7 +345,7 @@ export default {
       <tr v-for="filter of specialFilters" :key="filter.id">
         <td>
           <div class="field">
-            <div class="control" style="opacity: 0.5;">{{ filter.tag }}</div>
+            <div class="control" style="opacity: 0.5">{{ filter.tag }}</div>
           </div>
         </td>
         <td />
@@ -325,21 +364,34 @@ export default {
       item-key="id"
       tag="tbody"
     >
-
       <template #item="{ element: tag }">
-
-        <tr :class="{ 'bg-secondary': tag === dragging }" :style="{
-          ...isParentDragging(tag) && { display: 'none' },
-          ...isDraggingToSubtag(tag) || isDraggingSubtagToTop(tag) ? { backgroundColor: '#dbdbdb' } : null,
-        }">
+        <tr
+          :class="{ 'bg-secondary': tag === dragging }"
+          :style="{
+            ...(isParentDragging(tag) && { display: 'none' }),
+            ...(isDraggingToSubtag(tag) || isDraggingSubtagToTop(tag)
+              ? { backgroundColor: '#dbdbdb' }
+              : null),
+          }"
+        >
           <!-- filters (comment cannot go in template -->
 
           <!-- tag -->
-          <td style="cursor: grab;" :style="tag.parent && { paddingLeft: 0 }">
-            <div :style="tag.parent && { borderBottom: '#dbdbdb', margin: '-10px -20px -10px 0', paddingLeft: '42px' }">
+          <td style="cursor: grab" :style="tag.parent && { paddingLeft: 0 }">
+            <div
+              :style="
+                tag.parent && {
+                  borderBottom: '#dbdbdb',
+                  margin: '-10px -20px -10px 0',
+                  paddingLeft: '42px',
+                }
+              "
+            >
               <div class="field">
                 <div class="control">
-                  <span v-if="edits[tag.id]"><input v-model="edits[tag.id].tag" type="text" class="input"></span>
+                  <span v-if="edits[tag.id]"
+                    ><input v-model="edits[tag.id].tag" type="text" class="input"
+                  /></span>
                   <span v-else>{{ tag.tag }}</span>
                 </div>
               </div>
@@ -352,7 +404,13 @@ export default {
               <span class="ml-2">{{ tag.weight }}</span>
             </span>
             <span v-if="edits[tag.id]">
-              <input v-model.number="edits[tag.id].weight" type="number" class="input" style="min-width: 50px;padding-right: calc(0.75rem - 8px);" required>
+              <input
+                v-model.number="edits[tag.id].weight"
+                type="number"
+                class="input"
+                style="min-width: 50px; padding-right: calc(0.75rem - 8px)"
+                required
+              />
             </span>
           </td>
 
@@ -378,30 +436,49 @@ export default {
               <i v-if="tag.showOnFront" class="fas fa-check has-text-primary" />
               <i v-else class="fas fa-minus has-text-secondary" />
             </a>
-            <span v-if="edits[tag.id]"><input v-model="edits[tag.id].showOnFront" type="checkbox" class="checkbox"></span>
+            <span v-if="edits[tag.id]"
+              ><input v-model="edits[tag.id].showOnFront" type="checkbox" class="checkbox"
+            /></span>
           </td>
 
           <!-- edit/delete -->
           <td>
             <div v-if="!edits[tag.id]" class="field is-grouped is-justify-content-flex-end">
-              <p class="control"><button :disabled="$uiBusy" class="button is-flat" @click.prevent="toggleEditTag(tag.id, tag)">
-                                   <i class="fas fa-pencil-alt" />
-                                 </button>
+              <p class="control">
+                <button
+                  :disabled="$uiBusy"
+                  class="button is-flat"
+                  @click.prevent="toggleEditTag(tag.id, tag)"
+                >
+                  <i class="fas fa-pencil-alt" />
+                </button>
                 <button :disabled="$uiBusy" class="button is-flat" @click.prevent="remove(tag.id)">
                   <i class="fas fa-times" />
-                </button></p>
+                </button>
+              </p>
             </div>
             <div v-if="edits[tag.id]" class="field is-grouped is-justify-content-flex-end">
-              <p class="control"><button :disabled="$uiBusy" class="button is-rounded" @click.prevent="toggleEditTag(tag.id, null)">
-                <span>Cancel</span>
-              </button></p>
-              <p class="control"><button :disabled="$uiBusy" class="button is-rounded is-primary" @click.prevent="updateTag(tag.id)">
-                <i class="fas fa-check mr-2" />
-                <span>Save</span>
-              </button></p>
+              <p class="control">
+                <button
+                  :disabled="$uiBusy"
+                  class="button is-rounded"
+                  @click.prevent="toggleEditTag(tag.id, null)"
+                >
+                  <span>Cancel</span>
+                </button>
+              </p>
+              <p class="control">
+                <button
+                  :disabled="$uiBusy"
+                  class="button is-rounded is-primary"
+                  @click.prevent="updateTag(tag.id)"
+                >
+                  <i class="fas fa-check mr-2" />
+                  <span>Save</span>
+                </button>
+              </p>
             </div>
           </td>
-
         </tr>
       </template>
     </draggable>
@@ -413,13 +490,25 @@ export default {
         <a class="button is-static">Add Tag</a>
       </p>
       <p class="control w-100">
-        <input v-model="newTag.tag" type="text" :disabled="$uiBusy" class="input" placeholder="Enter tag">
+        <input
+          v-model="newTag.tag"
+          type="text"
+          :disabled="$uiBusy"
+          class="input"
+          placeholder="Enter tag"
+        />
       </p>
       <p class="control">
-        <a class="button" style="border: solid 1px #dbdbdb; border-left: 0;">
-          <label style="cursor: pointer; user-select: none;">
+        <a class="button" style="border: solid 1px #dbdbdb; border-left: 0">
+          <label style="cursor: pointer; user-select: none">
             <span class="mr-2">Subtag</span>
-            <input v-model="newTag.parent" type="checkbox" :false-value="null" :true-value="defaultSubtagParent" class="checkbox">
+            <input
+              v-model="newTag.parent"
+              type="checkbox"
+              :false-value="null"
+              :true-value="defaultSubtagParent"
+              class="checkbox"
+            />
           </label>
         </a>
       </p>
@@ -431,7 +520,6 @@ export default {
       </p>
     </div>
   </form>
-
 </template>
 
 <style lang="scss" scoped>

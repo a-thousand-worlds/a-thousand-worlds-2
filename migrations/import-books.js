@@ -25,11 +25,13 @@ const loadCollection = (f, path) => {
     const ref = db.ref(path)
     ref.once('value', snap => {
       const collection = snap.val()
-      resolve(Object.keys(collection).map(id => {
-        const record = collection[id]
-        if (!record.id) record.id = id
-        return record
-      }))
+      resolve(
+        Object.keys(collection).map(id => {
+          const record = collection[id]
+          if (!record.id) record.id = id
+          return record
+        }),
+      )
     })
   })
 }
@@ -53,7 +55,7 @@ const initFirebase = () => {
     storageBucket: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET,
     messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID,
     appId: process.env.VUE_APP_FIREBASE_APP_ID,
-    measurementId: process.env.VUE_APP_FIREBASE_MEASURMENT_ID
+    measurementId: process.env.VUE_APP_FIREBASE_MEASURMENT_ID,
   }
   firebase.initializeApp(firebaseConfig)
   return firebase
@@ -61,14 +63,18 @@ const initFirebase = () => {
 
 /** Metadata by isbn functions */
 const _isbn = (code, provider) => {
-  return isbn
-    .provider([provider])
-    .resolve(code)
-    // eslint-disable-next-line node/handle-callback-err
-    .catch(err => {
-      console.log(`book isbn metadata <${code}> not exists at <${provider}> error! (nothing special - just to know)`)
-      return null
-    })
+  return (
+    isbn
+      .provider([provider])
+      .resolve(code)
+      // eslint-disable-next-line node/handle-callback-err
+      .catch(err => {
+        console.log(
+          `book isbn metadata <${code}> not exists at <${provider}> error! (nothing special - just to know)`,
+        )
+        return null
+      })
+  )
 }
 
 const isbnSearch = async code => {
@@ -78,26 +84,28 @@ const isbnSearch = async code => {
     return null
   }
   const info = {
-    publisher: gBook && gBook.publisher ? gBook.publisher : oBook && oBook.publisher ? oBook.publisher : ''
+    publisher:
+      gBook && gBook.publisher ? gBook.publisher : oBook && oBook.publisher ? oBook.publisher : '',
   }
   return info
 }
 
 /** Normalizes 1.0 tags to match 2.0 tags. */
-const normalizeTag = tag => tag
-  ? tag.replace('-', ' ').replace('transitions', 'transition').toLowerCase()
-  : ''
+const normalizeTag = tag =>
+  tag ? tag.replace('-', ' ').replace('transitions', 'transition').toLowerCase() : ''
 
 /** Converting tags */
 const convertTags = (bookTags, tags) => {
-  return bookTags.map(tagName => {
-    const tag = tags.find(tg =>
-      // Convert "Non-fiction" to "Non fiction" for comparison
-      normalizeTag(tg.tag) === normalizeTag(tagName)
-    )
-    if (!tag) console.error(`Converting tag ${tagName} failed. Tag not found`)
-    return tag
-  })
+  return bookTags
+    .map(tagName => {
+      const tag = tags.find(
+        tg =>
+          // Convert "Non-fiction" to "Non fiction" for comparison
+          normalizeTag(tg.tag) === normalizeTag(tagName),
+      )
+      if (!tag) console.error(`Converting tag ${tagName} failed. Tag not found`)
+      return tag
+    })
     .filter(x => !!x)
     .reduce((accum, tag) => {
       accum[tag.id] = true
@@ -111,7 +119,7 @@ const convertCreator = (name, creators, creator) => {
   if (person) {
     return {
       creator: person,
-      new: []
+      new: [],
     }
   }
   console.log(`Creator <${name}> not found in database. Preparing new`)
@@ -129,23 +137,35 @@ const convertCreator = (name, creators, creator) => {
   }
   return {
     creator: person,
-    new: [person]
+    new: [person],
   }
 }
 
 /** Converting contributor */
 const convertContributor = async (name, contributors) => {
-  const contributor = contributors.find(user => name && user.profile.name && user.profile.name.toLowerCase() === name.toLowerCase())
+  const contributor = contributors.find(
+    user => name && user.profile.name && user.profile.name.toLowerCase() === name.toLowerCase(),
+  )
   if (contributor) {
     console.log(`contributor ${name} recognized as userid <${contributor.id}>`)
     return { contributor }
   }
-  console.log(`contributor <${name}> not recognized!\nSelect existing user to be used as book contributor or use "new" to create new user:`)
+  console.log(
+    `contributor <${name}> not recognized!\nSelect existing user to be used as book contributor or use "new" to create new user:`,
+  )
   contributors.forEach(user => console.log(`\t${user.profile.name} <${user.profile.email}>`))
   console.log('\tnew - to create new user')
-  const newContributor = await promptly.choose('Select contributor\'s full name or email [new]: ', [...contributors.map(u => u.profile.email), ...contributors.map(u => u.profile.name), 'new'], { default: 'new' })
+  const newContributor = await promptly.choose(
+    "Select contributor's full name or email [new]: ",
+    [...contributors.map(u => u.profile.email), ...contributors.map(u => u.profile.name), 'new'],
+    { default: 'new' },
+  )
   if (newContributor !== 'new') {
-    const ret = { contributor: contributors.find(user => user.profile.email === newContributor || user.profile.name === newContributor) }
+    const ret = {
+      contributor: contributors.find(
+        user => user.profile.email === newContributor || user.profile.name === newContributor,
+      ),
+    }
     console.log(`set <${ret.contirbutor.profile.name}> as book contributor`)
     return ret
   }
@@ -156,13 +176,13 @@ const convertContributor = async (name, contributors) => {
       id,
       profile: {
         name,
-        email: ''
+        email: '',
       },
       roles: {
-        contributor: true
-      }
+        contributor: true,
+      },
     },
-    new: true
+    new: true,
   }
 }
 
@@ -179,16 +199,19 @@ const convertBook = async (info, creators, tags, contributors, creator) => {
     return converted.creator
   })
   let illustratorIsSame = false
-  const illustrators = info.illustrator.split(',').map(illustrator => {
-    if (illustrator.toLowerCase() === 'same') {
-      illustratorIsSame = true
-      return null
-    }
-    const converted = convertCreator(illustrator, creators, creator)
-    newCreators = [...newCreators, ...converted.new]
-    creators = [...creators, ...converted.new]
-    return converted.creator
-  }).filter(x => !!x)
+  const illustrators = info.illustrator
+    .split(',')
+    .map(illustrator => {
+      if (illustrator.toLowerCase() === 'same') {
+        illustratorIsSame = true
+        return null
+      }
+      const converted = convertCreator(illustrator, creators, creator)
+      newCreators = [...newCreators, ...converted.new]
+      creators = [...creators, ...converted.new]
+      return converted.creator
+    })
+    .filter(x => !!x)
   authors.forEach(a => {
     bookCreators[a.id] = 'author'
     if (illustratorIsSame) {
@@ -202,7 +225,7 @@ const convertBook = async (info, creators, tags, contributors, creator) => {
   const bookTags = convertTags(info.tags, tags)
   console.log('tags converted')
   const cover = {
-    downloadUrl: `http://athousandworlds.org/assets/covers/${info.isbn}.jpg`
+    downloadUrl: `http://athousandworlds.org/assets/covers/${info.isbn}.jpg`,
   }
   const meta = await isbnSearch(info.isbn)
 
@@ -240,8 +263,7 @@ const go = async () => {
   let credentials = null
   try {
     credentials = await firebase.auth().signInWithEmailAndPassword(usr, pwd)
-  }
-  catch (err) {
+  } catch (err) {
     credentials = null
   }
   if (!credentials) {
@@ -261,7 +283,9 @@ const go = async () => {
   const tags = await loadCollection(firebase, 'tags/books')
   const creators = await loadCollection(firebase, 'people')
   const users = await loadCollection(firebase, 'users')
-  const contributors = users.filter(user => user.roles && (user.roles.contributor || user.roles.owner))
+  const contributors = users.filter(
+    user => user.roles && (user.roles.contributor || user.roles.owner),
+  )
 
   console.log('existing books', books.length)
   console.log('existing tags', tags.length)
@@ -273,19 +297,21 @@ const go = async () => {
     process.exit(1)
   }
 
-  const newBooks = importBooks.map((eb, i) => {
-    const details = importDetails[`${i + 1}`]
+  const newBooks = importBooks
+    .map((eb, i) => {
+      const details = importDetails[`${i + 1}`]
 
-    const exByName = books.find(book => eb.title.toLowerCase() === book.title.toLowerCase())
-    const exByIsbn = books.find(book => details.isbn === book.isbn)
-    const exByIsbn13 = books.find(book => details.isbn13 === book.isbn)
+      const exByName = books.find(book => eb.title.toLowerCase() === book.title.toLowerCase())
+      const exByIsbn = books.find(book => details.isbn === book.isbn)
+      const exByIsbn13 = books.find(book => details.isbn13 === book.isbn)
 
-    if (!exByName && !exByIsbn && !exByIsbn13) {
-      eb.details = details
-      return eb
-    }
-    return null
-  }).filter(x => !!x)
+      if (!exByName && !exByIsbn && !exByIsbn13) {
+        eb.details = details
+        return eb
+      }
+      return null
+    })
+    .filter(x => !!x)
 
   if (!newBooks.length) {
     console.log('There is no new books. Aborting')
@@ -301,10 +327,20 @@ const go = async () => {
   // eslint-disable-next-line fp/no-loops
   for (const info of newBooks) {
     console.log(`\nPreparing book <${info.title}>`)
-    const { book, newCreators, newContributors } = await convertBook(info, [...creators, ...creators2create], tags, [...contributors, ...contributors2create], credentials.user)
+    const { book, newCreators, newContributors } = await convertBook(
+      info,
+      [...creators, ...creators2create],
+      tags,
+      [...contributors, ...contributors2create],
+      credentials.user,
+    )
     let ok = 'yes'
     if (!yesAll) {
-      ok = await promptly.choose(`Create new book <${book.title}>? [Yes/no/abort/all]`, ['yes', 'no', 'abort', 'all'], { default: 'yes' })
+      ok = await promptly.choose(
+        `Create new book <${book.title}>? [Yes/no/abort/all]`,
+        ['yes', 'no', 'abort', 'all'],
+        { default: 'yes' },
+      )
     }
     if (ok === 'abort') {
       console.log('aborting')
@@ -322,9 +358,15 @@ const go = async () => {
     contributors2create = [...contributors2create, ...newContributors]
   }
 
-  console.log(`\nBooks to create: ${books2create.length}\nCreators to create: ${creators2create.length}\nContributors to create: ${contributors2create.length}`)
+  console.log(
+    `\nBooks to create: ${books2create.length}\nCreators to create: ${creators2create.length}\nContributors to create: ${contributors2create.length}`,
+  )
 
-  const saveOrUpload = await promptly.choose('Upload to firebase or save to files? [upload/save/Abort]', ['upload', 'save', 'abort'], { default: 'abort' })
+  const saveOrUpload = await promptly.choose(
+    'Upload to firebase or save to files? [upload/save/Abort]',
+    ['upload', 'save', 'abort'],
+    { default: 'abort' },
+  )
   if (saveOrUpload === 'abort') {
     console.log('Aborting. No database changes done')
     return
@@ -335,9 +377,16 @@ const go = async () => {
     if (!savePath.endsWith('/')) savePath += '/'
     fs.writeFileSync(`${savePath}books2create.json`, JSON.stringify(books2create, null, 2))
     fs.writeFileSync(`${savePath}creators2create.json`, JSON.stringify(creators2create, null, 2))
-    fs.writeFileSync(`${savePath}contributors2create.json`, JSON.stringify(contributors2create, null, 2))
-    console.log(`Files <${savePath}books2create.json>, <${savePath}creators2create.json> and <${savePath}contributors2create.json> saved.`)
-    console.log('(No database changes done. To apply changes to database - restart and use "upload" option)')
+    fs.writeFileSync(
+      `${savePath}contributors2create.json`,
+      JSON.stringify(contributors2create, null, 2),
+    )
+    console.log(
+      `Files <${savePath}books2create.json>, <${savePath}creators2create.json> and <${savePath}contributors2create.json> saved.`,
+    )
+    console.log(
+      '(No database changes done. To apply changes to database - restart and use "upload" option)',
+    )
     return
   }
 
@@ -347,7 +396,7 @@ const go = async () => {
     const ref = firebase.database().ref(`users/${user.id}`)
     const data = {
       profile: user.profile,
-      roles: user.roles
+      roles: user.roles,
     }
     await ref.set(data)
     console.log(`Contributor user <${user.profile.name}> saved [${user.id}]`)
@@ -368,7 +417,6 @@ const go = async () => {
     await ref.set(book)
     console.log(`Book <${book.title}> saved [${book.id}]`)
   }
-
 }
 
 go()

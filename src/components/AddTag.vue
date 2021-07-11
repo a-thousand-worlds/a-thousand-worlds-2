@@ -18,7 +18,6 @@ export default {
     },
   },
   computed: {
-
     selected() {
       const itemTags = this.$store.state.tags[this.type].data || {}
       return Object.keys(this.item?.[this.type === 'people' ? 'identities' : 'tags'] || [])
@@ -29,20 +28,17 @@ export default {
     options() {
       return this.$store.getters[`tags/${this.type}/listSorted`]()
     },
-
   },
   methods: {
-
     toggle({ option, value }) {
       this.$store.dispatch(`${this.type}/update`, {
         path: `${this.item.id}/${this.type === 'people' ? 'identities' : 'tags'}`,
         value: {
-          [option.id]: value || null
+          [option.id]: value || null,
         },
       })
     },
-
-  }
+  },
 }
 </script>
 

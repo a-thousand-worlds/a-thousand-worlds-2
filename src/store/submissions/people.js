@@ -11,7 +11,6 @@ import sendEmail from '@/util/sendEmail'
 
 const module = mergeOne(managed('submits/people'), {
   actions: {
-
     /** Submit people form to Firebase */
     submit: async (context, submission) => {
       const profile = context.rootState.user.user.profile
@@ -35,7 +34,7 @@ const module = mergeOne(managed('submits/people'), {
         submissions: {
           ...profile.submissions,
           [id]: 'pending',
-        }
+        },
       }
       await context.dispatch('user/saveProfile', profileNew, { root: true })
 
@@ -51,13 +50,12 @@ const module = mergeOne(managed('submits/people'), {
 
     /** Update submission status */
     updateSubmission: async (context, { peopleSubmissionId, personId, sub, status }) => {
-
       const submissionUpdates = {
         reviewedBy: context.rootState.user.user.uid,
         reviewedAt: dayjs().format(),
         status,
-        ...peopleSubmissionId ? { peopleSubmissionId } : null,
-        ...personId ? { personId } : null,
+        ...(peopleSubmissionId ? { peopleSubmissionId } : null),
+        ...(personId ? { personId } : null),
       }
 
       // commit local person submission update so we don't have to wait for server
@@ -76,23 +74,30 @@ const module = mergeOne(managed('submits/people'), {
       })
 
       // update user profile submission
-      await context.dispatch('users/save', {
-        path: `${sub.createdBy}/profile/submissions/${sub.id}`,
-        value: status
-      }, { root: true })
+      await context.dispatch(
+        'users/save',
+        {
+          path: `${sub.createdBy}/profile/submissions/${sub.id}`,
+          value: status,
+        },
+        { root: true },
+      )
 
       // update user profile personId
       if (personId) {
-        await context.dispatch('users/save', {
-          path: `${sub.createdBy}/profile/personId`,
-          value: personId
-        }, { root: true })
+        await context.dispatch(
+          'users/save',
+          {
+            path: `${sub.createdBy}/profile/personId`,
+            value: personId,
+          },
+          { root: true },
+        )
       }
     },
 
     /** Rejects a submission. */
     async reject(context, sub) {
-
       await context.dispatch('updateSubmission', { sub, status: 'rejected' })
 
       // send email
@@ -117,16 +122,14 @@ const module = mergeOne(managed('submits/people'), {
       }
 
       const fullName = submitter.profile.name || 'friend'
-      const firstName = fullName.includes(' ')
-        ? fullName.slice(0, fullName.indexOf(' '))
-        : fullName
-      const lastName = fullName.includes(' ')
-        ? fullName.slice(fullName.indexOf(' ') + 1)
-        : ''
+      const firstName = fullName.includes(' ') ? fullName.slice(0, fullName.indexOf(' ')) : fullName
+      const lastName = fullName.includes(' ') ? fullName.slice(fullName.indexOf(' ') + 1) : ''
 
-      const template = s => s.replace(/FIRST_NAME/g, firstName)
-        .replace(/LAST_NAME/g, lastName)
-        .replace(/FULL_NAME/g, fullName)
+      const template = s =>
+        s
+          .replace(/FIRST_NAME/g, firstName)
+          .replace(/LAST_NAME/g, lastName)
+          .replace(/FULL_NAME/g, fullName)
 
       // sending email
       await sendEmail({
@@ -141,9 +144,8 @@ const module = mergeOne(managed('submits/people'), {
           <body>
             ${template(emailTemplate.body)}
           </body>
-        </html>`
+        </html>`,
       })
-
     },
 
     /** Approves submissions group */
@@ -153,12 +155,12 @@ const module = mergeOne(managed('submits/people'), {
 
     /** Approves a single person. */
     approvePerson: async (context, sub) => {
-
       /** Get the creator id if it exists for the given user. */
       // TODO: This would be a lot easier if the peopleId was stored in the user profile
       const personSubmissionId = async userId => {
-
-        const userSubmissions = context.dispatch('users/loadOne', `${userId}/profile/submissions`, { root: true })
+        const userSubmissions = context.dispatch('users/loadOne', `${userId}/profile/submissions`, {
+          root: true,
+        })
 
         const approvedSubmissionIds = Object.entries(await userSubmissions)
           .filter(([id, status]) => status === 'approved')
@@ -166,18 +168,22 @@ const module = mergeOne(managed('submits/people'), {
 
         // const peopleSubmissions = context.dispatch('submits/people/loadAll'`)
         // TODO: Get most recent approved submission
-        const approvedPeopleSubmissionId = approvedSubmissionIds
-          .find(sid => context.rootGetters['submissions/people/get'](sid))
+        const approvedPeopleSubmissionId = approvedSubmissionIds.find(sid =>
+          context.rootGetters['submissions/people/get'](sid),
+        )
 
         if (!approvedPeopleSubmissionId) return null
 
-        const peopleSubmission = context.rootGetters['submissions/people/get'](approvedPeopleSubmissionId)
+        const peopleSubmission = context.rootGetters['submissions/people/get'](
+          approvedPeopleSubmissionId,
+        )
 
         return peopleSubmission?.peopleSubmissionId
       }
 
       // find associated person by sub.personId or fuzzy equal name match
-      const person = (sub.personId && context.rootGetters['people/get'](sub.personId)) ||
+      const person =
+        (sub.personId && context.rootGetters['people/get'](sub.personId)) ||
         context.rootGetters['people/findBy'](person => almostEqual(person.name, name))
       const personId = sub.personId || person?.id || uid()
       const personNew = {
@@ -191,23 +197,27 @@ const module = mergeOne(managed('submits/people'), {
       // we use 'donwloadUrl' field as mark for backend function to resave file from provided url
       if (sub.photo?.url?.startsWith('http')) {
         personNew.photo = {
-          downloadUrl: sub.photo.url
+          downloadUrl: sub.photo.url,
         }
       }
 
       // update user submission and people submission
       await context.dispatch('updateSubmission', {
-        peopleSubmissionId: await personSubmissionId(sub.createdBy) || uid(),
+        peopleSubmissionId: (await personSubmissionId(sub.createdBy)) || uid(),
         personId,
         sub,
-        status: 'approved'
+        status: 'approved',
       })
 
       // save creator
-      await context.dispatch('people/save', {
-        path: personId,
-        value: personNew
-      }, { root: true })
+      await context.dispatch(
+        'people/save',
+        {
+          path: personId,
+          value: personNew,
+        },
+        { root: true },
+      )
 
       // send email
       const submitter = await context.dispatch('users/loadOne', sub.createdBy, { root: true })
@@ -222,8 +232,8 @@ const module = mergeOne(managed('submits/people'), {
         throw new Error(message)
       }
       const personDetailUrl = `${window.location.origin}/person/${slugify(personNew.name)}`
-      const imageHtml = personNew.photo?.downloadUrl ?
-        `<p><a href="${personDetailUrl}" target="_blank"><img src="${personNew.photo.downloadUrl}" /></a></p>`
+      const imageHtml = personNew.photo?.downloadUrl
+        ? `<p><a href="${personDetailUrl}" target="_blank"><img src="${personNew.photo.downloadUrl}" /></a></p>`
         : ''
 
       const approvedRecord = `<p><b><a href="${personDetailUrl}" target="_blank">${sub.name}</a></b></p>${imageHtml}`
@@ -237,17 +247,15 @@ const module = mergeOne(managed('submits/people'), {
       }
 
       const fullName = submitter.profile.name || 'friend'
-      const firstName = fullName.includes(' ')
-        ? fullName.slice(0, fullName.indexOf(' '))
-        : fullName
-      const lastName = fullName.includes(' ')
-        ? fullName.slice(fullName.indexOf(' ') + 1)
-        : ''
+      const firstName = fullName.includes(' ') ? fullName.slice(0, fullName.indexOf(' ')) : fullName
+      const lastName = fullName.includes(' ') ? fullName.slice(fullName.indexOf(' ') + 1) : ''
 
-      const template = s => s.replace(/FIRST_NAME/g, firstName)
-        .replace(/LAST_NAME/g, lastName)
-        .replace(/FULL_NAME/g, fullName)
-        .replace(/APPROVED_RECORDS/g, approvedRecord)
+      const template = s =>
+        s
+          .replace(/FIRST_NAME/g, firstName)
+          .replace(/LAST_NAME/g, lastName)
+          .replace(/FULL_NAME/g, fullName)
+          .replace(/APPROVED_RECORDS/g, approvedRecord)
 
       // sending email
       await sendEmail({
@@ -262,12 +270,10 @@ const module = mergeOne(managed('submits/people'), {
           <body>
             ${template(emailTemplate.body)}
           </body>
-        </html>`
+        </html>`,
       })
-
     },
-
-  }
+  },
 })
 
 export default module

@@ -11,7 +11,6 @@ const watch = functions
   })
   .database.ref('/submits/people/{id}')
   .onUpdate(async (change, context) => {
-
     const snap = change.after
     const sub = snap.val()
 
@@ -32,26 +31,24 @@ const watch = functions
       const uuid = UUID.v4()
       const fname = `submits/people/${context.params.id}`
       const file = await bucket.file(fname)
-      await file
-        .save(cover.buffer, {
+      await file.save(cover.buffer, {
+        metadata: {
+          contentType: 'image/png',
+          cacheControl: 'public,max-age=31536000',
           metadata: {
-            contentType: 'image/png',
-            cacheControl: 'public,max-age=31536000',
-            metadata: {
-              firebaseStorageDownloadTokens: uuid
-            }
-          }
-        })
+            firebaseStorageDownloadTokens: uuid,
+          },
+        },
+      })
       const url = getDownloadUrl(fname, bucket.name, uuid)
 
       await snap.ref.child('photo').set({
         url,
         width: cover.width,
-        height: cover.height
+        height: cover.height,
       })
       console.log('Creator submission photo saved:', sub.name)
-    }
-    else {
+    } else {
       console.log('creator submission processed without photo image', sub.name)
     }
 

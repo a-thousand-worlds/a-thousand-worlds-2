@@ -1,18 +1,16 @@
 <script>
-
 import Popup from '@/components/ui/Popup'
 
 export default {
   components: {
     Popup,
-  }
+  },
 }
-
 </script>
 
 <template>
   <div class="popups-area is-flex is-justify-content-center">
-    <div style="max-width: 90%; max-height: 200px; overflow: auto;">
+    <div style="max-width: 90%; max-height: 200px; overflow: auto">
       <div v-for="popup of $store.state.ui.popups" :key="popup.id">
         <Popup class="mb-2" :popup="popup" />
       </div>
@@ -21,8 +19,8 @@ export default {
 </template>
 
 <style scoped lang="scss">
-@import "bulma/sass/utilities/_all.sass";
-@import "bulma/sass/elements/box.sass";
+@import 'bulma/sass/utilities/_all.sass';
+@import 'bulma/sass/elements/box.sass';
 @import '@/assets/style/vars.scss';
 
 .popups-area {
@@ -38,5 +36,4 @@ export default {
     width: calc(100% - #{$leftbar-width} - #{$rightbar-width});
   }
 }
-
 </style>

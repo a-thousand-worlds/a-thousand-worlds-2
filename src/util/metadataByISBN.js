@@ -4,15 +4,13 @@ import dayjs from 'dayjs'
 
 function _isbn(code, provider) {
   return new Promise((resolve, reject) => {
-    isbn
-      .provider([provider])
-      .resolve(code, (err, book) => {
-        if (book && !err) {
-          resolve(book)
-          return
-        }
-        resolve(null)
-      })
+    isbn.provider([provider]).resolve(code, (err, book) => {
+      if (book && !err) {
+        resolve(book)
+        return
+      }
+      resolve(null)
+    })
   })
 }
 

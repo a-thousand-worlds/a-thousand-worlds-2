@@ -12,11 +12,11 @@ export default {
   props: ['book'],
   computed: {
     coverRatio() {
-      if (this.updatedCover) return this.book.cover?.height / this.book.cover?.width * 100
+      if (this.updatedCover) return (this.book.cover?.height / this.book.cover?.width) * 100
       if (!this.book || !this.book.coverWidth || !this.book.coverHeight) {
         return 1
       }
-      return this.book.coverHeight / this.book.coverWidth * 100
+      return (this.book.coverHeight / this.book.coverWidth) * 100
     },
     bgImage() {
       if (this.updatedCover) return this.book.cover.cache || this.book.cover.url
@@ -25,23 +25,25 @@ export default {
     },
     updatedCover() {
       return this.book.cover?.url?.startsWith('http')
-    }
-  }
+    },
+  },
 }
 </script>
 
 <template>
   <BookDetailLink :book="book">
-
-    <div :style="{
-      width: '100%',
-      paddingTop: coverRatio+'%',
-      backgroundImage: `url(${bgImage})`,
-      backgroundSize: 'contain',
-      backgroundRepeat: 'no-repeat',
-      backgroundColor: bgImage ? 'transparent' : null,
-      minHeight: !bgImage ? '200px' : null,
-    }" class="book-cover-wrapper bg-secondary">
+    <div
+      :style="{
+        width: '100%',
+        paddingTop: coverRatio + '%',
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: bgImage ? 'transparent' : null,
+        minHeight: !bgImage ? '200px' : null,
+      }"
+      class="book-cover-wrapper bg-secondary"
+    >
       <div class="cover-shadow" />
       <div class="cover-data">
         <div class="title">{{ book.title }}</div>
@@ -60,10 +62,9 @@ export default {
           <h1 class="title">{{ book.title }}</h1>
           <CreatorsWidget :book="book" />
         </div>
-        <div style="padding-top: 0px;"><BookmarkButton :book="book" /></div>
+        <div style="padding-top: 0px"><BookmarkButton :book="book" /></div>
       </div>
     </div>
-
   </BookDetailLink>
 </template>
 
@@ -75,12 +76,15 @@ export default {
   background-size: contain;
   background-repeat: no-repeat;
 
-  .cover-shadow, .cover-data, .bookmark {
+  .cover-shadow,
+  .cover-data,
+  .bookmark {
     opacity: 0;
     transition: opacity 0.2s ease-in-out;
   }
 
-  .cover-shadow, .cover-data {
+  .cover-shadow,
+  .cover-data {
     position: absolute;
     top: 0;
     left: 0;
@@ -111,14 +115,17 @@ export default {
     position: relative;
     top: 0;
     left: 0;
-    .bookmark { opacity: 1; }
+    .bookmark {
+      opacity: 1;
+    }
     .cover-shadow {
       opacity: 0.8;
     }
     .cover-data {
       opacity: 1;
     }
-    .cover-shadow, .cover-data {
+    .cover-shadow,
+    .cover-data {
       width: 100%;
       height: 100%;
     }
@@ -130,5 +137,4 @@ export default {
     right: 10px;
   }
 }
-
 </style>

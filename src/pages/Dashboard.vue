@@ -45,10 +45,16 @@ export default {
       // returns true for non-contributors
 
       const affiliations = this.$store.state.user.user?.profile.affiliations
-      return this.$iam('contributor') && (
-        !affiliations ||
-        (!affiliations.website && !affiliations.organization && !affiliations.organizationLink && !(Object.values(affiliations.selectedEngagementCategory).length > 0 || affiliations.otherEngagementCategory)
-        )
+      return (
+        this.$iam('contributor') &&
+        (!affiliations ||
+          (!affiliations.website &&
+            !affiliations.organization &&
+            !affiliations.organizationLink &&
+            !(
+              Object.values(affiliations.selectedEngagementCategory).length > 0 ||
+              affiliations.otherEngagementCategory
+            )))
       )
     },
   },
@@ -62,26 +68,21 @@ export default {
     Promise.all(preloads)
   },
 }
-
 </script>
 
 <template>
-
   <div class="is-flex is-justify-content-center">
     <div class="is-flex-grow-1 mx-20" style="max-width: 600px; position: relative">
-
       <!-- page title -->
-      <h1 class="title page-title divider-bottom">
-        Your Dashboard
-      </h1>
+      <h1 class="title page-title divider-bottom">Your Dashboard</h1>
 
       <!-- your account -->
       <div v-if="!hasPendingContributorProfile" class="header-options mr-10">
-        <router-link :to="{ name: 'Account' }" style="color: black;">Your Account</router-link>
+        <router-link :to="{ name: 'Account' }" style="color: black">Your Account</router-link>
       </div>
 
       <!-- loader -->
-      <div v-if="!loaded" class="has-text-centered" style="margin-top: 20vh;">
+      <div v-if="!loaded" class="has-text-centered" style="margin-top: 20vh">
         <Loader />
       </div>
 
@@ -105,27 +106,50 @@ export default {
 
       <!-- Submit Book or Bundle -->
       <section v-if="$can('submitBookOrBundle')" class="section">
-
         <div v-if="$iam('contributor')">
           <ContributorProfileForm v-if="hasPendingContributorProfile" welcome />
           <ContributorProfilePreview v-else class="mb-30" />
         </div>
 
         <div v-if="!hasPendingContributorProfile">
-
           <!-- Welcome message sequence -->
-          <MessageSequence ref="submissionFormMessage" storageKey="dashboardSubmissionForms" @load="submissionFormMessageCompleted = $event.completed" @completed="submissionFormMessageCompleted = $event">
-
+          <MessageSequence
+            ref="submissionFormMessage"
+            storageKey="dashboardSubmissionForms"
+            @load="submissionFormMessageCompleted = $event.completed"
+            @completed="submissionFormMessageCompleted = $event"
+          >
             <template>
               <h2 class="field">Welcome!</h2>
-              <p class="field">As a leader in the industry and a contributor to ATW you have special access to two Submission Forms: <b>BOOKS</b> and <b>BUNDLES</b>. Both forms are available for you to use as many times as you like and at any time. The world is full of beautiful picture books—we want to hear what has captured your heart! To that end we hope that you spread the love and include picture books that are not in-house and you have not personally worked on.</p>
-              <p class="field">You can access the forms via your log-in information, which is unique to you, and should not be shared. Your public profile will be linked to each of your book recommendations. Your personal email will not be shared.</p>
+              <p class="field">
+                As a leader in the industry and a contributor to ATW you have special access to two
+                Submission Forms: <b>BOOKS</b> and <b>BUNDLES</b>. Both forms are available for you
+                to use as many times as you like and at any time. The world is full of beautiful
+                picture books—we want to hear what has captured your heart! To that end we hope that
+                you spread the love and include picture books that are not in-house and you have not
+                personally worked on.
+              </p>
+              <p class="field">
+                You can access the forms via your log-in information, which is unique to you, and
+                should not be shared. Your public profile will be linked to each of your book
+                recommendations. Your personal email will not be shared.
+              </p>
             </template>
 
             <template>
               <h2 class="field">Curatorial Process</h2>
               <p class="field">
-                Our vision is to create a directory that exemplifies beautiful art and innovative storytelling. Our mission is to amplify BIPOC voices and create a space for BIPOC creators and leaders. To that end <b>we are creating a space dedicated to only BIPOC creators. All picture books submitted for consideration need to have both BIPOC illustrator AND BIPOC author</b>. We also have a separate ATW Curatorial team consisting of BIPOC leaders who is tasked with a final curation of all submissions. This means that some of your picture books may not be included in the directory, but know that we always welcome more submissions from you. Thank you.
+                Our vision is to create a directory that exemplifies beautiful art and innovative
+                storytelling. Our mission is to amplify BIPOC voices and create a space for BIPOC
+                creators and leaders. To that end
+                <b
+                  >we are creating a space dedicated to only BIPOC creators. All picture books
+                  submitted for consideration need to have both BIPOC illustrator AND BIPOC
+                  author</b
+                >. We also have a separate ATW Curatorial team consisting of BIPOC leaders who is
+                tasked with a final curation of all submissions. This means that some of your
+                picture books may not be included in the directory, but know that we always welcome
+                more submissions from you. Thank you.
               </p>
             </template>
 
@@ -134,69 +158,117 @@ export default {
                 When you're ready, click on the BOOK button below to submit a book!
               </p>
             </template>
-
           </MessageSequence>
 
           <h2 v-if="$can('submitPerson')">
             Submission Forms
-            <span v-if="submissionFormMessageCompleted" @click.prevent="$refs.submissionFormMessage.toggle" v-tippy="{ content: 'Help' }" class="has-text-right" style="margin-left: 10px; font-size: 14px; white-space: nowrap; cursor: pointer; vertical-align: middle;"><i class="far fa-question-circle" /></span>
+            <span
+              v-if="submissionFormMessageCompleted"
+              @click.prevent="$refs.submissionFormMessage.toggle"
+              v-tippy="{ content: 'Help' }"
+              class="has-text-right"
+              style="
+                margin-left: 10px;
+                font-size: 14px;
+                white-space: nowrap;
+                cursor: pointer;
+                vertical-align: middle;
+              "
+              ><i class="far fa-question-circle"
+            /></span>
           </h2>
           <h2 v-else>Suggest a book</h2>
 
           <div class="field is-grouped">
             <div class="control">
-              <router-link class="button is-outlined is-primary" :to="{name:'BookSubmissionForm'}">Book</router-link>
+              <router-link
+                class="button is-outlined is-primary"
+                :to="{ name: 'BookSubmissionForm' }"
+                >Book</router-link
+              >
             </div>
             <div v-if="$can('submitPerson')" class="control">
-              <router-link class="button is-outlined is-primary" :to="{name:'PersonSubmissionForm'}">Person</router-link>
+              <router-link
+                class="button is-outlined is-primary"
+                :to="{ name: 'PersonSubmissionForm' }"
+                >Person</router-link
+              >
             </div>
             <!-- <div class="control">
               <router-link class="button is-outlined is-primary" :to="{name:'BundleSubmissionForm'}">Bundle</router-link>
             </div> -->
           </div>
-
         </div>
-
       </section>
 
       <!-- Invite -->
       <section v-if="$can('invite') && !hasPendingContributorProfile" class="section bordered-top">
         <h2>
           Invite Users
-          <span v-if="inviteMessageCompleted" @click.prevent="$refs.inviteMessage.toggle" v-tippy="{ content: 'Help' }" class="has-text-right" style="margin-left: 10px; font-size: 14px; white-space: nowrap; cursor: pointer; vertical-align: middle;"><i class="far fa-question-circle" /></span>
+          <span
+            v-if="inviteMessageCompleted"
+            @click.prevent="$refs.inviteMessage.toggle"
+            v-tippy="{ content: 'Help' }"
+            class="has-text-right"
+            style="
+              margin-left: 10px;
+              font-size: 14px;
+              white-space: nowrap;
+              cursor: pointer;
+              vertical-align: middle;
+            "
+            ><i class="far fa-question-circle"
+          /></span>
         </h2>
 
-        <MessageSequence ref="inviteMessage" storageKey="dashboardInviteMessage" @load="inviteMessageCompleted = $event.completed" @completed="inviteMessageCompleted = $event">
+        <MessageSequence
+          ref="inviteMessage"
+          storageKey="dashboardInviteMessage"
+          @load="inviteMessageCompleted = $event.completed"
+          @completed="inviteMessageCompleted = $event"
+        >
           <template>
             <h2 class="field">Other Ways to Contribute</h2>
             <p class="field">
-              Also you will see on your Dashboard that there is an INVITE USERS window. This is a place where you can easily invite people to use ATW. Just type in the names - emails of anyone you think should know about A THOUSAND WORLDS and click send. This is not a mailing list, they will receive only one email notification from ATW saying hello and letting them know about us. If you are as in love with our mission please consider helping us spread the word!
+              Also you will see on your Dashboard that there is an INVITE USERS window. This is a
+              place where you can easily invite people to use ATW. Just type in the names - emails
+              of anyone you think should know about A THOUSAND WORLDS and click send. This is not a
+              mailing list, they will receive only one email notification from ATW saying hello and
+              letting them know about us. If you are as in love with our mission please consider
+              helping us spread the word!
             </p>
             <p class="field">
-              To nominate other BIPOC leaders to contribute please go to the <router-link :to="{ name: 'Contact' }">Contact</router-link> page and click on "Nominate a leader" to send an email to ATW.
+              To nominate other BIPOC leaders to contribute please go to the
+              <router-link :to="{ name: 'Contact' }">Contact</router-link> page and click on
+              "Nominate a leader" to send an email to ATW.
             </p>
           </template>
         </MessageSequence>
 
         <InviteWidget ref="invite" />
         <ul class="my-20">
-          <li v-if="$can('editEmailTemplates')"><router-link :to="{ name: 'EmailTemplates' }">Edit email templates</router-link></li>
-          <li v-if="$can('manageInvites')"><router-link :to="{ name: 'InvitationManager' }">View invitations</router-link></li>
+          <li v-if="$can('editEmailTemplates')">
+            <router-link :to="{ name: 'EmailTemplates' }">Edit email templates</router-link>
+          </li>
+          <li v-if="$can('manageInvites')">
+            <router-link :to="{ name: 'InvitationManager' }">View invitations</router-link>
+          </li>
         </ul>
       </section>
 
       <!-- Your Book Submissions -->
-      <section v-if="$can('submitBookOrBundle') && bookSubmissions.length" class="section my-30 py-0">
+      <section
+        v-if="$can('submitBookOrBundle') && bookSubmissions.length"
+        class="section my-30 py-0"
+      >
         <YourBookSubmissions />
       </section>
-
     </div>
   </div>
-
 </template>
 
 <style lang="scss" scoped>
-@import "bulma/sass/utilities/_all.sass";
+@import 'bulma/sass/utilities/_all.sass';
 @import '@/assets/style/mixins.scss';
 
 .page {
@@ -226,5 +298,4 @@ a.button {
   min-width: 200px;
   border-radius: 20px;
 }
-
 </style>

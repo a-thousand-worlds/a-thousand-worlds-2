@@ -7,15 +7,14 @@ export default {
     Content,
   },
   mixins: [
-    validator(function() {
+    validator(function () {
       return [
         ...this.validateEmailTemplate(this.$refs.subject?.html, 'subject'),
         ...this.validateEmailTemplate(this.$refs.body?.html, 'body'),
       ]
-    })
+    }),
   ],
   data() {
-
     // organize content into groups
     const groups = [
       {
@@ -32,14 +31,14 @@ export default {
         title: 'Rejected Submission',
         items: ['book', 'bundle', 'people'],
         path: 'email/submissions/rejected',
-      }
+      },
     ]
 
     return {
       // start with the first item in the first group selected
       active: {
         group: groups[0],
-        item: groups[0].items[0]
+        item: groups[0].items[0],
       },
       groups,
     }
@@ -56,7 +55,7 @@ export default {
     active() {
       this.validate(this.$refs.subject)
       this.validate(this.$refs.body)
-    }
+    },
   },
   mounted() {
     this.validate()
@@ -67,33 +66,38 @@ export default {
       const templateVariables = html.match(/\w+_\w+/g)
 
       const isValidTemplateVariable = variable =>
-        ['FIRST_NAME', 'LAST_NAME', 'FULL_NAME', 'SIGNUP_LINK', 'APPROVED_RECORDS'].includes(variable)
+        ['FIRST_NAME', 'LAST_NAME', 'FULL_NAME', 'SIGNUP_LINK', 'APPROVED_RECORDS'].includes(
+          variable,
+        )
 
       return (templateVariables || [])
-        .map(variable => !isValidTemplateVariable(variable)
-          ? {
-            name,
-            message: `${variable} is not a valid template variable.`
-          }
-          : null
+        .map(variable =>
+          !isValidTemplateVariable(variable)
+            ? {
+                name,
+                message: `${variable} is not a valid template variable.`,
+              }
+            : null,
         )
         .filter(x => x)
-    }
-  }
+    },
+  },
 }
-
 </script>
 
 <template>
   <div class="columns">
-
     <div class="column is-one-quarter">
       <aside class="menu">
         <div v-for="group of groups" :key="group.title" class="mb-20">
           <p class="menu-label">{{ group.title }}{{ group.title.endsWith('ed') ? '' : 's' }}</p>
           <ul class="menu-list">
             <li v-for="item of group.items" :key="item" class="is-capitalized">
-              <a :class="{ 'is-active': item === active.item && group === active.group }" @click.prevent="active = { group, item }">{{ item }}</a>
+              <a
+                :class="{ 'is-active': item === active.item && group === active.group }"
+                @click.prevent="active = { group, item }"
+                >{{ item }}</a
+              >
             </li>
           </ul>
         </div>
@@ -105,7 +109,13 @@ export default {
       <div class="ml-20">
         <h3 class="is-capitalized mb-10">{{ active.group.title }}: {{ active.item }}</h3>
         <div class="mb-20">
-          <p class="mb-10" :class="{ 'has-text-danger': hasError('subject') }" style="font-weight: bold;">Subject: </p>
+          <p
+            class="mb-10"
+            :class="{ 'has-text-danger': hasError('subject') }"
+            style="font-weight: bold"
+          >
+            Subject:
+          </p>
           <Content
             ref="subject"
             :name="`${active.group.path}/${active.item}/subject`"
@@ -114,11 +124,19 @@ export default {
             @change="validate"
           />
           <div v-if="subjectErrors.length" class="field">
-            <p v-for="(error, i) of subjectErrors" :key="i" class="error my-10">{{ error.message || 'Unknown error' }}</p>
+            <p v-for="(error, i) of subjectErrors" :key="i" class="error my-10">
+              {{ error.message || 'Unknown error' }}
+            </p>
           </div>
         </div>
         <div class="mb-20">
-          <p class="mb-10" :class="{ 'has-text-danger': hasError('body') }" style="font-weight: bold;">Message:</p>
+          <p
+            class="mb-10"
+            :class="{ 'has-text-danger': hasError('body') }"
+            style="font-weight: bold"
+          >
+            Message:
+          </p>
           <div :class="{ 'content-container-error': hasError('body') }">
             <Content
               ref="body"
@@ -128,18 +146,19 @@ export default {
             />
           </div>
           <div v-if="bodyErrors.length" class="field">
-            <p v-for="(error, i) of bodyErrors" :key="i" class="error my-10">{{ error.message || 'Unknown error' }}</p>
+            <p v-for="(error, i) of bodyErrors" :key="i" class="error my-10">
+              {{ error.message || 'Unknown error' }}
+            </p>
           </div>
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
 <style scoped lang="scss">
-@import "bulma/sass/utilities/_all.sass";
-@import "bulma/sass/form/shared.sass";
+@import 'bulma/sass/utilities/_all.sass';
+@import 'bulma/sass/form/shared.sass';
 @import '@/assets/style/vars.scss';
 @import '@/assets/style/mixins.scss';
 
@@ -165,5 +184,4 @@ export default {
     }
   }
 }
-
 </style>

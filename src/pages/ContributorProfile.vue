@@ -9,13 +9,9 @@ export default {
 </script>
 
 <template>
-
   <div class="mx-20 mb-30">
-
     <div class="is-flex is-justify-content-center">
-
       <div>
-
         <div class="mb-5">
           <a @click.prevent="$router.back" class="is-uppercase is-primary">&lt; Back</a>
         </div>
@@ -24,9 +20,6 @@ export default {
 
         <ContributorProfileForm />
       </div>
-
     </div>
-
   </div>
-
 </template>

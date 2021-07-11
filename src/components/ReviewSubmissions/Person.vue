@@ -28,7 +28,7 @@ export default {
   computed: {
     ckConfig() {
       return {
-        placeholder: 'No bio'
+        placeholder: 'No bio',
       }
     },
     identities() {
@@ -46,7 +46,7 @@ export default {
     books() {
       if (!this.person) return null
       return this.$store.getters['books/list']().filter(book =>
-        Object.keys(book.creators || {}).includes(this.person.id)
+        Object.keys(book.creators || {}).includes(this.person.id),
       )
     },
     /** Gets the user that createtd the submission. */
@@ -60,7 +60,6 @@ export default {
     },
   },
   methods: {
-
     async reject() {
       this.$store.commit('ui/setBusy', true)
       await this.$store.dispatch('submissions/people/reject', this.sub)
@@ -68,63 +67,102 @@ export default {
       this.$store.dispatch('ui/popup', 'Submission rejected')
     },
 
-    save: debounce(async function() {
+    save: debounce(async function () {
       await this.$store.dispatch('submissions/people/save', {
         path: this.sub.id,
-        value: { ...this.sub }
+        value: { ...this.sub },
       })
     }, 500),
-  }
+  },
 }
 </script>
 
 <template>
   <div class="container">
     <div class="columns">
-
       <!-- image -->
       <div class="column is-2 is-offset-1">
-        <!-- eslint-disable-next-line vue/no-mutating-props -->
-        <PhotoUpload v-model="submission.photo" photoHeight="88px" noremove @update:modelValue="save" />
+        <!-- eslint-disable vue/no-mutating-props -->
+        <PhotoUpload
+          v-model="submission.photo"
+          photoHeight="88px"
+          noremove
+          @update:modelValue="save"
+        />
+        <!-- eslint-enable vue/no-mutating-props -->
       </div>
 
       <!-- name -->
       <div class="column is-3">
-
         <SimpleInput
           v-model="sub.name"
           @update:modelValue="save"
           :disabled="busy"
-          style="font-weight: bold;"
+          style="font-weight: bold"
           placeholder="Name"
         />
 
-        <Dropdown v-model="sub.title" :options="creatorTitles" @update:modelValue="save" style="display: block;" />
+        <Dropdown
+          v-model="sub.title"
+          :options="creatorTitles"
+          @update:modelValue="save"
+          style="display: block"
+        />
 
-        <Tag v-if="!person" :tag="{ tag: 'NEW' }" nolink class="mt-1" v-tippy="{ content: 'This person is new! When they are approved, they will be added to the people directory but they won\'t have any books.' }" />
-        <div v-else>{{ books.length }} book{{ books.length === 1 ?'' : 's' }}</div>
+        <Tag
+          v-if="!person"
+          :tag="{ tag: 'NEW' }"
+          nolink
+          class="mt-1"
+          v-tippy="{
+            content:
+              'This person is new! When they are approved, they will be added to the people directory but they won\'t have any books.',
+          }"
+        />
+        <div v-else>{{ books.length }} book{{ books.length === 1 ? '' : 's' }}</div>
       </div>
 
       <div class="column is-5">
         <!-- bio -->
         <div>
-          <ckeditor @update:modelValue="save" v-model="sub.bio" :disabled="busy" class="oneline" :editor="editor" :config="ckConfig" style="padding: 0;" />
+          <ckeditor
+            @update:modelValue="save"
+            v-model="sub.bio"
+            :disabled="busy"
+            class="oneline"
+            :editor="editor"
+            :config="ckConfig"
+            style="padding: 0"
+          />
         </div>
         <!-- identities -->
         <div class="tags">
-          <Tag v-for="id of identities" :key="id" :tag="peopleTags[id]" type="people" linkToManager class="mr-1 mb-1" v-tippy="{ content: 'Edit people tags' }" />
+          <Tag
+            v-for="id of identities"
+            :key="id"
+            :tag="peopleTags[id]"
+            type="people"
+            linkToManager
+            class="mr-1 mb-1"
+            v-tippy="{ content: 'Edit people tags' }"
+          />
         </div>
       </div>
 
       <!-- reject -->
       <div v-if="sub?.status !== 'rejected'" class="column is-1 has-text-right">
-        <button :class="{ disabled: busy }" :disabled="busy" v-tippy="{ content: 'Reject submission' }" class="is-flat is-uppercase is-underlined" @click="reject">
-          <i class="fas fa-times" style="font-size: 20px;" />
+        <button
+          :class="{ disabled: busy }"
+          :disabled="busy"
+          v-tippy="{ content: 'Reject submission' }"
+          class="is-flat is-uppercase is-underlined"
+          @click="reject"
+        >
+          <i class="fas fa-times" style="font-size: 20px" />
         </button>
       </div>
     </div>
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -134,7 +172,7 @@ export default {
   margin-top: 2rem;
 }
 
-input[type="checkbox"] {
+input[type='checkbox'] {
   width: 25px;
   height: 25px;
 }
@@ -162,11 +200,9 @@ input[type="checkbox"] {
       cursor: pointer;
     }
   }
-
 }
 
 #image-upload {
   display: none;
 }
-
 </style>

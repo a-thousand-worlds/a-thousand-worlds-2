@@ -1,5 +1,4 @@
 <script>
-
 export default {
   name: 'SortableTableHeading',
   props: {
@@ -20,7 +19,7 @@ export default {
       sortConfig: this.modelValue || {
         field: null,
         dir: null,
-      }
+      },
     }
   },
   watch: {
@@ -32,18 +31,21 @@ export default {
     sort(field) {
       this.sortConfig = {
         field,
-        dir: this.sortConfig.field === field
-          ? this.sortConfig.dir === 'desc' ? 'asc' : 'desc'
-          : this.default
+        dir:
+          this.sortConfig.field === field
+            ? this.sortConfig.dir === 'desc'
+              ? 'asc'
+              : 'desc'
+            : this.default,
       }
       this.$emit('update:modelValue', this.sortConfig)
-    }
-  }
+    },
+  },
 }
 </script>
 
 <template>
-  <th style="cursor: pointer; white-space: nowrap; user-select: none;" @click="sort(id)">
+  <th style="cursor: pointer; white-space: nowrap; user-select: none" @click="sort(id)">
     <slot />
     <i
       :class="`ml-1 fas fa-arrow-${sortConfig.dir === 'desc' ? 'down' : 'up'}`"

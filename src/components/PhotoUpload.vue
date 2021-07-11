@@ -1,5 +1,4 @@
 <script>
-
 export default {
   props: {
     labelClass: String,
@@ -8,18 +7,18 @@ export default {
       required: true,
     },
     noMinimumSize: Boolean,
-    noremove: Boolean
+    noremove: Boolean,
   },
   emits: ['update:modelValue'],
   computed: {
     bgPhoto() {
-      return this.modelValue ? `url(${this.modelValue.base64 || this.modelValue.url || this.modelValue})` : 'none'
-    }
+      return this.modelValue
+        ? `url(${this.modelValue.base64 || this.modelValue.url || this.modelValue})`
+        : 'none'
+    },
   },
   methods: {
-
     fileChange(e) {
-
       const file = e.target.files[0]
       const reader = new FileReader()
 
@@ -31,7 +30,7 @@ export default {
 
         // load width and height
         const image = new Image()
-        image.onload = function() {
+        image.onload = function () {
           photo.width = this.width
           photo.height = this.height
         }
@@ -51,29 +50,49 @@ export default {
       }
       this.$emit('update:modelValue', null)
     },
-
-  }
+  },
 }
 </script>
 
 <template>
-
   <div>
-
-    <div class="photo-circle mb-1" style="position: relative; height: 100%;">
+    <div class="photo-circle mb-1" style="position: relative; height: 100%">
       <!-- TODO: preserve aspect ratio with dynamic width and height. min-height is currently a magic number to keep a square aspect ratio. -->
-      <div :class="{ 'bg-secondary': !modelValue, 'has-photo': modelValue }" class="photo-container is-flex is-justify-content-center is-align-items-center" :style="{
-        borderRadius: '999px',
-        position: 'relative',
-        cursor: 'pointer',
-        backgroundImage: bgPhoto,
-        backgroundSize: 'cover',
-        paddingTop: '100%'
-      }">
-        <label for="photo-field" class="has-text-centered" style="cursor: pointer; font-weight: bold; position: absolute; margin-top: -100%;">{{ modelValue ? 'CHANGE' : 'UPLOAD' }}<br>PHOTO</label>
+      <div
+        :class="{ 'bg-secondary': !modelValue, 'has-photo': modelValue }"
+        class="photo-container is-flex is-justify-content-center is-align-items-center"
+        :style="{
+          borderRadius: '999px',
+          position: 'relative',
+          cursor: 'pointer',
+          backgroundImage: bgPhoto,
+          backgroundSize: 'cover',
+          paddingTop: '100%',
+        }"
+      >
+        <label
+          for="photo-field"
+          class="has-text-centered"
+          style="cursor: pointer; font-weight: bold; position: absolute; margin-top: -100%"
+          >{{ modelValue ? 'CHANGE' : 'UPLOAD' }}<br />PHOTO</label
+        >
       </div>
 
-      <input id="photo-field" ref="fileInput" type="file" @change="fileChange($event)" style="position: absolute; height: 100%; width: 100%; cursor: pointer; top: 0; opacity: 0; border-radius: 999px;">
+      <input
+        id="photo-field"
+        ref="fileInput"
+        type="file"
+        @change="fileChange($event)"
+        style="
+          position: absolute;
+          height: 100%;
+          width: 100%;
+          cursor: pointer;
+          top: 0;
+          opacity: 0;
+          border-radius: 999px;
+        "
+      />
     </div>
 
     <template v-if="!noremove">
@@ -81,22 +100,25 @@ export default {
         <a :class="{ 'is-invisible': !modelValue }" @click.prevent="clearPhoto">Remove photo</a>
       </div>
 
-      <div v-if="!noMinimumSize && (!modelValue || modelValue.width < 750)" class="is-flex is-justify-content-center" :style="!modelValue ? { marginTop: '-1.2em' } : null">
-        <p :class="{ 'has-text-danger': modelValue?.width < 750 }" style="position: absolute;">Minimum size: 800x800px</p>
+      <div
+        v-if="!noMinimumSize && (!modelValue || modelValue.width < 750)"
+        class="is-flex is-justify-content-center"
+        :style="!modelValue ? { marginTop: '-1.2em' } : null"
+      >
+        <p :class="{ 'has-text-danger': modelValue?.width < 750 }" style="position: absolute">
+          Minimum size: 800x800px
+        </p>
       </div>
     </template>
-
   </div>
-
 </template>
 
 <style scoped lang="scss">
-@import "bulma/sass/utilities/_all.sass";
+@import 'bulma/sass/utilities/_all.sass';
 @import '@/assets/style/vars.scss';
 @import '@/assets/style/mixins.scss';
 
 .photo-container {
-
   label {
     .photo-circle:hover & {
       @include primary(color);
@@ -104,7 +126,6 @@ export default {
   }
 
   &.has-photo {
-
     .photo {
       .photo-circle:hover & {
         color: white;
@@ -121,7 +142,6 @@ export default {
       }
     }
   }
-
 }
 
 a {
@@ -130,5 +150,4 @@ a {
     @include primary(color);
   }
 }
-
 </style>

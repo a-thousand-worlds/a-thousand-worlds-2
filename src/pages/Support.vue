@@ -17,7 +17,7 @@ export default {
   name: 'Support',
   components: {
     Content,
-    HeartIcon
+    HeartIcon,
   },
   setup() {
     const description = `Donate to support BIPOC children's book creators!`
@@ -34,14 +34,12 @@ export default {
     monthly: 'any',
   }),
   computed: {
-    btcAddress: () => process.env.VUE_APP_SUPPORT_BITCOIN || null
+    btcAddress: () => process.env.VUE_APP_SUPPORT_BITCOIN || null,
   },
 }
-
 </script>
 
 <template>
-
   <div class="columns m-20">
     <div class="column p-0 is-half-desktop is-offset-one-quarter-desktop">
       <Content name="support/title" format="inline" class="title page-title">Support</Content>
@@ -75,18 +73,32 @@ export default {
           <span class="ml-2">$15/month</span>
         </li>
       </ul>
-      <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" class="field">
-        <input type="hidden" name="cmd" value="_s-xclick">
-        <input type="hidden" name="hosted_button_id" :value="PaypalButtons[monthly]">
-        <button type="submit" class="button is-primary is-uppercase is-rounded mt-3">Start Now</button>
+      <form
+        action="https://www.paypal.com/cgi-bin/webscr"
+        method="post"
+        target="_top"
+        class="field"
+      >
+        <input type="hidden" name="cmd" value="_s-xclick" />
+        <input type="hidden" name="hosted_button_id" :value="PaypalButtons[monthly]" />
+        <button type="submit" class="button is-primary is-uppercase is-rounded mt-3">
+          Start Now
+        </button>
       </form>
       <h3 class="is-uppercase divider-bottom mt-6">One-time donation</h3>
       <p>You can also support with a one-time donation in any time</p>
       <div class="field">
-        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" class="field">
-          <input type="hidden" name="cmd" value="_s-xclick">
-          <input type="hidden" name="hosted_button_id" :value="PaypalButtons.any">
-          <button type="submit" class="button is-primary is-uppercase is-rounded mt-2">Give now</button>
+        <form
+          action="https://www.paypal.com/cgi-bin/webscr"
+          method="post"
+          target="_top"
+          class="field"
+        >
+          <input type="hidden" name="cmd" value="_s-xclick" />
+          <input type="hidden" name="hosted_button_id" :value="PaypalButtons.any" />
+          <button type="submit" class="button is-primary is-uppercase is-rounded mt-2">
+            Give now
+          </button>
         </form>
       </div>
       <div v-if="btcAddress">
@@ -99,14 +111,33 @@ export default {
       <h2>Participate</h2>
       <h3 class="is-uppercase divider-bottom">Submit a book recommendation</h3>
       <div class="field">
-        <button @click="$router.push({name: 'Contact', query: { subject: 'I am a BIPOC Leader in the book industry' }})" class="button is-primary is-uppercase is-rounded">You are a BIPOC Leader</button>
+        <button
+          @click="
+            $router.push({
+              name: 'Contact',
+              query: { subject: 'I am a BIPOC Leader in the book industry' },
+            })
+          "
+          class="button is-primary is-uppercase is-rounded"
+        >
+          You are a BIPOC Leader
+        </button>
       </div>
       <div class="field">
-        <button @click="$router.push({name: 'Contact', query: { subject: 'Nominate BIPOC Leader(s) to A Thousand Worlds' }})" class="button is-primary is-uppercase is-rounded mt-2">You know a BIPOC Leader</button>
+        <button
+          @click="
+            $router.push({
+              name: 'Contact',
+              query: { subject: 'Nominate BIPOC Leader(s) to A Thousand Worlds' },
+            })
+          "
+          class="button is-primary is-uppercase is-rounded mt-2"
+        >
+          You know a BIPOC Leader
+        </button>
       </div>
     </div>
   </div>
-
 </template>
 
 <style>

@@ -4,20 +4,16 @@ module.exports = {
     'plugin:jest-dom/recommended',
     'plugin:testing-library/recommended',
     'plugin:vue/vue3-recommended',
-    'raine'
+    'raine',
+    'prettier',
   ],
   parserOptions: {
-    parser: 'babel-eslint'
+    parser: 'babel-eslint',
   },
-  plugins: [
-    'jest-dom',
-    'testing-library'
-  ],
+  plugins: ['jest-dom', 'testing-library', 'prettier'],
   rules: {
-    'vue/component-name-in-template-casing': [
-      2,
-      'PascalCase'
-    ],
+    'prettier/prettier': [2],
+    'vue/component-name-in-template-casing': [2, 'PascalCase'],
     'vue/attribute-hyphenation': 0,
     'vue/attributes-order': 0,
     'vue/html-closing-bracket-newline': 0,
@@ -29,9 +25,11 @@ module.exports = {
     'vue/singleline-html-element-content-newline': 0,
     // use fork to allow MemberExpressions
     // https://github.com/jfmengels/eslint-plugin-fp/pull/54
-    "fp/no-mutating-methods": [2, {
-      "allowedObjects": ["$router", "router", "_"]
-    }]
-
-  }
+    'fp/no-mutating-methods': [
+      2,
+      {
+        allowedObjects: ['$router', 'router', '_'],
+      },
+    ],
+  },
 }

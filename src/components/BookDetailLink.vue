@@ -10,7 +10,7 @@ export default {
     // if true, links to BookEdit
     edit: {
       type: Boolean,
-    }
+    },
   },
   data() {
     return {
@@ -23,8 +23,8 @@ export default {
         name: this.edit ? 'BookEdit' : 'BookDetail',
         params: {
           isbn: this.book.isbn,
-          slug: slugify(this.book.title.replace(/'/g, ''))
-        }
+          slug: slugify(this.book.title.replace(/'/g, '')),
+        },
       }
     },
   },
@@ -41,7 +41,7 @@ export default {
     onClick(e) {
       this.$router.push({
         ...this.route,
-        ...this.editOnClick ? { name: 'BookEdit' } : null
+        ...(this.editOnClick ? { name: 'BookEdit' } : null),
       })
     },
     keydown(e) {
@@ -56,7 +56,6 @@ export default {
     },
   },
 }
-
 </script>
 
 <template>

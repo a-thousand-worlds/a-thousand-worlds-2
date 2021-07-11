@@ -22,19 +22,20 @@ export default {
     next()
   },
   setup() {
-
     const getFilterPhrase = state => {
       const filters = state.people.filters
       const filterNames = filters.map(tag => tag.tag).join(', ')
       return `${filterNames} creators`
     }
 
-    const getDescription = state => state.people.filters.length > 0
-      ? `Read books by ${getFilterPhrase(state)} at A Thousand Worlds`
-      : 'Colorful Reads X Colorful People'
-    const getTitle = state => state.people.filters.length > 0
-      ? `${getFilterPhrase(state)} @ A Thousand Worlds`
-      : 'A Thousand Worlds'
+    const getDescription = state =>
+      state.people.filters.length > 0
+        ? `Read books by ${getFilterPhrase(state)} at A Thousand Worlds`
+        : 'Colorful Reads X Colorful People'
+    const getTitle = state =>
+      state.people.filters.length > 0
+        ? `${getFilterPhrase(state)} @ A Thousand Worlds`
+        : 'A Thousand Worlds'
 
     const descriptionComputed = computedFromState(getDescription)
     // TODO: Commit people collage once we have all the people photos
@@ -52,10 +53,16 @@ export default {
         { name: 'twitter:title', content: titleComputed },
       ],
     })
-    watchEffect(() => store.dispatch('structuredData/set', { path: 'description', value: descriptionComputed.value }))
+    watchEffect(() =>
+      store.dispatch('structuredData/set', {
+        path: 'description',
+        value: descriptionComputed.value,
+      }),
+    )
     // watchEffect(() => store.dispatch('structuredData/set', { path: 'image.url', value: imageComputed.value }))
-    watchEffect(() => store.dispatch('structuredData/set', { path: 'headline', value: titleComputed.value }))
-
+    watchEffect(() =>
+      store.dispatch('structuredData/set', { path: 'headline', value: titleComputed.value }),
+    )
   },
   computed: {
     people() {
@@ -77,7 +84,7 @@ export default {
       if (Object.keys(prev).length === 0 && Object.keys(next).length > 0) {
         this.$store.dispatch('people/setFiltersFromUrl')
       }
-    }
+    },
   },
   methods: {
     resetFilter() {
@@ -85,16 +92,14 @@ export default {
     },
   },
 }
-
 </script>
 
 <template>
-
   <teleport to="#people-filter-menu">
     <Filter type="people" />
   </teleport>
 
-  <div v-if="loading" class="has-text-centered" style="margin-top: 20vh;">
+  <div v-if="loading" class="has-text-centered" style="margin-top: 20vh">
     <Loader />
   </div>
 
@@ -105,17 +110,20 @@ export default {
     </div>
 
     <div class="container is-flex is-flex-direction-row is-flex-wrap-wrap mx-20 mb-60">
-
-      <div v-for="person of people" :key="person.id" :class="{ 'with-bookmarks': $store.state.ui.bookmarksOpen }" class="has-text-centered person-block p-3">
+      <div
+        v-for="person of people"
+        :key="person.id"
+        :class="{ 'with-bookmarks': $store.state.ui.bookmarksOpen }"
+        class="has-text-centered person-block p-3"
+      >
         <PersonCard :person="person" />
       </div>
     </div>
   </div>
-
 </template>
 
 <style scoped lang="scss">
-@import "bulma/sass/utilities/_all.sass";
+@import 'bulma/sass/utilities/_all.sass';
 
 .person-block {
   width: 50%;
@@ -125,14 +133,21 @@ export default {
     margin-left: 0;
     margin-right: 0;
   }
-  @include from($desktop) { width: 33%; }
-  @include from($widescreen) { width: 25%; }
+  @include from($desktop) {
+    width: 33%;
+  }
+  @include from($widescreen) {
+    width: 25%;
+  }
 
   &.with-bookmarks {
     width: 100%;
-    @include from($desktop) { width: 50%; }
-    @include from($widescreen) { width: 33%; }
+    @include from($desktop) {
+      width: 50%;
+    }
+    @include from($widescreen) {
+      width: 33%;
+    }
   }
 }
-
 </style>

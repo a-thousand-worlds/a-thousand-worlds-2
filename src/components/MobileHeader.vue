@@ -1,5 +1,4 @@
 <script>
-
 import HamburgerIcon from '@/assets/icons/hamburger.svg'
 import MainMenu from '@/components/MainMenu.vue'
 
@@ -10,13 +9,13 @@ export default {
   },
   data() {
     return {
-      isOpen: false
+      isOpen: false,
     }
   },
   watch: {
-    '$route'() {
+    $route() {
       this.isOpen = false
-    }
+    },
   },
 }
 </script>
@@ -35,7 +34,16 @@ export default {
       </button>
     </section>
 
-    <section v-if="isOpen" class="submenu p-2 pt-20 has-text-centered is-align-self-stretch is-flex-direction-column is-justify-content-space-between">
+    <section
+      v-if="isOpen"
+      class="
+        submenu
+        p-2
+        pt-20
+        has-text-centered
+        is-align-self-stretch is-flex-direction-column is-justify-content-space-between
+      "
+    >
       <MainMenu />
     </section>
   </div>
@@ -45,7 +53,9 @@ export default {
 <style lang="scss">
 // hide filters
 .submenu {
-  #books-filter-menu, #bundles-filter-menu, #people-filter-menu {
+  #books-filter-menu,
+  #bundles-filter-menu,
+  #people-filter-menu {
     display: none;
   }
 }
@@ -110,5 +120,4 @@ export default {
     outline: none;
   }
 }
-
 </style>

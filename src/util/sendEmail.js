@@ -15,14 +15,19 @@ const sendEmail = async ({ to, subject, body }) => {
   if (firebase.auth().currentUser) {
     token = await firebase.auth().currentUser.getIdToken()
   }
-  return axios.get(`${url}?to=${to}&subject=${encodeURIComponent(subject)}&html=${encodeURIComponent(body)}`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  }).catch(e => {
-    console.error(e)
-    throw new Error('Email not sent')
-  })
+  return axios
+    .get(
+      `${url}?to=${to}&subject=${encodeURIComponent(subject)}&html=${encodeURIComponent(body)}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+    .catch(e => {
+      console.error(e)
+      throw new Error('Email not sent')
+    })
 }
 
 export default sendEmail

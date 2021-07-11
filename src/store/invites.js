@@ -8,10 +8,8 @@ const firebaseImport = () => import(/* webpackChunkName: "firebase" */ '@/fireba
 
 const module = mergeOne(collectionModule('invites'), {
   actions: {
-
     /** Sends an invitation email. */
     send({ rootGetters }, { code, email, firstName, lastName, role }) {
-
       // generate email
       const subjectTemplate = rootGetters['content/get'](`email/invite/${role}/subject`)
       const bodyTemplate = rootGetters['content/get'](`email/invite/${role}/body`)
@@ -25,10 +23,12 @@ const module = mergeOne(collectionModule('invites'), {
 
       const signupUrl = `${window.location.origin}/signup?code=${code}`
 
-      const template = s => s.replace(/FIRST_NAME/g, firstName || 'friend')
-        .replace(/LAST_NAME/g, lastName)
-        .replace(/FULL_NAME/g, firstName ? `${firstName} ${lastName}` : 'friend')
-        .replace(/SIGNUP_LINK/g, `<a href='${signupUrl}'>${signupUrl}</a>`)
+      const template = s =>
+        s
+          .replace(/FIRST_NAME/g, firstName || 'friend')
+          .replace(/LAST_NAME/g, lastName)
+          .replace(/FULL_NAME/g, firstName ? `${firstName} ${lastName}` : 'friend')
+          .replace(/SIGNUP_LINK/g, `<a href='${signupUrl}'>${signupUrl}</a>`)
 
       const subject = template(subjectTemplate)
       const body = template(bodyTemplate)
@@ -49,8 +49,10 @@ const module = mergeOne(collectionModule('invites'), {
     },
 
     /** Creates and sends an invitation for a given role. */
-    async createAndSend({ dispatch, rootGetters }, { recipient: { email, firstName, lastName }, role }) {
-
+    async createAndSend(
+      { dispatch, rootGetters },
+      { recipient: { email, firstName, lastName }, role },
+    ) {
       if (!email) throw new Error('email required')
       if (!role) throw new Error('role required')
 
@@ -85,7 +87,6 @@ const module = mergeOne(collectionModule('invites'), {
 
       return dispatch('send', { code, email, firstName, lastName, role })
     },
-
   },
 })
 

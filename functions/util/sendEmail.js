@@ -8,22 +8,21 @@ const sendEmail = async (to, subject, html, attachments = []) => {
     port: 2525,
     auth: {
       user: mg.user,
-      pass: mg.password
-    }
+      pass: mg.password,
+    },
   })
 
   let info = {
-    error: null
+    error: null,
   }
   try {
     info = await transporter.sendMail({
       from: mg.sender,
       to,
       subject,
-      html
+      html,
     })
-  }
-  catch (error) {
+  } catch (error) {
     info.error = error
   }
   return info

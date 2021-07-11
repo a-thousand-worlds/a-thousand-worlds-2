@@ -12,18 +12,18 @@ export default {
   props: ['hideBookmarks'],
   data() {
     return {
-      showViewOptions: true
+      showViewOptions: true,
     }
   },
   computed: {
     bookmarksCount() {
       return Object.keys(this.$store.state.user.user?.profile.bookmarks || {}).length
-    }
+    },
   },
   watch: {
-    '$route'(next) {
+    $route(next) {
       this.showViewOptions = next.name === 'Home' || next.name === 'Bundles'
-    }
+    },
   },
   methods: {
     toggleViewMode(mode) {
@@ -36,51 +36,68 @@ export default {
       }
       const state = this.$store.state.ui.bookmarksOpen
       this.$store.commit('ui/setBookmarksOpen', !state)
-    }
-  }
+    },
+  },
 }
 </script>
 
 <template>
-  <aside class="is-flex is-flex-direction-column is-justify-content-space-between has-text-centered" style="height: 100%;">
-
+  <aside
+    class="is-flex is-flex-direction-column is-justify-content-space-between has-text-centered"
+    style="height: 100%"
+  >
     <!-- div must remain when hiding for justify-content: space-between -->
     <div>
       <ul v-if="!hideBookmarks" class="menu-list">
-        <li><a :href="null" class="bookmark-toggler" @click.prevent="toggleBookmarks">
-          <BookmarkIcon class="fill-secondary" v-tippy="{ content: `You have ${bookmarksCount} saved book${bookmarksCount !== 1 ? 's' : ''}` }" />
-          <span v-if="$iam('authorized')" class="badge">{{ bookmarksCount }}</span>
-        </a></li>
+        <li>
+          <a :href="null" class="bookmark-toggler" @click.prevent="toggleBookmarks">
+            <BookmarkIcon
+              class="fill-secondary"
+              v-tippy="{
+                content: `You have ${bookmarksCount} saved book${bookmarksCount !== 1 ? 's' : ''}`,
+              }"
+            />
+            <span v-if="$iam('authorized')" class="badge">{{ bookmarksCount }}</span>
+          </a>
+        </li>
       </ul>
     </div>
 
     <ul v-if="showViewOptions" class="menu-list">
       <li>
-        <a :class="{ active: $store.state.ui.viewMode === 'covers' }" href="#" @click.prevent="toggleViewMode('covers')">
+        <a
+          :class="{ active: $store.state.ui.viewMode === 'covers' }"
+          href="#"
+          @click.prevent="toggleViewMode('covers')"
+        >
           <CoverViewIcon />
           <span class="icon-label">Cover</span>
         </a>
       </li>
       <li class="my-30">
-        <a :class="{ active: $store.state.ui.viewMode === 'list' }" href="#" @click.prevent="toggleViewMode('list')">
+        <a
+          :class="{ active: $store.state.ui.viewMode === 'list' }"
+          href="#"
+          @click.prevent="toggleViewMode('list')"
+        >
           <ListViewIcon />
           <span class="icon-label">List</span>
         </a>
       </li>
     </ul>
-
   </aside>
 </template>
 
 <style scoped lang="scss">
-@import "bulma/sass/utilities/_all.sass";
+@import 'bulma/sass/utilities/_all.sass';
 @import '@/assets/style/mixins.scss';
 
 .bookmark-toggler {
   position: relative;
   user-select: none;
 
-  &:focus, svg:focus {
+  &:focus,
+  svg:focus {
     outline: none;
   }
 
@@ -100,7 +117,6 @@ export default {
 }
 
 .menu-list a {
-
   color: black;
   padding: 0;
 
@@ -124,7 +140,5 @@ export default {
       color: #ccc;
     }
   }
-
 }
-
 </style>

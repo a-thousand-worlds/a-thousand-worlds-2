@@ -14,8 +14,7 @@ let creators = null
 try {
   books = JSON.parse(fs.readFileSync('/tmp/atw/books.json'))
   creators = JSON.parse(fs.readFileSync('/tmp/atw/creators.json'))
-}
-catch (e) {
+} catch (e) {
   console.error('reading data files error. breaking', e)
   process.exit(1)
 }
@@ -36,8 +35,7 @@ booksIds.forEach(bookId => {
 
   if (!Array.isArray(book.authors)) {
     nextBooks[bookId] = book
-  }
-  else {
+  } else {
     const nextCreators = {}
     book.authors.forEach(author => {
       const person = creatorsList.find(person => person.name.toLowerCase() === author.toLowerCase())
@@ -49,12 +47,16 @@ booksIds.forEach(bookId => {
     })
     if (Array.isArray(book.illustrators)) {
       book.illustrators.forEach(illustrator => {
-        const person = creatorsList.find(person => person.name.toLowerCase() === illustrator.toLowerCase())
+        const person = creatorsList.find(
+          person => person.name.toLowerCase() === illustrator.toLowerCase(),
+        )
         if (!person) {
           console.log(`illustrator <${illustrator}> person not found for book <${book.title}>`)
           return
         }
-        nextCreators[person.id] = nextCreators[person.id] ? 'author-illustrator' : person.role || 'illustrator'
+        nextCreators[person.id] = nextCreators[person.id]
+          ? 'author-illustrator'
+          : person.role || 'illustrator'
       })
     }
     book.creators = nextCreators
@@ -66,4 +68,6 @@ booksIds.forEach(bookId => {
 })
 
 fs.writeFileSync('./books.rebuilded.json', JSON.stringify(nextBooks, null, 2))
-console.log('Old books version saved at /tmp/atw/books.json, and updated file saved to ./books.updated.json - you need manually import it to Firebase. There is no reason to track this file with git, it is saved here just to find it easy - remove it after import is complete')
+console.log(
+  'Old books version saved at /tmp/atw/books.json, and updated file saved to ./books.updated.json - you need manually import it to Firebase. There is no reason to track this file with git, it is saved here just to find it easy - remove it after import is complete',
+)

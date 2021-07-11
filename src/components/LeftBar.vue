@@ -37,28 +37,32 @@ export default {
     onScroll() {
       if (this.animateLogo) {
         this.menuOffset = Math.min((window.scrollY + menuOffset) * menuRate, 0)
-        this.opacity = Math.min(Math.max(0, window.scrollY - fadeStart), fadeEnd - fadeStart) / (fadeEnd - fadeStart)
-      }
-      else {
+        this.opacity =
+          Math.min(Math.max(0, window.scrollY - fadeStart), fadeEnd - fadeStart) /
+          (fadeEnd - fadeStart)
+      } else {
         this.menuOffset = 0
         this.opacity = 1
         window.removeEventListener('scroll', this.onScroll)
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
 <template>
-  <aside class="is-align-self-stretch menu is-flex-direction-column is-justify-content-space-between">
-
+  <aside
+    class="is-align-self-stretch menu is-flex-direction-column is-justify-content-space-between"
+  >
     <div class="mb-10">
-      <router-link :to="{name: 'Home'}" :style="{ opacity: animateLogo ? opacity : null }">
-        <Logo title="COLORFUL READS X COLORFUL PEOPLE: Picture books curated by leaders in the industry" style="max-width: 100px; max-height: 100px;" />
+      <router-link :to="{ name: 'Home' }" :style="{ opacity: animateLogo ? opacity : null }">
+        <Logo
+          title="COLORFUL READS X COLORFUL PEOPLE: Picture books curated by leaders in the industry"
+          style="max-width: 100px; max-height: 100px"
+        />
       </router-link>
     </div>
 
     <MainMenu :style="{ transform: `translateY(${menuOffset}px)` }" />
-
   </aside>
 </template>

@@ -14,7 +14,7 @@ const module = {
       dispatch('books/subscribe')
       dispatch('bundles/subscribe')
       dispatch('people/subscribe')
-    }
+    },
   },
 }
 

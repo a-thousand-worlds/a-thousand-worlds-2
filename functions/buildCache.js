@@ -8,8 +8,7 @@ module.exports = () => {
     try {
       const ret = await rebuildCache()
       res.json({ ok: ret })
-    }
-    catch (err) {
+    } catch (err) {
       console.error('ERROR!', err)
       res.json({ err })
     }

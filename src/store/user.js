@@ -32,7 +32,7 @@ const usersModule = collection('users')
 const module = mergeOne(usersModule, {
   state: () => ({
     user: null,
-    nextPromise: null
+    nextPromise: null,
   }),
   mutations: {
     setNextPromise(state, accept) {
@@ -50,10 +50,9 @@ const module = mergeOne(usersModule, {
     },
     setRoles: (state, roles) => {
       if (state.user) state.user.roles = roles
-    }
+    },
   },
   actions: {
-
     // next subscription used by router on access validation
     next(ctx) {
       return new Promise((resolve, reject) => {
@@ -90,7 +89,7 @@ const module = mergeOne(usersModule, {
       await dispatch('saveProfile', {
         name,
         email,
-        ...code ? { code } : null,
+        ...(code ? { code } : null),
       })
 
       return user
@@ -139,8 +138,7 @@ const module = mergeOne(usersModule, {
         profile.bookmarks = Object.keys(profile.bookmarks)
           .filter(id => id !== mark.id)
           .reduce((acc, id) => ({ [id]: profile.bookmarks[id], ...acc }), {})
-      }
-      else {
+      } else {
         profile.bookmarks[mark.id] = mark.type
       }
       await ctx.dispatch('saveProfile', profile)
@@ -180,7 +178,7 @@ const module = mergeOne(usersModule, {
       firebaseImport().then(firebasem => {
         const firebase = firebasem.default
 
-        firebase.auth().onAuthStateChanged(function(user) {
+        firebase.auth().onAuthStateChanged(function (user) {
           if (user) {
             // User is signed in.
             const u = auth2user(user)
@@ -194,7 +192,7 @@ const module = mergeOne(usersModule, {
                 profile: defaultProfile(u, val.profile || {}),
                 roles: {
                   authorized: true,
-                  ...val.roles
+                  ...val.roles,
                 },
               })
 
@@ -206,14 +204,13 @@ const module = mergeOne(usersModule, {
                   const invite = inviteSnap.val()
                   if (invite && invite.role) {
                     const roles = {
-                      authorized: true
+                      authorized: true,
                     }
                     roles[invite.role] = true
                     ctx.commit('setRoles', roles)
                   }
                 })
               }
-
             })
 
             // subscribe to profile
@@ -238,14 +235,11 @@ const module = mergeOne(usersModule, {
               const roles = defaultProfile(u, snap.val())
               ctx.commit('setRoles', roles)
             })
-
-          }
-          else {
+          } else {
             ctx.commit('setUser', null)
           }
         })
       })
-
     },
 
     async updateEmail(ctx, email) {
@@ -256,8 +250,7 @@ const module = mergeOne(usersModule, {
         await user.updateEmail(email)
       }
     },
-
-  }
+  },
 })
 
 export default module

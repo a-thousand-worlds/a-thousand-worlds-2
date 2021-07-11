@@ -2,7 +2,6 @@ const express = require('express')
 const coverImageByISBN = require('./util/coverImageByISBN')
 
 module.exports = () => {
-
   const app = express()
 
   app.get('/', async (req, res) => {
@@ -16,8 +15,7 @@ module.exports = () => {
     const img = await coverImageByISBN(req.query.isbn)
     if (img) {
       console.log(`[${req.query.isbn}] cover found`)
-    }
-    else {
+    } else {
       console.log(`[${req.query.isbn}] cover not found`)
     }
     res.json(img)

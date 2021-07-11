@@ -17,12 +17,12 @@ export default {
   computed: {
     existingInvites() {
       return this.recipients.filter(recipient =>
-        this.$store.getters['invites/findBy']('email', recipient.email)
+        this.$store.getters['invites/findBy']('email', recipient.email),
       )
     },
     existingRecipients() {
       return this.recipients.filter(recipient =>
-        this.$store.getters['users/findBy']('profile.email', recipient.email)
+        this.$store.getters['users/findBy']('profile.email', recipient.email),
       )
     },
     hasFieldErrors() {
@@ -32,9 +32,7 @@ export default {
       return this.recipients.filter(recipient => !recipient.isValid)
     },
     recipients() {
-      return this.emailInput
-        ? this.emailInput.split(/[\n,]/g).map(parseRecipient)
-        : []
+      return this.emailInput ? this.emailInput.split(/[\n,]/g).map(parseRecipient) : []
     },
   },
   mounted() {
@@ -45,15 +43,13 @@ export default {
     document.removeEventListener('mouseup', this.updateExpanded)
   },
   methods: {
-
     // resize the textarea to fit its content
     autosize(e) {
       const multiline = e.target.value.includes('\n')
       if (multiline) {
         e.target.style.height = 'auto'
         e.target.style.height = e.target.scrollHeight + 'px'
-      }
-      else {
+      } else {
         e.target.style.removeProperty('height')
       }
     },
@@ -70,7 +66,7 @@ export default {
         .catch(err => {
           console.error(err)
           this.error = {
-            message: err.message
+            message: err.message,
           }
           this.loading = false
           this.disableSend = false
@@ -88,7 +84,6 @@ export default {
     },
 
     async send() {
-
       this.closeInviteDropdown()
 
       if (!this.validate()) return
@@ -97,14 +92,17 @@ export default {
         this.$store.dispatch('invites/createAndSend', {
           recipient,
           role: this.role,
-        })
+        }),
       )
 
-      await this.handleResponse(Promise.all(invitePromises)
-        .then(() => {
-          this.$store.dispatch('ui/popup', { text: `Email${this.recipients.length > 1 ? 's' : ''} sent!`, type: 'success' })
+      await this.handleResponse(
+        Promise.all(invitePromises).then(() => {
+          this.$store.dispatch('ui/popup', {
+            text: `Email${this.recipients.length > 1 ? 's' : ''} sent!`,
+            type: 'success',
+          })
           this.reset()
-        })
+        }),
       )
     },
 
@@ -146,7 +144,6 @@ export default {
 
     /** Checks all fields for errors and updates this.error. */
     validate() {
-
       this.error = null
 
       if (!this.emailInput) {
@@ -154,34 +151,29 @@ export default {
           message: 'Enter one or more emails',
           fields: { ...this.error?.fields, emailInput: true },
         }
-      }
-      else if (!this.role) {
+      } else if (!this.role) {
         this.error = {
           message: 'Enter a role',
           fields: { ...this.error?.fields, role: true },
         }
-      }
-      else if (this.invalidRecipients.length > 0) {
+      } else if (this.invalidRecipients.length > 0) {
         this.error = {
           message: `Invalid email${this.invalidRecipients.length > 1 ? 's' : ''}:`,
           data: this.invalidRecipients.map(recipient => recipient.raw),
           fields: { ...this.error?.fields, emailInput: true },
         }
-      }
-      else if (this.recipients.some(recipient => !recipient.firstName)) {
+      } else if (this.recipients.some(recipient => !recipient.firstName)) {
         this.error = {
           message: 'Name is also required, e.g. "Sarah Lopez - sarah@test.com"',
           fields: { ...this.error?.fields, emailInput: true },
         }
-      }
-      else if (this.existingRecipients.length > 0) {
+      } else if (this.existingRecipients.length > 0) {
         this.error = {
           message: `Already registered:`,
           data: this.existingRecipients.map(recipient => recipient.raw),
           fields: { ...this.error?.fields, emailInput: true },
         }
-      }
-      else if (this.existingInvites.length > 0) {
+      } else if (this.existingInvites.length > 0) {
         this.error = {
           message: `Already Invited:`,
           data: this.existingInvites.map(recipient => recipient.raw),
@@ -193,12 +185,10 @@ export default {
     },
   },
 }
-
 </script>
 
 <template>
   <div v-click-outside="closeInviteDropdown">
-
     <p v-if="expanded" class="mb-10">Enter a list of names and emails (one per line)</p>
 
     <div class="field">
@@ -208,14 +198,18 @@ export default {
             ref="textarea"
             v-model="emailInput"
             class="textarea"
-            :class="{ 'is-danger': hasError('emailInput')}"
+            :class="{ 'is-danger': hasError('emailInput') }"
             :placeholder="'Sarah Lopez - sarah@test.com\nDillon Avery - dillon@test.com\nMattie Smith - mattie@test.com\n...'"
-            style="line-height: 1.6; min-height: 2.5rem; min-width: 100px; max-width: 700px;"
+            style="line-height: 1.6; min-height: 2.5rem; min-width: 100px; max-width: 700px"
             :style="!expanded ? 'padding-top: 0.5rem; padding-bottom: 0.5rem;' : ''"
             @input="autosize"
           />
           <div class="ml-2">
-            <a v-tippy="{ content: 'Invite multiple' }" class="pt-2 pr-2" @click.prevent="toggleExpanded">
+            <a
+              v-tippy="{ content: 'Invite multiple' }"
+              class="pt-2 pr-2"
+              @click.prevent="toggleExpanded"
+            >
               <i :class="`fas fa-angle-double-${expanded ? 'up' : 'down'}`" />
             </a>
           </div>
@@ -231,16 +225,32 @@ export default {
       <div v-if="$allowedInviteeRoles().length > 1" class="control">
         <div :class="{ dropdown: true, 'is-active': dropdownActive }">
           <div class="dropdown-trigger">
-            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu" @click.prevent.stop="toggleInviteDropdown">
+            <button
+              class="button"
+              aria-haspopup="true"
+              aria-controls="dropdown-menu"
+              @click.prevent.stop="toggleInviteDropdown"
+            >
               <span>{{ role || 'CHOOSE ROLE' }}</span>
               <span class="icon is-small">
                 <i class="fas fa-angle-down" aria-hidden="true" />
               </span>
             </button>
           </div>
-          <div id="dropdown-menu" class="dropdown-menu" :class="{ 'is-danger': hasError('role') }" role="menu">
+          <div
+            id="dropdown-menu"
+            class="dropdown-menu"
+            :class="{ 'is-danger': hasError('role') }"
+            role="menu"
+          >
             <div class="dropdown-content">
-              <a v-for="userRole in $allowedInviteeRoles()" :key="userRole" class="dropdown-item is-capitalized" :class="{ 'is-active': role === userRole }" @click.prevent="setInviteRole(userRole)">
+              <a
+                v-for="userRole in $allowedInviteeRoles()"
+                :key="userRole"
+                class="dropdown-item is-capitalized"
+                :class="{ 'is-active': role === userRole }"
+                @click.prevent="setInviteRole(userRole)"
+              >
                 {{ userRole }}
               </a>
             </div>
@@ -249,7 +259,9 @@ export default {
       </div>
 
       <div class="control">
-        <button class="button is-primary" :disabled="disableSend" @click.prevent="send">Invite</button>
+        <button class="button is-primary" :disabled="disableSend" @click.prevent="send">
+          Invite
+        </button>
       </div>
     </div>
 
@@ -263,13 +275,11 @@ export default {
         <p v-for="item of error.data" :key="item">{{ item }}</p>
       </div>
     </div>
-
   </div>
 </template>
 
 <style scoped lang="scss">
-@import "bulma/sass/utilities/_all.sass";
-@import "bulma/sass/components/dropdown.sass";
+@import 'bulma/sass/utilities/_all.sass';
+@import 'bulma/sass/components/dropdown.sass';
 @import '@/assets/style/vars.scss';
-
 </style>

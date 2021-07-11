@@ -14,10 +14,13 @@ export default {
     },
   },
   computed: {
-
     searchMatchStart() {
-      return this.search && this.value && (!this.searchField || this.searchField.trim().toLowerCase() === this.field)
-        ? diacritics(this.value).toLowerCase().indexOf(diacritics(this.searchValue.trim()).toLowerCase())
+      return this.search &&
+        this.value &&
+        (!this.searchField || this.searchField.trim().toLowerCase() === this.field)
+        ? diacritics(this.value)
+            .toLowerCase()
+            .indexOf(diacritics(this.searchValue.trim()).toLowerCase())
         : -1
     },
 
@@ -34,14 +37,17 @@ export default {
     value() {
       return this.$slots.default()[0].children
     },
-
-  }
+  },
 }
 </script>
 
 <template>
   <span v-if="searchMatchStart >= 0">
-    {{ value.slice(0, searchMatchStart) }}<span :class="{ 'bg-primary': searchMatchStart >= 0 }">{{ value.slice(searchMatchStart, searchMatchStart + search.trim().length) }}</span>{{ value.slice(searchMatchStart + search.trim().length) }}
+    {{ value.slice(0, searchMatchStart)
+    }}<span :class="{ 'bg-primary': searchMatchStart >= 0 }">{{
+      value.slice(searchMatchStart, searchMatchStart + search.trim().length)
+    }}</span
+    >{{ value.slice(searchMatchStart + search.trim().length) }}
   </span>
   <span v-else>{{ value }}</span>
 </template>

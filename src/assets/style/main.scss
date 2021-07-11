@@ -4,60 +4,67 @@
 @import url('https://fonts.googleapis.com/css2?family=Sen:wght@400;700&display=swap');
 
 @font-face {
-  font-family: "GT Walsheim";
-  src: url("/fonts/GT Walsheim/GT-Walsheim-Medium.ttf");
+  font-family: 'GT Walsheim';
+  src: url('/fonts/GT Walsheim/GT-Walsheim-Medium.ttf');
 }
 
 // set font-family before importing Bulma
 $family-sans-serif: Sen, sans-serif;
 $family-primary: $family-sans-serif;
 
-@import "bulma/sass/utilities/_all.sass";
-@import "bulma/sass/base/_all.sass";
-@import "bulma/sass/helpers/_all.sass";
-@import "bulma/sass/components/menu.sass";
-@import "bulma/sass/elements/button.sass";
-@import "bulma/sass/form/shared.sass";
-@import "bulma/sass/form/input-textarea.sass";
-@import "bulma/sass/form/tools.sass";
-@import "bulma/sass/form/select.sass";
-@import "bulma/sass/grid/columns.sass";
-@import "bulma/sass/layout/section.sass";
+@import 'bulma/sass/utilities/_all.sass';
+@import 'bulma/sass/base/_all.sass';
+@import 'bulma/sass/helpers/_all.sass';
+@import 'bulma/sass/components/menu.sass';
+@import 'bulma/sass/elements/button.sass';
+@import 'bulma/sass/form/shared.sass';
+@import 'bulma/sass/form/input-textarea.sass';
+@import 'bulma/sass/form/tools.sass';
+@import 'bulma/sass/form/select.sass';
+@import 'bulma/sass/grid/columns.sass';
+@import 'bulma/sass/layout/section.sass';
 
-@import "./mixins.scss";
-@import "./vars.scss";
+@import './mixins.scss';
+@import './vars.scss';
 
 // extend bulma spacing
 // https://github.com/jgthms/bulma/blob/master/sass/helpers/spacing.sass
-$spacing-values: map.merge($spacing-values, (
-  // rem
-  "7": 7rem,
-  "8": 8rem,
-  "9": 9rem,
-  // px
-  "10": 10px,
-  "20": 20px,
-  "30": 30px,
-  "40": 40px,
-  "50": 50px,
-  "60": 60px,
-  "70": 70px,
-  "80": 80px,
-  "90": 90px,
-  "100": 100px,
-));
-@import "bulma/sass/helpers/spacing.sass";
+$spacing-values: map.merge(
+  $spacing-values,
+  (
+    // rem
+    '7': 7rem,
+    '8': 8rem,
+    '9': 9rem,
+    // px
+    '10': 10px,
+    '20': 20px,
+    '30': 30px,
+    '40': 40px,
+    '50': 50px,
+    '60': 60px,
+    '70': 70px,
+    '80': 80px,
+    '90': 90px,
+    '100': 100px
+  )
+);
+@import 'bulma/sass/helpers/spacing.sass';
 
 // Bulma has is-hidden-* classes that hide elements after a breakpoint, but does not seem to have classes that hide elements up to a breakpoint
 // https://bulma.io/documentation/helpers/visibility-helpers/
 $devices: (
-  tablet: $tablet,          // 768px
-  desktop: $desktop,        // 1024px
-  widescreen: $widescreen,  // 1216px
-  fullhd: $fullhd,          // 1408px
+  tablet: $tablet,
+  // 768px
+  desktop: $desktop,
+  // 1024px
+  widescreen: $widescreen,
+  // 1216px
+  fullhd: $fullhd,
+  // 1408px
 );
 
-@each $key,$value in $devices {
+@each $key, $value in $devices {
   @include until($value) {
     .from-#{$key} {
       display: none;
@@ -76,7 +83,8 @@ hr {
 }
 
 // override bulma title
-.title, .title:not(:last-child) {
+.title,
+.title:not(:last-child) {
   font-size: 30px;
   margin-bottom: 10px;
   @include from($tablet) {
@@ -121,7 +129,9 @@ button.is-flat {
 button.is-selected {
   @include primary(background-color);
   color: $primary-invert;
-  &:hover, &:active, &:focus {
+  &:hover,
+  &:active,
+  &:focus {
     color: $primary-invert;
   }
 }
@@ -176,24 +186,45 @@ button.is-selected {
   border-bottom: solid 1px;
 }
 
-.fill-primary { @include primary(fill); }
-.fill-secondary { @include secondary(fill); }
-.stroke-primary { @include primary(stroke); }
-.stroke-secondary { @include secondary(stroke); }
+.fill-primary {
+  @include primary(fill);
+}
+.fill-secondary {
+  @include secondary(fill);
+}
+.stroke-primary {
+  @include primary(stroke);
+}
+.stroke-secondary {
+  @include secondary(stroke);
+}
 
-a, a.is-primary, i.is-primary, .is-primary-text { @include primary(color); }
+a,
+a.is-primary,
+i.is-primary,
+.is-primary-text {
+  @include primary(color);
+}
 a.primary-hover {
   color: black;
   &:hover {
     @include primary(color);
   }
 }
-a.is-secondary, i.is-secondary, .is-secondary-text, { @include secondary(color); }
-.bg-primary, .button.is-primary:not(.is-outlined) {
+a.is-secondary,
+i.is-secondary,
+.is-secondary-text {
+  @include secondary(color);
+}
+.bg-primary,
+.button.is-primary:not(.is-outlined) {
   @include primary(background-color);
   color: $primary-invert !important; // override a.is-primary since primary mixin increases specificity
 }
-.bg-secondary, .button.is-secondary{ @include secondary(background-color); }
+.bg-secondary,
+.button.is-secondary {
+  @include secondary(background-color);
+}
 .button.is-primary.is-outlined,
 a.button.is-primary.is-outlined {
   @include primary(border-color);
@@ -236,7 +267,8 @@ a.button.is-secondary.is-outlined:hover,
 }
 
 /* Unstyled button for text that needs to sit next to a button and have the same size and padding. is-flat does not remove all styles. */
-.button-unstyled, .button-unstyled.is-primary {
+.button-unstyled,
+.button-unstyled.is-primary {
   cursor: text;
   background-color: transparent;
   border-color: transparent !important;
@@ -268,4 +300,3 @@ a.button.is-secondary.is-outlined:hover,
   user-select: none;
   cursor: pointer;
 }
-

@@ -12,7 +12,6 @@ const watch = functions
   })
   .database.ref('/people/{id}')
   .onCreate(async (snap, context) => {
-
     const person = snap.val()
     // there is no need to push date to logs, cuz firebase functions logging system does this itself
     console.log('Managing person photo', person.name)
@@ -30,8 +29,7 @@ const watch = functions
     if (person.photo.downloadUrl && person.photo.downloadUrl.startsWith('http')) {
       try {
         img = await loadImage(person.photo.downloadUrl, 400)
-      }
-      catch (err) {
+      } catch (err) {
         console.log('loading image error!', person.photo.downloadUrl, err)
         img = null
       }
@@ -39,8 +37,7 @@ const watch = functions
     if (!img && person.photo.base64 && person.photo.base64.length) {
       try {
         img = await image64ToBuffer(person.photo.base64, 400)
-      }
-      catch (err) {
+      } catch (err) {
         console.log('converting image from base64 error!', err)
         img = null
       }
@@ -57,25 +54,23 @@ const watch = functions
     const uuid = UUID.v4()
     const fname = `people/${context.params.id}`
     const file = await bucket.file(fname)
-    await file
-      .save(img.buffer, {
+    await file.save(img.buffer, {
+      metadata: {
+        contentType: 'image/png',
+        cacheControl: 'public,max-age=31536000',
         metadata: {
-          contentType: 'image/png',
-          cacheControl: 'public,max-age=31536000',
-          metadata: {
-            firebaseStorageDownloadTokens: uuid
-          }
-        }
-      })
+          firebaseStorageDownloadTokens: uuid,
+        },
+      },
+    })
     const url = getDownloadUrl(fname, bucket.name, uuid)
 
     await snap.ref.child('photo').set({
       url,
       width: img.width,
-      height: img.height
+      height: img.height,
     })
     console.log('Photo saved:', person.name, url)
-
   })
 
 module.exports = watch

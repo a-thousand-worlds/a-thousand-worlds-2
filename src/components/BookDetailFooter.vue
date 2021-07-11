@@ -4,7 +4,7 @@ import ISBN from 'isbn3'
 export default {
   props: {
     book: {
-      required: true
+      required: true,
     },
   },
   data() {
@@ -23,42 +23,57 @@ export default {
     },
   },
 }
-
 </script>
 
 <template>
   <div class="content-footer">
     <div class="content-footer-inner">
       <div class="link-container">
-
         <button class="button button-unstyled is-primary pl-0">FIND BOOK AT</button>
 
-        <a :href="`https://worldcat.org/isbn/${book.isbn}`" target="_blank"><button class="button is-rounded is-secondary mx-1 test">
-          <i class="fas fa-university mr-1" /> LOCAL LIBRARY
-        </button></a>
+        <a :href="`https://worldcat.org/isbn/${book.isbn}`" target="_blank"
+          ><button class="button is-rounded is-secondary mx-1 test">
+            <i class="fas fa-university mr-1" /> LOCAL LIBRARY
+          </button></a
+        >
 
-        <a v-if="amazonAffiliateCode" :href="`https://amzn.com/${isbn10}?tag=${amazonAffiliateCode}`" target="_blank"><button class="button is-rounded is-secondary mx-1">
-          <i class="fas fa-shopping-cart mr-1" /> AMAZON
-        </button></a>
+        <a
+          v-if="amazonAffiliateCode"
+          :href="`https://amzn.com/${isbn10}?tag=${amazonAffiliateCode}`"
+          target="_blank"
+          ><button class="button is-rounded is-secondary mx-1">
+            <i class="fas fa-shopping-cart mr-1" /> AMAZON
+          </button></a
+        >
 
-        <a v-if="bookshopAffiliateCode" :href="`https://www.bookshop.org/a/${bookshopAffiliateCode}/${isbn13}`" target="_blank"><button class="button is-rounded is-secondary mx-1">
-          <i class="fas fa-shopping-cart mr-1" /> BOOKSHOP
-        </button></a>
+        <a
+          v-if="bookshopAffiliateCode"
+          :href="`https://www.bookshop.org/a/${bookshopAffiliateCode}/${isbn13}`"
+          target="_blank"
+          ><button class="button is-rounded is-secondary mx-1">
+            <i class="fas fa-shopping-cart mr-1" /> BOOKSHOP
+          </button></a
+        >
 
         <!-- <a :href="`http://www.indiebound.org/book/${book.isbn}?aff=${indieboundAffiliateCode}`" target="_blank"><button class="button is-rounded is-secondary mx-1">
           <i class="fas fa-shopping-cart mr-1" /> INDIE BOOKSELLERS
         </button></a> -->
 
-        <a v-if="book.goodreads" :href="`https://www.goodreads.com/book/show/${book.goodreads}`" target="_blank"><button class="button is-rounded is-secondary mx-1 mr-20">
-          <i class="fas fa-book-open mr-1" /> GOODREADS
-        </button></a>
+        <a
+          v-if="book.goodreads"
+          :href="`https://www.goodreads.com/book/show/${book.goodreads}`"
+          target="_blank"
+          ><button class="button is-rounded is-secondary mx-1 mr-20">
+            <i class="fas fa-book-open mr-1" /> GOODREADS
+          </button></a
+        >
       </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-@import "bulma/sass/utilities/_all.sass";
+@import 'bulma/sass/utilities/_all.sass';
 @import '@/assets/style/mixins.scss';
 @import '@/assets/style/vars.scss';
 
@@ -77,7 +92,8 @@ export default {
     padding-bottom: $mobile-footer-height;
   }
 
-  .button, input {
+  .button,
+  input {
     border: solid 1px #666;
     font-size: 14px;
   }
@@ -107,5 +123,4 @@ export default {
     text-align: right;
   }
 }
-
 </style>

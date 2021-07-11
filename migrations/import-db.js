@@ -45,7 +45,7 @@ const initFirebase = () => {
     storageBucket: process.env.VUE_APP_FIREBASE_STORAGE_BUCKET,
     messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID,
     appId: process.env.VUE_APP_FIREBASE_APP_ID,
-    measurementId: process.env.VUE_APP_FIREBASE_MEASURMENT_ID
+    measurementId: process.env.VUE_APP_FIREBASE_MEASURMENT_ID,
   }
   firebase.initializeApp(firebaseConfig)
   return firebase
@@ -61,8 +61,7 @@ const go = async () => {
   let credentials = null
   try {
     credentials = await firebase.auth().signInWithEmailAndPassword(usr, pwd)
-  }
-  catch (err) {
+  } catch (err) {
     credentials = null
   }
   if (!credentials) {
@@ -79,20 +78,26 @@ const go = async () => {
   const tagsBundles = await loadCollection(firebase, 'tags/bundles')
   const people = await loadCollection(firebase, 'people')
   const users = await loadCollection(firebase, 'users')
-  const contributors = Object.values(users).filter(user => user.roles && (user.roles.contributor || user.roles.owner))
+  const contributors = Object.values(users).filter(
+    user => user.roles && (user.roles.contributor || user.roles.owner),
+  )
   const content = await loadCollection(firebase, 'content')
 
-  const db = JSON.stringify({
-    books,
-    people,
-    tags: {
-      books: tagsBooks,
-      people: tagsPeople,
-      bundles: tagsBundles
+  const db = JSON.stringify(
+    {
+      books,
+      people,
+      tags: {
+        books: tagsBooks,
+        people: tagsPeople,
+        bundles: tagsBundles,
+      },
+      contributors,
+      content,
     },
-    contributors,
-    content
-  }, null, 2)
+    null,
+    2,
+  )
 
   fs.writeFileSync('./public/dbcache.js', `window.dbcache = ${db}`)
 

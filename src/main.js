@@ -20,7 +20,8 @@ router.beforeEach((to, from, next) => {
   if (!Array.isArray(access)) access = [access]
   if (!store.state.user.user || !store.state.user.user.roles) {
     store.commit('ui/setPageLoading', true)
-    store.dispatch('user/next')
+    store
+      .dispatch('user/next')
       .then(user => {
         store.commit('ui/setPageLoading', false)
         if (access.some(mixins.methods.$iam)) next()
@@ -46,20 +47,15 @@ router.afterEach((to, from) => {
 })
 
 // global error handling
-window.addEventListener('onerror', function(msg, url, line, col, error) {
+window.addEventListener('onerror', function (msg, url, line, col, error) {
   console.error(msg, url, line, col, error)
   store.dispatch('ui/popup', { text: msg, type: 'error', autoclose: false })
 })
-window.addEventListener('unhandledrejection', function(e) {
+window.addEventListener('unhandledrejection', function (e) {
   store.dispatch('ui/popup', { text: e.reason, type: 'error', autoclose: false })
 })
 
-const app = createApp(App)
-  .use(createHead())
-  .use(store)
-  .use(router)
-  .use(CKEditor)
-  .use(VueTippy)
+const app = createApp(App).use(createHead()).use(store).use(router).use(CKEditor).use(VueTippy)
 
 // sourced from https://stackoverflow.com/questions/63869859/detect-click-outside-element-on-vue-3
 Object.entries(directives).forEach(([name, directive]) => app.directive(name, directive))

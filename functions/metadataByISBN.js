@@ -4,7 +4,6 @@ const express = require('express')
 const isbn = require('node-isbn')
 
 async function getGoodreadsBookIDByISBN(isbn) {
-
   console.log(`Searching ID for "${isbn}"`)
 
   try {
@@ -19,19 +18,20 @@ async function getGoodreadsBookIDByISBN(isbn) {
     })
     console.log(`  ID: ${id}`)
     return id
-  }
-  catch (err) {
+  } catch (err) {
     console.log(`Unable to find ID for ${isbn}.`, err.message)
     return null
   }
 }
 
 function _isbn(code, provider) {
-  return isbn
-    .provider([provider])
-    .resolve(code)
-    // eslint-disable-next-line node/handle-callback-err
-    .catch(err => null)
+  return (
+    isbn
+      .provider([provider])
+      .resolve(code)
+      // eslint-disable-next-line node/handle-callback-err
+      .catch(err => null)
+  )
 }
 
 async function isbnSearch(code) {
@@ -49,7 +49,6 @@ async function isbnSearch(code) {
 }
 
 module.exports = () => {
-
   const app = express()
 
   app.get('/', async (req, res) => {

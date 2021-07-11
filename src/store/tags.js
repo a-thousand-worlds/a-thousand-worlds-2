@@ -7,14 +7,14 @@ const module = {
   modules: {
     books: mergeOne(managed('tags/books'), sortable()),
     bundles: mergeOne(managed('tags/bundles'), sortable()),
-    people: mergeOne(managed('tags/people'), sortable())
+    people: mergeOne(managed('tags/people'), sortable()),
   },
   actions: {
     async subscribe({ dispatch, commit }, options = {}) {
       dispatch('books/subscribe', options.books)
       dispatch('bundles/subscribe', options.bundles)
       dispatch('people/subscribe', options.people)
-    }
+    },
   },
 }
 

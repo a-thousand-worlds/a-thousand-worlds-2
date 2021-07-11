@@ -5,7 +5,9 @@ import { defineAsyncComponent } from 'vue'
 
 export default {
   components: {
-    CEditor: defineAsyncComponent(() => import(/* webpackChunkName: "ckeditor" */ '@/components/CEditor'))
+    CEditor: defineAsyncComponent(() =>
+      import(/* webpackChunkName: "ckeditor" */ '@/components/CEditor'),
+    ),
   },
   props: {
     name: String,
@@ -13,8 +15,8 @@ export default {
     format: {
       type: String,
       validator: value => ['inline', 'oneline', 'multiline'].indexOf(value) !== -1,
-      default: 'multiline'
-    }
+      default: 'multiline',
+    },
   },
   emits: ['data', 'change'],
   data() {
@@ -28,7 +30,6 @@ export default {
     },
   },
   watch: {
-
     html() {
       this.save()
       this.$emit('change', {
@@ -54,7 +55,6 @@ export default {
         })
       }
     },
-
   },
   methods: {
     getContent() {
@@ -62,15 +62,13 @@ export default {
       return this.$store.getters['content/get'](this.name) ?? slotDefault
     },
 
-    save: debounce(function() {
+    save: debounce(function () {
       if (this.$can('editContent')) {
         this.$store.dispatch('content/save', { path: this.name, value: this.html })
       }
-    }, 500)
-
+    }, 500),
   },
 }
-
 </script>
 
 <template>

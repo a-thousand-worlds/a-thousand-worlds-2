@@ -1,5 +1,4 @@
 <script>
-
 import metadataByISBN from '@/util/metadataByISBN'
 
 // const isValidIsbn = code => typeof code === 'string' && (code.length === 10 || code.length === 13)
@@ -11,13 +10,13 @@ export default {
     return {
       isbn: this.modelValue || '',
       loading: false,
-      searches: []
+      searches: [],
     }
   },
   watch: {
     modelValue(next, prev) {
       this.isbn = next
-    }
+    },
   },
   methods: {
     searchGlobal() {
@@ -41,8 +40,9 @@ export default {
       this.isbn = search
       this.$emit('update:modelValue', search)
       this.book = null
-      this.searches = this.$store.getters['books/list']()
-        .filter(book => search.length && book.isbn.includes(search))
+      this.searches = this.$store.getters['books/list']().filter(
+        book => search.length && book.isbn.includes(search),
+      )
     },
     hideSearch() {
       this.searches = []
@@ -52,38 +52,54 @@ export default {
       this.isbn = b.isbn
       this.$emit('update:modelValue', this.isbn)
       this.$emit('bookSelected', b)
-    }
-  }
+    },
+  },
 }
 </script>
 
 <template>
-
   <div class="field has-addons">
     <div class="control w-100">
-      <input v-model="isbn" :disabled="disabled" type="text" class="input" @input="doSearch($event)">
+      <input
+        v-model="isbn"
+        :disabled="disabled"
+        type="text"
+        class="input"
+        @input="doSearch($event)"
+      />
       <div v-if="searches.length" v-click-outside="hideSearch" class="search-wrap">
         <div class="search-results">
-          <div v-for="res of searches" :key="res.id" class="media p-2" @click.prevent="fillBook(res, si)">
+          <div
+            v-for="res of searches"
+            :key="res.id"
+            class="media p-2"
+            @click.prevent="fillBook(res, si)"
+          >
             <div class="media-left">
-              <img :src="res.cover">
+              <img :src="res.cover" />
             </div>
             <div class="media-right">
-              <b>{{ res.title }}</b><br>
-              <small>{{ res.isbn }}</small><br>
+              <b>{{ res.title }}</b
+              ><br />
+              <small>{{ res.isbn }}</small
+              ><br />
             </div>
           </div>
         </div>
       </div>
     </div>
     <div v-if="searchable" class="control">
-      <button :disabled="disabled || loading || !isbn" :class="{'is-loading': loading}" class="button is-primary" @click="searchGlobal">
+      <button
+        :disabled="disabled || loading || !isbn"
+        :class="{ 'is-loading': loading }"
+        class="button is-primary"
+        @click="searchGlobal"
+      >
         <i class="fas fa-search" />
         <span class="ml-3">Search</span>
       </button>
     </div>
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -119,5 +135,4 @@ export default {
     }
   }
 }
-
 </style>

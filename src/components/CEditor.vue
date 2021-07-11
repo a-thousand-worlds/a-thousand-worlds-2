@@ -11,8 +11,8 @@ export default {
       editor: BalloonEditor,
       editorConfig: {
         placeholder: this.placeholder,
-        extraPlugins: [FirebaseUploadAdapter]
-      }
+        extraPlugins: [FirebaseUploadAdapter],
+      },
     }
   },
   watch: {
@@ -21,19 +21,23 @@ export default {
     },
     modelValue(next) {
       this.html = next
-    }
-  }
+    },
+  },
 }
-
 </script>
 
 <template>
-  <input v-if="format === 'oneline' || format === 'inline'" v-model="html" type="text" :class="format === 'oneline' ? 'input' : format" :disabled="disabled">
+  <input
+    v-if="format === 'oneline' || format === 'inline'"
+    v-model="html"
+    type="text"
+    :class="format === 'oneline' ? 'input' : format"
+    :disabled="disabled"
+  />
   <ckeditor v-else v-model="html" :editor="editor" :config="editorConfig" :disabled="disabled" />
 </template>
 
 <style scoped lang="scss">
-
 .inline {
   border: none;
   box-shadow: none;
@@ -44,5 +48,4 @@ export default {
 .ck.editor {
   border: 1px solid #dbdbdb;
 }
-
 </style>

@@ -54,9 +54,7 @@ const module = {
   },
   actions: {
     popup(context, data) {
-      const { text, type } = typeof data === 'string'
-        ? { text: data, type: 'info' }
-        : data
+      const { text, type } = typeof data === 'string' ? { text: data, type: 'info' } : data
       const typeClasses = { error: 'danger' }
       const id = uid()
       context.commit('pushPopup', { id, text, type: typeClasses[type] || type })
@@ -75,22 +73,22 @@ const module = {
     /* @param data = { text, header, type } */
     confirm(context, data) {
       return new Promise((resolve, reject) => {
-        const { text, type, header } = typeof data === 'string'
-          ? { text: data, type: 'info', header: 'Confirmation required' }
-          : data
+        const { text, type, header } =
+          typeof data === 'string'
+            ? { text: data, type: 'info', header: 'Confirmation required' }
+            : data
         context.commit('doConfirm', { text, type, header, resolve })
       })
     },
     /* @param data = { text, header, type } */
     prompt(context, data) {
       return new Promise((resolve, reject) => {
-        const { text, type, header } = typeof data === 'string'
-          ? { text: data, type: 'info', header: 'Input required' }
-          : data
+        const { text, type, header } =
+          typeof data === 'string' ? { text: data, type: 'info', header: 'Input required' } : data
         context.commit('doPrompt', { text, type, header, resolve })
       })
-    }
-  }
+    },
+  },
 }
 
 export default module

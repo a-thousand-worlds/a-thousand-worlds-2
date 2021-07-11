@@ -1,5 +1,5 @@
 @import '@/assets/style/mixins.scss';
-@import "bulma/sass/components/tabs.sass";
+@import 'bulma/sass/components/tabs.sass';
 
 .tabs li.is-active a {
   @include primary(color);

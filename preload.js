@@ -11,10 +11,11 @@ const _ = require('lodash')
 let tagsFile
 try {
   tagsFile = fs.readFileSync('/tmp/atw/tags.json')
-}
-catch (e) {
+} catch (e) {
   if (e.code === 'ENOENT') {
-    console.error('ERROR: Missing /tmp/atw/tags.json. Run "npm run preload" to download collections from Firebase Realtime Database.')
+    console.error(
+      'ERROR: Missing /tmp/atw/tags.json. Run "npm run preload" to download collections from Firebase Realtime Database.',
+    )
     process.exit(1)
   }
   throw e
@@ -23,12 +24,18 @@ catch (e) {
 const tagsFull = JSON.parse(tagsFile)
 
 // strip timestamps to reduce payload
-const tags = Object.entries(tagsFull).reduce((accum, [categoryKey, categoryValue]) => ({
-  ...accum,
-  [categoryKey]: Object.entries(categoryValue).reduce((accumInner, [tagKey, tagValue]) => ({
-    ...accumInner,
-    [tagKey]: _.pick(tagValue, ['id', 'showOnFront', 'sortOrder', 'tag'])
-  }), {})
-}), {})
+const tags = Object.entries(tagsFull).reduce(
+  (accum, [categoryKey, categoryValue]) => ({
+    ...accum,
+    [categoryKey]: Object.entries(categoryValue).reduce(
+      (accumInner, [tagKey, tagValue]) => ({
+        ...accumInner,
+        [tagKey]: _.pick(tagValue, ['id', 'showOnFront', 'sortOrder', 'tag']),
+      }),
+      {},
+    ),
+  }),
+  {},
+)
 
 fs.writeFileSync('src/assets/tags.json', JSON.stringify(tags, null, 2))

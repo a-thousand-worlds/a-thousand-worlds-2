@@ -4,13 +4,12 @@ module.exports = {
       splitChunks: {
         chunks: 'all',
       },
-    }
+    },
   },
   /*
-  */
+   */
   // https://github.com/visualfanatic/vue-svg-loader
   chainWebpack: config => {
-
     // svg
     const svgRule = config.module.rule('svg')
     svgRule.uses.clear()
@@ -25,8 +24,8 @@ module.exports = {
       // https://github.com/visualfanatic/vue-svg-loader/issues/58
       .options({
         svgo: {
-          plugins: [{ removeViewBox: false }]
-        }
+          plugins: [{ removeViewBox: false }],
+        },
       })
   },
 }

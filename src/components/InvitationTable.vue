@@ -9,7 +9,7 @@ export default {
       default: () => ['createdAt', 'email', 'firstName', 'lastName', 'role'],
       // possible values
       // ['createdAt', 'used', 'cancelled', 'email', 'firstName', 'lastName', 'role', 'resend', 'cancel'],
-    }
+    },
   },
   emits: ['cancel', 'resend'],
   data() {
@@ -19,10 +19,12 @@ export default {
   },
   computed: {
     dateHeader() {
-      return this.fields.includes('cancelled') ? 'Cancelled'
-        : this.fields.includes('used') ? 'Accepted'
+      return this.fields.includes('cancelled')
+        ? 'Cancelled'
+        : this.fields.includes('used')
+        ? 'Accepted'
         : 'Invited'
-    }
+    },
   },
   methods: {
     cancel(invite) {
@@ -34,16 +36,16 @@ export default {
     },
     /** Return the appropriate date based on fields. */
     date(invite) {
-      const dateField = this.fields.includes('cancelled') ? 'cancelled'
-        : this.fields.includes('used') ? 'used'
+      const dateField = this.fields.includes('cancelled')
+        ? 'cancelled'
+        : this.fields.includes('used')
+        ? 'used'
         : 'createdAt'
-      return invite[dateField]
-        ? this.format(invite[dateField])
-        : null
+      return invite[dateField] ? this.format(invite[dateField]) : null
     },
     format(date) {
       return dayjs(date).format('MMMM DD, YYYY')
-    }
+    },
   },
 }
 </script>
@@ -66,10 +68,21 @@ export default {
         <td v-if="fields.includes('email')">{{ invite.lastName }}</td>
         <td class="is-capitalized">{{ invite.role }}</td>
         <td>
-          <button v-if="fields.includes('resend')" class="is-flat" v-tippy="{ content: 'Resend invitation' }" :disabled="resendDisabled[invite.code]" @click="resend(invite)">
+          <button
+            v-if="fields.includes('resend')"
+            class="is-flat"
+            v-tippy="{ content: 'Resend invitation' }"
+            :disabled="resendDisabled[invite.code]"
+            @click="resend(invite)"
+          >
             <i class="fas fa-paper-plane" />
           </button>
-          <button v-if="fields.includes('cancel')" class="is-flat" v-tippy="{ content: 'Cancel invitation' }" @click="cancel(invite)">
+          <button
+            v-if="fields.includes('cancel')"
+            class="is-flat"
+            v-tippy="{ content: 'Cancel invitation' }"
+            @click="cancel(invite)"
+          >
             <i class="fas fa-times" />
           </button>
           <!-- <button v-if="fields.includes('profile')" class="is-flat" v-tippy="{ content: 'View profile' }">

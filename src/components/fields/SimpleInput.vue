@@ -1,5 +1,4 @@
 <script>
-
 export default {
   props: {
     modelValue: {},
@@ -12,18 +11,21 @@ export default {
   data() {
     return {
       value: this.modelValue || '',
-      mode: 'view'
+      mode: 'view',
     }
   },
   computed: {
     hasValue() {
-      return (typeof this.value === 'string' && this.value.length) || (typeof this.value === 'number' && this.value)
-    }
+      return (
+        (typeof this.value === 'string' && this.value.length) ||
+        (typeof this.value === 'number' && this.value)
+      )
+    },
   },
   watch: {
     modelValue(next, prev) {
       this.value = next
-    }
+    },
   },
   methods: {
     updateValue(e) {
@@ -50,27 +52,32 @@ export default {
     },
     onEsc() {
       this.mode = 'view'
-    }
-  }
+    },
+  },
 }
 </script>
 
 <template>
-
   <div :class="{ control: !unstyled }">
     <div class="field">
       <div :class="{ control: !unstyled, 'w-50': true }" :style="controlStyle">
         <div
           v-if="mode === 'view' && !hasValue && placeholder?.length"
-          :class="{disabled:disabled}"
+          :class="{ disabled: disabled }"
           class="w-50 pointer placeholder"
-          @click="onDivClick">{{ placeholder }}</div>
+          @click="onDivClick"
+        >
+          {{ placeholder }}
+        </div>
         <div
           v-if="mode === 'view' && hasValue"
-          :class="{disabled:disabled}"
+          :class="{ disabled: disabled }"
           :title="placeholder"
           class="w-50 pointer"
-          @click="onDivClick">{{ value }}</div>
+          @click="onDivClick"
+        >
+          {{ value }}
+        </div>
         <input
           v-if="mode === 'edit'"
           ref="input"
@@ -81,15 +88,14 @@ export default {
           @blur="onInputBlur"
           @keyup.enter="onEnter"
           @keyup.escape="onEsc"
-          @input="updateVal">
+          @input="updateVal"
+        />
       </div>
     </div>
   </div>
-
 </template>
 
 <style lang="scss" scoped>
-
 .input {
   margin-top: -0.25rem;
   margin-left: -0.25rem;
@@ -114,5 +120,4 @@ export default {
 .disabled {
   color: #ddd;
 }
-
 </style>

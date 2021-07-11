@@ -2,7 +2,6 @@ import { validate as validateEmail } from 'email-validator'
 
 /** Parse a string into a name and email. */
 const parseRecipient = s => {
-
   const words = s
     .split(/\s+/g)
     // replace empty words or dashes
@@ -26,7 +25,7 @@ const parseRecipient = s => {
     lastName: words.slice(1, words.length - 1).join(' '),
     email,
     raw: s,
-    isValid: true
+    isValid: true,
   }
 }
 

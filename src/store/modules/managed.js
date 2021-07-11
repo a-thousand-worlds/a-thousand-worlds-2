@@ -10,7 +10,6 @@ const module = name => {
   const collectionModule = collection(name)
   const managedModule = {
     actions: {
-
       /** save method overrides parents collection/abstract::save */
       async save(ctx, { path, value, method }) {
         if (!path) throw new Error(`Managed collection "${name}": path required`)
@@ -24,7 +23,10 @@ const module = name => {
         }
 
         // managed collection element should be object
-        if (typeof value !== 'object') throw new Error(`Managed collection "${name}": value should be object, not ${typeof value}`)
+        if (typeof value !== 'object')
+          throw new Error(
+            `Managed collection "${name}": value should be object, not ${typeof value}`,
+          )
 
         const now = dayjs().format()
         const userId = ctx.rootState?.user?.user?.uid || null
@@ -32,9 +34,11 @@ const module = name => {
           ...value,
           updatedAt: now,
           updatedBy: userId,
-          ...method !== 'update' && !value.createdAt && { createdAt: now },
-          ...method !== 'update' && !value.createdBy && { createdBy: userId },
-          ...method !== 'update' && value.reviewedBy && !value.reviewedAt && { reviewedAt: userId },
+          ...(method !== 'update' && !value.createdAt && { createdAt: now }),
+          ...(method !== 'update' && !value.createdBy && { createdBy: userId }),
+          ...(method !== 'update' &&
+            value.reviewedBy &&
+            !value.reviewedAt && { reviewedAt: userId }),
         }
 
         const firebasem = await firebaseImport()
@@ -45,9 +49,8 @@ const module = name => {
 
       async update(ctx, { path, value }) {
         ctx.dispatch('save', { path, value, method: 'update' })
-      }
-
-    }
+      },
+    },
   }
   return mergeOne(collectionModule, managedModule)
 }

@@ -8,14 +8,12 @@ const watch = functions
   })
   .database.ref('/people/{id}')
   .onDelete(async (snap, context) => {
-
     const person = snap.val()
     console.log('deleting person photo', person.name)
     const bucket = admin.storage().bucket()
     const fname = `people/${context.params.id}`
     const file = await bucket.file(fname)
     await file.delete()
-
   })
 
 module.exports = watch

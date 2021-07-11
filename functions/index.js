@@ -33,7 +33,7 @@ exports.metadataByISBN = functions.https.onRequest(metadataByISBN())
 exports.amazonSearchBook = functions
   .runWith({
     timeoutSeconds: 300,
-    memory: '1GB'
+    memory: '1GB',
   })
   .https.onRequest(amazonSearchBook())
 
@@ -62,7 +62,7 @@ const buildCache = require('./buildCache')
 exports.buildCache = functions
   .runWith({
     timeoutSeconds: 300,
-    memory: '1GB'
+    memory: '1GB',
   })
   .https.onRequest(buildCache())
 /**/
@@ -72,5 +72,6 @@ exports.buildCacheCron = functions
     timeoutSeconds: 300,
     memory: '1GB',
   })
-  .pubsub.schedule('0 0 * * *').timeZone('America/New_York')
+  .pubsub.schedule('0 0 * * *')
+  .timeZone('America/New_York')
   .onRun(buildCacheCron)

@@ -4,11 +4,12 @@ import mixins from '@/mixins/global'
 import directives from '@/directives'
 
 /** Renders a component with global directives, mixins, and store for tests. */
-export const render = component => vueRender(component, {
-  // https://vue-test-utils.vuejs.org/v2/api/#mount
-  global: {
-    directives,
-    mixins: [mixins],
-    plugins: [store]
-  }
-})
+export const render = component =>
+  vueRender(component, {
+    // https://vue-test-utils.vuejs.org/v2/api/#mount
+    global: {
+      directives,
+      mixins: [mixins],
+      plugins: [store],
+    },
+  })

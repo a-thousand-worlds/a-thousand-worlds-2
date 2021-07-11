@@ -4,7 +4,10 @@ const coverImageByISBN = require('./util/coverImageByISBN')
 const loadImage = require('./util/loadImage')
 const uid = require('uuid').v4
 
-const getDownloadUrl = (fileName, bucketName, token) => `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(fileName)}?alt=media&token=${token}`
+const getDownloadUrl = (fileName, bucketName, token) =>
+  `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(
+    fileName,
+  )}?alt=media&token=${token}`
 
 const watchBookSubmissions = functions
   .runWith({
@@ -13,7 +16,6 @@ const watchBookSubmissions = functions
   })
   .database.ref('/submits/books/{id}')
   .onCreate(async (snap, context) => {
-
     const book = snap.val()
     console.log(new Date(), 'Finding cover for book submission:', book.isbn)
 
@@ -26,8 +28,7 @@ const watchBookSubmissions = functions
       if (!img) {
         img = await coverImageByISBN(book.isbn, 400)
       }
-    }
-    finally {
+    } finally {
       await snap.ref.child('findingCover').remove()
     }
 
@@ -42,25 +43,23 @@ const watchBookSubmissions = functions
     const id = uid()
     const fname = `submits/${context.params.id}`
     const file = await bucket.file(fname)
-    await file
-      .save(img.buffer, {
+    await file.save(img.buffer, {
+      metadata: {
+        contentType: 'image/png',
+        cacheControl: 'public,max-age=31536000',
         metadata: {
-          contentType: 'image/png',
-          cacheControl: 'public,max-age=31536000',
-          metadata: {
-            firebaseStorageDownloadTokens: id
-          }
-        }
-      })
+          firebaseStorageDownloadTokens: id,
+        },
+      },
+    })
     const url = getDownloadUrl(fname, bucket.name, id)
 
     await snap.ref.child('cover').set({
       url,
       width: img.width,
-      height: img.height
+      height: img.height,
     })
     console.log(new Date(), 'Cover saved:', book.isbn, url)
-
   })
 
 module.exports = watchBookSubmissions

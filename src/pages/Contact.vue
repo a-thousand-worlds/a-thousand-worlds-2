@@ -6,19 +6,21 @@ import HeartIcon from '@/assets/icons/heart.svg'
 import sendEmail from '@/util/sendEmail'
 
 const variants = {
-  'Nominate BIPOC Leader(s) to A Thousand Worlds': 'Thank you! Please list their names, title (i.e. editor, librarian, book reviewer teacher, etc) and contact info!',
-  'I am a BIPOC Leader in the book industry': 'You are a superstar! Please share what your title is or how you engage with picture books. Thank you for you interest in contributing to our picture book directory!',
+  'Nominate BIPOC Leader(s) to A Thousand Worlds':
+    'Thank you! Please list their names, title (i.e. editor, librarian, book reviewer teacher, etc) and contact info!',
+  'I am a BIPOC Leader in the book industry':
+    'You are a superstar! Please share what your title is or how you engage with picture books. Thank you for you interest in contributing to our picture book directory!',
   'Partnership Opportunity': 'Message',
   'Feedback and Questions about A Thousand Worlds': 'Message',
   'Report a Bug': 'What I expected to have happen:\n\nWhat actually happened:\n',
-  Other: 'Message'
+  Other: 'Message',
 }
 
 export default {
   name: 'Contact',
   components: {
     Content,
-    HeartIcon
+    HeartIcon,
   },
   setup() {
     const description = `Contact us! We'd love to hear from you!`
@@ -37,7 +39,7 @@ export default {
       email: query.get('email') || '',
       subject: query.get('subject') || '',
       message: query.get('message') || '',
-      dropdown: query.get('subject') || ''
+      dropdown: query.get('subject') || '',
     }
     return ret
   },
@@ -50,7 +52,7 @@ export default {
     },
     isValid() {
       return this.name.length && this.email.length && this.subject.length && this.message.length
-    }
+    },
   },
   methods: {
     setSubject(i) {
@@ -64,7 +66,7 @@ export default {
       sendEmail({
         to: process.env.VUE_APP_ADMIN_EMAIL,
         subject: this.subject,
-        body: `<p>Contact form message<p><p>From ${this.name} - ${this.email}<p><br><p>${this.message}`
+        body: `<p>Contact form message<p><p>From ${this.name} - ${this.email}<p><br><p>${this.message}`,
       })
         .then(() => {
           this.$store.dispatch('ui/popup', { text: 'Message sent!', autoclose: true })
@@ -75,22 +77,27 @@ export default {
         })
         .catch(err => {
           console.log('sending message error', err)
-          this.$store.dispatch('ui/popup', { text: 'Sending Error: ' + JSON.stringify(err), autoclose: false })
+          this.$store.dispatch('ui/popup', {
+            text: 'Sending Error: ' + JSON.stringify(err),
+            autoclose: false,
+          })
         })
         .finally(() => {
           this.$store.commit('ui/setBusy', false)
         })
-    }
-  }
+    },
+  },
 }
-
 </script>
 
 <template>
-
   <div class="columns m-30">
     <div class="column p-0 is-three-fifths-desktop is-offset-one-fifth-desktop is-text-centered">
-      <Content name="contact/title" class="contact-page-title page-title is-uppercase" format="multiline">
+      <Content
+        name="contact/title"
+        class="contact-page-title page-title is-uppercase"
+        format="multiline"
+      >
         We want to hear from you!
       </Content>
     </div>
@@ -104,12 +111,54 @@ export default {
         </div>
         <div class="column is-flex is-align-items-center">
           <div>
-            <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[0] }" @click.prevent.stop="setSubject(0)">Nominate a Leader</a></p>
-            <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[1] }" @click.prevent.stop="setSubject(1)">Say Hello</a></p>
-            <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[2] }" @click.prevent.stop="setSubject(2)">Partner with Us</a></p>
-            <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[3] }" @click.prevent.stop="setSubject(3)">Ask a Question</a></p>
-            <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[4] }" @click.prevent.stop="setSubject(4)">Report a Bug</a></p>
-            <p><a href="#" :class="{ 'is-text-color': dropdown !== subjectVariants[5] }" @click.prevent.stop="setSubject(5)">Other</a></p>
+            <p>
+              <a
+                href="#"
+                :class="{ 'is-text-color': dropdown !== subjectVariants[0] }"
+                @click.prevent.stop="setSubject(0)"
+                >Nominate a Leader</a
+              >
+            </p>
+            <p>
+              <a
+                href="#"
+                :class="{ 'is-text-color': dropdown !== subjectVariants[1] }"
+                @click.prevent.stop="setSubject(1)"
+                >Say Hello</a
+              >
+            </p>
+            <p>
+              <a
+                href="#"
+                :class="{ 'is-text-color': dropdown !== subjectVariants[2] }"
+                @click.prevent.stop="setSubject(2)"
+                >Partner with Us</a
+              >
+            </p>
+            <p>
+              <a
+                href="#"
+                :class="{ 'is-text-color': dropdown !== subjectVariants[3] }"
+                @click.prevent.stop="setSubject(3)"
+                >Ask a Question</a
+              >
+            </p>
+            <p>
+              <a
+                href="#"
+                :class="{ 'is-text-color': dropdown !== subjectVariants[4] }"
+                @click.prevent.stop="setSubject(4)"
+                >Report a Bug</a
+              >
+            </p>
+            <p>
+              <a
+                href="#"
+                :class="{ 'is-text-color': dropdown !== subjectVariants[5] }"
+                @click.prevent.stop="setSubject(5)"
+                >Other</a
+              >
+            </p>
           </div>
         </div>
       </div>
@@ -118,43 +167,83 @@ export default {
 
   <div class="columns m-40">
     <div class="column p-0 is-half-desktop is-offset-one-quarter-desktop">
-
       <div class="field">
         <div class="control has-icons-right">
-          <input :disabled="$store.state.ui.busy" class="input" type="text" placeholder="Name" v-model="name">
+          <input
+            :disabled="$store.state.ui.busy"
+            class="input"
+            type="text"
+            placeholder="Name"
+            v-model="name"
+          />
         </div>
       </div>
 
       <div class="field">
-        <input :disabled="$store.state.ui.busy" class="input" type="email" placeholder="Email" v-model="email">
+        <input
+          :disabled="$store.state.ui.busy"
+          class="input"
+          type="email"
+          placeholder="Email"
+          v-model="email"
+        />
       </div>
 
       <div class="field">
-        <select required :disabled="$store.state.ui.busy" class="select" v-model="dropdown" @change="setSubject()">
+        <select
+          required
+          :disabled="$store.state.ui.busy"
+          class="select"
+          v-model="dropdown"
+          @change="setSubject()"
+        >
           <option value="" disabled>Subject</option>
-          <option v-for="subj in subjectVariants" :key="subj" @click="setSubject(subj)" class="subject-opt">{{ subj }}</option>
+          <option
+            v-for="subj in subjectVariants"
+            :key="subj"
+            @click="setSubject(subj)"
+            class="subject-opt"
+          >
+            {{ subj }}
+          </option>
         </select>
       </div>
 
       <div v-if="dropdown === 'Other'" class="field">
-        <input :disabled="$store.state.ui.busy" class="input" type="text" placeholder="Subject" v-model="subject">
+        <input
+          :disabled="$store.state.ui.busy"
+          class="input"
+          type="text"
+          placeholder="Subject"
+          v-model="subject"
+        />
       </div>
 
       <div class="field">
-        <textarea :disabled="$store.state.ui.busy" rows="7" class="textarea" :placeholder="messagePlaceholder" v-model="message" />
+        <textarea
+          :disabled="$store.state.ui.busy"
+          rows="7"
+          class="textarea"
+          :placeholder="messagePlaceholder"
+          v-model="message"
+        />
       </div>
 
       <div class="has-text-right">
-        <button :disabled="$store.state.ui.busy || !isValid" type="submit" class="button is-primary is-uppercase is-rounded mt-3" @click="sendEmail">Send</button>
+        <button
+          :disabled="$store.state.ui.busy || !isValid"
+          type="submit"
+          class="button is-primary is-uppercase is-rounded mt-3"
+          @click="sendEmail"
+        >
+          Send
+        </button>
       </div>
-
     </div>
   </div>
-
 </template>
 
 <style lang="scss">
-
 $placeholderColor: #a0a0a0;
 
 .contact-page-title {
@@ -181,7 +270,7 @@ $placeholderColor: #a0a0a0;
   color: $placeholderColor;
 }
 .select option:first-child {
-  display:  none;
+  display: none;
 }
 .select option {
   color: black;
@@ -197,9 +286,8 @@ $placeholderColor: #a0a0a0;
 </style>
 
 <style lang="scss">
-.ck.ck-editor__editable_inline>:first-child,
-.ck.ck-editor__editable_inline>:last-child,
- {
+.ck.ck-editor__editable_inline > :first-child,
+.ck.ck-editor__editable_inline > :last-child {
   margin-top: 0px !important;
   margin-bottom: 0px !important;
 }

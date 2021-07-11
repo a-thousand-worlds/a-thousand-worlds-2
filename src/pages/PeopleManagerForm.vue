@@ -1,6 +1,5 @@
 <!-- DEPRECATED. Use Book Submission Form. -->
 <script>
-
 import Jimp from 'jimp'
 
 export default {
@@ -17,8 +16,8 @@ export default {
         bio: '',
         photo: '',
         file: null,
-        role: 'author'
-      }
+        role: 'author',
+      },
     }
   },
   computed: {
@@ -32,13 +31,13 @@ export default {
       if (!this.photoSize) {
         return null
       }
-      let sz = Math.floor(this.photoSize * 100 / 1024) / 100 // kb
+      let sz = Math.floor((this.photoSize * 100) / 1024) / 100 // kb
       if (sz < 1024) {
         return sz + 'kb'
       }
-      sz = Math.floor(sz * 100 / 1024) / 100 // mb
+      sz = Math.floor((sz * 100) / 1024) / 100 // mb
       return sz + 'mb'
-    }
+    },
   },
   created() {
     if (this.$router.currentRoute._value.name === 'PeopleManagerUpdateForm') {
@@ -80,31 +79,30 @@ export default {
       this.$store.dispatch('savePerson', this.person).then(() => {
         this.$router.push({ name: 'PeopleManager' })
       })
-    }
-  }
+    },
+  },
 }
 </script>
 
 <template>
-  <h1 v-if="mode==='new'" class="title page-title">Add Person</h1>
-  <h1 v-if="mode!=='new'" class="title page-title">Update Person</h1>
+  <h1 v-if="mode === 'new'" class="title page-title">Add Person</h1>
+  <h1 v-if="mode !== 'new'" class="title page-title">Update Person</h1>
 
   <section class="section">
     <form @submit.prevent="save">
       <div class="columns">
         <div class="column is-one-third">
           <div id="photo-wrapper">
-            <img v-if="photoUrl" :src="photoUrl">
+            <img v-if="photoUrl" :src="photoUrl" />
           </div>
           <small v-if="photoSizeD">{{ photoSizeD }}</small>
-          <input type="file" class="file" @change.prevent="fileChange($event)">
+          <input type="file" class="file" @change.prevent="fileChange($event)" />
         </div>
         <div class="column is-two-thirds">
-
           <div class="field">
             <label class="label">Name</label>
             <div class="control">
-              <input v-model="person.name" type="text" class="input">
+              <input v-model="person.name" type="text" class="input" />
             </div>
           </div>
 
@@ -126,16 +124,16 @@ export default {
               <textarea v-model="person.bio" class="textarea" />
             </div>
           </div>
-
         </div>
       </div>
       <div class="">
-        <input type="submit" class="button is-primary" value="Save">
-        <router-link class="button is-secondary ml-3" :to="{name: 'PeopleManager'}">Cancel</router-link>
+        <input type="submit" class="button is-primary" value="Save" />
+        <router-link class="button is-secondary ml-3" :to="{ name: 'PeopleManager' }"
+          >Cancel</router-link
+        >
       </div>
     </form>
   </section>
-
 </template>
 
 <style scoped lang="scss">

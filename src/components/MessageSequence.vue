@@ -4,15 +4,12 @@
 import { h } from 'vue'
 
 export default {
-
   props: {
-
     // a stable storage key that is unique across the app
     storageKey: {
       type: String,
       required: true,
     },
-
   },
 
   emits: ['completed', 'load', 'step'],
@@ -33,7 +30,6 @@ export default {
   },
 
   methods: {
-
     key(...args) {
       return `messageSequence_${this.storageKey}_${args.join('_')}`
     },
@@ -61,25 +57,31 @@ export default {
       const step = this.step === this.numSteps ? 0 : this.numSteps
       this.set(step)
     },
-
   },
 
   render() {
     if (this.step === this.numSteps) return null
-    return h('div', {
-      class: 'bg-secondary p-20 mb-20',
-      style: 'display: inline-block; border-radius: 10px; font-size: 20px;',
-    }, [
-      this.$slots.default()[this.step].children,
-      h('button', {
-        onClick: e => {
-          e.preventDefault()
-          this.next()
-        },
-        class: 'button is-rounded is-primary'
-      }, this.step < this.numSteps - 1 ? 'Next' : 'Okay'),
-    ])
-  }
-
+    return h(
+      'div',
+      {
+        class: 'bg-secondary p-20 mb-20',
+        style: 'display: inline-block; border-radius: 10px; font-size: 20px;',
+      },
+      [
+        this.$slots.default()[this.step].children,
+        h(
+          'button',
+          {
+            onClick: e => {
+              e.preventDefault()
+              this.next()
+            },
+            class: 'button is-rounded is-primary',
+          },
+          this.step < this.numSteps - 1 ? 'Next' : 'Okay',
+        ),
+      ],
+    )
+  },
 }
 </script>

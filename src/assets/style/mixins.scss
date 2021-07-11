@@ -2,15 +2,31 @@
 
 // set the primary color based on a rotating theme (ancestor selector)
 @mixin primary($property, $rest: '') {
-  .theme1 & { #{$property}: #{$primary1} #{$rest}; }
-  .theme2 & { #{$property}: #{$primary2} #{$rest}; }
-  .theme3 & { #{$property}: #{$primary3} #{$rest}; }
-  .theme4 & { #{$property}: #{$primary4} #{$rest}; }
+  .theme1 & {
+    #{$property}: #{$primary1} #{$rest};
+  }
+  .theme2 & {
+    #{$property}: #{$primary2} #{$rest};
+  }
+  .theme3 & {
+    #{$property}: #{$primary3} #{$rest};
+  }
+  .theme4 & {
+    #{$property}: #{$primary4} #{$rest};
+  }
 }
 
 @mixin secondary($property, $rest: '') {
-  .theme1 & { #{$property}: $secondary1 #{$rest}; }
-  .theme2 & { #{$property}: $secondary2 #{$rest}; }
-  .theme3 & { #{$property}: $secondary3 #{$rest}; }
-  .theme4 & { #{$property}: $secondary4 #{$rest}; }
+  .theme1 & {
+    #{$property}: $secondary1 #{$rest};
+  }
+  .theme2 & {
+    #{$property}: $secondary2 #{$rest};
+  }
+  .theme3 & {
+    #{$property}: $secondary3 #{$rest};
+  }
+  .theme4 & {
+    #{$property}: $secondary4 #{$rest};
+  }
 }

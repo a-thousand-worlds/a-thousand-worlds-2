@@ -34,11 +34,11 @@ const getBookSrcset = async image => {
 async function scrape(isbn) {
   const browser = await puppeteer.launch({
     defaultViewport: { width: 800, height: 600, deviceScaleFactor: 3 },
-    args: ['--no-sandbox']
+    args: ['--no-sandbox'],
   })
   const page = await browser.newPage()
   await page.goto(amazonIsbnSearchUrl(isbn), {
-    waitUntil: 'networkidle2'
+    waitUntil: 'networkidle2',
   })
   const images = await page.$$('.s-image')
   const srcsets = await Promise.all(images.map(image => getBookSrcset(image)))
@@ -49,7 +49,6 @@ async function scrape(isbn) {
 /**/
 
 async function coverImageByISBN(isbn, scaleToMaxWidth = 0) {
-
   console.log('[coverImageByIsbn]: Searching covers')
 
   const covers = { amazon: {} }
@@ -61,8 +60,12 @@ async function coverImageByISBN(isbn, scaleToMaxWidth = 0) {
   let url = null
   if (covers.amazon && !covers.amazon.error) {
     const amazonSizes = Object.keys(covers.amazon)
-    const largestAmazonCover = Math.max.apply(null, amazonSizes.map(s => parseFloat(s, 10)))
-    url = covers.amazon[largestAmazonCover + 'x'] ||
+    const largestAmazonCover = Math.max.apply(
+      null,
+      amazonSizes.map(s => parseFloat(s, 10)),
+    )
+    url =
+      covers.amazon[largestAmazonCover + 'x'] ||
       covers.amazon['3x'] ||
       covers.amazon['2x'] ||
       covers.amazon['1.5x'] ||

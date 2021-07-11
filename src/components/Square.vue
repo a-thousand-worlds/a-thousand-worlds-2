@@ -6,22 +6,23 @@ export default {
     color: {
       type: String,
       validator: value => ['primary', 'secondary'].indexOf(value) !== -1,
-      default: 'secondary'
-    }
-  }
+      default: 'secondary',
+    },
+  },
 }
 </script>
 
 <template>
-
-  <div class="square is-flex is-justify-content-center is-align-items-center" :class="'bg-' + color">
+  <div
+    class="square is-flex is-justify-content-center is-align-items-center"
+    :class="'bg-' + color"
+  >
     <slot />
   </div>
-
 </template>
 
 <style scoped lang="scss">
-@import "bulma/sass/utilities/_all.sass";
+@import 'bulma/sass/utilities/_all.sass';
 @import '@/assets/style/mixins.scss';
 
 .square {
@@ -45,13 +46,11 @@ export default {
       font-size: 20px;
     }
   }
-
 }
 
 .square:after {
-  content: "";
+  content: '';
   display: block;
   padding-bottom: 100%;
 }
-
 </style>

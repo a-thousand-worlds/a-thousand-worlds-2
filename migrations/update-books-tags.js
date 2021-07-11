@@ -14,8 +14,7 @@ let tags = null
 try {
   books = JSON.parse(fs.readFileSync('/tmp/atw/books.json'))
   tags = JSON.parse(fs.readFileSync('/tmp/atw/books.tags.json'))
-}
-catch (e) {
+} catch (e) {
   console.error('reading data files error. breaking', e)
   process.exit(1)
 }
@@ -36,8 +35,7 @@ booksIds.forEach(bookId => {
 
   if (!Array.isArray(book.tags)) {
     nextBooks[bookId] = book
-  }
-  else {
+  } else {
     const nextTags = book.tags
       .map(tagName => tagsList.find(tag => tag.tag === tagName))
       .reduce((acc, tag) => {
@@ -51,4 +49,6 @@ booksIds.forEach(bookId => {
 })
 
 fs.writeFileSync('./books.rebuilded.json', JSON.stringify(nextBooks, null, 2))
-console.log('Old books version saved at /tmp/atw/books.json, and updated file saved to ./books.updated.json - you need manually import it to Firebase. There is no reason to track this file with git, it is saved here just to find it easy - remove it after import is complete')
+console.log(
+  'Old books version saved at /tmp/atw/books.json, and updated file saved to ./books.updated.json - you need manually import it to Firebase. There is no reason to track this file with git, it is saved here just to find it easy - remove it after import is complete',
+)

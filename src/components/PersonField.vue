@@ -1,5 +1,4 @@
 <script>
-
 export default {
   props: ['person'],
   emits: ['changed', 'changed-role'],
@@ -8,19 +7,20 @@ export default {
       personDB: null,
       name: this.person || '',
       exists: false,
-      role: 'author'
+      role: 'author',
     }
   },
   watch: {
     name(next, prev) {
-      const user = this.$store.state.people.find(x => x.name.toLowerCase() === this.name.toLowerCase())
+      const user = this.$store.state.people.find(
+        x => x.name.toLowerCase() === this.name.toLowerCase(),
+      )
       if (user) {
         this.personDB = user
         this.exists = true
         this.role = user.role
         this.$emit('changed-role', this.role)
-      }
-      else {
+      } else {
         this.personDB = null
         this.exists = false
       }
@@ -31,33 +31,32 @@ export default {
     },
     role(next, prev) {
       this.$emit('changed-role', next)
-    }
+    },
   },
   created() {
-    const user = this.$store.state.people.find(x => x.name.toLowerCase() === this.name.toLowerCase())
+    const user = this.$store.state.people.find(
+      x => x.name.toLowerCase() === this.name.toLowerCase(),
+    )
     if (user) {
       this.personDB = user
       this.exists = true
       this.role = user.role
       // this.$emit('changed-role', this.role)
-    }
-    else {
+    } else {
       this.personDB = null
       this.exists = false
     }
 
     this.$emit('changed', this.name)
     this.$emit('changed-role', this.role)
-  }
+  },
 }
-
 </script>
 
 <template>
-
   <div class="field is-grouped">
     <div class="control">
-      <input v-model="name" type="text" class="input">
+      <input v-model="name" type="text" class="input" />
     </div>
     <div class="control">
       <div class="select">
@@ -68,13 +67,8 @@ export default {
       </div>
     </div>
     <div class="control">
-      <button v-if="!exists" class="button is-static">
-        Person not exists and will be created
-      </button>
-      <button v-if="exists" class="button is-static">
-        Person exists in database
-      </button>
+      <button v-if="!exists" class="button is-static">Person not exists and will be created</button>
+      <button v-if="exists" class="button is-static">Person exists in database</button>
     </div>
   </div>
-
 </template>

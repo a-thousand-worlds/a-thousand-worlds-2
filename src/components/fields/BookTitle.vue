@@ -1,18 +1,17 @@
 <script>
-
 export default {
   props: ['inputClass', 'inputId', 'modelValue', 'disabled', 'searchable'],
   emits: ['update:modelValue', 'bookSelected'],
   data() {
     return {
       title: this.modelValue || '',
-      searches: []
+      searches: [],
     }
   },
   watch: {
     modelValue(next, prev) {
       this.title = next
-    }
+    },
   },
   methods: {
     doSearch(e) {
@@ -22,8 +21,9 @@ export default {
         return
       }
       this.book = null
-      this.searches = this.$store.state.booksList
-        .filter(book => search && book.title.toLowerCase().includes(search.toLowerCase()))
+      this.searches = this.$store.state.booksList.filter(
+        book => search && book.title.toLowerCase().includes(search.toLowerCase()),
+      )
     },
     hideSearch() {
       this.searches = []
@@ -33,30 +33,38 @@ export default {
       this.title = b.title
       this.$emit('update:modelValue', this.title)
       this.$emit('bookSelected', b)
-    }
-  }
+    },
+  },
 }
 </script>
 
 <template>
-
   <div class="control">
-    <input :id="inputId" v-model="title" :disabled="disabled" type="text" class="input" :class="inputClass" @input="doSearch($event)">
+    <input
+      :id="inputId"
+      v-model="title"
+      :disabled="disabled"
+      type="text"
+      class="input"
+      :class="inputClass"
+      @input="doSearch($event)"
+    />
     <div v-if="searches.length" v-click-outside="hideSearch" class="search-wrap">
       <div class="search-results">
         <div v-for="res of searches" :key="res.id" class="media p-2" @click.prevent="fillBook(res)">
           <div class="media-left">
-            <img :src="res.cover">
+            <img :src="res.cover" />
           </div>
           <div class="media-right">
-            <b>{{ res.title }}</b><br>
-            <small>{{ res.isbn }}</small><br>
+            <b>{{ res.title }}</b
+            ><br />
+            <small>{{ res.isbn }}</small
+            ><br />
           </div>
         </div>
       </div>
     </div>
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -88,5 +96,4 @@ export default {
     }
   }
 }
-
 </style>

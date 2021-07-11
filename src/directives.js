@@ -1,7 +1,7 @@
 const directives = {
   'click-outside': {
     beforeMount(el, binding, vnode) {
-      el.clickOutsideEvent = function(event) {
+      el.clickOutsideEvent = function (event) {
         if (!(el === event.target || el.contains(event.target))) {
           binding.value(event, el)
         }
@@ -10,8 +10,8 @@ const directives = {
     },
     unmounted(el) {
       document.body.removeEventListener('click', el.clickOutsideEvent)
-    }
-  }
+    },
+  },
 }
 
 export default directives

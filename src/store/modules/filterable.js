@@ -13,7 +13,6 @@ const module = () => ({
       state.filters = []
     },
     toggleFilter(state, filter) {
-
       const isFilterOn = state.filters.some(activeFilter => activeFilter.id === filter.id)
 
       // toggle off filter
@@ -24,11 +23,10 @@ const module = () => ({
       else {
         // toggle off subtags with same parent
         const filtersNoOtherSubtags = state.filters.filter(
-          activeFilter => !activeFilter.parent || activeFilter.parent !== filter.parent
+          activeFilter => !activeFilter.parent || activeFilter.parent !== filter.parent,
         )
         state.filters = [...filtersNoOtherSubtags, filter]
       }
-
     },
     setIdFilters(state, ids) {
       state.idFilters = ids
@@ -41,26 +39,32 @@ const module = () => ({
     isFiltered: state => {
       return state.filters?.length > 0 || state.idFilters?.length > 0
     },
-    filtered: state => (items, tagName = 'tags') => {
+    filtered:
+      state =>
+      (items, tagName = 'tags') => {
+        if (!state.filters?.length && !state.idFilters?.length) return items
 
-      if (!state.filters?.length && !state.idFilters?.length) return items
-
-      return items.filter(item =>
-        state.filters.every(filter => {
-          // handle hardcoded special filters
-          const key = specialFilters.people.some(({ id }) => id === filter.id) ? 'title'
-            : tagName
-          const value = item[key]
-          const itemFilters = Array.isArray(value) ? value
-            : typeof value === 'string' ? [value]
-            : typeof value === 'object' ? Object.keys(value)
-            : []
-          return itemFilters.includes(filter.id)
-        })
-        // id filters
-        && state.idFilters.includes(item.id)
-      )
-    }
+        return items.filter(
+          item =>
+            state.filters.every(filter => {
+              // handle hardcoded special filters
+              const key = specialFilters.people.some(({ id }) => id === filter.id)
+                ? 'title'
+                : tagName
+              const value = item[key]
+              const itemFilters = Array.isArray(value)
+                ? value
+                : typeof value === 'string'
+                ? [value]
+                : typeof value === 'object'
+                ? Object.keys(value)
+                : []
+              return itemFilters.includes(filter.id)
+            }) &&
+            // id filters
+            state.idFilters.includes(item.id),
+        )
+      },
   },
   actions: {
     resetFilters({ commit, dispatch }) {
@@ -98,22 +102,30 @@ const module = () => ({
       if (urlIds.length > 0) {
         commit('setIdFilters', urlIds)
       }
-
     },
     toggleFilter({ commit, dispatch }, filter) {
       commit('toggleFilter', filter)
       dispatch('updateUrl')
     },
     updateUrl({ state }) {
-      const filtersUrlComponent = state.filters.map(activeFilter => slugify(activeFilter.tag) + (activeFilter.submenu ? `/${slugify(activeFilter.submenu.text)}` : '')).join(',')
+      const filtersUrlComponent = state.filters
+        .map(
+          activeFilter =>
+            slugify(activeFilter.tag) +
+            (activeFilter.submenu ? `/${slugify(activeFilter.submenu.text)}` : ''),
+        )
+        .join(',')
       const page = state.name === 'books' ? 'Home' : 'People'
       router[router.currentRoute.name === page ? 'replace' : 'push']({
         name: page,
-        query: state.filters.length > 0 ? {
-          filters: filtersUrlComponent
-        } : {}
+        query:
+          state.filters.length > 0
+            ? {
+                filters: filtersUrlComponent,
+              }
+            : {},
       })
-    }
+    },
   },
 })
 
