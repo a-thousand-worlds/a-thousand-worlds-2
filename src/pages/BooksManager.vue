@@ -60,19 +60,27 @@ export default {
       // sort books by the sort config
       const sort = books => {
         const sorted = sortBy(books, [
-          book =>
-            this.sortConfig.field === 'authors'
-              ? sortEmptyToEnd(this.formatAuthors(book.creators), this.sortConfig.dir)
-              : this.sortConfig.field === 'illustrators'
-              ? sortEmptyToEnd(this.formatIllustrators(book.creators), this.sortConfig.dir)
-              : this.sortConfig.field === 'tags'
-              ? sortEmptyToEnd(
+          book => {
+            switch (this.sortConfig.field) {
+              case 'submitted':
+                return dayjs(book.createdAt)
+              case 'updated':
+                return dayjs(book.updatedAt)
+              case 'authors':
+                return sortEmptyToEnd(this.formatAuthors(book.creators), this.sortConfig.dir)
+              case 'illustrators':
+                return sortEmptyToEnd(this.formatIllustrators(book.creators), this.sortConfig.dir)
+              case 'tags':
+                return sortEmptyToEnd(
                   this.getTags(book)
                     .map(tag => tag.tag)
                     .join(' '),
                   this.sortConfig.dir,
                 )
-              : sortEmptyToEnd(book[this.sortConfig.field], this.sortConfig.dir),
+              default:
+                return sortEmptyToEnd(book[this.sortConfig.field], this.sortConfig.dir)
+            }
+          },
           'titleLower',
         ])
         return this.sortConfig.dir === 'desc' ? reverse(sorted) : sorted

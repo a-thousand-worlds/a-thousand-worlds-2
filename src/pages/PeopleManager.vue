@@ -58,24 +58,28 @@ export default {
       // sort people by the sort config
       const sort = people => {
         const sorted = sortBy(people, [
-          person =>
-            this.sortConfig.field === 'title'
-              ? sortEmptyToEnd(
+          person => {
+            switch (this.sortConfig.field) {
+              case 'submitted':
+                return dayjs(person.createdAt)
+              case 'updated':
+                return dayjs(person.updatedAt)
+              case 'title':
+                return sortEmptyToEnd(
                   (person.title || person.role || '').toLowerCase(),
                   this.sortConfig.dir,
                 )
-              : this.sortConfig.field === 'submitted'
-              ? dayjs(person.createdAt)
-              : this.sortConfig.field === 'tags'
-              ? sortEmptyToEnd(
+              case 'tags':
+                return sortEmptyToEnd(
                   this.getTags(person)
                     .map(tag => tag.tag)
                     .join(' '),
                   this.sortConfig.dir,
                 )
-              : this.sortConfig.field === 'updated'
-              ? dayjs(person.updatedAt)
-              : (person[this.sortConfig.field] || '').toLowerCase(),
+              default:
+                return (person[this.sortConfig.field] || '').toLowerCase()
+            }
+          },
           'nameLower',
         ])
         return this.sortConfig.dir === 'desc' ? reverse(sorted) : sorted
