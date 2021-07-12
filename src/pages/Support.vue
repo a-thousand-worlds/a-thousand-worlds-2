@@ -121,9 +121,15 @@ export default {
       </div>
     </div>
     <div class="column is-full is-one-quarter-desktop">
-      <div class="is-mobile mt-30" />
+      <div class="is-hidden-desktop mt-30" />
       <h2>Participate</h2>
-      <h3 class="is-uppercase divider-bottom">Submit a book recommendation</h3>
+      <h3 class="is-uppercase is-hidden-desktop divider-bottom">
+        <span>Submit a book recommendation</span>
+      </h3>
+      <!-- squeeze in the text on two lines on desktop size -->
+      <h3 class="is-uppercase is-hidden-touch divider-bottom" style="margin-right: -50px">
+        <span>Submit a book recommendation</span>
+      </h3>
       <div class="field">
         <button
           @click="
