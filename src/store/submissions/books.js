@@ -294,12 +294,12 @@ const module = mergeOne(managed('submits/books'), {
       if (!submitter) {
         const message = `Could not find user ${submission.createdBy}`
         console.error(message, group)
-        throw new Error(message)
+        return
       }
       if (!submitter.profile.email) {
         const message = `No email for user ${submission.createdBy}`
         console.error(message, group)
-        throw new Error(message)
+        return
       }
 
       const approved = group.filter(sub => sub.status === 'approved')
@@ -313,7 +313,7 @@ const module = mergeOne(managed('submits/books'), {
           approved.length ? 'approving' : 'rejection'
         }`
         console.error(message, group)
-        throw new Error(message)
+        return
       }
 
       const fullName = submitter.profile.name || 'friend'
@@ -347,7 +347,10 @@ const module = mergeOne(managed('submits/books'), {
             </body>
           </html>`,
         })
-      } catch (e) {}
+      } catch (e) {
+        console.error('Email failed to send')
+        console.error(e)
+      }
     },
   },
 })
