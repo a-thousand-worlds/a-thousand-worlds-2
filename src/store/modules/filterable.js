@@ -62,7 +62,7 @@ const module = () => ({
               return itemFilters.includes(filter.id)
             }) &&
             // id filters
-            state.idFilters.includes(item.id),
+            (state.idFilters?.length === 0 || state.idFilters.includes(item.id)),
         )
       },
   },
