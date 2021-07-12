@@ -1,4 +1,4 @@
-<!-- A message with one or more steps persisted to storage. -->
+<!-- A message with one or more steps persisted to local storage and user profile. It could probably just be saved to user profile, since they have to be logged in anyway to see the Dashboard. -->
 
 <script>
 import { h } from 'vue'
@@ -15,8 +15,11 @@ export default {
   emits: ['completed', 'load', 'step'],
 
   data() {
+    const completedOnProfile =
+      this.$store.state.user?.user.profile?.messageSequence[this.storageKey]
     const data = {
-      completed: localStorage.getItem(this.key('completed')),
+      // consider the message sequence completed if local storage or remote profile have it marked completed
+      completed: completedOnProfile || localStorage.getItem(this.key('completed')),
       step: +(localStorage.getItem(this.key('step')) || 0),
     }
     this.$emit('load', data)
@@ -24,9 +27,22 @@ export default {
   },
 
   computed: {
+    completedOnProfile() {
+      return this.$store.state.user?.user.profile?.messageSequence[this.storageKey]
+    },
+
     numSteps() {
       return this.$slots.default().length
     },
+  },
+
+  mounted() {
+    // set the step to the end if the message sequence is completed on the remote profile
+    // it can still increment after the component is
+    // has to be done in mounted so that this.numSteps is specified
+    if (this.completedOnProfile) {
+      this.step = this.numSteps
+    }
   },
 
   methods: {
@@ -48,6 +64,10 @@ export default {
       if (step === this.numSteps) {
         this.completed = true
         localStorage.setItem(this.key('completed'), true)
+        this.$store.dispatch('user/completeMessageSequence', {
+          key: this.storageKey,
+          value: true,
+        })
         this.$emit('completed', true)
       }
     },
