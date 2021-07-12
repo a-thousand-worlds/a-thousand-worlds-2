@@ -7,9 +7,9 @@ import sendEmail from '@/util/sendEmail'
 
 const variants = {
   'Nominate BIPOC Leader(s) to A Thousand Worlds':
-    'Thank you! Please list their names, title (i.e. editor, librarian, book reviewer teacher, etc) and contact info!',
+    'Thank you! Please list their names, title (i.e. editor, librarian, book reviewer, teacher, etc) and contact info!',
   'I am a BIPOC Leader in the book industry':
-    'You are a superstar! Please share what your title is or how you engage with picture books. Thank you for you interest in contributing to our picture book directory!',
+    'You are a superstar! Please share what your title is or how you engage with picture books. Thank you for your interest in contributing to our picture book directory!',
   'Partnership Opportunity': 'Message',
   'Feedback and Questions about A Thousand Worlds': 'Message',
   'Report a Bug': 'What I expected to have happen:\n\nWhat actually happened:\n',
