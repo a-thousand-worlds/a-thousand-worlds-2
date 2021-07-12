@@ -15,34 +15,20 @@ export default {
   emits: ['completed', 'load', 'step'],
 
   data() {
-    const completedOnProfile =
-      this.$store.state.user?.user.profile?.messageSequence[this.storageKey]
+    const remoteData = this.$store.state.user?.user.profile?.messageSequence?.[this.storageKey]
     const data = {
-      // consider the message sequence completed if local storage or remote profile have it marked completed
-      completed: completedOnProfile || localStorage.getItem(this.key('completed')),
-      step: +(localStorage.getItem(this.key('step')) || 0),
+      completed: false,
+      step: 0,
+      ...remoteData,
     }
     this.$emit('load', data)
     return data
   },
 
   computed: {
-    completedOnProfile() {
-      return this.$store.state.user?.user.profile?.messageSequence[this.storageKey]
-    },
-
     numSteps() {
       return this.$slots.default().length
     },
-  },
-
-  mounted() {
-    // set the step to the end if the message sequence is completed on the remote profile
-    // it can still increment after the component is
-    // has to be done in mounted so that this.numSteps is specified
-    if (this.completedOnProfile) {
-      this.step = this.numSteps
-    }
   },
 
   methods: {
@@ -57,15 +43,19 @@ export default {
     /** Sets the step and persists it to storage. */
     set(step) {
       this.step = step
-      localStorage.setItem(this.key('step'), step)
+      this.$store.dispatch('user/updateMessageSequence', {
+        name: this.storageKey,
+        key: 'step',
+        value: step,
+      })
       this.$emit('step', step)
 
       // complete if on last step
       if (step === this.numSteps) {
         this.completed = true
-        localStorage.setItem(this.key('completed'), true)
-        this.$store.dispatch('user/completeMessageSequence', {
-          key: this.storageKey,
+        this.$store.dispatch('user/updateMessageSequence', {
+          name: this.storageKey,
+          key: 'completed',
           value: true,
         })
         this.$emit('completed', true)
@@ -88,7 +78,7 @@ export default {
         style: 'display: inline-block; border-radius: 10px; font-size: 20px;',
       },
       [
-        this.$slots.default()[this.step].children,
+        this.$slots.default()[this.step]?.children,
         h(
           'button',
           {

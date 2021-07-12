@@ -122,18 +122,21 @@ const module = mergeOne(usersModule, {
     },
 
     // See: MessageSequence component
-    async completeMessageSequence(ctx, { key, value }) {
+    async updateMessageSequence(ctx, { name, key, value }) {
       const firebasem = await firebaseImport()
       const firebase = firebasem.default
       const ref = firebase.database().ref(`users/${ctx.state.user.uid}/profile/messageSequence`)
       await ref.update({
-        [key]: value,
+        [`${name}/${key}`]: value,
       })
       ctx.commit('setProfile', {
         ...ctx.state.user.profile,
         messageSequence: {
           ...ctx.state.user.profile.messageSequence,
-          [key]: value,
+          [name]: {
+            ...ctx.state.user.profile.messageSequence?.[name],
+            [key]: value,
+          },
         },
       })
     },
