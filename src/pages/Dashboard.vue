@@ -266,9 +266,9 @@ export default {
         </ul>
       </section>
 
-      <!-- Your Book Submissions -->
+      <!-- Your Book Submissions (non-owner) -->
       <section
-        v-if="$can('submitBookOrBundle') && bookSubmissions.length"
+        v-if="$can('submitBookOrBundle') && !$iam('owner') && bookSubmissions.length"
         class="section my-30 py-0"
       >
         <YourBookSubmissions />
