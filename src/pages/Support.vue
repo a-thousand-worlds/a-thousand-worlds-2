@@ -13,6 +13,25 @@ const PaypalButtons = {
   15: process.env.VUE_APP_SUPPORT_PAYPAL_15,
 }
 
+if (!process.env.VUE_APP_SUPPORT_PAYPAL_ANY) {
+  console.error('Any Amount: PayPal Button ID environment variable not configured')
+}
+if (!process.env.VUE_APP_SUPPORT_PAYPAL_3) {
+  console.error('$3: PayPal Button ID environment variable not configured')
+}
+if (!process.env.VUE_APP_SUPPORT_PAYPAL_5) {
+  console.error('$5: PayPal Button ID environment variable not configured')
+}
+if (!process.env.VUE_APP_SUPPORT_PAYPAL_7) {
+  console.error('$7: PayPal Button ID environment variable not configured')
+}
+if (!process.env.VUE_APP_SUPPORT_PAYPAL_10) {
+  console.error('$10: PayPal Button ID environment variable not configured')
+}
+if (!process.env.VUE_APP_SUPPORT_PAYPAL_15) {
+  console.error('$15: PayPal Button ID environment variable not configured')
+}
+
 export default {
   name: 'Support',
   components: {
@@ -73,12 +92,7 @@ export default {
           <span class="ml-2">$15/month</span>
         </li>
       </ul>
-      <form
-        action="https://www.paypal.com/cgi-bin/webscr"
-        method="post"
-        target="_top"
-        class="field"
-      >
+      <form action="https://www.paypal.com/donate" method="post" target="_top" class="field">
         <input type="hidden" name="cmd" value="_s-xclick" />
         <input type="hidden" name="hosted_button_id" :value="PaypalButtons[monthly]" />
         <button type="submit" class="button is-primary is-uppercase is-rounded mt-3">
