@@ -57,7 +57,17 @@ module.exports = () => {
       let isbn = null
       $('div.s-result-item').each(function (i, $result) {
         const asin = $(this).data('asin')
-        if (asin && `${asin}`.length && !$el) {
+        // let's check that element is book in next way - "book result" should include one of format keyword
+        const text = $(this).text()
+        const isBook = [
+          'Kindle',
+          'Hardcover',
+          'Paperback',
+          'Audible audiobook',
+          'Board book',
+          'Audio CD',
+        ].some(format => text.includes(format))
+        if (asin && `${asin}`.length && !$el && isBook) {
           $el = $(this)
           isbn = asin
         }
