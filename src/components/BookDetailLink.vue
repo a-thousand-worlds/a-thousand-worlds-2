@@ -45,7 +45,7 @@ export default {
       })
     },
     keydown(e) {
-      if (this.$iam('owner') && e.key === 'Shift') {
+      if (this.$iam('owner') && e.key === 'Shift' && this.$route.name !== 'BookEdit') {
         this.editOnClick = true
       }
     },

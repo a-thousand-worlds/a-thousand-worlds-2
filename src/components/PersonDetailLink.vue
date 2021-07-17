@@ -7,7 +7,7 @@ export default {
     person: {
       required: true,
     },
-    // if true, links to BookEdit
+    // if true, links to PersonEdit
     edit: Boolean,
   },
   data() {
@@ -43,7 +43,7 @@ export default {
       })
     },
     keydown(e) {
-      if (this.$iam('owner') && e.key === 'Shift') {
+      if (this.$iam('owner') && e.key === 'Shift' && this.$route.name !== 'PersonEdit') {
         this.editOnClick = true
       }
     },
