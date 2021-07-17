@@ -15,7 +15,7 @@ import NotFound from '@/pages/NotFound'
 import PrevNext from '@/components/PrevNext'
 import Tag from '@/components/Tag'
 
-/** Gets the person object from the url params. */
+/** Gets the person object from the url params. Not reactive. */
 const getPerson = () =>
   store.getters['people/findBy'](
     'name',
@@ -122,11 +122,11 @@ export default {
           )
         : []
     },
-    name() {
-      return this.$route.params.name
-    },
     person() {
-      const person = getPerson()
+      const person = this.$store.getters['people/findBy'](
+        'name',
+        name => slugify(name) === this.$route.params.name,
+      )
       this.$store.dispatch('debug', { person })
       return person
     },

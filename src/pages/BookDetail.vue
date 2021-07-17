@@ -18,7 +18,7 @@ import PrevNext from '@/components/PrevNext'
 import RecommendedBy from '@/components/RecommendedBy'
 import Tag from '@/components/Tag'
 
-/** Gets the detail page book object. */
+/** Gets the detail page book object. Not reactive. */
 const getBook = state =>
   state.books.loaded
     ? Object.values(state.books.data).find(
@@ -118,7 +118,11 @@ export default {
   },
   computed: {
     book() {
-      const book = getBook(this.$store.state)
+      const book = this.$store.state.books.loaded
+        ? Object.values(this.$store.state.books.data).find(
+            book => book.isbn === this.$route.params.isbn,
+          )
+        : null
       this.$store.dispatch('debug', { book })
       return book
     },
