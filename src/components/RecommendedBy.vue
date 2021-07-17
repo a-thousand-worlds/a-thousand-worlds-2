@@ -218,7 +218,12 @@ export default {
         >
         <span v-else>{{ name }}</span>
       </span>
-      <i v-else style="opacity: 0.5">None</i>
+      <span
+        v-else
+        @click.stop="dropdownActive = !dropdownActive"
+        style="opacity: 0.5; font-style: italic; cursor: pointer"
+        >None</span
+      >
 
       <!-- title -->
       <span v-if="title">, {{ title }}</span>
