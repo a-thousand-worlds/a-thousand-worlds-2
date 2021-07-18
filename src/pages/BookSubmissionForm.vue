@@ -10,6 +10,7 @@ import isSame from '@/util/isSame'
 import validator from '@/mixins/validator'
 
 import BookTitleField from '@/components/fields/BookTitle'
+import Content from '@/components/Content'
 import LogarithmicProgressBar from '@/components/LogarithmicProgressBar'
 import MessageSequence from '@/components/MessageSequence'
 import RecommendedBy from '@/components/RecommendedBy'
@@ -17,6 +18,7 @@ import RecommendedBy from '@/components/RecommendedBy'
 export default {
   components: {
     BookTitleField,
+    Content,
     LogarithmicProgressBar,
     MessageSequence,
     RecommendedBy,
@@ -374,17 +376,21 @@ export default {
 
         <MessageSequence
           ref="help"
-          storageKey="bookSubmissionFormHelp"
+          storageKey="bookSubmissionForm"
           @load="helpCompleted = $event.completed"
           @completed="helpCompleted = $event"
         >
           <template>
-            <h2 class="field">Getting Started</h2>
-            <p class="field">
-              This is the <b>Book Submission Form</b>. Fill out this form to submit one or more
-              picture books to be reviewed by the ATW curatorial team and entered into the book
-              directory upon approval.
-            </p>
+            <h2 class="field">
+              <Content name="instructions/bookSubmissionForm/title">Getting Started</Content>
+            </h2>
+            <div class="field">
+              <Content name="instructions/bookSubmissionForm/body">
+                This is the Book Submission Form. Fill out this form to submit one or more picture
+                books to be reviewed by the ATW curatorial team and entered into the book directory
+                upon approval.
+              </Content>
+            </div>
           </template>
         </MessageSequence>
 

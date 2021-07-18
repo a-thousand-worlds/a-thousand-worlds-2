@@ -1,4 +1,5 @@
 <script>
+import Content from '@/components/Content'
 import ContributorProfileForm from '@/components/Dashboard/ContributorProfileForm'
 import ContributorProfilePreview from '@/components/Dashboard/ContributorProfilePreview'
 import CreatorProfilePreview from '@/components/Dashboard/CreatorProfilePreview'
@@ -11,6 +12,7 @@ import YourBookSubmissions from '@/components/Dashboard/YourBookSubmissions'
 
 export default {
   components: {
+    Content,
     ContributorProfileForm,
     ContributorProfilePreview,
     CreatorProfilePreview,
@@ -128,42 +130,44 @@ export default {
             @completed="submissionFormMessageCompleted = $event"
           >
             <template>
-              <h2 class="field">Welcome!</h2>
-              <p class="field">
-                As a leader in the industry and a contributor to ATW you have special access to two
-                Submission Forms: <b>BOOKS</b> and <b>BUNDLES</b>. Both forms are available for you
-                to use as many times as you like and at any time. The world is full of beautiful
-                picture books—we want to hear what has captured your heart! To that end we hope that
-                you spread the love and include picture books that are not in-house and you have not
-                personally worked on.
-              </p>
-              <p class="field">
-                You can access the forms via your log-in information, which is unique to you, and
-                should not be shared. Your public profile will be linked to each of your book
-                recommendations. Your personal email will not be shared.
-              </p>
+              <h2 class="field">
+                <Content name="instructions/dashboard/welcome/0/title">Welcome!</Content>
+              </h2>
+              <div class="field">
+                <Content name="instructions/dashboard/welcome/0/body">
+                  As a leader in the industry and a contributor to ATW you have special access to
+                  two Submission Forms: BOOKS and BUNDLES. Both forms are available for you to use
+                  as many times as you like and at any time. The world is full of beautiful picture
+                  books—we want to hear what has captured your heart! To that end we hope that you
+                  spread the love and include picture books that are not in-house and you have not
+                  personally worked on.
+                </Content>
+              </div>
             </template>
 
             <template>
-              <h2 class="field">Curatorial Process</h2>
-              <p class="field">
-                Our vision is to create a directory that exemplifies beautiful art and innovative
-                storytelling. Our mission is to amplify BIPOC voices and create a space for BIPOC
-                creators and leaders. To that end
-                <b
-                  >we are creating a space dedicated to only BIPOC creators. All picture books
-                  submitted for consideration need to have both BIPOC illustrator AND BIPOC
-                  author</b
-                >. We also have a separate ATW Curatorial team consisting of BIPOC leaders who is
-                tasked with a final curation of all submissions. This means that some of your
-                picture books may not be included in the directory, but know that we always welcome
-                more submissions from you. Thank you.
-              </p>
+              <h2 class="field">
+                <Content name="instructions/dashboard/welcome/1/title">Curatorial Process</Content>
+              </h2>
+              <div class="field">
+                <Content name="instructions/dashboard/welcome/1/body">
+                  Our vision is to create a directory that exemplifies beautiful art and innovative
+                  storytelling. Our mission is to amplify BIPOC voices and create a space for BIPOC
+                  creators and leaders. To that end we are creating a space dedicated to only BIPOC
+                  creators. All picture books submitted for consideration need to have both BIPOC
+                  illustrator AND BIPOC author. We also have a separate ATW Curatorial team
+                  consisting of BIPOC leaders who is tasked with a final curation of all
+                  submissions. This means that some of your picture books may not be included in the
+                  directory, but know that we always welcome more submissions from you. Thank you.
+                </Content>
+              </div>
             </template>
 
             <template>
               <p class="field">
-                When you're ready, click on the BOOK button below to submit a book!
+                <Content name="instructions/welcome/2/body"
+                  >When you're ready, click on the BOOK button below to submit a book!</Content
+                >
               </p>
             </template>
           </MessageSequence>
@@ -233,25 +237,24 @@ export default {
 
         <MessageSequence
           ref="inviteMessage"
-          storageKey="dashboardInviteMessage"
+          storageKey="dashboardInvite"
           @load="inviteMessageCompleted = $event.completed"
           @completed="inviteMessageCompleted = $event"
         >
           <template>
-            <h2 class="field">Other Ways to Contribute</h2>
-            <p class="field">
-              Also you will see on your Dashboard that there is an INVITE USERS window. This is a
-              place where you can easily invite people to use ATW. Just type in the names - emails
-              of anyone you think should know about A THOUSAND WORLDS and click send. This is not a
-              mailing list, they will receive only one email notification from ATW saying hello and
-              letting them know about us. If you are as in love with our mission please consider
-              helping us spread the word!
-            </p>
-            <p class="field">
-              To nominate other BIPOC leaders to contribute please go to the
-              <router-link :to="{ name: 'Contact' }">Contact</router-link> page and click on
-              "Nominate a leader" to send an email to ATW.
-            </p>
+            <h2 class="field">
+              <Content name="instructions/dashboard/invite/title">Other Ways to Contribute</Content>
+            </h2>
+            <div class="field">
+              <Content name="instructions/dashboard/invite/body">
+                Also you will see on your Dashboard that there is an INVITE USERS window. This is a
+                place where you can easily invite people to use ATW. Just type in the names - emails
+                of anyone you think should know about A THOUSAND WORLDS and click send. This is not
+                a mailing list, they will receive only one email notification from ATW saying hello
+                and letting them know about us. If you are as in love with our mission please
+                consider helping us spread the word!
+              </Content>
+            </div>
           </template>
         </MessageSequence>
 
@@ -307,5 +310,16 @@ h2.title {
 a.button {
   min-width: 200px;
   border-radius: 20px;
+}
+</style>
+
+<style lang="scss">
+.ck.ck-editor__editable_inline {
+  padding: 0px !important;
+  & > :first-child,
+  & > :last-child {
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+  }
 }
 </style>
