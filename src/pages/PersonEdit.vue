@@ -131,7 +131,16 @@ export default {
     },
 
     bioBlur() {
-      this.bioFocused = false
+      // ck-editor triggers blur when showing the popup link editor
+      // this.bioFocused is reactively used in this.bio, so any change triggers a re-render
+      // delay this.bioFocused = false and make sure the editor is actually blurred to avoid re-rendering when the popup link editor is shown, and avoid saving the autolink
+      setTimeout(() => {
+        const bioEl = document.querySelector('.person-bio')
+        const blurred = bioEl?.classList.contains('ck-blurred')
+        if (blurred) {
+          this.bioFocused = false
+        }
+      }, 10)
     },
 
     bioFocus() {
@@ -162,8 +171,10 @@ export default {
     },
 
     updateBio(value) {
-      // updateBio gets incorrectly triggered once on blur with the auto-linked bio, so we need to ignore it
+      // updateBio gets triggered on focus when there is an autolink since this.bio changes
+      // prevent the autolink from getting embedded by making sure the editor is focused before updating
       if (!this.bioFocused) return
+
       this.updatePerson({ bio: value })
     },
 
@@ -172,6 +183,14 @@ export default {
         value = field
         field = ''
       }
+
+      // do not update if the field is not changed
+      // handle field embedded in complex value, e.g. field === '' and value === { isbn: '1419742256' }
+      if (this.person[field] === value) return
+      const extractedField =
+        field === '' && Object.keys(value).length === 1 && Object.keys(value)[0]
+      if (extractedField && this.person[extractedField] === value[extractedField]) return
+
       return this.$store.dispatch('people/update', {
         path: `${this.person.id}/${field}`,
         value,
