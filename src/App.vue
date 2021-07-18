@@ -2,6 +2,7 @@
 import { useHead } from '@vueuse/head'
 import BookmarksView from '@/components/BookmarksView'
 import Confirm from '@/components/ui/Confirm'
+import ImpersonateHeader from '@/components/ImpersonateHeader'
 import LeftBar from '@/components/LeftBar.vue'
 import MobileFooter from '@/components/MobileFooter'
 import MobileHeader from '@/components/MobileHeader'
@@ -21,6 +22,7 @@ export default {
   components: {
     BookmarksView,
     Confirm,
+    ImpersonateHeader,
     LeftBar,
     Loader,
     MobileFooter,
@@ -122,6 +124,7 @@ export default {
 
   <!-- Full Website -->
   <div v-else :class="`theme${$store.state.theme}`">
+    <ImpersonateHeader />
     <MobileHeader class="is-hidden-tablet" />
 
     <WelcomeDismissable v-if="showWelcome" />

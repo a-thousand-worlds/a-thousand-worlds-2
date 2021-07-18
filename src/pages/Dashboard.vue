@@ -3,6 +3,7 @@ import Content from '@/components/Content'
 import ContributorProfileForm from '@/components/Dashboard/ContributorProfileForm'
 import ContributorProfilePreview from '@/components/Dashboard/ContributorProfilePreview'
 import CreatorProfilePreview from '@/components/Dashboard/CreatorProfilePreview'
+import Impersonate from '@/components/Dashboard/Impersonate'
 import InviteWidget from '@/components/InviteWidget'
 import Loader from '@/components/Loader'
 import ManageCollectionsPreview from '@/components/Dashboard/ManageCollectionsPreview'
@@ -16,8 +17,9 @@ export default {
     ContributorProfileForm,
     ContributorProfilePreview,
     CreatorProfilePreview,
-    Loader,
+    Impersonate,
     InviteWidget,
+    Loader,
     ManageCollectionsPreview,
     MessageSequence,
     ReviewSubmissionsPreview,
@@ -88,6 +90,11 @@ export default {
         <Loader />
       </div>
 
+      <!-- Creator Profile Preview -->
+      <section v-if="$iam('creator')" class="section divider-bottom">
+        <CreatorProfilePreview />
+      </section>
+
       <div v-if="submissionFormMessageCompleted">
         <!-- Review Submissions -->
         <section
@@ -106,11 +113,6 @@ export default {
           <div class="mb-30">
             <router-link :to="{ name: 'TagsManager' }">Tags Manager</router-link>
           </div>
-        </section>
-
-        <!-- Creator Profile Preview -->
-        <section v-if="$iam('creator')" class="section divider-bottom">
-          <CreatorProfilePreview />
         </section>
       </div>
 
@@ -215,7 +217,7 @@ export default {
       <!-- Invite -->
       <section
         v-if="$can('invite') && !hasPendingContributorProfile && submissionFormMessageCompleted"
-        class="section bordered-top"
+        class="section bordered-top divider-bottom py-50"
       >
         <h2>
           Invite Users
@@ -275,6 +277,10 @@ export default {
         class="section my-30 py-0"
       >
         <YourBookSubmissions />
+      </section>
+
+      <section v-if="$iam('owner')" class="section">
+        <Impersonate />
       </section>
     </div>
   </div>

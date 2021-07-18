@@ -16,7 +16,10 @@ export default {
       return userSubmissions.length > 0 && userSubmissions.every(status => status === 'rejected')
     },
     hasPendingSubmission() {
-      return Object.values(this.userSubmissions).some(status => status === 'pending')
+      return (
+        !this.$store.state.user?.impersonate &&
+        Object.values(this.userSubmissions).some(status => status === 'pending')
+      )
     },
     peopleSubmissionId() {
       const peopleSubmissions = this.$store.state.submissions.people.data || {}
@@ -26,6 +29,10 @@ export default {
       )
     },
     person() {
+      if (this.$store.state.user.impersonate) {
+        return {}
+      }
+
       // searches for the person id based on the submission and logged in user
       const getPersonId = () => {
         // first check user profile

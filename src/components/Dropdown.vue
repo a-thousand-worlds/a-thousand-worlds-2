@@ -1,6 +1,11 @@
 <script>
 export default {
   props: {
+    format: {
+      type: String,
+      default: 'link',
+      validator: value => ['link', 'button'].includes(value),
+    },
     label: {
       type: String,
     },
@@ -38,14 +43,40 @@ export default {
     close() {
       this.active = false
     },
+    select(id) {
+      this.$emit('update:modelValue', id)
+    },
   },
 }
 </script>
 
 <template>
   <div>
+    <!-- button -->
+    <div v-if="format === 'button'" class="dropdown-trigger" style="margin-right: 20px">
+      <button
+        class="button"
+        aria-haspopup="true"
+        aria-controls="dropdown-menu"
+        @click.prevent.stop="active = !active"
+        v-click-outside="close"
+        style="margin-bottom: -20px"
+      >
+        <span style="text-transform: uppercase">{{
+          labelFormatted || placeholder || 'Choose'
+        }}</span>
+        <span class="icon is-small">
+          <i class="fas fa-angle-down" aria-hidden="true" />
+        </span>
+      </button>
+    </div>
+
     <!-- dropdown -->
-    <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': active }">
+    <div
+      class="dropdown mt-4 no-user-select"
+      :class="{ 'is-active': active }"
+      style="margin-bottom: 20px"
+    >
       <div id="dropdown-menu" class="dropdown-menu" role="menu">
         <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll">
           <!-- pre-options -->
@@ -56,7 +87,7 @@ export default {
             v-for="option in options"
             :key="option.id"
             class="dropdown-item is-capitalized"
-            @click.prevent="$emit('update:modelValue', option.id)"
+            @click.prevent="select(option.id)"
             :class="{ selected: (modelValue ?? defaultValue) === option?.id }"
           >
             {{ option.text }}
@@ -67,6 +98,7 @@ export default {
 
     <!-- link -->
     <a
+      v-if="format === 'link'"
       @click.prevent.stop="active = !active"
       v-click-outside="close"
       :class="{ 'is-primary': active }"

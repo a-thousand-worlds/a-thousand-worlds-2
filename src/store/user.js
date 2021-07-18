@@ -30,16 +30,28 @@ function auth2user(dbUser) {
 
 const usersModule = collection('users')
 const module = mergeOne(usersModule, {
-  state: () => ({
+  state: {
+    impersonate: null,
     user: null,
     nextPromise: null,
-  }),
+  },
   mutations: {
+    impersonate: (state, role) => {
+      state.impersonate = role
+      if (role) {
+        localStorage.setItem('impersonate', role)
+      } else {
+        localStorage.removeItem('impersonate')
+      }
+    },
     setNextPromise(state, accept) {
       state.nextPromise = accept
     },
     setUser: (state, user) => {
       state.user = user
+      if (user && !state.impersonate) {
+        state.impersonate = localStorage.getItem('impersonate')
+      }
       if (state.nextPromise) {
         state.nextPromise(state.user)
         state.nextPromise = null
