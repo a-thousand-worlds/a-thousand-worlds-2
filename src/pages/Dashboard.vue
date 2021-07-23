@@ -1,7 +1,7 @@
 <script>
 import Content from '@/components/Content'
-import ContributorProfileForm from '@/components/Dashboard/ContributorProfileForm'
-import ContributorProfilePreview from '@/components/Dashboard/ContributorProfilePreview'
+import PublicProfileForm from '@/components/Dashboard/PublicProfileForm'
+import PublicProfilePreview from '@/components/Dashboard/PublicProfilePreview'
 import CreatorProfilePreview from '@/components/Dashboard/CreatorProfilePreview'
 import Impersonate from '@/components/Dashboard/Impersonate'
 import InviteWidget from '@/components/InviteWidget'
@@ -14,8 +14,8 @@ import YourBookSubmissions from '@/components/Dashboard/YourBookSubmissions'
 export default {
   components: {
     Content,
-    ContributorProfileForm,
-    ContributorProfilePreview,
+    PublicProfileForm,
+    PublicProfilePreview,
     CreatorProfilePreview,
     Impersonate,
     InviteWidget,
@@ -44,13 +44,13 @@ export default {
     username() {
       return this.$store.state.user.user?.profile.name || this.$store.state.user.user?.profile.email
     },
-    hasPendingContributorProfile() {
-      // if affiliations are set, we know the user completed the ContributorProfileForm
+    hasPendingPublicProfile() {
+      // if affiliations are set, we know the user completed the PublicProfileForm
       // returns true for non-contributors
 
       const affiliations = this.$store.state.user.user?.profile.affiliations
       return (
-        this.$iam('contributor') &&
+        this.$can('submitBookOrBundle') &&
         (!affiliations ||
           (!affiliations.website &&
             !affiliations.organization &&
@@ -81,7 +81,7 @@ export default {
       <h1 class="title page-title divider-bottom">Your Dashboard</h1>
 
       <!-- your account -->
-      <div v-if="!hasPendingContributorProfile" class="header-options mr-10">
+      <div v-if="!hasPendingPublicProfile" class="header-options mr-10">
         <router-link :to="{ name: 'Account' }" style="color: black">Your Account</router-link>
       </div>
 
@@ -121,12 +121,12 @@ export default {
         class="section"
         style="padding-top: 75px; padding-bottom: 75px"
       >
-        <div v-if="$iam('contributor')">
-          <ContributorProfileForm v-if="hasPendingContributorProfile" welcome />
-          <ContributorProfilePreview v-else class="mb-30" />
+        <div>
+          <PublicProfileForm v-if="hasPendingPublicProfile" welcome />
+          <PublicProfilePreview v-else class="mb-30" />
         </div>
 
-        <div v-if="!hasPendingContributorProfile">
+        <div v-if="!hasPendingPublicProfile">
           <!-- Welcome message sequence -->
           <MessageSequence
             ref="submissionFormMessage"
@@ -219,7 +219,7 @@ export default {
 
       <!-- Invite -->
       <section
-        v-if="$can('invite') && !hasPendingContributorProfile && submissionFormMessageCompleted"
+        v-if="$can('invite') && !hasPendingPublicProfile && submissionFormMessageCompleted"
         class="section"
       >
         <h2>

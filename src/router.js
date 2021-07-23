@@ -90,9 +90,9 @@ const routes = [
     },
   },
   {
-    path: '/contributor',
-    name: 'ContributorProfile',
-    component: () => import(/* webpackChunkName: "contributor" */ './pages/ContributorProfile.vue'),
+    path: '/profile',
+    name: 'PublicProfile',
+    component: () => import(/* webpackChunkName: "contributor" */ './pages/PublicProfile.vue'),
     meta: {
       access: 'authorized',
     },

@@ -1,9 +1,9 @@
 <script>
-import ContributorProfileForm from '@/components/Dashboard/ContributorProfileForm'
+import PublicProfileForm from '@/components/Dashboard/PublicProfileForm'
 
 export default {
   components: {
-    ContributorProfileForm,
+    PublicProfileForm,
   },
 }
 </script>
@@ -18,7 +18,7 @@ export default {
 
         <h1 class="page-title divider-bottom">Edit Profile</h1>
 
-        <ContributorProfileForm />
+        <PublicProfileForm />
       </div>
     </div>
   </div>

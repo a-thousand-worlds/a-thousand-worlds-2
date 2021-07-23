@@ -2,7 +2,7 @@
 import sortBy from 'lodash/sortBy'
 import engagements from '@/store/constants/engagements'
 import normalizeLink from '@/util/normalizeLink'
-import ContributorProfileForm from '@/components/Dashboard/ContributorProfileForm'
+import PublicProfileForm from '@/components/Dashboard/PublicProfileForm'
 
 const newContributor = () => ({
   engagements: {},
@@ -14,7 +14,7 @@ const newContributor = () => ({
 
 export default {
   components: {
-    ContributorProfileForm,
+    PublicProfileForm,
   },
   props: {
     // contributor id
@@ -240,7 +240,7 @@ export default {
     <!-- New Contributor -->
     <div v-else style="max-width: 450px">
       <h2 class="divider-bottom">{{ showEditContributor ? 'Edit' : 'New' }} Contributor</h2>
-      <ContributorProfileForm
+      <PublicProfileForm
         :contributor="profile"
         @cancel="resetContributorForm"
         @save="contributorFormSaved"
