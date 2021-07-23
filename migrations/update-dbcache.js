@@ -114,9 +114,13 @@ const go = async () => {
       const cacheUrl = `/img/${book.id}.png`
       const localPath = `./public/img/${book.id}.png`
       db.books[book.id].cover.cache = cacheUrl
-      console.info(`downloading book cover <${book.title}> id: <${book.id}>`)
-      // const response = await axios.get(book.cover.url, { responseType: 'arraybuffer' })
-      // fs.writeFileSync(localPath, Buffer.from(res.data))
+      if (fs.existsSync(localPath)) {
+        console.info(`Book cover exists <${book.title}> id: <${book.id}>`)
+      } else {
+        console.info(`Downloading book cover <${book.title}> id: <${book.id}>`)
+        const response = await axios.get(book.cover.url, { responseType: 'arraybuffer' })
+        fs.writeFileSync(localPath, Buffer.from(res.data))
+      }
     }),
   )
 
