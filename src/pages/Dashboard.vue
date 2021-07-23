@@ -91,33 +91,36 @@ export default {
       </div>
 
       <!-- Creator Profile Preview -->
-      <section v-if="$iam('creator')" class="section divider-bottom">
+      <section v-if="$iam('creator')" class="section">
         <CreatorProfilePreview />
       </section>
 
-      <div v-if="submissionFormMessageCompleted">
+      <section
+        class="section"
+        v-if="submissionFormMessageCompleted && ($can('review') || $can('manageCollections'))"
+      >
         <!-- Review Submissions -->
-        <section
-          v-if="$can('review')"
-          class="section my-30 py-0"
-          :class="{ 'divider-bottom': !$can('manageCollections') }"
-        >
+        <div v-if="$can('review')">
           <h2>Review Submissions</h2>
           <ReviewSubmissionsPreview />
-        </section>
+        </div>
 
         <!-- Manage Collections -->
-        <section v-if="$can('manageCollections')" class="section my-30 py-0 divider-bottom">
+        <div v-if="$can('manageCollections')" class="mt-20">
           <h2>Manage Collections</h2>
           <ManageCollectionsPreview />
           <div class="mb-30">
             <router-link :to="{ name: 'TagsManager' }">Tags Manager</router-link>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
 
       <!-- Submit Book or Bundle -->
-      <section v-if="$can('submitBookOrBundle')" class="section">
+      <section
+        v-if="$can('submitBookOrBundle')"
+        class="section"
+        style="padding-top: 75px; padding-bottom: 75px"
+      >
         <div v-if="$iam('contributor')">
           <ContributorProfileForm v-if="hasPendingContributorProfile" welcome />
           <ContributorProfilePreview v-else class="mb-30" />
@@ -217,7 +220,7 @@ export default {
       <!-- Invite -->
       <section
         v-if="$can('invite') && !hasPendingContributorProfile && submissionFormMessageCompleted"
-        class="section bordered-top divider-bottom py-50"
+        class="section"
       >
         <h2>
           Invite Users
@@ -274,7 +277,7 @@ export default {
       <!-- Your Book Submissions (non-owner) -->
       <section
         v-if="$can('submitBookOrBundle') && !$iam('owner') && bookSubmissions.length"
-        class="section my-30 py-0"
+        class="section"
       >
         <YourBookSubmissions />
       </section>
@@ -289,6 +292,14 @@ export default {
 <style lang="scss" scoped>
 @import 'bulma/sass/utilities/_all.sass';
 @import '@/assets/style/mixins.scss';
+
+.section {
+  @include primary(border-bottom-color);
+  border-bottom: solid 1px;
+  &:last-child {
+    border-bottom: none;
+  }
+}
 
 .page {
   width: 100%;
