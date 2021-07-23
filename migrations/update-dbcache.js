@@ -1,5 +1,6 @@
 const promptly = require('promptly')
 const axios = require('axios')
+const chalk = require('chalk')
 const fs = require('fs')
 
 const envFile = process.argv[process.argv.length - 1]
@@ -86,9 +87,9 @@ const go = async () => {
     return
   }
   console.info(
-    `Authorized as <${credentials.user.displayName ? credentials.user.displayName + ' - ' : ''}${
-      credentials.user.uid
-    }>.`,
+    `Authorized as <${
+      credentials.user.displayName ? chalk.cyan(credentials.user.displayName) + ' - ' : ''
+    }${chalk.cyan(credentials.user.uid)}>.`,
   )
 
   const db = await cacheDatabase(firebase.database())
@@ -115,11 +116,17 @@ const go = async () => {
       const localPath = `./public/img/${book.id}.png`
       db.books[book.id].cover.cache = cacheUrl
       if (fs.existsSync(localPath)) {
-        console.info(`Book cover exists <${book.title}> id: <${book.id}>`)
+        console.info(
+          `${chalk.green('Book cover exists')} ${book.title} (id: ${chalk.cyan(book.id)})`,
+        )
       } else {
-        console.info(`Downloading book cover <${book.title}> id: <${book.id}>`)
-        const response = await axios.get(book.cover.url, { responseType: 'arraybuffer' })
-        fs.writeFileSync(localPath, Buffer.from(res.data))
+        console.info(
+          `${chalk.red('Book cover does not exist')}. Downloading book cover ${
+            book.title
+          } (id: <${chalk.cyan(book.id)})`,
+        )
+        // const response = await axios.get(book.cover.url, { responseType: 'arraybuffer' })
+        // fs.writeFileSync(localPath, Buffer.from(res.data))
       }
     }),
   )
