@@ -1,5 +1,4 @@
 <script>
-import sortBy from 'lodash/sortBy'
 import engagements from '@/store/constants/engagements'
 import normalizeLink from '@/util/normalizeLink'
 import PublicProfileForm from '@/components/Dashboard/PublicProfileForm'
@@ -44,16 +43,8 @@ export default {
     }
   },
   computed: {
-    // sorted contributor for dropdown menu
-    // accessible by admin only
-    // unauthorized users must access contributors individually
-    contributors() {
-      const contributorList = this.$store.state.users.loaded
-        ? Object.entries(this.$store.state.users.data)
-            .filter(([id, user]) => user.roles?.contributor)
-            .map(([id, user]) => ({ id, ...user }))
-        : []
-      return sortBy(contributorList, 'profile.name')
+    contributorOptions() {
+      return this.$store.getters['users/contributorOptions']
     },
 
     // populated individually in the created hook since users are not loaded automatically except for admin
@@ -199,13 +190,13 @@ export default {
             >
             <hr class="dropdown-divider" />
             <a
-              v-for="contributor in contributors"
+              v-for="contributor in contributorOptions"
               :key="contributor.id"
               class="dropdown-item is-capitalized"
               :class="{ 'is-active': contributor.id === modelValue }"
               @click.prevent="update(contributor)"
             >
-              {{ contributor.profile.name }}
+              {{ contributor.text }}
             </a>
           </div>
         </div>

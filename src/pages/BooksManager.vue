@@ -100,23 +100,8 @@ export default {
       }))
     },
 
-    // sorted contributor for dropdown menu
-    // accessible by admin only
-    // unauthorized users must access contributors individually
     contributorOptions() {
-      const contributorList = this.$store.state.users.loaded
-        ? Object.entries(this.$store.state.users.data)
-            .filter(([id, user]) => user.roles?.contributor || user.roles?.owner)
-            .map(([id, user]) => {
-              const fullName =
-                user.profile.name ||
-                (user.profile.firstName
-                  ? `${user.profile.firstName || ''} ${user.profile.lastName || ''}`.trim()
-                  : '')
-              return { id, text: `${fullName}${user.roles.owner ? ' (owner)' : ''}` }
-            })
-        : []
-      return sortBy(contributorList, 'name')
+      return this.$store.getters['users/contributorOptions']
     },
 
     tags() {
@@ -485,7 +470,7 @@ export default {
                   v-if="editMode"
                   label="Add Author"
                   @update="updateBook(book, 'creators', { [$event]: 'author' })"
-                  class="mb-10 ml-1 mr-30"
+                  class="mb-10 ml-1 mr-30 mt-2"
                   style="width: 100%"
                 />
               </td>
@@ -527,7 +512,7 @@ export default {
                   v-if="editMode"
                   label="Add Illustrator"
                   @update="updateBook(book, 'creators', { [$event]: 'illustrator' })"
-                  class="mb-10 ml-1 mr-30"
+                  class="mb-10 ml-1 mr-30 mt-2"
                   style="width: 100%"
                 />
               </td>

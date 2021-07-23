@@ -72,11 +72,7 @@ export default {
     </div>
 
     <!-- dropdown -->
-    <div
-      class="dropdown mt-4 no-user-select"
-      :class="{ 'is-active': active }"
-      style="margin-bottom: 20px"
-    >
+    <div class="dropdown mt-4 no-user-select" :class="{ 'is-active': active }">
       <div id="dropdown-menu" class="dropdown-menu" role="menu">
         <div class="dropdown-content" style="max-height: 19.5em; overflow: scroll">
           <!-- pre-options -->
