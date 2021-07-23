@@ -5,12 +5,12 @@ const fs = require('fs')
 const envFile = process.argv[process.argv.length - 1]
 
 if (envFile.endsWith('update-dbcache.js')) {
-  console.log('Ussage: npm run update:localcache PATH_TO_ENV_FILE')
+  console.info('Usage: npm run update:localcache PATH_TO_ENV_FILE')
   process.exit(0)
 }
 
 require('dotenv').config({ path: envFile })
-console.log(`using firebase config from <${envFile}>`)
+console.info(`using firebase config from <${envFile}>`)
 
 /** loading firebase website "collection" */
 const loadCollection = (db, path) => {
@@ -70,10 +70,10 @@ const initFirebase = () => {
 
 /** Main function */
 const go = async () => {
-  console.log('Initializing firebase')
+  console.info('Initializing firebase')
   const usr = await promptly.prompt(`Website owner authentication email`)
   const pwd = await promptly.password(`Website owner authentication password for <${usr}>`)
-  console.log('Connecting to firebase')
+  console.info('Connecting to firebase')
   const firebase = initFirebase()
   let credentials = null
   try {
@@ -82,10 +82,14 @@ const go = async () => {
     credentials = null
   }
   if (!credentials) {
-    console.log('Firebase authentication error. Nothing done. Aborting')
+    console.info('Firebase authentication error. Nothing done. Aborting')
     return
   }
-  console.log(`Authorized as <${credentials.user.displayName} - ${credentials.user.uid}>.`)
+  console.info(
+    `Authorized as <${credentials.user.displayName ? credentials.user.displayName + ' - ' : ''}${
+      credentials.user.uid
+    }>.`,
+  )
 
   const db = await cacheDatabase(firebase.database())
   db.cacheDate = new Date()
@@ -105,15 +109,14 @@ const go = async () => {
 
   // download cover images
   await Promise.all(
-    cacheBooks.map(book => {
+    cacheBooks.map(async book => {
       // updating cached db cuz we need calculate later hash of file with cached urls
       const cacheUrl = `/img/${book.id}.png`
       const localPath = `./public/img/${book.id}.png`
       db.books[book.id].cover.cache = cacheUrl
-      console.log(`downloading book cover <${book.title}> id: <${book.id}>`)
-      return axios
-        .get(book.cover.url, { responseType: 'arraybuffer' })
-        .then(res => fs.writeFileSync(localPath, Buffer.from(res.data)))
+      console.info(`downloading book cover <${book.title}> id: <${book.id}>`)
+      // const response = await axios.get(book.cover.url, { responseType: 'arraybuffer' })
+      // fs.writeFileSync(localPath, Buffer.from(res.data))
     }),
   )
 
@@ -124,7 +127,7 @@ const go = async () => {
 /** run main function */
 go()
   .then(() => {
-    console.log('done')
+    console.info('done')
     process.exit(0)
   })
   .catch(err => {
