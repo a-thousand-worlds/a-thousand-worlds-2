@@ -17,6 +17,11 @@ export default {
   methods: {
     impersonate() {
       this.$store.commit('user/impersonate', this.role)
+
+      // scroll to top after re-render
+      setTimeout(() => {
+        window.scrollTo(0, 0)
+      })
     },
   },
 }
