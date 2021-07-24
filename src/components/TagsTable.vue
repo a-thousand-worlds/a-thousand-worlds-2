@@ -146,25 +146,27 @@ export default {
       // update tag sortOrders
       // subtags use 0.01 increment
       const increment = parentOld ? 0.01 : 1
-      const updatesTags = tagsToResort.reduce(
-        (accum, tag, i) => ({
-          ...accum,
-          [`${tag.id}/sortOrder`]: moveDown
-            ? // shift up
-              i === 0
-              ? // move first item to the end
-                startSortOrder + (tagsToResort.length - 1) * increment
-              : // shift other items up
-                startSortOrder + (i - 1) * increment
-            : // shift down
-            i === tagsToResort.length - 1
-            ? // move last item to the beginning
-              startSortOrder
-            : // shift other items down
-              startSortOrder + (i + 1) * increment,
-        }),
-        {},
-      )
+      const updatesTags = tagsToResort
+        .filter(tag => tag.id)
+        .reduce(
+          (accum, tag, i) => ({
+            ...accum,
+            [`${tag.id}/sortOrder`]: moveDown
+              ? // shift up
+                i === 0
+                ? // move first item to the end
+                  startSortOrder + (tagsToResort.length - 1) * increment
+                : // shift other items up
+                  startSortOrder + (i - 1) * increment
+              : // shift down
+              i === tagsToResort.length - 1
+              ? // move last item to the beginning
+                startSortOrder
+              : // shift other items down
+                startSortOrder + (i + 1) * increment,
+          }),
+          {},
+        )
 
       // re-order subtags with parent.sortOrder + 0.01 increments
       // only when moving a top-level tag across the subtag list
@@ -172,7 +174,7 @@ export default {
       // re-order all subtags that are affected by the move
       const updatesSubtags = !parentOld
         ? this.tags
-            .filter(tag => tag.parent)
+            .filter(tag => tag.id && tag.parent)
             .reduce((accum, tag, i) => {
               // const parentSortOrder = updatesTags[`${parentOld ? tag.parent : tagOld.id}/sortOrder`]
               const parentSortOrder =
@@ -185,9 +187,12 @@ export default {
         : []
 
       // update parent if moving a subtag to a new parent
-      const updatesParent = parentOld !== parentNew && {
-        [`${tagOld.id}/parent`]: parentNew?.id || null,
-      }
+      const updatesParent =
+        parentOld !== parentNew && tagOld.id
+          ? {
+              [`${tagOld.id}/parent`]: parentNew?.id || null,
+            }
+          : {}
 
       try {
         await this.$store.dispatch(`tags/${this.type}/update`, {
@@ -282,6 +287,10 @@ export default {
     },
 
     async updateTag(tagid) {
+      if (!tagid) {
+        console.error('Missing tag id')
+        return
+      }
       const tag = { ...this.edits[tagid] }
       this.$store.commit('ui/setBusy', true)
       try {

@@ -31,6 +31,10 @@ export default {
   },
   methods: {
     toggle({ option, value }) {
+      if (!option.id) {
+        console.error('Missing tag id', option, value)
+        return
+      }
       this.$store.dispatch(`${this.type}/update`, {
         path: `${this.item.id}/${this.type === 'people' ? 'identities' : 'tags'}`,
         value: {
