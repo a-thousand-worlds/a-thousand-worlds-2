@@ -82,7 +82,7 @@ export default {
           <a
             v-for="option in options"
             :key="option.id"
-            class="dropdown-item is-capitalized"
+            class="dropdown-item"
             @click.prevent="select(option.id)"
             :class="{ selected: (modelValue ?? defaultValue) === option?.id }"
           >

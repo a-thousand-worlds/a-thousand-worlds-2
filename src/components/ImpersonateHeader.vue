@@ -1,4 +1,5 @@
 <script>
+import _ from 'lodash'
 import Dropdown from '@/components/Dropdown.vue'
 import { allowedInvitees } from '@/rights'
 
@@ -10,7 +11,7 @@ export default {
     return {
       roleOptions: Object.keys(allowedInvitees)
         .filter(role => role !== 'owner')
-        .map(role => ({ id: role, text: role })),
+        .map(role => ({ id: role, text: _.capitalize(role) })),
     }
   },
   computed: {

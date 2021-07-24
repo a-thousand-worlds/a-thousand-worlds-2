@@ -1,4 +1,5 @@
 <script>
+import _ from 'lodash'
 import Dropdown from '@/components/Dropdown'
 import { allowedInvitees } from '@/rights'
 
@@ -11,7 +12,7 @@ export default {
       role: this.$store.state.user.impersonate,
       roleOptions: Object.keys(allowedInvitees)
         .filter(role => role !== 'owner')
-        .map(role => ({ id: role, text: role })),
+        .map(role => ({ id: role, text: _.capitalize(role) })),
     }
   },
   methods: {
