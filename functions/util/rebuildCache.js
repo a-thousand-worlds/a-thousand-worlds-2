@@ -163,6 +163,7 @@ const rebuildCache = async () => {
   const newFiles = {}
   const hashMap = {}
   const pathMap = {}
+  const hashNames = {}
 
   const db = await cacheDatabase(admin.database())
   db.cacheDate = new Date()
@@ -176,21 +177,29 @@ const rebuildCache = async () => {
     .filter(x => !!x)
 
   await Promise.all(
-    cacheBooks.map(book => {
-      // updating cached db cuz we need calculate later hash of file with cached urls
+    cacheBooks.map(async book => {
+      console.log(`downloading cover for <${book.title}>`)
       const cacheUrl = `/img/${book.id}.png`
       db.books[book.id].cover.cache = cacheUrl
-      console.log(`downloading book cover <${book.title}> id: <${book.id}>`)
-      return axios
-        .get(book.cover.url, { responseType: 'arraybuffer' })
-        .then(res => gzipAndHash(Buffer.from(res.data)))
-        .then(gzip => {
-          newFiles[cacheUrl] = gzip
-          hashMap[cacheUrl] = gzip.hash
-          pathMap[gzip.hash] = cacheUrl
-        })
+      const httpResult = await axios.get(book.cover.url, { responseType: 'arraybuffer' })
+      const gzip = await gzipAndHash(httpResult.data)
+      newFiles[cacheUrl] = gzip
+      hashMap[cacheUrl] = gzip.hash
+      pathMap[gzip.hash] = cacheUrl
+      hashNames[gzip.hash] = book.title
+      console.log(`cover for <${book.title}> downloaded`)
     }),
-  )
+  ).catch(err => {
+    console.error('Downloading error!', err)
+    updateSuccess = false
+  })
+
+  if (!updateSuccess) {
+    console.error('generating new version failed. some files were not downloaded!')
+    console.log(`removing nextVersion <${nextVersion.name}>`)
+    await api.sites.versions.delete({ name: nextVersion.name })
+    return null
+  }
 
   const dbCacheJs = `window.dbcache = ${JSON.stringify(db, null, 2)}`
   newFiles['/dbcache.js'] = await gzipAndHash(Buffer.from(dbCacheJs))
@@ -209,16 +218,17 @@ const rebuildCache = async () => {
   // uploading only required files
   // if file already exists in some previous version - google will catch it automatically, so reupload is not required
   const uploads = await Promise.all(
-    uploadInfo.uploadRequiredHashes.map(hash => {
+    uploadInfo.uploadRequiredHashes.map(async hash => {
       const gzip = newFiles[pathMap[hash]]
-      console.log(`uploading file <${pathMap[hash]}>`)
-      return client.request({
+      console.log(`uploading file <${pathMap[hash]}> for book <${hashNames[hash]}>`)
+      await client.request({
         url: uploadInfo.uploadUrl + '/' + hash,
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         data: gzip.gzip,
         auth: true,
       })
+      console.log(`cover image for <${hashNames[hash]}> uploaded`)
     }),
   ).catch(err => {
     console.error('upload error!', JSON.stringify(err))
@@ -267,7 +277,9 @@ const rebuildCache = async () => {
         const ref = admin.database().ref(`books/${book.id}/cover/cache`)
         return ref.set(`/img/${book.id}.png`)
       }),
-    )
+    ).catch(err => {
+      console.error('updating database error!', err)
+    })
     console.log('database updated')
   }
 
