@@ -26,12 +26,9 @@
     "import:books": "node ./migrations/import-books.js",
     "import:db": "node ./migrations/import-db.js"
   },
-  "//dependencies": {
-    "@ckeditor/ckeditor5-vue": "Waiting on https://github.com/ckeditor/ckeditor5-vue/pull/173"
-  },
   "dependencies": {
     "@ckeditor/ckeditor5-build-balloon": "^24.0.0",
-    "@ckeditor/ckeditor5-vue": "git+https://github.com/raineorshine/ckeditor5-vue.git#emits",
+    "@ckeditor/ckeditor5-vue": "^2.0.1",
     "@sindresorhus/slugify": "^1.1.0",
     "@vueuse/head": "^0.5.1",
     "axios": "^0.21.1",
@@ -51,7 +48,7 @@
     "node-isbn": "^1.6.0",
     "sharp": "^0.27.0",
     "uuid": "^8.3.2",
-    "vue": "^3.0.5",
+    "vue": "^3.1.5",
     "vue-router": "^4.0.3",
     "vue-tippy": "^6.0.0-alpha.24",
     "vuedraggable": "^4.0.1",
