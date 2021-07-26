@@ -131,7 +131,7 @@ const go = async () => {
     }),
   )
 
-  const dbCacheJs = `window.dbcache = ${JSON.stringify(db)}`
+  const dbCacheJs = `window.dbcache = ${JSON.stringify(db, null, 2)}`
   fs.writeFileSync('./public/dbcache.js', dbCacheJs)
 }
 
