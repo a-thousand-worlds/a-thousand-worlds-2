@@ -31,5 +31,7 @@ module.exports = {
         allowedObjects: ['$router', 'router', '_'],
       },
     ],
+    'testing-library/render-result-naming-convention': 0,
+    'testing-library/prefer-screen-queries': 0,
   },
 }

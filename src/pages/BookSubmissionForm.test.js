@@ -59,7 +59,7 @@ test('do not search for isbn after typing in author and illustrator', async () =
     'Catia Chien',
   )
   await delay(1000) // wait for input debounce
-  expect(component.queryByRole('loading')).toBe(null)
+  expect(component.queryByRole('loading')).not.toBeInTheDocument()
 })
 
 test('do not search for isbn after typing in only title', async () => {
@@ -69,7 +69,7 @@ test('do not search for isbn after typing in only title', async () => {
     'The Bear and the Moon',
   )
   await delay(1000) // wait for input debounce
-  expect(component.queryByRole('loading')).toBe(null)
+  expect(component.queryByRole('loading')).not.toBeInTheDocument()
 })
 
 test('do not search for isbn after typing in only author', async () => {
@@ -79,7 +79,7 @@ test('do not search for isbn after typing in only author', async () => {
     'The Bear and the Moon',
   )
   await delay(1000) // wait for input debounce
-  expect(component.queryByRole('loading')).toBe(null)
+  expect(component.queryByRole('loading')).not.toBeInTheDocument()
 })
 
 test('do not search for isbn after typing in only illustrator', async () => {
@@ -89,7 +89,7 @@ test('do not search for isbn after typing in only illustrator', async () => {
     'The Bear and the Moon',
   )
   await delay(1000) // wait for input debounce
-  expect(component.queryByRole('loading')).toBe(null)
+  expect(component.queryByRole('loading')).not.toBeInTheDocument()
 })
 
 test('show the thumbnail after it has loaded', async () => {
@@ -174,9 +174,9 @@ test('remove suggestion if they clear the title', async () => {
   expect(await component.findByText('Is this your book?', {}, { timeout: 30000 }))
   await fireEvent.update(component.getByLabelText('Title', { exact: false }), '')
   await delay(1000) // wait for input debounce
-  expect(component.queryByRole('loading')).toBe(null)
-  expect(component.queryByAltText('thumbnail')).toBe(null)
-  expect(component.queryByText('Is this your book?')).toBe(null)
+  expect(component.queryByRole('loading')).not.toBeInTheDocument()
+  expect(component.queryByAltText('thumbnail')).not.toBeInTheDocument()
+  expect(component.queryByText('Is this your book?')).not.toBeInTheDocument()
 })
 
 test('search for thumbnail after typing in ISBN', async () => {
@@ -190,7 +190,7 @@ test('search for thumbnail after typing in ISBN', async () => {
     '1452171912',
   )
   await fireEvent.click(component.getByText('Search'))
-  expect(component.queryByText('Okay, please enter the ISBN:')).toBe(null)
+  expect(component.queryByText('Okay, please enter the ISBN:')).not.toBeInTheDocument()
   expect(await component.findByRole('loading', {}, { timeout: 1000 }))
   expect(await component.findByText('Is this your book?', {}, { timeout: 30000 }))
   expect(component.getByAltText('thumbnail')).not.toHaveStyle({ visibility: 'hidden' })
@@ -207,7 +207,7 @@ test('thank you after clicking "No, but keep anyway"', async () => {
     '1452171912',
   )
   await fireEvent.click(component.getByText('Search'))
-  expect(component.queryByText('Okay, please enter the ISBN:')).toBe(null)
+  expect(component.queryByText('Okay, please enter the ISBN:')).not.toBeInTheDocument()
   expect(await component.findByText('Is this your book?', {}, { timeout: 30000 }))
   await fireEvent.click(component.getByText('No, but keep anyway'))
   expect(component.getByText('Got it - Thanks!'))
