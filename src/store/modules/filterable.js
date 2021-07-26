@@ -1,4 +1,5 @@
-import * as slugify from '@sindresorhus/slugify'
+import slugify from '@sindresorhus/slugify'
+
 import router from '@/router'
 import specialFilters from '@/store/constants/special-filters'
 

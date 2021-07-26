@@ -1,5 +1,5 @@
 <script>
-import * as slugify from '@sindresorhus/slugify'
+import slugify from '@sindresorhus/slugify'
 
 /** A helper component to generate a PersonDetail route with the supplementary slug. */
 export default {

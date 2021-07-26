@@ -1,5 +1,5 @@
 <script>
-import * as slugify from '@sindresorhus/slugify'
+import slugify from '@sindresorhus/slugify'
 
 export default {
   props: {

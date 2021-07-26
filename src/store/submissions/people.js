@@ -1,7 +1,8 @@
 import pick from 'lodash/pick'
 import { v4 as uid } from 'uuid'
 import dayjs from 'dayjs'
-import * as slugify from '@sindresorhus/slugify'
+import slugify from '@sindresorhus/slugify'
+
 import managed from '@/store/modules/managed'
 import personSubmission from '@/store/constants/personSubmission'
 import almostEqual from '@/util/almostEqual'

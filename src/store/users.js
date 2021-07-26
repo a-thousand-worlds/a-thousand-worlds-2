@@ -1,6 +1,7 @@
 /** Vuex module for users collection */
 import sortBy from 'lodash/sortBy'
-import * as slugify from '@sindresorhus/slugify'
+import slugify from '@sindresorhus/slugify'
+
 // import firebase from '@/firebase'
 import collectionModule, { firebaseGet } from './modules/collection'
 import mergeOne from '@/util/mergeOne'

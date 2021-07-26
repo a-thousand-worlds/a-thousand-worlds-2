@@ -1,5 +1,6 @@
 <script>
-import * as slugify from '@sindresorhus/slugify'
+import slugify from '@sindresorhus/slugify'
+
 import PersonDetailLink from '@/components/PersonDetailLink'
 import creatorTitles from '@/store/constants/creatorTitles'
 

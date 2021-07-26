@@ -1,6 +1,7 @@
 <script>
 import dayjs from 'dayjs'
-import * as slugify from '@sindresorhus/slugify'
+import slugify from '@sindresorhus/slugify'
+
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import creatorTitles from '@/store/constants/creatorTitles'
 import pronounOptions from '@/store/constants/pronouns'

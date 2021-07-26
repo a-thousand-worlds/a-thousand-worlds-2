@@ -1,5 +1,6 @@
 <script>
-import * as slugify from '@sindresorhus/slugify'
+import slugify from '@sindresorhus/slugify'
+
 import { watchEffect } from 'vue'
 import { useHead } from '@vueuse/head'
 import computedFromState from '@/util/computedFromState'

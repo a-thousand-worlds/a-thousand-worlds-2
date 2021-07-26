@@ -1,4 +1,4 @@
-import * as slugify from '@sindresorhus/slugify'
+import slugify from '@sindresorhus/slugify'
 
 /** Renders a book as a small snippet of HTML for the approval email template. */
 const renderEmailBook = sub => {
