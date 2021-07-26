@@ -104,67 +104,6 @@ const rebuildCache = async () => {
     auth: client,
   })
 
-  console.log(`requiesting sites for project <${key.project_id}>`)
-  const reqSites = await api.projects.sites.list({
-    parent: `projects/${key.project_id}`,
-  })
-  if (!reqSites.data.sites || !Array.isArray(reqSites.data.sites) || !reqSites.data.sites.length) {
-    console.error('Sites not found!')
-    return null
-  }
-  const site = reqSites.data.sites[0]
-
-  await clearNotFinalizedVersions(api, site)
-
-  console.log(`requiesting releases for site <${site.name}>`)
-  const reqReleases = await api.sites.releases.list({
-    parent: site.name,
-  })
-  if (
-    !reqReleases.data.releases ||
-    !Array.isArray(reqReleases.data.releases) ||
-    !reqReleases.data.releases.length
-  ) {
-    console.error('Releases not found!')
-    return null
-  }
-  const release = reqReleases.data.releases.find(r => r.version.status === 'FINALIZED')
-  if (!release) {
-    console.error('Finalized release not found!')
-    return null
-  }
-
-  await api.sites.versions.clone({
-    parent: site.name,
-    requestBody: {
-      sourceVersion: release.version.name,
-      finalize: false,
-      exclude: {
-        regexes: ['dbcache.js'],
-      },
-    },
-  })
-
-  const versionsReq = await api.sites.versions.list({
-    parent: site.name,
-    filter: 'status="CREATED"',
-  })
-  if (
-    !versionsReq.data.versions ||
-    !Array.isArray(versionsReq.data.versions) ||
-    !versionsReq.data.versions.length
-  ) {
-    console.error('created version not found! exiting')
-    return null
-  }
-  const nextVersion = versionsReq.data.versions[0]
-  let updateSuccess = true
-
-  const newFiles = {}
-  const hashMap = {}
-  const pathMap = {}
-  const hashNames = {}
-
   const db = await cacheDatabase(admin.database())
   db.cacheDate = new Date()
 
@@ -176,100 +115,171 @@ const rebuildCache = async () => {
     })
     .filter(x => !!x)
 
+  console.log(`requiesting sites for project <${key.project_id}>`)
+  const reqSites = await api.projects.sites.list({
+    parent: `projects/${key.project_id}`,
+  })
+  if (!reqSites.data.sites || !Array.isArray(reqSites.data.sites) || !reqSites.data.sites.length) {
+    console.error('Sites not found!')
+    return null
+  }
+  // uncomment this line
+  // const site = reqSites.data.sites[0]
+
+  // and comment 2 next with closures to run script only on default firebase website
   await Promise.all(
-    cacheBooks.map(async book => {
-      console.log(`downloading cover for <${book.title}>`)
-      const cacheUrl = `/img/${book.id}.png`
-      db.books[book.id].cover.cache = cacheUrl
-      const httpResult = await axios.get(book.cover.url, { responseType: 'arraybuffer' })
-      const gzip = await gzipAndHash(httpResult.data)
-      newFiles[cacheUrl] = gzip
-      hashMap[cacheUrl] = gzip.hash
-      pathMap[gzip.hash] = cacheUrl
-      hashNames[gzip.hash] = book.title
-      console.log(`cover for <${book.title}> downloaded`)
-    }),
-  ).catch(err => {
-    console.error('Downloading error!', err)
-    updateSuccess = false
-  })
+    reqSites.data.sites.map(async site => {
+      console.log(`updating site <${site.name}> at <${site.defaultUrl}>`)
 
-  if (!updateSuccess) {
-    console.error('generating new version failed. some files were not downloaded!')
-    console.log(`removing nextVersion <${nextVersion.name}>`)
-    await api.sites.versions.delete({ name: nextVersion.name })
-    return null
-  }
+      await clearNotFinalizedVersions(api, site)
 
-  const dbCacheJs = `window.dbcache = ${JSON.stringify(db, null, 2)}`
-  newFiles['/dbcache.js'] = await gzipAndHash(Buffer.from(dbCacheJs))
-  hashMap['/dbcache.js'] = newFiles['/dbcache.js'].hash
-  pathMap[newFiles['/dbcache.js'].hash] = '/dbcache.js'
-
-  /**/
-  const uploadInfoReq = await api.sites.versions.populateFiles({
-    parent: nextVersion.name,
-    requestBody: {
-      files: hashMap,
-    },
-  })
-  const uploadInfo = uploadInfoReq.data
-
-  // uploading only required files
-  // if file already exists in some previous version - google will catch it automatically, so reupload is not required
-  const uploads = await Promise.all(
-    uploadInfo.uploadRequiredHashes.map(async hash => {
-      const gzip = newFiles[pathMap[hash]]
-      console.log(`uploading file <${pathMap[hash]}> for book <${hashNames[hash]}>`)
-      await client.request({
-        url: uploadInfo.uploadUrl + '/' + hash,
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        data: gzip.gzip,
-        auth: true,
+      console.log(`requiesting releases for site <${site.name}>`)
+      const reqReleases = await api.sites.releases.list({
+        parent: site.name,
       })
-      console.log(`cover image for <${hashNames[hash]}> uploaded`)
+      if (
+        !reqReleases.data.releases ||
+        !Array.isArray(reqReleases.data.releases) ||
+        !reqReleases.data.releases.length
+      ) {
+        console.error('Releases not found!')
+        return null
+      }
+      const release = reqReleases.data.releases.find(r => r.version.status === 'FINALIZED')
+      if (!release) {
+        console.error('Finalized release not found!')
+        return null
+      }
+
+      await api.sites.versions.clone({
+        parent: site.name,
+        requestBody: {
+          sourceVersion: release.version.name,
+          finalize: false,
+          exclude: {
+            regexes: ['dbcache.js'],
+          },
+        },
+      })
+
+      const versionsReq = await api.sites.versions.list({
+        parent: site.name,
+        filter: 'status="CREATED"',
+      })
+      if (
+        !versionsReq.data.versions ||
+        !Array.isArray(versionsReq.data.versions) ||
+        !versionsReq.data.versions.length
+      ) {
+        console.error('created version not found! exiting')
+        return null
+      }
+      const nextVersion = versionsReq.data.versions[0]
+      let updateSuccess = true
+
+      const newFiles = {}
+      const hashMap = {}
+      const pathMap = {}
+      const hashNames = {}
+
+      await Promise.all(
+        cacheBooks.map(async book => {
+          console.log(`downloading cover for <${book.title}>`)
+          const cacheUrl = `/img/${book.id}.png`
+          db.books[book.id].cover.cache = cacheUrl
+          const httpResult = await axios.get(book.cover.url, { responseType: 'arraybuffer' })
+          const gzip = await gzipAndHash(httpResult.data)
+          newFiles[cacheUrl] = gzip
+          hashMap[cacheUrl] = gzip.hash
+          pathMap[gzip.hash] = cacheUrl
+          hashNames[gzip.hash] = book.title
+          console.log(`cover for <${book.title}> downloaded`)
+        }),
+      ).catch(err => {
+        console.error('Downloading error!', err)
+        updateSuccess = false
+      })
+
+      if (!updateSuccess) {
+        console.error('generating new version failed. some files were not downloaded!')
+        console.log(`removing nextVersion <${nextVersion.name}>`)
+        await api.sites.versions.delete({ name: nextVersion.name })
+        return null
+      }
+
+      const dbCacheJs = `window.dbcache = ${JSON.stringify(db, null, 2)}`
+      newFiles['/dbcache.js'] = await gzipAndHash(Buffer.from(dbCacheJs))
+      hashMap['/dbcache.js'] = newFiles['/dbcache.js'].hash
+      pathMap[newFiles['/dbcache.js'].hash] = '/dbcache.js'
+
+      /**/
+      const uploadInfoReq = await api.sites.versions.populateFiles({
+        parent: nextVersion.name,
+        requestBody: {
+          files: hashMap,
+        },
+      })
+      const uploadInfo = uploadInfoReq.data
+
+      // uploading only required files
+      // if file already exists in some previous version - google will catch it automatically, so reupload is not required
+      const uploads = await Promise.all(
+        uploadInfo.uploadRequiredHashes.map(async hash => {
+          const gzip = newFiles[pathMap[hash]]
+          console.log(`uploading file <${pathMap[hash]}> for book <${hashNames[hash]}>`)
+          await client.request({
+            url: uploadInfo.uploadUrl + '/' + hash,
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            data: gzip.gzip,
+            auth: true,
+          })
+          console.log(`file <${pathMap[hash]}> for book <${hashNames[hash]}> uploaded`)
+        }),
+      ).catch(err => {
+        console.error('upload error!', JSON.stringify(err))
+        updateSuccess = false
+      })
+
+      if (uploads.filter(x => x && x.status).find(up => up.status !== 200)) {
+        console.error('Upload files failed')
+        updateSuccess = false
+      } else {
+        console.log('New files uploaded')
+      }
+
+      if (!updateSuccess) {
+        console.error('generating new version failed. some files were not uploaded!')
+        console.log(`removing nextVersion <${nextVersion.name}>`)
+        await api.sites.versions.delete({ name: nextVersion.name })
+        return null
+      }
+
+      console.log(`finalizing and releasing verion <${nextVersion.name}>`)
+      const patchReq = await api.sites.versions.patch({
+        name: nextVersion.name,
+        updateMask: 'status',
+        requestBody: {
+          status: 'FINALIZED',
+        },
+      })
+      if (patchReq.status !== 200) {
+        console.log(`finalization failed. removing nextVersion <${nextVersion.name}>`)
+        await api.sites.versions.delete({ name: nextVersion.name })
+        return null
+      }
+
+      console.log(`releasing version <${nextVersion.name}>`)
+      const nextReleaseReq = await api.sites.releases.create({
+        parent: site.name,
+        versionName: nextVersion.name,
+      })
+      console.log(`released <${nextReleaseReq.data.name}>`)
+      console.log(`site <${site.name}> at <${site.defaultUrl}> updated`)
     }),
-  ).catch(err => {
-    console.error('upload error!', JSON.stringify(err))
-    updateSuccess = false
-  })
+  )
 
-  if (uploads.filter(x => x && x.status).find(up => up.status !== 200)) {
-    console.error('Upload files failed')
-    updateSuccess = false
-  } else {
-    console.log('New files uploaded')
-  }
-
-  if (!updateSuccess) {
-    console.error('generating new version failed. some files were not uploaded!')
-    console.log(`removing nextVersion <${nextVersion.name}>`)
-    await api.sites.versions.delete({ name: nextVersion.name })
-    return null
-  }
-
-  console.log(`finalizing and releasing verion <${nextVersion.name}>`)
-  const patchReq = await api.sites.versions.patch({
-    name: nextVersion.name,
-    updateMask: 'status',
-    requestBody: {
-      status: 'FINALIZED',
-    },
-  })
-  if (patchReq.status !== 200) {
-    console.log(`finalization failed. removing nextVersion <${nextVersion.name}>`)
-    await api.sites.versions.delete({ name: nextVersion.name })
-    return null
-  }
-
-  console.log(`releasing version <${nextVersion.name}>`)
-  const nextReleaseReq = await api.sites.releases.create({
-    parent: site.name,
-    versionName: nextVersion.name,
-  })
-  console.log(`released <${nextReleaseReq.data.name}>`)
-
+  console.log('all websites updated')
   if (cacheBooks.length) {
     console.log('updating database with cached cover url')
     await Promise.all(
