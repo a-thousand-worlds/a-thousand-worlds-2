@@ -2,7 +2,7 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:jest-dom/recommended',
-    'plugin:testing-library/recommended',
+    'plugin:testing-library/vue',
     'plugin:vue/vue3-recommended',
     'raine',
     'prettier',
