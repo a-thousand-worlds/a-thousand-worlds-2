@@ -26,6 +26,9 @@ export default {
   },
 
   computed: {
+    isDone() {
+      return this.step === this.numSteps
+    },
     numSteps() {
       return this.$slots.default().length
     },
@@ -64,21 +67,29 @@ export default {
 
     /** Toggles the step between the first and last steps and persists it to storage. */
     toggle() {
-      const step = this.step === this.numSteps ? 0 : this.numSteps
+      const step = this.isDone ? 0 : this.numSteps
       this.set(step)
     },
   },
 
   render() {
-    if (this.step === this.numSteps) return null
+    // If the sequence is done, preload step 0 and hide the component with display: none
+    // this allows slots to get mounted in preparation for toggling the message sequence on
+    // which is needed for slot descendants such as Content to preload their content.
+    // Otherwise, there is a delay loading slot Content
+    const stepPreloaded = this.isDone ? 0 : this.step
     return h(
       'div',
       {
         class: 'bg-secondary p-20 mb-20',
-        style: 'display: inline-block; border-radius: 10px; font-size: 20px;',
+        style: {
+          display: this.isDone ? 'none' : 'inline-block',
+          borderRadius: '10px',
+          fontSize: '20px',
+        },
       },
       [
-        this.$slots.default()[this.step]?.children,
+        this.$slots.default()[stepPreloaded]?.children,
         h(
           'button',
           {
@@ -88,7 +99,7 @@ export default {
             },
             class: 'button is-rounded is-primary',
           },
-          this.step < this.numSteps - 1 ? 'Next' : 'Okay',
+          stepPreloaded < this.numSteps - 1 ? 'Next' : 'Okay',
         ),
       ],
     )
