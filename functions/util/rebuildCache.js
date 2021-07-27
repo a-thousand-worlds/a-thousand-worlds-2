@@ -90,7 +90,7 @@ const getCacheClean = () =>
   })
 
 /** main working function */
-const rebuildCache = async () => {
+const rebuildCache = async (host = 'all') => {
   const cacheClean = await getCacheClean()
   if (cacheClean) {
     console.log('Cache is clean, nothing to be done.')
@@ -115,6 +115,35 @@ const rebuildCache = async () => {
     })
     .filter(x => !!x)
 
+  const newFiles = {}
+  const hashMap = {}
+  const pathMap = {}
+  const hashNames = {}
+
+  await Promise.all(
+    cacheBooks.map(async book => {
+      console.log(`downloading cover for <${book.title}>`)
+      const cacheUrl = `/img/${book.id}.png`
+      db.books[book.id].cover.cache = cacheUrl
+      const httpResult = await axios.get(book.cover.url, { responseType: 'arraybuffer' })
+      const gzip = await gzipAndHash(httpResult.data)
+      newFiles[cacheUrl] = gzip
+      hashMap[cacheUrl] = gzip.hash
+      pathMap[gzip.hash] = cacheUrl
+      hashNames[gzip.hash] = book.title
+      console.log(`cover for <${book.title}> downloaded`)
+    }),
+  ).catch(err => {
+    console.error('Downloading covers error!', err)
+    console.log('downloading covers fails, stops')
+    return null
+  })
+
+  const dbCacheJs = `window.dbcache = ${JSON.stringify(db, null, 2)}`
+  newFiles['/dbcache.js'] = await gzipAndHash(Buffer.from(dbCacheJs))
+  hashMap['/dbcache.js'] = newFiles['/dbcache.js'].hash
+  pathMap[newFiles['/dbcache.js'].hash] = '/dbcache.js'
+
   console.log(`requiesting sites for project <${key.project_id}>`)
   const reqSites = await api.projects.sites.list({
     parent: `projects/${key.project_id}`,
@@ -123,12 +152,17 @@ const rebuildCache = async () => {
     console.error('Sites not found!')
     return null
   }
-  // uncomment this line
-  // const site = reqSites.data.sites[0]
 
-  // and comment 2 next with closures to run script only on default firebase website
+  const sites =
+    host === 'all' ? reqSites.data.sites : [reqSites.data.sites.find(site => site.name === host)]
+  if (!sites.length || !sites[0]) {
+    console.error(`Site for host <${host}> not found!`)
+    console.log(`Sites: <${reqSites.data.sites.map(site => site.name).join(', ')}>`)
+    return null
+  }
+
   await Promise.all(
-    reqSites.data.sites.map(async site => {
+    sites.map(async site => {
       console.log(`updating site <${site.name}> at <${site.defaultUrl}>`)
 
       await clearNotFinalizedVersions(api, site)
@@ -177,42 +211,6 @@ const rebuildCache = async () => {
       const nextVersion = versionsReq.data.versions[0]
       let updateSuccess = true
 
-      const newFiles = {}
-      const hashMap = {}
-      const pathMap = {}
-      const hashNames = {}
-
-      await Promise.all(
-        cacheBooks.map(async book => {
-          console.log(`downloading cover for <${book.title}>`)
-          const cacheUrl = `/img/${book.id}.png`
-          db.books[book.id].cover.cache = cacheUrl
-          const httpResult = await axios.get(book.cover.url, { responseType: 'arraybuffer' })
-          const gzip = await gzipAndHash(httpResult.data)
-          newFiles[cacheUrl] = gzip
-          hashMap[cacheUrl] = gzip.hash
-          pathMap[gzip.hash] = cacheUrl
-          hashNames[gzip.hash] = book.title
-          console.log(`cover for <${book.title}> downloaded`)
-        }),
-      ).catch(err => {
-        console.error('Downloading error!', err)
-        updateSuccess = false
-      })
-
-      if (!updateSuccess) {
-        console.error('generating new version failed. some files were not downloaded!')
-        console.log(`removing nextVersion <${nextVersion.name}>`)
-        await api.sites.versions.delete({ name: nextVersion.name })
-        return null
-      }
-
-      const dbCacheJs = `window.dbcache = ${JSON.stringify(db, null, 2)}`
-      newFiles['/dbcache.js'] = await gzipAndHash(Buffer.from(dbCacheJs))
-      hashMap['/dbcache.js'] = newFiles['/dbcache.js'].hash
-      pathMap[newFiles['/dbcache.js'].hash] = '/dbcache.js'
-
-      /**/
       const uploadInfoReq = await api.sites.versions.populateFiles({
         parent: nextVersion.name,
         requestBody: {
@@ -221,8 +219,9 @@ const rebuildCache = async () => {
       })
       const uploadInfo = uploadInfoReq.data
 
-      // uploading only required files
+      // uploading only required files is going automatically by google
       // if file already exists in some previous version - google will catch it automatically, so reupload is not required
+      // and google resturns only new/updated files list to upload
       const uploads = await Promise.all(
         uploadInfo.uploadRequiredHashes.map(async hash => {
           const gzip = newFiles[pathMap[hash]]
