@@ -28,6 +28,11 @@ export default {
       if (this.updatedCover) return this.book.cover.cache || this.book.cover.url
       return this.book.cover || ''
     },
+    bgFallback() {
+      if (!this.book) return null
+      if (this.updatedCover) return this.book.cover.url
+      return this.book.cover || ''
+    },
     updatedCover() {
       return this.book?.cover?.url?.startsWith('http')
     },
@@ -50,7 +55,7 @@ export default {
             minWidth: !bgImage ? '100px' : null,
             minHeight: !bgImage ? '180px' : null,
             paddingTop: coverRatio + '%',
-            backgroundImage: `url(${bgImage})`,
+            backgroundImage: `url(${bgImage}), url(${bgFallback})`,
             backgroundColor: bgImage ? 'transparent' : null,
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',

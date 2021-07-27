@@ -23,6 +23,10 @@ export default {
       // return this.$store.state.images[this.book.cover] || ''
       return this.book.cover || ''
     },
+    bgFallback() {
+      if (this.updatedCover) return this.book.cover.url
+      return this.book.cover || ''
+    },
     updatedCover() {
       return this.book.cover?.url?.startsWith('http')
     },
@@ -36,7 +40,7 @@ export default {
       :style="{
         width: '100%',
         paddingTop: coverRatio + '%',
-        backgroundImage: `url(${bgImage})`,
+        backgroundImage: `url(${bgImage}), url(${bgFallback})`,
         backgroundSize: 'contain',
         backgroundRepeat: 'no-repeat',
         backgroundColor: bgImage ? 'transparent' : null,
