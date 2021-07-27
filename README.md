@@ -61,13 +61,20 @@
 1. Website uses boolean `cache/clean` flag to check if cache rebuilding is required. To make manual cache rebuilding confirm flag not exists or set to `false` and fire `buildCache` Firebase function endpoint.
 1. Book covers are also cached from Firebase Storage to Firebase Hosting (because second works faster).
 
+#### Multisites buildCache http entrypoint and cron pubsub function
+
+To use rebuild cache on Firebase Hosting websites manually there is `FUNCTIONS_URL/buildCache` entrypoint with available query param `host`.
+Default value for `host` param is `'all'` but it applies Firebase Website `SITE_ID` value if there are many websites use same Firebase Database and functions.
+
+Default automatic cache updatating function updates all websites. To configure this behavior - update `functions/buildCacheCron.js` (line 5). For separate autoupdates of multiple website - duplicate `functions/buildCacheCron.js`, update accordingly `function/buildCacheCron*.js` files and `functions/index.js`
+
 ## Scripts
 
 ### Local cache for local run or development
 
 ```sh
 # update local cache
-npm run update:localcache %ENV_FILE%
+npm run update:dbcache %ENV_FILE%
 ```
 
 1. Prompted authentication (email/password) - are credentials for website (not firebase!)
