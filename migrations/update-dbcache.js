@@ -125,8 +125,8 @@ const go = async () => {
             book.title
           } (id: <${chalk.cyan(book.id)})`,
         )
-        // const response = await axios.get(book.cover.url, { responseType: 'arraybuffer' })
-        // fs.writeFileSync(localPath, Buffer.from(res.data))
+        const response = await axios.get(book.cover.url, { responseType: 'arraybuffer' })
+        fs.writeFileSync(localPath, Buffer.from(response.data))
       }
     }),
   )
