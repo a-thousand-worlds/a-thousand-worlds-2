@@ -198,12 +198,7 @@ export default {
           @change="setSubject()"
         >
           <option value="" disabled>Subject</option>
-          <option
-            v-for="subj in subjectVariants"
-            :key="subj"
-            @click="setSubject(subj)"
-            class="subject-opt"
-          >
+          <option v-for="subj in subjectVariants" :key="subj" class="subject-opt">
             {{ subj }}
           </option>
         </select>
