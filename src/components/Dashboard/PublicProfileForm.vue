@@ -95,15 +95,10 @@ export default {
       const tags = this.$store.getters['tags/topLevel']('people')
       return tags.filter(tag => tag.showOnContributorForm)
     },
-
     // gender subtags that are allowed to be shown on the contributor form
     tagsGender() {
-      const tagGender = this.$store.getters[`tags/people/findBy`]('tag', 'Gender')
-      return tagGender
-        ? this.$store.getters[`tags/people/listSorted`]().filter(
-            tag => tag.showOnContributorForm && tag.parent === tagGender.id,
-          )
-        : []
+      const subtagsGender = this.$store.getters['tags/subtags']('people', 'Gender')
+      return subtagsGender.filter(tag => tag.showOnContributorForm)
     },
   },
   watch: {

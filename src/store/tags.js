@@ -18,12 +18,12 @@ const module = {
   },
   getters: {
     /**
-     * Gets an unsorted list of standalone top level tags with no subtags.
+     * Gets a sorted list of standalone top level tags with no subtags.
      *
      * @param type    books | people | bundles
      * */
-    topLevel: (state, getters, rootState) => type => {
-      const allTags = Object.values(state[type].data || {})
+    topLevel: (state, getters, rootState, rootGetters) => type => {
+      const allTags = rootGetters[`tags/${type}/listSorted`]()
       const subTags = allTags.filter(tag => tag.parent)
       return allTags.filter(
         tag =>
@@ -32,6 +32,13 @@ const module = {
           // does not have any subtags
           !subTags.some(subtag => subtag.parent === tag.id),
       )
+    },
+
+    /** Gets a sorted list of all subtags of a parent tag. */
+    subtags: (state, getters, rootState, rootGetters) => (type, parentTagName) => {
+      const allTags = rootGetters[`tags/${type}/listSorted`]()
+      const parent = allTags.find(tag => tag.tag === parentTagName)
+      return allTags.filter(subtag => subtag.parent === parent.id)
     },
   },
 }

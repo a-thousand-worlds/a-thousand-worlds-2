@@ -51,12 +51,8 @@ export default {
     },
     // gender subtags that are allowed to be shown on the creators form
     tagsGender() {
-      const tagGender = this.$store.getters[`tags/people/findBy`]('tag', 'Gender')
-      return tagGender
-        ? this.$store.getters[`tags/people/listSorted`]().filter(
-            tag => tag.showOnPeopleForm && tag.parent === tagGender.id,
-          )
-        : []
+      const subtagsGender = this.$store.getters['tags/subtags']('people', 'Gender')
+      return subtagsGender.filter(tag => tag.showOnPeopleForm)
     },
     person() {
       /* We used to get the creator through an old person submission.
