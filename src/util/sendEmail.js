@@ -1,5 +1,4 @@
 import axios from 'axios'
-// import firebase from '@/firebase'
 const firebaseImport = () => import(/* webpackChunkName: "firebase" */ '@/firebase')
 
 const sendEmail = async ({ to, subject, body }) => {
@@ -26,7 +25,11 @@ const sendEmail = async ({ to, subject, body }) => {
     )
     .catch(e => {
       console.error(e)
-      throw new Error('Email not sent')
+      if (/^Network Error/i.test(e.message)) {
+        throw new Error('Network Error. Is the email Firebase function running? ' + url)
+      } else {
+        throw new Error('Error sending email' + (e.message ? ': ' + e.message : ''))
+      }
     })
 }
 
