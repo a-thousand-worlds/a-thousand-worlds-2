@@ -228,18 +228,19 @@ const module = mergeOne(usersModule, {
                 },
               })
 
-              // it may happen, that user after registration didn't get his roles from invite immediatelly
-              // so getting role from invite
+              // it is possible that signup redirects to the dashboard before the roles are set on the server-side
+              // fetch the role from the invite, otherwise the user will get an not authorized error
               if (val.profile.code && !val.roles) {
                 const inviteRef = firebase.database().ref(`invites/${val.profile.code}`)
                 inviteRef.once('value', inviteSnap => {
                   const invite = inviteSnap.val()
-                  if (invite && invite.role) {
-                    const roles = {
+                  if (invite?.role) {
+                    // set role locally
+                    // the user is not authorized to change their role on the server
+                    ctx.commit('setRoles', {
                       authorized: true,
-                    }
-                    roles[invite.role] = true
-                    ctx.commit('setRoles', roles)
+                      [invite.role]: true,
+                    })
                   }
                 })
               }

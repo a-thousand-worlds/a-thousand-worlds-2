@@ -334,25 +334,14 @@ export default {
                   >EMAIL<sup class="required">*</sup></label
                 >
                 <div class="control">
-                  <span
-                    v-tippy="
-                      invite
-                        ? {
-                            content: `You have to use this email to sign up as a ${invite.role}, but you can change it after logging in.`,
-                          }
-                        : null
-                    "
-                  >
-                    <input
-                      v-model="email"
-                      @keypress.enter.prevent="onEnter"
-                      :disabled="invite"
-                      type="email"
-                      class="input"
-                      :class="{ 'is-danger': hasError('email') }"
-                      @input="revalidate"
-                    />
-                  </span>
+                  <input
+                    v-model="email"
+                    @keypress.enter.prevent="onEnter"
+                    type="email"
+                    class="input"
+                    :class="{ 'is-danger': hasError('email') }"
+                    @input="revalidate"
+                  />
                 </div>
               </div>
 
