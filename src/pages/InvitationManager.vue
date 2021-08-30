@@ -69,7 +69,7 @@ export default {
         <InvitationTable
           v-if="pendingInvites.length"
           :invites="pendingInvites"
-          :fields="['created', 'email', 'firstName', 'lastName', 'role', 'resend', 'cancel']"
+          :fields="['created', 'email', 'name', 'role', 'resend', 'cancel']"
           @resend="resend"
           @cancel="cancel"
         />
@@ -81,7 +81,7 @@ export default {
         <InvitationTable
           v-if="acceptedInvites.length"
           :invites="acceptedInvites"
-          :fields="['used', 'email', 'firstName', 'lastName', 'role', 'profile']"
+          :fields="['used', 'email', 'name', 'role', 'profile']"
         />
         <p v-else>There are no accepted invitations.</p>
       </section>
@@ -91,7 +91,7 @@ export default {
         <InvitationTable
           v-if="cancelledInvites.length"
           :invites="cancelledInvites"
-          :fields="['cancelled', 'email', 'firstName', 'lastName', 'role']"
+          :fields="['cancelled', 'email', 'name', 'role']"
         />
         <p v-else>There are no cancelled invitations.</p>
       </section>

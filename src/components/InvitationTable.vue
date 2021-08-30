@@ -6,9 +6,9 @@ export default {
     invites: Array,
     fields: {
       type: Array,
-      default: () => ['createdAt', 'email', 'firstName', 'lastName', 'role'],
+      default: () => ['createdAt', 'email', 'name', 'role'],
       // possible values
-      // ['createdAt', 'used', 'cancelled', 'email', 'firstName', 'lastName', 'role', 'resend', 'cancel'],
+      // ['createdAt', 'used', 'cancelled', 'email', 'name', 'role', 'resend', 'cancel'],
     },
   },
   emits: ['cancel', 'resend'],
@@ -46,18 +46,19 @@ export default {
   <table class="table w-100">
     <thead>
       <th>Date</th>
+      <th>Name</th>
       <th>Email</th>
-      <th>First</th>
-      <th>Last</th>
       <th>Role</th>
       <th />
     </thead>
     <tbody>
       <tr v-for="invite of invites" :key="invite.code">
         <td>{{ date(invite) }}</td>
+        <td v-if="fields.includes('name')">
+          {{ invite.firstName }} {{ invite.lastName
+          }}{{ !invite.firstName && !invite.lastName ? '--' : '' }}
+        </td>
         <td v-if="fields.includes('email')">{{ invite.email }}</td>
-        <td v-if="fields.includes('firstName')">{{ invite.firstName }}</td>
-        <td v-if="fields.includes('email')">{{ invite.lastName }}</td>
         <td class="is-capitalized">{{ invite.role }}</td>
         <td>
           <button
