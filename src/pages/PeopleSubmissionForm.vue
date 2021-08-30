@@ -46,11 +46,8 @@ export default {
     },
     // top-level tags used as identities that are allowed to be shown on the creators form
     tags() {
-      const tags = this.$store.getters[`tags/people/listSorted`]()
-      return tags.filter(
-        tag1 =>
-          tag1.showOnPeopleForm && !tag1.parent && !tags.some(tag2 => tag2.parent === tag1.id),
-      )
+      const tags = this.$store.getters['tags/topLevel']('people')
+      return tags.filter(tag => tag.showOnPeopleForm)
     },
     // gender subtags that are allowed to be shown on the creators form
     tagsGender() {
