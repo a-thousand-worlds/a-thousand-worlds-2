@@ -57,7 +57,7 @@ const watchUsers = functions /*
     // mark invite as used
     await update(`invites/${inviteCode}`, {
       ...(user.email !== invite.email ? { signupEmail: user.email } : null),
-      used: true,
+      used: new Date().toISOString(),
     })
   })
 

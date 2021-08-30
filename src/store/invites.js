@@ -1,9 +1,7 @@
 import * as animal from 'cute-animals'
-// import firebase from '@/firebase'
 import mergeOne from '@/util/mergeOne'
 import sendEmail from '@/util/sendEmail'
 import collectionModule from './modules/collection'
-// import { v4 as uid } from 'uuid'
 const firebaseImport = () => import(/* webpackChunkName: "firebase" */ '@/firebase')
 
 const module = mergeOne(collectionModule('invites'), {
@@ -74,7 +72,7 @@ const module = mergeOne(collectionModule('invites'), {
         if (!invites[code]) {
           invites[code] = {
             code,
-            createdAt: Date.now(),
+            createdAt: new Date().toISOString(),
             email,
             firstName,
             lastName,

@@ -17,15 +17,6 @@ export default {
       resendDisabled: {},
     }
   },
-  computed: {
-    dateHeader() {
-      return this.fields.includes('cancelled')
-        ? 'Cancelled'
-        : this.fields.includes('used')
-        ? 'Accepted'
-        : 'Invited'
-    },
-  },
   methods: {
     cancel(invite) {
       this.$emit('cancel', invite)
@@ -41,7 +32,8 @@ export default {
         : this.fields.includes('used')
         ? 'used'
         : 'createdAt'
-      return invite[dateField] ? this.format(invite[dateField]) : null
+      // date field was incorrectly set to true instead of a date in earlier versions of the code, so make sure it gets ignored
+      return invite[dateField] && invite[dateField] !== true ? this.format(invite[dateField]) : '--'
     },
     format(date) {
       return dayjs(date).format('MMMM DD, YYYY')
@@ -53,7 +45,7 @@ export default {
 <template>
   <table class="table w-100">
     <thead>
-      <th>{{ dateHeader }}</th>
+      <th>Date</th>
       <th>Email</th>
       <th>First</th>
       <th>Last</th>
