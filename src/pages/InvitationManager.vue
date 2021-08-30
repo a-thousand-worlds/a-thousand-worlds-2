@@ -2,10 +2,13 @@
 import InvitationTable from '@/components/InvitationTable'
 
 const compare = (a, b) => (a > b ? 1 : b > a ? -1 : 0)
-const compareBy =
+const compareDateBy =
   (prop, dir = 'asc') =>
-  (a, b) =>
-    dir === 'asc' ? compare(a[prop], b[prop]) : compare(b[prop], a[prop])
+  (a, b) => {
+    const aValue = new Date(a[prop])
+    const bValue = new Date(b[prop])
+    return dir === 'asc' ? compare(aValue, bValue) : compare(bValue, aValue)
+  }
 
 export default {
   name: 'InvitationManager',
@@ -15,9 +18,10 @@ export default {
   computed: {
     cancelledInvites() {
       // eslint-disable-next-line fp/no-mutating-methods
-      return Object.values(this.invites)
+      const sorted = Object.values(this.invites)
         .filter(invite => invite.cancelled)
-        .sort(compareBy('cancelled', 'desc'))
+        .sort(compareDateBy('cancelled', 'desc'))
+      return sorted
     },
     invites() {
       return this.$store.getters['invites/getAll']()
@@ -26,13 +30,13 @@ export default {
       // eslint-disable-next-line fp/no-mutating-methods
       return Object.values(this.invites)
         .filter(invite => !invite.used && !invite.cancelled)
-        .sort(compareBy('createdAt', 'desc'))
+        .sort(compareDateBy('createdAt', 'desc'))
     },
     acceptedInvites() {
       // eslint-disable-next-line fp/no-mutating-methods
       return Object.values(this.invites)
         .filter(invite => invite.used)
-        .sort(compareBy('used', 'desc'))
+        .sort(compareDateBy('used', 'desc'))
     },
   },
   methods: {
