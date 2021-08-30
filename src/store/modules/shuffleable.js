@@ -12,6 +12,7 @@ const getShuffleWeight = (item, tagProp, weightSpec) => {
     if (!(id in weightSpec) && Object.keys(weightSpec).length > 0) {
       console.warn(
         `Tag id missing from weightSpec when shuffling by ${tagProp}: ${id}. This could mean that a tag was deleted from the tags collection but not deleted from a book/person.`,
+        item.title || item.name,
         item,
       )
     }
