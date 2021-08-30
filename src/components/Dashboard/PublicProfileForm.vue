@@ -52,22 +52,6 @@ export default {
                     },
                   ]
                 : [],
-              ...(!this.affiliations.organization
-                ? [
-                    {
-                      name: 'organizationName',
-                      message: 'Organization is required',
-                    },
-                  ]
-                : []),
-              ...(!this.affiliations.organizationLink
-                ? [
-                    {
-                      name: 'organizationLink',
-                      message: 'Organization link is required',
-                    },
-                  ]
-                : []),
               ...(this.welcome && !hasIdentity && !this.otherIdentity
                 ? [
                     {
@@ -289,9 +273,7 @@ export default {
         <!-- organization -->
         <div class="field">
           <label class="label is-uppercase" :class="{ error: hasError('organizationName') }"
-            >Are you affiliated with an organization?<sup v-if="!admin" class="required"
-              >*</sup
-            ></label
+            >Are you affiliated with an organization?</label
           >
           <input
             v-model="affiliations.organization"
@@ -304,7 +286,7 @@ export default {
         <!-- organization link -->
         <div class="field">
           <label class="label is-uppercase" :class="{ error: hasError('organizationLink') }"
-            >Link to organization<sup v-if="!admin" class="required">*</sup></label
+            >Link to organization</label
           >
           <input
             v-model="affiliations.organizationLink"
