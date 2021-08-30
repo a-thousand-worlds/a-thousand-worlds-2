@@ -139,12 +139,12 @@ export default {
       return response
         .then(() => {
           this.loading = false
-          this.error = null
           this.disableAfterSave = false
+          this.clearErrors()
         })
         .catch(err => {
           console.error(err)
-          this.error = {
+          this.addError({
             // reword wrong-password error from "The password is invalid or the user does not have a password."
             message:
               err.code === 'auth/wrong-password'
@@ -152,7 +152,7 @@ export default {
                 : err.code === 'auth/user-not-found'
                 ? 'Email not registered'
                 : err.message,
-          }
+          })
           this.loading = false
           this.disableSend = false
         })
@@ -219,19 +219,17 @@ export default {
 
       await this.$store.dispatch('user/updateEmail', this.email).catch(err => {
         console.error(err)
-        this.error = {
-          // reword requires-recent-login error from "This operation is sensitive and requires recent authentication. Log in again before retrying this request."
-          fields: { ...this.error?.fields, email: true },
+        this.addError({
           message:
             err.code === 'auth/requires-recent-login'
               ? 'Changing your email requires a recent login. Please log in again before attempting this change.'
               : err.message,
-        }
+        })
         this.loading = false
         this.disableSend = false
       })
 
-      if (!this.error) {
+      if (!this.hasErrors()) {
         await this.handleResponse(
           this.$store
             .dispatch('user/updateProfile', {
@@ -239,7 +237,7 @@ export default {
               email: this.email,
             })
             .then(() => {
-              if (!this.error) {
+              if (!this.hasErrors()) {
                 this.$store.dispatch('ui/popup', {
                   text: 'Account updated',
                   type: 'success',
@@ -252,7 +250,7 @@ export default {
 
     setActive(active) {
       this.active = active
-      this.error = null
+      this.clearErrors()
 
       this.$router.push({
         name: this.isSignup ? 'Signup' : this.isLogin ? 'Login' : this.isAccount ? 'Account' : null,
@@ -375,8 +373,13 @@ export default {
             />
           </div>
 
-          <div v-if="errors.length" class="field">
-            <p v-for="(error, i) of errors" :key="i" class="error has-text-centered is-uppercase">
+          <!-- error message -->
+          <div v-if="hasErrors()" class="field">
+            <p
+              v-for="(error, i) of getErrors()"
+              :key="i"
+              class="error has-text-centered is-uppercase"
+            >
               {{ error.message || 'Unknown error' }}
             </p>
           </div>
