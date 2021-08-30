@@ -13,6 +13,9 @@ const get = refString =>
 /** Gets the value of a Firebase reference. */
 const set = (refString, value) => admin.database().ref(refString).set(value)
 
+/** Gets the value of a Firebase reference. */
+const update = (refString, value) => admin.database().ref(refString).update(value)
+
 const watchUsers = functions /*
   .runWith({
     timeoutSeconds: 300,
@@ -50,8 +53,12 @@ const watchUsers = functions /*
     // set user role
     await set(`users/${user.uid}/roles`, { [invite.role]: true })
 
+    // set signup email on invite if it differs from invite email
     // mark invite as used
-    await set(`invites/${inviteCode}/used`, true)
+    await update(`invites/${inviteCode}`, {
+      ...(user.email !== invite.email ? { signupEmail: user.email } : null),
+      used: true,
+    })
   })
 
 module.exports = watchUsers
