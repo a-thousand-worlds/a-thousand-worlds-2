@@ -90,14 +90,16 @@ export default {
     }
   },
   computed: {
-    // top-level tags used as identities
+    // top-level tags used as identities that are allowed to be shown on the contributor form
     tags() {
-      return this.$store.getters[`tags/people/listSorted`]().filter(
-        tag => tag.showOnContributorForm && !tag.parent,
+      const tags = this.$store.getters[`tags/people/listSorted`]()
+      return tags.filter(
+        tag1 =>
+          tag1.showOnContributorForm && !tag1.parent && !tags.some(tag2 => tag2.parent === tag1.id),
       )
     },
 
-    // gender subtags
+    // gender subtags that are allowed to be shown on the contributor form
     tagsGender() {
       const tagGender = this.$store.getters[`tags/people/findBy`]('tag', 'Gender')
       return tagGender

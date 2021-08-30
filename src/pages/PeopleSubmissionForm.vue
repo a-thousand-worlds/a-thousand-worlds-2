@@ -44,15 +44,15 @@ export default {
     name() {
       return this.$store.state.user.user?.profile.name
     },
-    // top-level tags used as identities
-    // exclude gender since gender is specified by its subtags
+    // top-level tags used as identities that are allowed to be shown on the creators form
     tags() {
-      const tagGender = this.$store.getters[`tags/people/findBy`]('tag', 'Gender')
-      return this.$store.getters[`tags/people/listSorted`]().filter(
-        tag => tag.showOnPeopleForm && !tag.parent && tag.id !== tagGender.id,
+      const tags = this.$store.getters[`tags/people/listSorted`]()
+      return tags.filter(
+        tag1 =>
+          tag1.showOnPeopleForm && !tag1.parent && !tags.some(tag2 => tag2.parent === tag1.id),
       )
     },
-    // gender subtags
+    // gender subtags that are allowed to be shown on the creators form
     tagsGender() {
       const tagGender = this.$store.getters[`tags/people/findBy`]('tag', 'Gender')
       return tagGender
