@@ -1,6 +1,6 @@
 {
   "name": "atw2",
-  "version": "0.35.1",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "build": "vue-cli-service build",
