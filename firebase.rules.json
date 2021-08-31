@@ -1,23 +1,6 @@
 /* firebase realtime database access rules */
 {
   "rules": {
-    "log": {
-      ".read": "auth != null && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )",
-      ".write": "auth != null && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )"
-    },
-    "users": {
-      ".read": "auth != null && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )",
-      ".write": "root.child('users/'+auth.uid+'/roles/owner').val() === true",
-      "$uid": {
-        // contributors can be loaded individually (e.g. in the RecommendedBy component)
-        ".read": "root.child('users/'+$uid+'/roles/contributor').val() === true || ( auth != null && ($uid === auth.uid || root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true) )",
-        ".write": "auth != null && $uid === auth.uid",
-        "roles": {
-          ".read": "auth != null && $uid === auth.uid",
-          ".write": "auth != null && root.child('users/'+auth.uid+'/roles/owner').val() === true"
-        }
-      }
-    },
     "cache": {
       ".read": true,
       ".write": "auth != null"
@@ -40,6 +23,10 @@
         }
       }
     },
+    "logs": {
+      ".read": "auth != null && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )",
+      ".write": "auth != null && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )"
+    },
     "people": {
       ".read": true,
       ".write": "auth != null && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )"
@@ -54,6 +41,19 @@
       "$category": {
         "$sub": {
           ".read": "auth != null && root.child('users/'+auth.uid+'/profile/submissions/'+$sub).val() != null"
+        }
+      }
+    },
+    "users": {
+      ".read": "auth != null && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )",
+      ".write": "root.child('users/'+auth.uid+'/roles/owner').val() === true",
+      "$uid": {
+        // contributors can be loaded individually (e.g. in the RecommendedBy component)
+        ".read": "root.child('users/'+$uid+'/roles/contributor').val() === true || ( auth != null && ($uid === auth.uid || root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true) )",
+        ".write": "auth != null && $uid === auth.uid",
+        "roles": {
+          ".read": "auth != null && $uid === auth.uid",
+          ".write": "auth != null && root.child('users/'+auth.uid+'/roles/owner').val() === true"
         }
       }
     }

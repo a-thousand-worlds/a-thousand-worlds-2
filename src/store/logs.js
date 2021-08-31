@@ -1,8 +1,8 @@
 import { dateComparator } from '@/util/dateComparator'
+import mergeOne from '@/util/mergeOne'
 import collectionModule from './modules/collection'
-const firebaseImport = () => import(/* webpackChunkName: "firebase" */ '@/firebase')
 
-const module = mergeOne(collectionModule('log'), {
+const module = mergeOne(collectionModule('logs'), {
   getters: {
     listSorted: (state, getters) => () =>
       state.loaded

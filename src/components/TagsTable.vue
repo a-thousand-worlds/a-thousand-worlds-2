@@ -507,7 +507,7 @@ export default {
                   :disabled="$uiBusy"
                   class="button is-flat"
                   v-tippy="{
-                    content: `Delete the '${tag.tag}' tag from ${numItems(tag)} ${type}`,
+                    content: `Delete the '${tag.tag}' tag and remove from ${numItems(tag)} ${type}`,
                   }"
                   @click.prevent="remove(tag.id)"
                 >
