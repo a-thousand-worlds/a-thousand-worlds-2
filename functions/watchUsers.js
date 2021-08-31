@@ -53,10 +53,12 @@ const watchUsers = functions /*
     // set user role
     await set(`users/${user.uid}/roles`, { [invite.role]: true })
 
-    // set signup email on invite if it differs from invite email
+    // add uid to invite
+    // add signupEmail to invite if it differs from the invite email
     // mark invite as used
     await update(`invites/${inviteCode}`, {
       ...(user.email !== invite.email ? { signupEmail: user.email } : null),
+      uid: user.uid,
       used: new Date().toISOString(),
     })
   })
