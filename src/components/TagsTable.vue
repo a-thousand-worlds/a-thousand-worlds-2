@@ -239,6 +239,12 @@ export default {
       return this.dragging && this.dragging === this.getParent(tag)
     },
 
+    numItems(tag) {
+      const tagProp = this.type === 'people' ? 'identities' : 'tags'
+      const allItems = this.$store.getters[`${this.type}/list`]()
+      return allItems.filter(item => item[tagProp]?.[tag.id]).length || 0
+    },
+
     async remove(id) {
       await this.$store.dispatch(`tags/${this.type}/remove`, id)
       this.resetNewTag()
@@ -309,6 +315,20 @@ export default {
     <thead>
       <tr>
         <th style="width: 100%">Tag</th>
+
+        <!-- # Books/People/Bundles -->
+        <th
+          class="has-text-centered"
+          v-tippy="{
+            content: `The number of books with this tag.`,
+          }"
+          style="white-space: nowrap"
+        >
+          {{ type === 'books' ? 'Books' : type === 'people' ? 'People' : 'Bundles' }}
+          <i class="far fa-question-circle" />
+        </th>
+
+        <!-- Weight -->
         <th
           class="has-text-centered"
           v-tippy="{
@@ -318,6 +338,8 @@ export default {
         >
           Weight <i class="far fa-question-circle" />
         </th>
+
+        <!-- Creator -->
         <th
           v-if="type === 'people'"
           class="has-text-centered"
@@ -328,6 +350,8 @@ export default {
         >
           Creator <i class="far fa-question-circle" />
         </th>
+
+        <!-- Contributor -->
         <th
           v-if="type === 'people'"
           class="has-text-centered"
@@ -338,6 +362,8 @@ export default {
         >
           Contributor <i class="far fa-question-circle" />
         </th>
+
+        <!-- Show -->
         <th
           class="has-text-centered"
           v-tippy="{ content: `Show this tag in the ${type} filter menu` }"
@@ -345,7 +371,17 @@ export default {
         >
           Show <i class="far fa-question-circle" />
         </th>
-        <th>Edit/Delete</th>
+
+        <!-- Edit/Delete -->
+        <th
+          class="has-text-centered"
+          v-tippy="{
+            content: `Edit or delete this tag from all ${type}`,
+          }"
+          style="white-space: nowrap"
+        >
+          Edit/Delete <i class="far fa-question-circle" />
+        </th>
       </tr>
     </thead>
 
@@ -357,6 +393,7 @@ export default {
             <div class="control" style="opacity: 0.5">{{ filter.tag }}</div>
           </div>
         </td>
+        <td />
         <td />
         <td />
         <td />
@@ -405,6 +442,11 @@ export default {
                 </div>
               </div>
             </div>
+          </td>
+
+          <!-- books -->
+          <td class="has-text-right">
+            <span class="ml-2">{{ numItems(tag) }}</span>
           </td>
 
           <!-- weight -->
@@ -461,7 +503,14 @@ export default {
                 >
                   <i class="fas fa-pencil-alt" />
                 </button>
-                <button :disabled="$uiBusy" class="button is-flat" @click.prevent="remove(tag.id)">
+                <button
+                  :disabled="$uiBusy"
+                  class="button is-flat"
+                  v-tippy="{
+                    content: `Delete the '${tag.tag}' tag from ${numItems(tag)} ${type}`,
+                  }"
+                  @click.prevent="remove(tag.id)"
+                >
                   <i class="fas fa-times" />
                 </button>
               </p>
