@@ -65,7 +65,7 @@ const collectionModule = name => ({
     list: state => () => state.loaded ? Object.values(state.data) : [],
   },
   actions: {
-    /** Loads the collection from cache */
+    /** Loads the collection from the cache and updates state. */
     loadCache(context, cache) {
       const valueNotNull = cache || {}
       context.commit('set', valueNotNull)
@@ -77,14 +77,14 @@ const collectionModule = name => ({
       context.commit('set', valueNotNull)
       return valueNotNull
     },
-    /** Loads single element from Firebase */
+    /** Loads single element from Firebase and sets it in state. */
     async loadOne(context, path) {
       const value = await firebaseGet(`${name}/${path}`)
       const valueNotNull = value || {}
       context.commit('setOne', { path, value: valueNotNull })
       return valueNotNull
     },
-    /** Saves a record to the collection in Firebase. */
+    /** Saves a record to the collection in state and Firebase. */
     async save(context, { path, value }) {
       if (!path) throw new Error('path required')
       if (value === undefined) throw new Error('value may not be undefined')
@@ -95,7 +95,7 @@ const collectionModule = name => ({
       await setCacheRequired()
     },
     /**
-     * Subscribes to the collection in Firebase, syncing with this.data
+     * Subscribes to the collection in Firebase, syncing with state.
      *
      * @param onValue    Pass-through Firebase value event.
      * @param transform  Transform the value before it is saved to the state.

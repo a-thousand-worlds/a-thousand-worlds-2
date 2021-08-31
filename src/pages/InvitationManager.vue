@@ -1,14 +1,6 @@
 <script>
 import InvitationTable from '@/components/InvitationTable'
-
-const compare = (a, b) => (a > b ? 1 : b > a ? -1 : 0)
-const compareDateBy =
-  (prop, dir = 'asc') =>
-  (a, b) => {
-    const aValue = new Date(a[prop])
-    const bValue = new Date(b[prop])
-    return dir === 'asc' ? compare(aValue, bValue) : compare(bValue, aValue)
-  }
+import { dateComparator } from '@/util/dateComparator'
 
 export default {
   name: 'InvitationManager',
@@ -20,7 +12,7 @@ export default {
       // eslint-disable-next-line fp/no-mutating-methods
       const sorted = Object.values(this.invites)
         .filter(invite => invite.cancelled)
-        .sort(compareDateBy('cancelled', 'desc'))
+        .sort(dateComparator('cancelled'))
       return sorted
     },
     invites() {
@@ -30,13 +22,13 @@ export default {
       // eslint-disable-next-line fp/no-mutating-methods
       return Object.values(this.invites)
         .filter(invite => !invite.used && !invite.cancelled)
-        .sort(compareDateBy('createdAt', 'desc'))
+        .sort(dateComparator('createdAt'))
     },
     acceptedInvites() {
       // eslint-disable-next-line fp/no-mutating-methods
       return Object.values(this.invites)
         .filter(invite => invite.used)
-        .sort(compareDateBy('used', 'desc'))
+        .sort(dateComparator('used'))
     },
   },
   methods: {
