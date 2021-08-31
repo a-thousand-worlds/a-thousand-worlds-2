@@ -495,14 +495,14 @@ export default {
                     </button>
                   </div>
 
-                  <!-- Is this your book? -->
+                  <!-- Is this the correct book? -->
                   <div
                     v-else-if="!loadingBook[si] && (coverImage(si) || sub.confirmed != null)"
                     class="column field"
                   >
                     <div v-if="sub.confirmed === null" class="control mb-20">
                       <label class="label" :class="{ 'has-text-danger': hasError('isbn') }"
-                        >Is this your book?</label
+                        >Is this the correct book?</label
                       >
                       <div class="field" :class="{ 'is-grouped': sub.attempts === 1 }">
                         <div class="control mb-2">
