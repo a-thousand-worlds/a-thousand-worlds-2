@@ -1,4 +1,4 @@
-import { v4 as uid } from 'uuid'
+import uid from '@/util/chronouid'
 
 const module = {
   namespaced: true,

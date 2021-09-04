@@ -1,4 +1,3 @@
-import { v4 as uid } from 'uuid'
 import groupBy from 'lodash/groupBy'
 import dayjs from 'dayjs'
 import managed from '@/store/modules/managed'
@@ -8,6 +7,7 @@ import isSame from '@/util/isSame'
 import mergeOne from '@/util/mergeOne'
 import renderBook from '@/util/renderEmailBook'
 import sendEmail from '@/util/sendEmail'
+import uid from '@/util/chronouid'
 
 const module = mergeOne(managed('submits/books'), {
   getters: {

@@ -1,5 +1,4 @@
 import pick from 'lodash/pick'
-import { v4 as uid } from 'uuid'
 import dayjs from 'dayjs'
 import slugify from '@sindresorhus/slugify'
 
@@ -9,6 +8,7 @@ import almostEqual from '@/util/almostEqual'
 import iam from '@/util/iam'
 import mergeOne from '@/util/mergeOne'
 import sendEmail from '@/util/sendEmail'
+import uid from '@/util/chronouid'
 
 const module = mergeOne(managed('submits/people'), {
   actions: {

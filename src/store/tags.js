@@ -1,4 +1,4 @@
-import { v4 as uid } from 'uuid'
+import uid from '@/util/chronouid'
 import mergeOne from '@/util/mergeOne'
 import managed from '@/store/modules/managed'
 import sortable from '@/store/modules/sortable'

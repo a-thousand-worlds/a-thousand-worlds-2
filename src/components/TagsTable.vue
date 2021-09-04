@@ -1,5 +1,5 @@
 <script>
-import { v4 as uid } from 'uuid'
+import uid from '@/util/chronouid'
 import draggable from 'vuedraggable'
 import specialFilters from '@/store/constants/special-filters'
 

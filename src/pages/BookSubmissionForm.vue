@@ -2,11 +2,11 @@
 import throttle from 'lodash/throttle'
 import debounce from 'lodash/debounce'
 import ISBN from 'isbn3'
-import { v4 as uid } from 'uuid'
 import metadataByISBN from '@/util/metadataByISBN'
 import findBookByKeyword from '@/util/findBookByKeyword'
 import isValidISBN from '@/util/isValidISBN'
 import isSame from '@/util/isSame'
+import uid from '@/util/chronouid'
 import validator from '@/mixins/validator'
 
 import BookTitleField from '@/components/fields/BookTitle'
