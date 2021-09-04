@@ -2,8 +2,6 @@
 import collection from '@/store/modules/collection'
 import mergeOne from '@/util/mergeOne'
 import setCacheRequired from '@/util/setCacheRequired'
-// import firebase from '@/firebase'
-import dayjs from 'dayjs'
 const firebaseImport = () => import(/* webpackChunkName: "firebase" */ '@/firebase')
 
 const module = name => {
@@ -28,7 +26,7 @@ const module = name => {
             `Managed collection "${name}": value should be object, not ${typeof value}`,
           )
 
-        const now = dayjs().format()
+        const now = new Date().toISOString()
         const userId = ctx.rootState?.user?.user?.uid || null
         const valueNew = {
           ...value,

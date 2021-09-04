@@ -1,5 +1,4 @@
 import pick from 'lodash/pick'
-import dayjs from 'dayjs'
 import slugify from '@sindresorhus/slugify'
 
 import managed from '@/store/modules/managed'
@@ -53,7 +52,7 @@ const module = mergeOne(managed('submits/people'), {
     updateSubmission: async (context, { peopleSubmissionId, personId, sub, status }) => {
       const submissionUpdates = {
         reviewedBy: context.rootState.user.user.uid,
-        reviewedAt: dayjs().format(),
+        reviewedAt: new Date().toISOString(),
         status,
         ...(peopleSubmissionId ? { peopleSubmissionId } : null),
         ...(personId ? { personId } : null),

@@ -2,7 +2,6 @@
 const fs = require('fs')
 const promptly = require('promptly')
 const uuid = require('uuid').v4
-const dayjs = require('dayjs')
 const axios = require('axios').default
 // used to search publisher metadata (not presented at source data)
 const isbn = require('node-isbn')
@@ -126,11 +125,11 @@ const convertCreator = (name, creators, creator) => {
   const id = uuid()
   person = {
     id: id,
-    createdAt: dayjs().format(),
+    createdAt: new Date().toISOString(),
     createdBy: creator.uid,
-    approvedAt: dayjs().format(),
+    approvedAt: new Date().toISOString(),
     approvedBy: creator.uid,
-    updatedAt: dayjs().format(),
+    updatedAt: new Date().toISOString(),
     updatedBy: creator.uid,
     name: name,
     bio: '',
@@ -235,13 +234,13 @@ const convertBook = async (info, creators, tags, contributors, creator) => {
   const book = {
     id: id,
     createdBy: contributor.contributor.id,
-    createdAt: dayjs().format(),
+    createdAt: new Date().toISOString(),
     creators: bookCreators,
     goodreads: info.details.goodreads || '',
     isbn: info.isbn ? info.isbn.toString() : '',
     cover: cover,
     publisher: meta.publisher,
-    reviewedAt: dayjs().format(),
+    reviewedAt: new Date().toISOString(),
     reviewedBy: creator.uid,
     status: 'approved',
     summary: info.details.text,

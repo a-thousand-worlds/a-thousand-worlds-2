@@ -1,5 +1,4 @@
 import groupBy from 'lodash/groupBy'
-import dayjs from 'dayjs'
 import managed from '@/store/modules/managed'
 import almostEqual from '@/util/almostEqual'
 import iam from '@/util/iam'
@@ -91,9 +90,8 @@ const module = mergeOne(managed('submits/books'), {
 
     /** Reject submission */
     reject: async (context, sub) => {
-      const now = dayjs()
       sub.reviewedBy = context.rootState.user.user.uid
-      sub.reviewedAt = now.format()
+      sub.reviewedAt = new Date().toISOString()
       sub.status = 'rejected'
 
       // update book submission
@@ -207,7 +205,7 @@ const module = mergeOne(managed('submits/books'), {
             isbn: sub.isbn,
             cover: bookCover,
             publisher: sub.publisher,
-            reviewedAt: dayjs().format(),
+            reviewedAt: new Date().toISOString(),
             reviewedBy: context.rootState.user.user.uid,
             status: 'approved',
             submissionId: sub.id,
@@ -237,7 +235,7 @@ const module = mergeOne(managed('submits/books'), {
         value: {
           ...sub,
           bookId,
-          reviewedAt: dayjs().format(),
+          reviewedAt: new Date().toISOString(),
           reviewedBy: context.rootState.user.user.uid,
           status: 'approved',
         },
