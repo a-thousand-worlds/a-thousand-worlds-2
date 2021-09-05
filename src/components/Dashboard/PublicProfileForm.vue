@@ -1,5 +1,6 @@
 <script>
 import validator from '@/mixins/validator'
+import Content from '@/components/Content'
 import PhotoUpload from '@/components/PhotoUpload'
 import engagementOptions from '@/store/constants/engagements'
 
@@ -13,6 +14,7 @@ const newAffiliations = () => ({
 
 export default {
   components: {
+    Content,
     PhotoUpload,
   },
   mixins: [
@@ -291,11 +293,13 @@ export default {
         </div>
 
         <div v-if="admin || welcome || true">
-          <h2 v-if="!admin" class="mt-50 mb-30">
-            ATW is based on celebrating the voices of diverse identities. We'd love to know how you
-            identify, to help us keep track of our representation and ensure we are being inclusive.
-            This information below will not be made public.
-          </h2>
+          <h3 v-if="!admin" class="mt-50 mb-30">
+            <Content name="contributor-profile/identities">
+              ATW is based on celebrating the voices of diverse identities. We'd love to know how
+              you identify, to help us keep track of our representation and ensure we are being
+              inclusive. This information below will not be made public.
+            </Content>
+          </h3>
 
           <!-- identities -->
           <div v-if="!admin" class="field" divider-30>
@@ -424,5 +428,15 @@ export default {
 
 .field:not(:last-child) {
   margin-bottom: 30px;
+}
+</style>
+
+<!-- do not scope so that we can style CKEditor -->
+<style lang="scss">
+.ck {
+  padding: 0 !important;
+  p {
+    margin: 0 !important;
+  }
 }
 </style>
