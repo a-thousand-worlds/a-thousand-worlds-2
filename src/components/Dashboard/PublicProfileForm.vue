@@ -292,8 +292,9 @@ export default {
 
         <div v-if="admin || welcome || true">
           <h2 v-if="!admin" class="mt-50 mb-30">
-            ATW is based on raising the voices of diverse identities. We'd love to know how you
-            identify. This information will not be made public.
+            ATW is based on celebrating the voices of diverse identities. We'd love to know how you
+            identify, to help us keep track of our representation and ensure we are being inclusive.
+            This information below will not be made public.
           </h2>
 
           <!-- identities -->
