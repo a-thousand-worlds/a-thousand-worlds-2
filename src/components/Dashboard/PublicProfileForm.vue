@@ -209,7 +209,9 @@ export default {
                 class="label is-uppercase"
                 :class="{ error: hasError('website') }"
                 style="margin-right: -5px"
-                >Your website or social media URL<sup v-if="!admin" class="required">*</sup></label
+                ><Content name="contributor-profile/website" format="label"
+                  >Your website or social media URL</Content
+                ><sup v-if="!admin" class="required">*</sup></label
               >
               <input v-model="affiliations.website" class="input" type="text" />
             </div>
@@ -217,7 +219,9 @@ export default {
             <!-- engagement -->
             <div class="field">
               <label class="label is-uppercase" :class="{ error: hasError('engagements') }"
-                >How do you engage with books?<sup class="required">*</sup></label
+                ><Content name="contributor-profile/engagement" format="label"
+                  >How do you engage with books?</Content
+                ><sup class="required">*</sup></label
               >
               <div class="sublabel tablet-columns-2">
                 <div
@@ -269,7 +273,9 @@ export default {
         <!-- organization -->
         <div class="field">
           <label class="label is-uppercase" :class="{ error: hasError('organizationName') }"
-            >Are you affiliated with an organization?</label
+            ><Content name="contributor-profile/organization" format="label"
+              >Are you affiliated with an organization?</Content
+            ></label
           >
           <input
             v-model="affiliations.organization"
@@ -282,7 +288,9 @@ export default {
         <!-- organization link -->
         <div class="field">
           <label class="label is-uppercase" :class="{ error: hasError('organizationLink') }"
-            >Link to organization</label
+            ><Content name="contributor-profile/organization-link" format="label"
+              >Link to organization</Content
+            ></label
           >
           <input
             v-model="affiliations.organizationLink"
@@ -428,15 +436,5 @@ export default {
 
 .field:not(:last-child) {
   margin-bottom: 30px;
-}
-</style>
-
-<!-- do not scope so that we can style CKEditor -->
-<style lang="scss">
-.ck {
-  padding: 0 !important;
-  p {
-    margin: 0 !important;
-  }
 }
 </style>
