@@ -245,6 +245,7 @@ $placeholderColor: #a0a0a0;
   font-size: 40px;
   // not sure why page-title is !important, but we have to override it
   margin-bottom: 0 !important;
+  text-align: center !important;
 }
 .fa-address-card {
   padding-top: 11px;

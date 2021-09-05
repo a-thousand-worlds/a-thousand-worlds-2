@@ -1,8 +1,10 @@
 <script>
+import Content from '@/components/Content'
 import PublicProfileForm from '@/components/Dashboard/PublicProfileForm'
 
 export default {
   components: {
+    Content,
     PublicProfileForm,
   },
 }
@@ -16,7 +18,9 @@ export default {
           <a @click.prevent="$router.back" class="is-uppercase is-primary">&lt; Back</a>
         </div>
 
-        <h1 class="page-title divider-bottom">Edit Profile</h1>
+        <h1 class="page-title divider-bottom">
+          <Content name="contributor-profile/title" format="label">Edit Profile</Content>
+        </h1>
 
         <PublicProfileForm />
       </div>

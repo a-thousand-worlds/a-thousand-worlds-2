@@ -356,7 +356,7 @@ export default {
         </div>
 
         <h1 class="title page-title divider-bottom" style="position: relative">
-          Submit a book
+          <Content name="book-submission/title" format="label">Submit a book</Content>
           <span
             v-if="helpCompleted"
             @click.prevent="$refs.help.toggle"
@@ -609,9 +609,9 @@ export default {
             <!-- tags -->
             <div v-if="!books[si] || (books[si] && !books[si].id)" class="field">
               <label class="label" :class="{ 'has-text-danger': hasError('tags') }"
-                >How would you categorize this book? Select all that apply<sup class="required"
-                  >*</sup
-                ></label
+                ><Content name="book-submission/tags" format="label"
+                  >How would you categorize this book? Select all that apply</Content
+                ><sup class="required">*</sup></label
               >
               <div class="text-14 tablet-columns-2">
                 <div

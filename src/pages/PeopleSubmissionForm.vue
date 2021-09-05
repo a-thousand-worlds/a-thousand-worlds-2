@@ -6,10 +6,12 @@ import validator from '@/mixins/validator'
 import creatorTitles from '@/store/constants/creatorTitles'
 import pronouns from '@/store/constants/pronouns'
 import personSubmission from '@/store/constants/personSubmission'
+import Content from '@/components/Content'
 import PhotoUpload from '@/components/PhotoUpload'
 
 export default {
   components: {
+    Content,
     PhotoUpload,
   },
   mixins: [
@@ -157,7 +159,19 @@ export default {
         </div>
 
         <h1 class="title page-title divider-bottom">
-          {{ person ? 'Edit public profile' : $iam('owner') ? 'New Person' : 'Create a profile' }}
+          <span v-if="person"
+            ><Content name="people-submission/title/person" format="label"
+              >Edit public profile</Content
+            ></span
+          >
+          <span v-else-if="$iam('owner')"
+            ><Content name="people-submission/title/owner" format="label">New Person</Content></span
+          >
+          <span v-else
+            ><Content name="people-submission/title/new" format="label"
+              >Create a profile</Content
+            ></span
+          >
         </h1>
 
         <section class="basic-information">
