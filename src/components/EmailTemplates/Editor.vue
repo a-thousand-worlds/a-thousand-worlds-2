@@ -86,7 +86,7 @@ export default {
 </script>
 
 <template>
-  <div class="columns">
+  <div class="editor-component columns">
     <div class="column is-one-quarter">
       <aside class="menu">
         <div v-for="group of groups" :key="group.title" class="mb-20">
@@ -119,7 +119,7 @@ export default {
           <Content
             ref="subject"
             :name="`${active.group.path}/${active.item}/subject`"
-            :class="{ 'is-danger': hasError('subject') }"
+            :class="{ 'is-danger': hasError('subject'), 'content-subject': true }"
             format="oneline"
             @change="validate"
           />
@@ -141,7 +141,7 @@ export default {
             <Content
               ref="body"
               :name="`${active.group.path}/${active.item}/body`"
-              class="editor"
+              class="content-email-body"
               @change="validate"
             />
           </div>
@@ -162,9 +162,8 @@ export default {
 @import '@/assets/style/vars.scss';
 @import '@/assets/style/mixins.scss';
 
-.editor {
-  border-radius: 5px !important;
-  border: solid 1px #ddd;
+.content-email-body {
+  outline: solid 1px #ddd;
   min-height: 10rem;
 }
 
@@ -174,7 +173,7 @@ export default {
 
 // cannot add is-danger directly to Content element since dynamic classes interfere with CKEditor classes
 .content-container-error {
-  .editor {
+  .content-email-body {
     border-color: $danger !important;
     &:focus,
     &.is-focused,
@@ -182,6 +181,21 @@ export default {
     &.is-active {
       box-shadow: $input-focus-box-shadow-size bulmaRgba($danger, 0.25);
     }
+  }
+}
+</style>
+
+<style lang="scss">
+.editor-component {
+  input.content-subject:not(:focus) {
+    cursor: text;
+  }
+
+  .content-email-body.ck.ck-editor__editable_inline {
+    margin: 0;
+    outline: solid 1px #ddd;
+    padding: 10px;
+    cursor: text;
   }
 }
 </style>
