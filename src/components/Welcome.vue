@@ -33,7 +33,7 @@ export default {
         <!-- set max-width to achieve desired line breaks while maintaining responsiveness -->
         <div
           class="subtitle is-flex is-align-items-center"
-          style="height: 100%; max-width: 12em; margin: auto"
+          style="height: 100%; max-width: 10.5em; margin: auto"
         >
           <Content
             name="welcome/right"

@@ -329,14 +329,3 @@ a.button {
   border-radius: 20px;
 }
 </style>
-
-<style lang="scss">
-.ck.ck-editor__editable_inline {
-  padding: 0px !important;
-  & > :first-child,
-  & > :last-child {
-    margin-top: 0px !important;
-    margin-bottom: 0px !important;
-  }
-}
-</style>
