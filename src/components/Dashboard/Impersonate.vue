@@ -31,7 +31,7 @@ export default {
 <template>
   <div style="min-height: 24em">
     <h2>Impersonate</h2>
-    <p class="field">Browse the dashboard as a different user role to see what they see.</p>
+    <p class="field">Browse the dashboard as a different type of user to see what they see.</p>
     <div class="field">
       <Dropdown
         :options="roleOptions"
