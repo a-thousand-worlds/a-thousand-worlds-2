@@ -5,6 +5,7 @@ const { JWT } = require('google-auth-library')
 const key = require('../serviceAccountKey.json')
 const zlib = require('zlib')
 const crypto = require('crypto')
+const image64ToBuffer = require('../util/image64ToBuffer')
 
 /** Creates authorized client for googleapi calls */
 const getAuthorizedClient = () =>
@@ -115,11 +116,29 @@ const rebuildCache = async (host = 'all') => {
     })
     .filter(x => !!x)
 
+  // collect user's photo to cache
+  const usersPhotos = db.contributors
+    .map((user, i) => {
+      const photo = user.profile.photo
+      if (!photo || !photo.base64 || (photo.url && photo.url.startsWith('http'))) return null
+      // base photo file name on user email cuz we loosed users ids on previous step
+      const name = crypto.createHash('sha256').update(user.profile.email).digest('hex')
+      /* eslint-disable-next-line */
+      console.log(`updating user <${user.profile.name} ${user.profile.email}> photo with key <${name}>`)
+      return {
+        i,
+        name,
+        base64: photo.base64,
+      }
+    })
+    .filter(x => !!x)
+
   const newFiles = {}
   const hashMap = {}
   const pathMap = {}
   const hashNames = {}
 
+  // processing books covers
   await Promise.all(
     cacheBooks.map(async book => {
       console.log(`downloading cover for <${book.title}>`)
@@ -136,6 +155,28 @@ const rebuildCache = async (host = 'all') => {
   ).catch(err => {
     console.error('Downloading covers error!', err)
     console.log('downloading covers fails, stops')
+    return null
+  })
+
+  // processing users photos
+  await Promise.all(
+    usersPhotos.map(async info => {
+      console.log('updating user photo', info.name)
+      const buff = await image64ToBuffer(info.base64, 400)
+      const cacheUrl = `/img/${info.name}.png`
+      db.contributors[info.i].profile.photo.base64 = cacheUrl
+      db.contributors[info.i].profile.photo.width = buff.width
+      db.contributors[info.i].profile.photo.height = buff.height
+      const gzip = await gzipAndHash(buff.buffer)
+      newFiles[cacheUrl] = gzip
+      hashMap[cacheUrl] = gzip.hash
+      pathMap[gzip.hash] = cacheUrl
+      hashNames[gzip.hash] = info.name
+      console.log(`user photo <${info.name}> prepared`)
+    }),
+  ).catch(err => {
+    console.error('Updating users photos error!', err)
+    console.log('Updating users photos fails, stops')
     return null
   })
 

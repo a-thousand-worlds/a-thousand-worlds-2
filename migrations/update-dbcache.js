@@ -3,6 +3,8 @@ const axios = require('axios')
 const chalk = require('chalk')
 const fs = require('fs')
 
+const image64ToBuffer = require('../functions/util/image64ToBuffer')
+
 const envFile = process.argv[process.argv.length - 1]
 
 if (envFile.endsWith('update-dbcache.js')) {
@@ -103,6 +105,25 @@ const go = async () => {
     })
     .filter(x => !!x)
 
+  // collect user's photo to cache
+  const usersPhotos = db.contributors
+    .map((user, i) => {
+      const photo = user.profile.photo
+      if (!photo || !photo.base64 || (photo.url && photo.url.startsWith('http'))) return null
+      // base photo file name on user email cuz we loosed users ids on previous step
+      const name = crypto.createHash('sha256').update(user.profile.email).digest('hex')
+      /* eslint-disable-next-line */
+      console.log(`updating user <${user.profile.name} ${user.profile.email}> photo with key <${name}>`)
+      return {
+        i,
+        name,
+        base64: photo.base64,
+      }
+    })
+    .filter(x => !!x)
+
+
+
   // create images directory if not exists
   if (!fs.existsSync('./public/img')) {
     fs.mkdirSync('./public/img')
@@ -130,6 +151,23 @@ const go = async () => {
       }
     }),
   )
+
+  // processing users photos
+  await Promise.all(
+    usersPhotos.map(async info => {
+      console.log('updating user photo', info.name)
+      const buff = await image64ToBuffer(info.base64, 400)
+      const cacheUrl = `/img/${info.name}.png`
+      const localPath = `./public/img/${info.name}.png`
+      db.contributors[info.i].profile.photo.base64 = cacheUrl
+      db.contributors[info.i].profile.photo.width = buff.width
+      db.contributors[info.i].profile.photo.height = buff.height
+      fs.writeFileSync(localPath, Buffer.from(buff.buffer))
+      console.log(`user photo <${info.name}> prepared`)
+    }),
+  ).catch(err => {
+    console.error('Updating users photos error!', err)
+  })
 
   const dbCacheJs = `window.dbcache = ${JSON.stringify(db, null, 2)}`
   fs.writeFileSync('./public/dbcache.js', dbCacheJs)
