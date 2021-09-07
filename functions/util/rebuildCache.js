@@ -179,7 +179,9 @@ const rebuildCache = async (host = 'all') => {
       console.log('updating user photo', info.name)
       const buff = await image64ToBuffer(info.base64, 400)
       const cacheUrl = `/img/${info.name}.png`
-      db.contributors[info.i].profile.photo.base64 = cacheUrl
+      // eslint-disable-next-line fp/no-delete
+      delete db.contributors[info.i].profile.photo.base64
+      db.contributors[info.i].profile.photo.url = cacheUrl
       db.contributors[info.i].profile.photo.width = buff.width
       db.contributors[info.i].profile.photo.height = buff.height
       const gzip = await gzipAndHash(buff.buffer)

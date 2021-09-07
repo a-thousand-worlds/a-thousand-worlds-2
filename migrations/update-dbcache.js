@@ -164,7 +164,9 @@ const go = async () => {
       const buff = await image64ToBuffer(info.base64, 400)
       const cacheUrl = `/img/${info.name}.png`
       const localPath = `./public/img/${info.name}.png`
-      db.contributors[info.i].profile.photo.base64 = cacheUrl
+      // eslint-disable-next-line fp/no-delete
+      delete db.contributors[info.i].profile.photo.base64
+      db.contributors[info.i].profile.photo.url = cacheUrl
       db.contributors[info.i].profile.photo.width = buff.width
       db.contributors[info.i].profile.photo.height = buff.height
       fs.writeFileSync(localPath, Buffer.from(buff.buffer))
