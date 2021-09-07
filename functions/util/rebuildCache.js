@@ -1,3 +1,5 @@
+/** Caches the most used collections from the database (books, people, tags, contributors, and content) and uploads dbcache.js to each hosting site. Moves data url base64 photos to real hosted urls. */
+
 const admin = require('firebase-admin')
 const axios = require('axios')
 const { google } = require('googleapis')
@@ -116,7 +118,8 @@ const rebuildCache = async (host = 'all') => {
     })
     .filter(x => !!x)
 
-  // collect user's photo to cache
+  // get base64 user photos from the database
+  // they will be uploaded and the url will be added to the cache
   const usersPhotos = db.contributors
     .map((user, i) => {
       const photo = user.profile.photo
@@ -124,7 +127,9 @@ const rebuildCache = async (host = 'all') => {
       // base photo file name on user email cuz we loosed users ids on previous step
       const name = crypto.createHash('sha256').update(user.profile.email).digest('hex')
       /* eslint-disable-next-line */
-      console.log(`updating user <${user.profile.name} ${user.profile.email}> photo with key <${name}>`)
+      console.log(
+        `updating user <${user.profile.name} ${user.profile.email}> photo with key <${name}>`,
+      )
       return {
         i,
         name,
@@ -133,12 +138,21 @@ const rebuildCache = async (host = 'all') => {
     })
     .filter(x => !!x)
 
+  // new files that need to be gzip'd and uploaded to storage
+  // includes book covers, user photos, and dbcache.js itself
   const newFiles = {}
+
+  // hashMap maps the url of a file to its gzip hash.
+  // pathMap does the opposite: it maps the gzip hash to the url
   const hashMap = {}
   const pathMap = {}
+
+  // maps the gzip hash to a human-readable name
+  // only used for logging
   const hashNames = {}
 
-  // processing books covers
+  // download book cover images
+  // gzip and add to newFiles, hashMap, pathMap, and hashNames for uploading
   await Promise.all(
     cacheBooks.map(async book => {
       console.log(`downloading cover for <${book.title}>`)
@@ -158,7 +172,8 @@ const rebuildCache = async (host = 'all') => {
     return null
   })
 
-  // processing users photos
+  // replace the base64 data url contributor photos with hosted urls
+  // gzip and add to newFiles, hashMap, pathMap, and hashNames for uploading
   await Promise.all(
     usersPhotos.map(async info => {
       console.log('updating user photo', info.name)
@@ -260,9 +275,9 @@ const rebuildCache = async (host = 'all') => {
       })
       const uploadInfo = uploadInfoReq.data
 
-      // uploading only required files is going automatically by google
-      // if file already exists in some previous version - google will catch it automatically, so reupload is not required
-      // and google resturns only new/updated files list to upload
+      // uploading only required files is done automatically by google
+      // if a file already exists in some previous version - google will catch it automatically, so reupload is not required
+      // and google returns only new/updated files list to upload
       const uploads = await Promise.all(
         uploadInfo.uploadRequiredHashes.map(async hash => {
           const gzip = newFiles[pathMap[hash]]

@@ -1,3 +1,5 @@
+/** An HTTP server that provides a public endpoint for rebuilding dbcache.js. */
+
 const express = require('express')
 const rebuildCache = require('./util/rebuildCache')
 

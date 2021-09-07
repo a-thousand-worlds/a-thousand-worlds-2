@@ -1,3 +1,5 @@
+/** Before deploying a new release to Firebase from a local machine, we need to regenerate dbcache.js from the database and add missing photos, otherwise the old photos will overwrite what is on the hosted website. */
+
 const promptly = require('promptly')
 const axios = require('axios')
 const chalk = require('chalk')
@@ -105,7 +107,8 @@ const go = async () => {
     })
     .filter(x => !!x)
 
-  // collect user's photo to cache
+  // get base64 user photos from the database
+  // they will be uploaded and the url will be added to the cache
   const usersPhotos = db.contributors
     .map((user, i) => {
       const photo = user.profile.photo
@@ -113,7 +116,9 @@ const go = async () => {
       // base photo file name on user email cuz we loosed users ids on previous step
       const name = crypto.createHash('sha256').update(user.profile.email).digest('hex')
       /* eslint-disable-next-line */
-      console.log(`updating user <${user.profile.name} ${user.profile.email}> photo with key <${name}>`)
+      console.log(
+        `updating user <${user.profile.name} ${user.profile.email}> photo with key <${name}>`,
+      )
       return {
         i,
         name,
@@ -122,14 +127,13 @@ const go = async () => {
     })
     .filter(x => !!x)
 
-
-
   // create images directory if not exists
   if (!fs.existsSync('./public/img')) {
     fs.mkdirSync('./public/img')
   }
 
-  // download cover images
+  // set cover.cache to the relative book cover url
+  // download book covers that do not exist and save locally
   await Promise.all(
     cacheBooks.map(async book => {
       // updating cached db cuz we need calculate later hash of file with cached urls
@@ -152,7 +156,8 @@ const go = async () => {
     }),
   )
 
-  // processing users photos
+  // replace the base64 data url contributor photos with hosted urls
+  // gzip and add to newFiles, hashMap, pathMap, and hashNames for uploading
   await Promise.all(
     usersPhotos.map(async info => {
       console.log('updating user photo', info.name)
