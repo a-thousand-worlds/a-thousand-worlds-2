@@ -3,6 +3,7 @@
 const promptly = require('promptly')
 const axios = require('axios')
 const chalk = require('chalk')
+const crypto = require('crypto')
 const fs = require('fs')
 
 const image64ToBuffer = require('../functions/util/image64ToBuffer')
