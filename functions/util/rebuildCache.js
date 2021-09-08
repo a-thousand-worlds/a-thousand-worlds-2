@@ -125,15 +125,12 @@ const rebuildCache = async (host = 'all') => {
       const photo = user.profile.photo
       if (!photo || !photo.base64 || (photo.url && photo.url.startsWith('http'))) return null
       // base photo file name on user email cuz we loosed users ids on previous step
-      const name = crypto.createHash('sha256').update(user.profile.email).digest('hex')
-      /* eslint-disable-next-line */
-      console.log(
-        `updating user <${user.profile.name} ${user.profile.email}> photo with key <${name}>`,
-      )
+      const key = crypto.createHash('sha256').update(user.profile.email).digest('hex')
       return {
         i,
-        name,
         base64: photo.base64,
+        key,
+        name: user.profile.name,
       }
     })
     .filter(x => !!x)
@@ -175,25 +172,23 @@ const rebuildCache = async (host = 'all') => {
   // replace the base64 data url contributor photos with hosted urls
   // gzip and add to newFiles, hashMap, pathMap, and hashNames for uploading
   await Promise.all(
-    usersPhotos.map(async info => {
-      console.log('updating user photo', info.name)
-      const buff = await image64ToBuffer(info.base64, 400)
-      const cacheUrl = `/img/${info.name}.png`
+    usersPhotos.map(async userPhoto => {
+      const cacheUrl = `/img/${userPhoto.key}.png`
+      console.log(`Preparing user photo for ${userPhoto.name} (<${cacheUrl}>)`)
+      const buff = await image64ToBuffer(userPhoto.base64, 400)
       // eslint-disable-next-line fp/no-delete
-      delete db.contributors[info.i].profile.photo.base64
-      db.contributors[info.i].profile.photo.url = cacheUrl
-      db.contributors[info.i].profile.photo.width = buff.width
-      db.contributors[info.i].profile.photo.height = buff.height
+      delete db.contributors[userPhoto.i].profile.photo.base64
+      db.contributors[userPhoto.i].profile.photo.url = cacheUrl
+      db.contributors[userPhoto.i].profile.photo.width = buff.width
+      db.contributors[userPhoto.i].profile.photo.height = buff.height
       const gzip = await gzipAndHash(buff.buffer)
       newFiles[cacheUrl] = gzip
       hashMap[cacheUrl] = gzip.hash
       pathMap[gzip.hash] = cacheUrl
-      hashNames[gzip.hash] = info.name
-      console.log(`user photo <${info.name}> prepared`)
+      hashNames[gzip.hash] = userPhoto.key
     }),
   ).catch(err => {
     console.error('Updating users photos error!', err)
-    console.log('Updating users photos fails, stops')
     return null
   })
 

@@ -115,14 +115,11 @@ const go = async () => {
       const photo = user.profile.photo
       if (!photo || !photo.base64 || (photo.url && photo.url.startsWith('http'))) return null
       // base photo file name on user email cuz we loosed users ids on previous step
-      const name = crypto.createHash('sha256').update(user.profile.email).digest('hex')
-      /* eslint-disable-next-line */
-      console.log(
-        `updating user <${user.profile.name} ${user.profile.email}> photo with key <${name}>`,
-      )
+      const key = crypto.createHash('sha256').update(user.profile.email).digest('hex')
       return {
         i,
-        name,
+        key,
+        name: user.profile.name,
         base64: photo.base64,
       }
     })
@@ -160,18 +157,17 @@ const go = async () => {
   // replace the base64 data url contributor photos with hosted urls
   // gzip and add to newFiles, hashMap, pathMap, and hashNames for uploading
   await Promise.all(
-    usersPhotos.map(async info => {
-      console.log('updating user photo', info.name)
-      const buff = await image64ToBuffer(info.base64, 400)
-      const cacheUrl = `/img/${info.name}.png`
-      const localPath = `./public/img/${info.name}.png`
+    usersPhotos.map(async userPhoto => {
+      const buff = await image64ToBuffer(userPhoto.base64, 400)
+      const cacheUrl = `/img/${userPhoto.key}.png`
+      const localPath = `./public/img/${userPhoto.key}.png`
+      console.log(`Saving user photo for ${userPhoto.name} <${cacheUrl}>`)
       // eslint-disable-next-line fp/no-delete
-      delete db.contributors[info.i].profile.photo.base64
-      db.contributors[info.i].profile.photo.url = cacheUrl
-      db.contributors[info.i].profile.photo.width = buff.width
-      db.contributors[info.i].profile.photo.height = buff.height
+      delete db.contributors[userPhoto.i].profile.photo.base64
+      db.contributors[userPhoto.i].profile.photo.url = cacheUrl
+      db.contributors[userPhoto.i].profile.photo.width = buff.width
+      db.contributors[userPhoto.i].profile.photo.height = buff.height
       fs.writeFileSync(localPath, Buffer.from(buff.buffer))
-      console.log(`user photo <${info.name}> prepared`)
     }),
   ).catch(err => {
     console.error('Updating users photos error!', err)
