@@ -1,7 +1,12 @@
+/** Before deploying a new release to Firebase from a local machine, we need to regenerate dbcache.js from the database and add missing photos, otherwise the old photos will overwrite what is on the hosted website. */
+
 const promptly = require('promptly')
 const axios = require('axios')
 const chalk = require('chalk')
+const crypto = require('crypto')
 const fs = require('fs')
+
+const image64ToBuffer = require('../functions/util/image64ToBuffer')
 
 const envFile = process.argv[process.argv.length - 1]
 
@@ -103,12 +108,30 @@ const go = async () => {
     })
     .filter(x => !!x)
 
+  // get base64 user photos from the database
+  // they will be uploaded and the url will be added to the cache
+  const usersPhotos = db.contributors
+    .map((user, i) => {
+      const photo = user.profile.photo
+      if (!photo || !photo.base64 || (photo.url && photo.url.startsWith('http'))) return null
+      // base photo file name on user email cuz we loosed users ids on previous step
+      const key = crypto.createHash('sha256').update(user.profile.email).digest('hex')
+      return {
+        i,
+        key,
+        name: user.profile.name,
+        base64: photo.base64,
+      }
+    })
+    .filter(x => !!x)
+
   // create images directory if not exists
   if (!fs.existsSync('./public/img')) {
     fs.mkdirSync('./public/img')
   }
 
-  // download cover images
+  // set cover.cache to the relative book cover url
+  // download book covers that do not exist and save locally
   await Promise.all(
     cacheBooks.map(async book => {
       // updating cached db cuz we need calculate later hash of file with cached urls
@@ -130,6 +153,25 @@ const go = async () => {
       }
     }),
   )
+
+  // replace the base64 data url contributor photos with hosted urls
+  // gzip and add to newFiles, hashMap, pathMap, and hashNames for uploading
+  await Promise.all(
+    usersPhotos.map(async userPhoto => {
+      const buff = await image64ToBuffer(userPhoto.base64, 400)
+      const cacheUrl = `/img/${userPhoto.key}.png`
+      const localPath = `./public/img/${userPhoto.key}.png`
+      console.log(`Saving user photo for ${userPhoto.name} <${cacheUrl}>`)
+      // eslint-disable-next-line fp/no-delete
+      delete db.contributors[userPhoto.i].profile.photo.base64
+      db.contributors[userPhoto.i].profile.photo.url = cacheUrl
+      db.contributors[userPhoto.i].profile.photo.width = buff.width
+      db.contributors[userPhoto.i].profile.photo.height = buff.height
+      fs.writeFileSync(localPath, Buffer.from(buff.buffer))
+    }),
+  ).catch(err => {
+    console.error('Updating users photos error!', err)
+  })
 
   const dbCacheJs = `window.dbcache = ${JSON.stringify(db, null, 2)}`
   fs.writeFileSync('./public/dbcache.js', dbCacheJs)

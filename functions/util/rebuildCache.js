@@ -1,3 +1,5 @@
+/** Caches the most used collections from the database (books, people, tags, contributors, and content) and uploads dbcache.js to each hosting site. Moves data url base64 photos to real hosted urls. */
+
 const admin = require('firebase-admin')
 const axios = require('axios')
 const { google } = require('googleapis')
@@ -5,6 +7,7 @@ const { JWT } = require('google-auth-library')
 const key = require('../serviceAccountKey.json')
 const zlib = require('zlib')
 const crypto = require('crypto')
+const image64ToBuffer = require('../util/image64ToBuffer')
 
 /** Creates authorized client for googleapi calls */
 const getAuthorizedClient = () =>
@@ -115,11 +118,38 @@ const rebuildCache = async (host = 'all') => {
     })
     .filter(x => !!x)
 
+  // get base64 user photos from the database
+  // they will be uploaded and the url will be added to the cache
+  const usersPhotos = db.contributors
+    .map((user, i) => {
+      const photo = user.profile.photo
+      if (!photo || !photo.base64 || (photo.url && photo.url.startsWith('http'))) return null
+      // base photo file name on user email cuz we loosed users ids on previous step
+      const key = crypto.createHash('sha256').update(user.profile.email).digest('hex')
+      return {
+        i,
+        base64: photo.base64,
+        key,
+        name: user.profile.name,
+      }
+    })
+    .filter(x => !!x)
+
+  // new files that need to be gzip'd and uploaded to storage
+  // includes book covers, user photos, and dbcache.js itself
   const newFiles = {}
+
+  // hashMap maps the url of a file to its gzip hash.
+  // pathMap does the opposite: it maps the gzip hash to the url
   const hashMap = {}
   const pathMap = {}
+
+  // maps the gzip hash to a human-readable name
+  // only used for logging
   const hashNames = {}
 
+  // download book cover images
+  // gzip and add to newFiles, hashMap, pathMap, and hashNames for uploading
   await Promise.all(
     cacheBooks.map(async book => {
       console.log(`downloading cover for <${book.title}>`)
@@ -136,6 +166,29 @@ const rebuildCache = async (host = 'all') => {
   ).catch(err => {
     console.error('Downloading covers error!', err)
     console.log('downloading covers fails, stops')
+    return null
+  })
+
+  // replace the base64 data url contributor photos with hosted urls
+  // gzip and add to newFiles, hashMap, pathMap, and hashNames for uploading
+  await Promise.all(
+    usersPhotos.map(async userPhoto => {
+      const cacheUrl = `/img/${userPhoto.key}.png`
+      console.log(`Preparing user photo for ${userPhoto.name} (<${cacheUrl}>)`)
+      const buff = await image64ToBuffer(userPhoto.base64, 400)
+      // eslint-disable-next-line fp/no-delete
+      delete db.contributors[userPhoto.i].profile.photo.base64
+      db.contributors[userPhoto.i].profile.photo.url = cacheUrl
+      db.contributors[userPhoto.i].profile.photo.width = buff.width
+      db.contributors[userPhoto.i].profile.photo.height = buff.height
+      const gzip = await gzipAndHash(buff.buffer)
+      newFiles[cacheUrl] = gzip
+      hashMap[cacheUrl] = gzip.hash
+      pathMap[gzip.hash] = cacheUrl
+      hashNames[gzip.hash] = userPhoto.key
+    }),
+  ).catch(err => {
+    console.error('Updating users photos error!', err)
     return null
   })
 
@@ -219,9 +272,9 @@ const rebuildCache = async (host = 'all') => {
       })
       const uploadInfo = uploadInfoReq.data
 
-      // uploading only required files is going automatically by google
-      // if file already exists in some previous version - google will catch it automatically, so reupload is not required
-      // and google resturns only new/updated files list to upload
+      // uploading only required files is done automatically by google
+      // if a file already exists in some previous version - google will catch it automatically, so reupload is not required
+      // and google returns only new/updated files list to upload
       const uploads = await Promise.all(
         uploadInfo.uploadRequiredHashes.map(async hash => {
           const gzip = newFiles[pathMap[hash]]
