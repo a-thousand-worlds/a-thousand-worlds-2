@@ -3,6 +3,7 @@ import debounce from 'lodash/debounce'
 import Jimp from 'jimp'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import almostEqual from '@/util/almostEqual'
+import parseNames from '@/util/parseNames'
 import MultiPersonField from '@/components/fields/MultiPerson'
 import SimpleInput from '@/components/fields/SimpleInput'
 import Tag from '@/components/Tag'
@@ -44,10 +45,7 @@ export default {
     /** Returns true if all authors exist in the people directory already. */
     authorsExist() {
       if (!this.sub) return null
-      const authors = (this.sub.authors || '')
-        .split(/[,;&]| and /g)
-        .map(x => x && x.trim())
-        .filter(x => x)
+      const authors = parseNames(this.sub.authors)
       return authors.every(name =>
         this.$store.getters['people/findBy'](person => almostEqual(name, person.name)),
       )
@@ -55,10 +53,7 @@ export default {
     /** Returns true if all authors exist in the people directory already. */
     illustratorsExist() {
       if (!this.sub) return null
-      const illustrators = (this.sub.illustrators || '')
-        .split(/[,;&]| and /g)
-        .map(x => x && x.trim())
-        .filter(x => x)
+      const illustrators = parseNames(this.sub.illustrators)
       return illustrators.every(name =>
         this.$store.getters['people/findBy'](person => almostEqual(name, person.name)),
       )

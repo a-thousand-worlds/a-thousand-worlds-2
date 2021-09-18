@@ -1,14 +1,14 @@
 <script>
+import parseNames from '@/util/parseNames'
+
 export default {
   props: ['modelValue', 'disabled', 'preText', 'searchDb', 'role', 'placeholder'],
   emits: ['update:modelValue', 'person-selected', 'person-removed'],
   data() {
     return {
       names: this.modelValue || '',
-      people:
-        this.modelValue && this.modelValue.length
-          ? this.modelValue.split(/[,;&]| and /g).map(x => x.trim())
-          : [],
+      parseNames,
+      people: this.modelValue && this.modelValue.length ? parseNames(this.modelValue) : [],
       searches: [],
       mode: 'view',
     }
@@ -67,7 +67,7 @@ export default {
       if (this.searches.length) {
         return
       }
-      this.people = this.names.split(/[,;&]| and /g).map(x => x.trim())
+      this.people = parseNames(this.names)
       this.$emit('update:modelValue', this.people.join(', '))
       this.mode = 'view'
     },

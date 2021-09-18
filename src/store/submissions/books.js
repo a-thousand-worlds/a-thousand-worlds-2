@@ -7,6 +7,7 @@ import mergeOne from '@/util/mergeOne'
 import renderBook from '@/util/renderEmailBook'
 import sendEmail from '@/util/sendEmail'
 import uid from '@/util/chronouid'
+import parseNames from '@/util/parseNames'
 
 const module = mergeOne(managed('submits/books'), {
   getters: {
@@ -124,13 +125,8 @@ const module = mergeOne(managed('submits/books'), {
     /** Approves a single book submission. */
     approveBook: async (context, sub) => {
       // collect creators and create not existing people
-      const authors = sub.authors
-        .split(/[,;&]| and /g)
-        .map(x => x.trim())
-        .filter(x => x)
-      const illustrators = sub.illustrators
-        .split(/[,;&]| and /g)
-        .map(x => x.trim())
+      const authors = parseNames(sub.authors)
+      const illustrators = parseNames(sub.illustrators)
         // filter out "same" illustrators so the creator is only added once
         .filter(
           illustrator => illustrator && !isSame(illustrator) && !authors.includes(illustrator),
