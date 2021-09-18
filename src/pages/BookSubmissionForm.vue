@@ -1,11 +1,12 @@
 <script>
+import uniq from 'lodash/uniq'
 import throttle from 'lodash/throttle'
 import debounce from 'lodash/debounce'
 import ISBN from 'isbn3'
 import metadataByISBN from '@/util/metadataByISBN'
 import findBookByKeyword from '@/util/findBookByKeyword'
 import isValidISBN from '@/util/isValidISBN'
-import isSame from '@/util/isSame'
+import parseNames from '@/util/parseNames'
 import uid from '@/util/chronouid'
 import validator from '@/mixins/validator'
 
@@ -215,7 +216,10 @@ export default {
       }
 
       this.loadingBook[si] = true
-      const search = `${title} by ${authors} ${!isSame(illustrators) ? illustrators : ''}`
+      const creators = uniq([...parseNames(authors), ...parseNames(illustrators)]).filter(
+        s => !/^same$/i.test(s),
+      )
+      const search = `${title} by ${creators.join(' ')}`
       const nonce = ++this.findBookByKeywordNonce
       const result = await findBookByKeyword(search).catch(e => {
         console.error(e)
