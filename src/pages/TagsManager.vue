@@ -53,7 +53,7 @@ export default {
   </div>
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 @import 'bulma/sass/utilities/_all.sass';
 @import 'bulma/sass/elements/table.sass';
 @import 'bulma/sass/form/shared.sass';
