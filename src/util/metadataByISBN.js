@@ -14,30 +14,27 @@ function _isbn(code, provider) {
   })
 }
 
-/** Loads book metadata, excluting cover image. */
+/** Loads book metadata, excluding cover image. */
 const metadataByISBN = async isbn => {
-  const req = await axios.get(process.env.VUE_APP_METADATA_BY_ISBN_URL + '?isbn=' + isbn)
-  const data = req.data || {}
-  // it's so happens, that sometime google data is not accessible
+  // sometimes data is not accessible
   // from backend, so trying to reload it on frontend
-  if (data && !data.google) {
-    data.google = await _isbn(isbn, 'google')
-  }
-  const src = data.google || data.openlib || {}
+  const req = await axios.get(process.env.VUE_APP_METADATA_BY_ISBN_URL + '?isbn=' + isbn)
+  const book = req.data || (await _isbn(isbn, 'google'))
+
   // published date can be different. sometimes it's only 'YYYY',
   // sometimes 'YYYY-MM' sometimes other formats - dayjs manages this
-  const d = dayjs(src.publishedDate)
-  const ret = {
-    authors: src.authors || [],
-    goodreads: data.goodreads || '',
-    illustrators: src.illustrators || [],
-    isbn: data.isbn,
-    publisher: src.publisher || '',
-    summary: src.description || '',
-    title: src.title || '',
+  const d = dayjs(book.publishedDate)
+
+  return {
+    authors: book.authors || [],
+    goodreads: book.goodreads || '',
+    illustrators: book.illustrators || [],
+    isbn: book.isbn,
+    publisher: book.publisher || '',
+    summary: book.description || '',
+    title: book.title || '',
     year: d.isValid() ? d.year() : '',
   }
-  return ret
 }
 
 export default metadataByISBN

@@ -1,3 +1,7 @@
+/* Searches for metadata for an ISBN from Google and OpenLibrary.
+ * e.g. https://us-central1-a-thousand-worlds.cloudfunctions.net/metadataByISBN?isbn=9781984881489
+ */
+
 const functions = require('firebase-functions')
 const axios = require('axios').default
 const express = require('express')
@@ -24,28 +28,39 @@ async function getGoodreadsBookIDByISBN(isbn) {
   }
 }
 
+/** Calls the node-isbn function and returns null if there is an error. */
 function _isbn(code, provider) {
   return (
     isbn
       .provider([provider])
       .resolve(code)
       // eslint-disable-next-line node/handle-callback-err
-      .catch(err => null)
+      .catch(err => {
+        console.log(`Error searching ${provider} for ${code}`, err)
+        return null
+      })
   )
 }
 
-async function isbnSearch(code) {
-  const gBook = await _isbn(code, 'google')
-  const oBook = await _isbn(code, 'openlibrary')
-  if (!gBook && !oBook) {
+/** Searches for metadata for an ISBN from Google and, if not found, from OpenLibrary. */
+async function isbnSearch(isbn) {
+  console.log('Searching Google for ' + isbn)
+  let book = await _isbn(isbn, 'google')
+
+  if (!book) {
+    console.log('Google data not found. Searching OpenLibrary for ' + isbn)
+    book = await _isbn(isbn, 'openlibrary')
+  }
+
+  if (!book) {
+    console.log('OpenLibrary data not found')
     return null
   }
-  const book = {
-    isbn: code,
-    google: gBook,
-    openlib: oBook,
+
+  return {
+    ...book,
+    isbn,
   }
-  return book
 }
 
 module.exports = () => {
@@ -57,16 +72,15 @@ module.exports = () => {
       res.send(JSON.stringify(null))
       return
     }
-    console.log(`searching [${req.query.isbn}]`)
     const book = await isbnSearch(req.query.isbn)
     if (!book) {
-      console.log(`[${req.query.isbn}] not found`)
       res.json(null)
       return
     }
+
+    console.log('Searching Goodreads')
     book.goodreads = await getGoodreadsBookIDByISBN(req.query.isbn)
-    const ttl = book.google ? book.google.title : book.openlib.title
-    console.log(`[${req.query.isbn}] found - ${ttl}`, JSON.stringify(book))
+    console.log(`[${req.query.isbn}] found - ${book.title}`, JSON.stringify(book))
     res.json(book)
   })
 
