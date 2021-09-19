@@ -101,6 +101,9 @@ const module = mergeOne(usersModule, {
       await dispatch('saveProfile', {
         name,
         email,
+        ...(typeof navigator !== 'undefined' && navigator.userAgent
+          ? { userAgent: navigator.userAgent }
+          : null),
         ...(code ? { code } : null),
       })
 
