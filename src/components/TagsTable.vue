@@ -581,6 +581,11 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+@import 'bulma/sass/utilities/_all.sass';
+@import 'bulma/sass/elements/table.sass';
+@import 'bulma/sass/form/shared.sass';
+@import 'bulma/sass/form/checkbox-radio.sass';
+
 table th:last-child {
   text-align: right;
 }
