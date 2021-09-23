@@ -82,11 +82,8 @@ const module = mergeOne(usersModule, {
       const firebasem = await firebaseImport()
       const firebase = firebasem.default
       firebase.auth().signOut()
-      ctx.commit('setUser', null)
+      ctx.dispatch('resetAuth', null, { root: true })
       ctx.commit('ui/setLastVisited', new Date(), { root: true })
-
-      // TODO: global clear mutation
-      // ctx.commit('clear', null, { root: true })
 
       router.push({ name: 'Login' })
     },

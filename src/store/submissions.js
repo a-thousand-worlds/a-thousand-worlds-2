@@ -10,7 +10,12 @@ const module = {
     people: peopleSubmissions,
   },
   actions: {
-    async subscribe({ dispatch, commit }) {
+    async reset({ dispatch }) {
+      dispatch('books/reset')
+      dispatch('bundles/reset')
+      dispatch('people/reset')
+    },
+    async subscribe({ dispatch }) {
       dispatch('books/subscribe')
       dispatch('bundles/subscribe')
       dispatch('people/subscribe')

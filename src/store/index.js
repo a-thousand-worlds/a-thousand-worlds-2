@@ -36,6 +36,14 @@ const store = createStore({
     theme: (hour % 4) + 1,
   },
   actions: {
+    /** Clears data that only admin are authorized to see. */
+    resetAuth(ctx) {
+      // these should match the nested subscriptions in user/subscribe/onAuthStateChanged/profile/value
+      // reset admin data
+      ctx.dispatch('submissions/reset')
+      ctx.dispatch('users/reset')
+    },
+
     // loads all collections from the cache
     loadCache({ state, dispatch }) {
       if (window.dbcache) {
