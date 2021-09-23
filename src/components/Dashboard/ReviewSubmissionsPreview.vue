@@ -9,18 +9,24 @@ export default {
   },
   computed: {
     bookSubmissions() {
-      return this.getPending(this.$store.state.submissions.books?.data)
+      return this.getPending(this.$store.state.submissions.books)
     },
     bundleSubmissions() {
-      return this.getPending(this.$store.state.submissions.bundles?.data)
+      return this.getPending(this.$store.state.submissions.bundles)
     },
     peopleSubmissions() {
-      return this.getPending(this.$store.state.submissions.people?.data)
+      return this.getPending(this.$store.state.submissions.people)
     },
   },
   methods: {
-    getPending(data) {
-      return Object.values(data || {}).filter(sub => sub?.status === 'pending')
+    /** Gets the pending submissions, or returns null if they are not all loaded. */
+    getPending(submissionsState) {
+      // state.loaded is set to true as soon as one submission is loaded
+      // loadOne may be called before load here
+      // to avoid flashing "0" pending submissions, wait until all are loaded
+      return submissionsState.loadedAll
+        ? Object.values(submissionsState.data || {}).filter(sub => sub?.status === 'pending')
+        : null
     },
   },
 }
@@ -31,8 +37,8 @@ export default {
     <div class="column">
       <router-link :to="{ name: 'ReviewSubmissions', params: { type: 'books' } }">
         <Square>
-          <h3 :style="{ opacity: bookSubmissions.length === 0 ? 0.4 : null }">
-            Books ({{ bookSubmissions.length }})
+          <h3 :style="{ opacity: bookSubmissions?.length > 0 ? null : 0.4 }">
+            Books ({{ bookSubmissions ? bookSubmissions.length : '...' }})
           </h3>
         </Square>
       </router-link>
@@ -40,8 +46,8 @@ export default {
     <div class="column">
       <router-link :to="{ name: 'ReviewSubmissions', params: { type: 'people' } }">
         <Square style="border-radius: 999px">
-          <h3 :style="{ opacity: peopleSubmissions.length === 0 ? 0.4 : null }">
-            People ({{ Object.keys(peopleSubmissions).length }})
+          <h3 :style="{ opacity: peopleSubmissions?.length > 0 ? null : 0.4 }">
+            People ({{ peopleSubmissions ? peopleSubmissions.length : '...' }})
           </h3>
         </Square>
       </router-link>
@@ -53,8 +59,8 @@ export default {
             class="fill-primary"
             style="position: absolute; opacity: 0.1; width: 90%; height: 100%"
           />
-          <h3 :style="{ opacity: bundleSubmissions.length === 0 ? 0.4 : null }">
-            Bundles ({{ bundleSubmissions.length }})
+          <h3 :style="{ opacity: bundleSubmissions?.length > 0 ? null : 0.4 }">
+            Bundles ({{ bundleSubmissions ? bundleSubmissions.length : '...' }})
           </h3>
         </Square>
       </router-link>

@@ -20,7 +20,10 @@ const collectionModule = name => {
   /** Returns the initial state from the cache. */
   const initialState = () => ({
     data: window.dbcache && window.dbcache[name] ? window.dbcache[name] : {},
+    // tracks when at least one item has been loaded
     loaded: false,
+    // tracks when all items have been loaded
+    loadedAll: false,
     name,
   })
 
@@ -38,6 +41,7 @@ const collectionModule = name => {
       set(state, data) {
         state.data = data
         state.loaded = true
+        state.loadedAll = true
       },
       setOne(state, { path, value }) {
         set(state.data, path, value)
