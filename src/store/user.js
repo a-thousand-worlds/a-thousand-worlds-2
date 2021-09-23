@@ -258,6 +258,7 @@ const module = mergeOne(usersModule, {
               setTimeout(() => {
                 if (!ctx.rootState.users?.loaded && can(ctx.rootState, 'editContent')) {
                   ctx.dispatch('users/subscribe', {}, { root: true })
+                  ctx.dispatch('submissions/subscribe', {}, { root: true })
                 }
               })
             })
