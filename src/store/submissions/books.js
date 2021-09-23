@@ -87,6 +87,61 @@ const module = mergeOne(managed('submits/books'), {
       if (iam(context.rootState, 'owner')) {
         await context.dispatch('approve', submissionsSaved)
       }
+      // notify owner by email
+      else {
+        try {
+          // we need any submission to get submitter information
+          const submission = submissionsSaved[0]
+          const profile =
+            context.rootState.users.data[submission.createdBy]?.profile ||
+            context.rootState.user.user.profile
+          if (!profile) {
+            const message = `Could not find user ${submission.createdBy}`
+            console.error(message, submissionsSaved)
+            return
+          }
+
+          const emailTemplatePath = `email/submissions/pending/book`
+          const emailTemplate = context.rootGetters['content/get'](emailTemplatePath)
+
+          if (!emailTemplate || !emailTemplate.subject || !emailTemplate.body) {
+            const message = `No email template at content/${emailTemplatePath}`
+            console.error(message, submissionsSaved)
+            return
+          }
+
+          const fullName = profile.name || 'friend'
+          const firstName = fullName.includes(' ')
+            ? fullName.slice(0, fullName.indexOf(' '))
+            : fullName
+          const lastName = fullName.includes(' ') ? fullName.slice(fullName.indexOf(' ') + 1) : ''
+          const items = submissions.length ? submissionsSaved.map(renderBook).join('\n') : ''
+
+          await sendEmail({
+            to: process.env.VUE_APP_ADMIN_EMAIL,
+            subject: emailTemplate.subject,
+            data: {
+              FIRST_NAME: firstName,
+              LAST_NAME: lastName,
+              FULL_NAME: fullName,
+              NEW_BOOKS: items,
+            },
+            body: `<html>
+              <head>
+                <style>
+                  p { margin: 0; }
+                </style>
+              </head>
+              <body>
+                ${emailTemplate.body}
+              </body>
+            </html>`,
+          })
+        } catch (e) {
+          console.error('Email failed to send')
+          console.error(e)
+        }
+      }
     },
 
     /** Reject submission */
@@ -297,15 +352,13 @@ const module = mergeOne(managed('submits/books'), {
       }
 
       const approved = group.filter(sub => sub.status === 'approved')
-      // let emailTemplate = null
-      const emailTemplate = context.rootGetters['content/get'](
-        `email/submissions/${approved.length ? 'approved' : 'rejected'}/book`,
-      )
+      const emailTemplatePath = `email/submissions/${
+        approved.length ? 'approved' : 'rejected'
+      }/book`
+      const emailTemplate = context.rootGetters['content/get'](emailTemplatePath)
 
       if (!emailTemplate || !emailTemplate.subject || !emailTemplate.body) {
-        const message = `No email template for books submission ${
-          approved.length ? 'approving' : 'rejection'
-        }`
+        const message = `No email template at ${emailTemplatePath}`
         console.error(message, group)
         return
       }
@@ -313,23 +366,21 @@ const module = mergeOne(managed('submits/books'), {
       const fullName = submitter.profile.name || 'friend'
       const firstName = fullName.includes(' ') ? fullName.slice(0, fullName.indexOf(' ')) : fullName
       const lastName = fullName.includes(' ') ? fullName.slice(fullName.indexOf(' ') + 1) : ''
-
       const approvedRecords = approved.length ? approved.map(el => renderBook(el)).join('\n') : ''
 
-      const template = s =>
-        s
-          .replace(/FIRST_NAME/g, firstName)
-          .replace(/LAST_NAME/g, lastName)
-          .replace(/FULL_NAME/g, fullName)
-          .replace(/APPROVED_RECORDS/g, approvedRecords)
-
-      // send email
+      // send to submitter
       // if it fails, catch the error since the approval still succeeded
       // sendEmail will log an error
       try {
         await sendEmail({
           to: submitter.profile.email,
-          subject: template(emailTemplate.subject),
+          subject: emailTemplate.subject,
+          data: {
+            FIRST_NAME: firstName,
+            LAST_NAME: lastName,
+            FULL_NAME: fullName,
+            NEW_BOOKS: approvedRecords,
+          },
           body: `<html>
             <head>
               <style>
@@ -337,7 +388,7 @@ const module = mergeOne(managed('submits/books'), {
               </style>
             </head>
             <body>
-              ${template(emailTemplate.body)}
+              ${emailTemplate.body}
             </body>
           </html>`,
         })

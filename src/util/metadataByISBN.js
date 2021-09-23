@@ -21,6 +21,8 @@ const metadataByISBN = async isbn => {
   const req = await axios.get(process.env.VUE_APP_METADATA_BY_ISBN_URL + '?isbn=' + isbn)
   const book = req.data || (await _isbn(isbn, 'google'))
 
+  if (!book) return null
+
   // published date can be different. sometimes it's only 'YYYY',
   // sometimes 'YYYY-MM' sometimes other formats - dayjs manages this
   const d = dayjs(book.publishedDate)

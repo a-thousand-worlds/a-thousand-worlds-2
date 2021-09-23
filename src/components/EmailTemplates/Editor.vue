@@ -20,17 +20,52 @@ export default {
       {
         title: 'Invitation',
         items: this.$allowedInviteeRoles(),
-        path: 'email/invite',
+        to: [
+          {
+            description: item =>
+              `This email is sent to someone who is invited to sign up as ${
+                item === 'advisor' || item === 'owner' ? 'an' : 'a'
+              } ${item}.`,
+            path: 'email/invite',
+          },
+        ],
+      },
+      {
+        title: 'Pending Submission',
+        items: ['book', 'bundle', 'people'],
+        to: [
+          {
+            description: item =>
+              `This email is sent to the site owner when a new ${item} submission is pending.`,
+            path: 'email/submissions/pending',
+          },
+        ],
       },
       {
         title: 'Approved Submission',
         items: ['book', 'bundle', 'people'],
-        path: 'email/submissions/approved',
+        to: [
+          {
+            description: item =>
+              `This email is sent to ${
+                item === 'people' ? 'creators' : 'contributors'
+              } when their ${item} submission is approved.`,
+            path: 'email/submissions/approved',
+          },
+        ],
       },
       {
         title: 'Rejected Submission',
         items: ['book', 'bundle', 'people'],
-        path: 'email/submissions/rejected',
+        to: [
+          {
+            description: item =>
+              `This email is sent to ${
+                item === 'people' ? 'creators' : 'contributors'
+              } when their ${item} submission is rejected.`,
+            path: 'email/submissions/rejected',
+          },
+        ],
       },
     ]
 
@@ -66,9 +101,15 @@ export default {
       const templateVariables = html.match(/\w+_\w+/g)
 
       const isValidTemplateVariable = variable =>
-        ['FIRST_NAME', 'LAST_NAME', 'FULL_NAME', 'SIGNUP_LINK', 'APPROVED_RECORDS'].includes(
-          variable,
-        )
+        [
+          'FIRST_NAME',
+          'LAST_NAME',
+          'FULL_NAME',
+          'SIGNUP_LINK',
+          'NEW_BOOKS',
+          'NEW_BUNDLES',
+          'NEW_PERSON',
+        ].includes(variable)
 
       return (templateVariables || [])
         .map(variable =>
@@ -108,47 +149,56 @@ export default {
       <!-- <h2 class="is-capitalized">{{ active.group }}</h2> -->
       <div class="ml-20">
         <h3 class="is-capitalized mb-10">{{ active.group.title }}: {{ active.item }}</h3>
-        <div class="mb-20">
-          <p
-            class="mb-10"
-            :class="{ 'has-text-danger': hasError('subject') }"
-            style="font-weight: bold"
-          >
-            Subject:
+        <div v-for="recipient in active.group.to" :key="recipient.path">
+          <p v-if="recipient.description" class="mb-20">
+            {{
+              typeof recipient.description === 'string'
+                ? recipient.description
+                : recipient.description(active.item)
+            }}
           </p>
-          <Content
-            ref="subject"
-            :name="`${active.group.path}/${active.item}/subject`"
-            :class="{ 'is-danger': hasError('subject'), 'content-subject': true }"
-            format="oneline"
-            @change="validate"
-          />
-          <div v-if="subjectErrors.length" class="field">
-            <p v-for="(error, i) of subjectErrors" :key="i" class="error my-10">
-              {{ error.message || 'Unknown error' }}
+          <div class="mb-20">
+            <p
+              class="mb-10"
+              :class="{ 'has-text-danger': hasError('subject') }"
+              style="font-weight: bold"
+            >
+              Subject:
             </p>
-          </div>
-        </div>
-        <div class="mb-20">
-          <p
-            class="mb-10"
-            :class="{ 'has-text-danger': hasError('body') }"
-            style="font-weight: bold"
-          >
-            Message:
-          </p>
-          <div :class="{ 'content-container-error': hasError('body') }">
             <Content
-              ref="body"
-              :name="`${active.group.path}/${active.item}/body`"
-              class="content-email-body"
+              ref="subject"
+              :name="`${recipient.path}/${active.item}/subject`"
+              :class="{ 'is-danger': hasError('subject'), 'content-subject': true }"
+              format="oneline"
               @change="validate"
             />
+            <div v-if="subjectErrors.length" class="field">
+              <p v-for="(error, i) of subjectErrors" :key="i" class="error my-10">
+                {{ error.message || 'Unknown error' }}
+              </p>
+            </div>
           </div>
-          <div v-if="bodyErrors.length" class="field">
-            <p v-for="(error, i) of bodyErrors" :key="i" class="error my-10">
-              {{ error.message || 'Unknown error' }}
+          <div class="mb-20">
+            <p
+              class="mb-10"
+              :class="{ 'has-text-danger': hasError('body') }"
+              style="font-weight: bold"
+            >
+              Message:
             </p>
+            <div :class="{ 'content-container-error': hasError('body') }">
+              <Content
+                ref="body"
+                :name="`${recipient.path}/${active.item}/body`"
+                class="content-email-body"
+                @change="validate"
+              />
+            </div>
+            <div v-if="bodyErrors.length" class="field">
+              <p v-for="(error, i) of bodyErrors" :key="i" class="error my-10">
+                {{ error.message || 'Unknown error' }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
