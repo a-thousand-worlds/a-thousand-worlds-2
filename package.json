@@ -8,7 +8,7 @@
     "deploy": "npm run build && firebase deploy --only hosting",
     "deploy:functions": "firebase deploy --only functions",
     "deploy:staging": "npm run build && npm run host:staging",
-    "emulate": "firebase emulators:start --only database,functions",
+    "emulate": "firebase emulators:start --only functions",
     "host:staging": "firebase hosting:channel:deploy staging --expires 30d",
     "lint": "vue-cli-service lint src functions vue.config.js",
     "//preload": "cannot call firebase database:get in child_process due to truncated stdout (https://github.com/sindresorhus/execa/issues/130)",
