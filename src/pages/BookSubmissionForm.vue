@@ -1,5 +1,4 @@
 <script>
-import uniq from 'lodash/uniq'
 import throttle from 'lodash/throttle'
 import debounce from 'lodash/debounce'
 import ISBN from 'isbn3'
@@ -209,22 +208,36 @@ export default {
     },
 
     metadataInputsChangedDebounced: debounce(async function (si) {
-      const { authors, illustrators, title } = this.submissions[si]
+      const sub = this.submissions[si]
+      const { authors, illustrators, title } = sub
+
+      // only search by title and author which should be sufficient for uniqueness
+      // increasing the length of the search query decreases the accuracy on Amazon
+      const search = `${title.trim()} by ${parseNames(authors).join(' ')}`
+
+      // clear book cover search if title, author, or illustrators are missing
       this.setConfirmed(si, null)
-      this.submissions[si].attempts = 0
+      sub.attempts = 0
       if (!title || !authors || !illustrators) {
-        this.submissions[si].isbn = null
-        this.submissions[si].confirmed = null
-        this.submissions[si].thumbnail = ''
+        sub.isbn = null
+        sub.confirmed = null
+        sub.lastSearch = null
+        sub.thumbnail = ''
         this.getBooks()
         return
       }
 
+      // avoid duplicates
+      // make sure illustrators is filled out, since it is not part of the search query
+      if (search === sub.lastSearch) {
+        return
+      }
+
+      // save the search so that we can avoid duplicate searches
+      sub.lastSearch = search
+
       this.loadingBook[si] = true
-      const creators = uniq([...parseNames(authors), ...parseNames(illustrators)]).filter(
-        s => !/^same$/i.test(s),
-      )
-      const search = `${title} by ${creators.join(' ')}`
+
       const nonce = ++this.findBookByKeywordNonce
       const result = await findBookByKeyword(search).catch(e => {
         console.error(e)
@@ -235,16 +248,16 @@ export default {
       // effectively cancels the old call
       if (nonce !== this.findBookByKeywordNonce) return
 
-      this.submissions[si].attempts = 1
+      sub.attempts = 1
       this.loadingBook[si] = false
       const { isbn, thumbnail } = result || {}
-      if (isbn && isbn !== this.submissions[si].isbn) {
-        this.submissions[si].isbn = isbn
-        this.submissions[si].thumbnail = thumbnail
+      if (isbn && isbn !== sub.isbn) {
+        sub.isbn = isbn
+        sub.thumbnail = thumbnail
       } else {
-        this.submissions[si].isbn = null
-        this.submissions[si].confirmed = null
-        this.submissions[si].thumbnail = ''
+        sub.isbn = null
+        sub.confirmed = null
+        sub.thumbnail = ''
         this.setConfirmed(si, false)
       }
 
