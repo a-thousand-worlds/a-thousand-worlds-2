@@ -170,6 +170,8 @@ export default {
         attempts: 0,
         authors: '',
         confirmed: null,
+        // createdAt needs to be set manually so that it gets saved to profile.draftBooks, which is not a managed collection
+        createdAt: new Date().toISOString(),
         illustrators: '',
         isbn: '',
         publisher: '',
