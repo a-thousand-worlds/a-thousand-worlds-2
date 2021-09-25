@@ -39,6 +39,7 @@ export default {
       active: this.getActiveFromUrl(),
       email: profile?.email || '',
       name: profile?.name || '',
+      bipoc: null,
       disableAfterSave: false,
       disableResetPassword: false,
       loading: false,
@@ -360,12 +361,38 @@ export default {
                   />
                 </div>
               </div>
+
+              <!-- BIPOC -->
+              <div
+                v-if="invite?.role === 'contributor' || invite?.role === 'creator'"
+                class="field"
+              >
+                <label class="label">Do you identify as BIPOC?</label>
+                <div>
+                  <label
+                    ><input type="radio" v-model="bipoc" name="bipoc" :value="true" /> Yes</label
+                  >
+                </div>
+                <div>
+                  <label
+                    ><input type="radio" v-model="bipoc" name="bipoc" :value="false" /> No</label
+                  >
+                </div>
+              </div>
             </div>
           </div>
 
+          <!-- BIPOC message -->
+          <h3 v-if="bipoc === false" class="mb-20">
+            Thank you for your interest in joining ATW! We recognize the value of everyone who
+            wishes to contribute. In order to stay true to the mission of ATW, we are only accepting
+            BIPOC contributors at this time.
+          </h3>
+
+          <!-- submit -->
           <div class="field my-4">
             <input
-              :disabled="loading || disableAfterSave"
+              :disabled="loading || disableAfterSave || bipoc === false"
               type="submit"
               class="button is-primary is-rounded is-fullwidth is-uppercase"
               :class="{ 'is-loading': loading }"
