@@ -19,6 +19,8 @@ export default {
       required: true,
       type: String,
     },
+    // if true, prevents "words and pictures by" from being shortened to "by"
+    longlabel: Boolean,
   },
   emits: ['remove', 'updateTitle'],
   data() {
@@ -36,7 +38,13 @@ export default {
     },
     titleIntro() {
       const intro =
-        this.role === 'author' ? 'words ' : this.role === 'illustrator' ? 'pictures ' : ''
+        this.role === 'author'
+          ? 'words '
+          : this.role === 'illustrator'
+          ? 'pictures '
+          : this.longlabel
+          ? 'words and pictures '
+          : ''
       return `${intro}by`
     },
   },

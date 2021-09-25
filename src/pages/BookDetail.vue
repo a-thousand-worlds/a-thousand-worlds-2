@@ -236,10 +236,15 @@ export default {
           <!-- use negative right margin to avoid wrapping creators until margin is used up -->
           <div class="creators divider-bottom">
             <div class="is-flex is-flex-wrap-wrap" style="margin-right: -30px">
+              <!-- if there is more than one creator, and they are not all author-illustrators, do not shorten "words and pictures by" to "by" -->
               <CreatorCard
                 v-for="id in creators"
                 :key="id"
                 :id="id"
+                :longlabel="
+                  creators.length > 1 &&
+                  Object.values(book.creators).some(role => role !== 'author-illustrator')
+                "
                 :role="book.creators[id]"
                 class="mb-20 mr-30"
                 style="min-width: 33%"
