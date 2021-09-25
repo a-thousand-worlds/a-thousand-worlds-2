@@ -312,11 +312,14 @@ export default {
       this.loadingBook[si] = false
       const { isbn, thumbnail } = result || {}
       if (isbn) {
-        sub.isbn = isbn
         sub.thumbnail = thumbnail
         sub.attempts = 2
         this.getBooks()
         this.setConfirmed(si, null)
+
+        // set ISBN after setConfirmed, which clears it it
+        sub.isbnLastFound = isbn
+
         this.updateMetadataDebounced(si)
       } else {
         sub.isbnLastFound = sub.isbn
@@ -664,6 +667,7 @@ export default {
 
         <hr />
 
+        <!-- submit -->
         <div class="field is-grouped">
           <button
             @click.prevent="submitForReview"
@@ -683,6 +687,7 @@ export default {
           </button>
         </div>
 
+        <!-- errors -->
         <div v-if="errors.length" class="field">
           <p v-for="(error, i) of errors" :key="i" class="error has-text-centered is-uppercase">
             {{ error.message || 'Unknown error' }}
