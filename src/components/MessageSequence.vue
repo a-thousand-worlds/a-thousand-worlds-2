@@ -78,6 +78,7 @@ export default {
     // which is needed for slot descendants such as Content to preload their content.
     // Otherwise, there is a delay loading slot Content
     const stepPreloaded = this.isDone ? 0 : this.step
+    const isLastStep = stepPreloaded === this.numSteps - 1
     return h(
       'div',
       {
@@ -90,17 +91,19 @@ export default {
       },
       [
         this.$slots.default()[stepPreloaded]?.children,
-        h(
-          'button',
-          {
-            onClick: e => {
-              e.preventDefault()
-              this.next()
+        h('div', { class: isLastStep ? 'has-text-centered' : 'has-text-right' }, [
+          h(
+            'button',
+            {
+              onClick: e => {
+                e.preventDefault()
+                this.next()
+              },
+              class: 'button is-rounded is-primary',
             },
-            class: 'button is-rounded is-primary',
-          },
-          stepPreloaded < this.numSteps - 1 ? 'Next' : 'Okay',
-        ),
+            isLastStep ? 'Okay' : 'Next',
+          ),
+        ]),
       ],
     )
   },
