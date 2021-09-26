@@ -60,8 +60,14 @@ const module = mergeOne(usersModule, {
     setProfile: (state, profile) => {
       if (state.user) state.user.profile = profile
     },
+    /** Sets the user's roles. Always sets authorized: true. */
     setRoles: (state, roles) => {
-      if (state.user) state.user.roles = roles
+      if (state.user) {
+        state.user.roles = {
+          authorized: true,
+          ...roles,
+        }
+      }
     },
   },
   actions: {
@@ -238,7 +244,6 @@ const module = mergeOne(usersModule, {
                     // set role locally
                     // the user is not authorized to change their role on the server
                     ctx.commit('setRoles', {
-                      authorized: true,
                       [invite.role]: true,
                     })
                   }
@@ -266,7 +271,7 @@ const module = mergeOne(usersModule, {
             // subscribe to roles
             const rolesRef = firebase.database().ref(`users/${u.uid}/roles`)
             rolesRef.on('value', snap => {
-              const roles = defaultProfile(u, snap.val())
+              const roles = snap.val()
               ctx.commit('setRoles', roles)
             })
           } else {
