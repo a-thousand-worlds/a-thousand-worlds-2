@@ -2,6 +2,7 @@
 import validator from '@/mixins/validator'
 import Content from '@/components/Content'
 import PhotoUpload from '@/components/PhotoUpload'
+import RecommendedBy from '@/components/RecommendedBy'
 import engagementOptions from '@/store/constants/engagements'
 
 const newAffiliations = () => ({
@@ -16,6 +17,7 @@ export default {
   components: {
     Content,
     PhotoUpload,
+    RecommendedBy,
   },
   mixins: [
     validator(function () {
@@ -326,99 +328,114 @@ export default {
           </div>
         </div>
 
-        <div v-if="admin || welcome || true">
-          <h3 v-if="!admin" class="mt-50 mb-30">
-            <Content name="contributor-profile/identities">
-              ATW is based on celebrating the voices of diverse identities. We'd love to know how
-              you identify, to help us keep track of our representation and ensure we are being
-              inclusive. This information will not be made public.
-            </Content>
-          </h3>
+        <!-- attribution preview -->
+        <div id="attribution-preview" class="field my-50">
+          <label class="label mb-20"
+            >Here's how your name will appear on each book you recommend:</label
+          >
+          <div
+            class="bg-secondary p-30"
+            style="border-radius: 10px; margin-left: -30px; margin-right: -30px"
+          >
+            <RecommendedBy
+              v-model="$store.state.user.user.uid"
+              :preview="{ affiliations }"
+              class="mt-10"
+            />
+          </div>
+        </div>
 
-          <!-- identities -->
-          <div v-if="!admin" class="field" divider-30>
-            <label class="label">
-              <span
-                :class="{ 'has-text-danger': hasError('identity') }"
-                style="text-transform: uppercase"
-                >Identity<sup v-if="!admin" class="required">*</sup></span
-              >
-              <div style="font-weight: normal">Please select all that apply</div>
-            </label>
+        <h3 v-if="!admin" class="mt-50 mb-30">
+          <Content name="contributor-profile/identities">
+            ATW is based on celebrating the voices of diverse identities. We'd love to know how you
+            identify, to help us keep track of our representation and ensure we are being inclusive.
+            This information will not be made public.
+          </Content>
+        </h3>
 
-            <div class="sublabel tablet-columns-2">
-              <div
-                v-for="tag of tags"
-                :key="tag.id"
-                class="control is-flex"
-                style="column-break-inside: avoid"
-              >
-                <input
-                  v-model="identities[tag.id]"
-                  :id="`tag-${tag.id}`"
-                  type="checkbox"
-                  :false-value="null"
-                  class="checkbox mb-3 mt-1"
-                  @change="revalidate"
-                />
-                <label class="label pl-2 pb-1" :for="`tag-${tag.id}`" style="cursor: pointer">{{
-                  tag.tag
-                }}</label>
-              </div>
+        <!-- identities -->
+        <div v-if="!admin" class="field" divider-30>
+          <label class="label">
+            <span
+              :class="{ 'has-text-danger': hasError('identity') }"
+              style="text-transform: uppercase"
+              >Identity<sup v-if="!admin" class="required">*</sup></span
+            >
+            <div style="font-weight: normal">Please select all that apply</div>
+          </label>
+
+          <div class="sublabel tablet-columns-2">
+            <div
+              v-for="tag of tags"
+              :key="tag.id"
+              class="control is-flex"
+              style="column-break-inside: avoid"
+            >
+              <input
+                v-model="identities[tag.id]"
+                :id="`tag-${tag.id}`"
+                type="checkbox"
+                :false-value="null"
+                class="checkbox mb-3 mt-1"
+                @change="revalidate"
+              />
+              <label class="label pl-2 pb-1" :for="`tag-${tag.id}`" style="cursor: pointer">{{
+                tag.tag
+              }}</label>
+            </div>
+            <div>
+              <input
+                v-model="identities.other"
+                id="tag-other"
+                type="checkbox"
+                :false-value="null"
+                class="checkbox mr-2 mb-3"
+                @change="revalidate"
+              />
+              <label for="tag-other" class="label is-inline">Other</label>
               <div>
                 <input
-                  v-model="identities.other"
-                  id="tag-other"
-                  type="checkbox"
-                  :false-value="null"
-                  class="checkbox mr-2 mb-3"
-                  @change="revalidate"
+                  v-model="otherIdentity"
+                  @input="revalidate"
+                  class="input"
+                  style="max-width: 200px"
+                  type="text"
                 />
-                <label for="tag-other" class="label is-inline">Other</label>
-                <div>
-                  <input
-                    v-model="otherIdentity"
-                    @input="revalidate"
-                    class="input"
-                    style="max-width: 200px"
-                    type="text"
-                  />
-                </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- genders -->
-          <!-- (stored in identities) -->
-          <div v-if="!admin && tagsGender.length > 0" class="field" divider-30>
-            <label class="label">
-              <span
-                :class="{ 'has-text-danger': hasError('gender') }"
-                style="text-transform: uppercase"
-                >Gender<sup v-if="!admin" class="required">*</sup></span
-              >
-              <div style="font-weight: normal">Please select all that apply</div>
-            </label>
+        <!-- gender -->
+        <!-- (stored in identities) -->
+        <div v-if="!admin && tagsGender.length > 0" class="field" divider-30>
+          <label class="label">
+            <span
+              :class="{ 'has-text-danger': hasError('gender') }"
+              style="text-transform: uppercase"
+              >Gender<sup v-if="!admin" class="required">*</sup></span
+            >
+            <div style="font-weight: normal">Please select all that apply</div>
+          </label>
 
-            <div class="sublabel tablet-columns-2">
-              <div
-                v-for="tag of tagsGender"
-                :key="tag.id"
-                class="control is-flex"
-                style="column-break-inside: avoid"
-              >
-                <input
-                  v-model="identities[tag.id]"
-                  :id="`tag-${tag.id}`"
-                  type="checkbox"
-                  :false-value="null"
-                  class="checkbox mb-3 mt-1"
-                  @change="revalidate"
-                />
-                <label class="label pl-2 pb-1" :for="`tag-${tag.id}`" style="cursor: pointer">{{
-                  tag.tag
-                }}</label>
-              </div>
+          <div class="sublabel tablet-columns-2">
+            <div
+              v-for="tag of tagsGender"
+              :key="tag.id"
+              class="control is-flex"
+              style="column-break-inside: avoid"
+            >
+              <input
+                v-model="identities[tag.id]"
+                :id="`tag-${tag.id}`"
+                type="checkbox"
+                :false-value="null"
+                class="checkbox mb-3 mt-1"
+                @change="revalidate"
+              />
+              <label class="label pl-2 pb-1" :for="`tag-${tag.id}`" style="cursor: pointer">{{
+                tag.tag
+              }}</label>
             </div>
           </div>
         </div>

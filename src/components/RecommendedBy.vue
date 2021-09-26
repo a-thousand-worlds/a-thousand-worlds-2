@@ -32,6 +32,10 @@ export default {
 
     labelClass: {},
     labelStyle: {},
+
+    // specify a profile the user profile in the store
+    // useful for previewing profile changes
+    preview: {},
   },
   emits: ['update:modelValue'],
   data() {
@@ -49,10 +53,20 @@ export default {
 
     // populated individually in the created hook since users are not loaded automatically except for admin
     profile() {
+      // return the logged in user if the id matches (contributors)
+      if (this.modelValue === this.$store.state.user.user?.uid) {
+        return {
+          ...this.$store.state.user.user.profile,
+          ...this.preview,
+        }
+      }
+
+      // otherwise lookup in users collection (admin)
       return this.modelValue && this.$store.state.users.loaded
         ? {
             id: this.modelValue,
             ...this.$store.state.users.data[this.modelValue]?.profile,
+            ...this.preview,
           }
         : null
     },
@@ -74,8 +88,9 @@ export default {
       const reviewerEngagements = [
         // selectedEngagementCategories
         ...(this.profile?.affiliations?.selectedEngagementCategories
-          ? Object.keys(this.profile.affiliations.selectedEngagementCategories)
-              .map(id => engagements.find(engagement => engagement.id === id))
+          ? Object.entries(this.profile.affiliations.selectedEngagementCategories)
+              .filter(([id, value]) => value)
+              .map(([id, value]) => engagements.find(engagement => engagement.id === id))
               .filter(x => x)
           : []),
         // otherEngagementCategory
