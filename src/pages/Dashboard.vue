@@ -1,6 +1,5 @@
 <script>
 import Content from '@/components/Content'
-import PublicProfileForm from '@/components/Dashboard/PublicProfileForm'
 import PublicProfilePreview from '@/components/Dashboard/PublicProfilePreview'
 import CreatorProfilePreview from '@/components/Dashboard/CreatorProfilePreview'
 import Impersonate from '@/components/Dashboard/Impersonate'
@@ -14,7 +13,6 @@ import YourBookSubmissions from '@/components/Dashboard/YourBookSubmissions'
 export default {
   components: {
     Content,
-    PublicProfileForm,
     PublicProfilePreview,
     CreatorProfilePreview,
     Impersonate,
@@ -46,8 +44,6 @@ export default {
     },
     hasPendingPublicProfile() {
       // if affiliations are set, we know the user completed the PublicProfileForm
-      // returns true for non-contributors
-
       const affiliations = this.$store.state.user.user?.profile.affiliations
       return (
         this.$can('submitBookOrBundle') &&
@@ -81,7 +77,7 @@ export default {
       <h1 class="title page-title divider-bottom">Your Dashboard</h1>
 
       <!-- your account -->
-      <div v-if="!hasPendingPublicProfile" class="header-options mr-10">
+      <div class="header-options mr-10">
         <router-link :to="{ name: 'Account' }" style="color: black">Your Account</router-link>
       </div>
 
@@ -121,62 +117,59 @@ export default {
         class="section"
         style="padding-top: 75px; padding-bottom: 75px"
       >
+        <!-- Welcome message sequence -->
+        <MessageSequence
+          ref="submissionFormMessage"
+          storageKey="dashboardSubmissionForms"
+          @load="submissionFormMessageCompleted = $event.completed"
+          @completed="submissionFormMessageCompleted = $event"
+        >
+          <template>
+            <h2 class="field">
+              <Content name="instructions/dashboard/welcome/0/title">Welcome!</Content>
+            </h2>
+            <div class="field">
+              <Content name="instructions/dashboard/welcome/0/body">
+                As a leader in the industry and a contributor to ATW you have special access to two
+                Submission Forms: BOOKS and BUNDLES. Both forms are available for you to use as many
+                times as you like and at any time. The world is full of beautiful picture books—we
+                want to hear what has captured your heart! To that end we hope that you spread the
+                love and include picture books that are not in-house and you have not personally
+                worked on.
+              </Content>
+            </div>
+          </template>
+
+          <template>
+            <h2 class="field">
+              <Content name="instructions/dashboard/welcome/1/title">Curatorial Process</Content>
+            </h2>
+            <div class="field">
+              <Content name="instructions/dashboard/welcome/1/body">
+                Our vision is to create a directory that exemplifies beautiful art and innovative
+                storytelling. Our mission is to amplify BIPOC voices and create a space for BIPOC
+                creators and leaders. To that end we are creating a space dedicated to only BIPOC
+                creators. All picture books submitted for consideration need to have both BIPOC
+                illustrator AND BIPOC author. We also have a separate ATW Curatorial team consisting
+                of BIPOC leaders who is tasked with a final curation of all submissions. This means
+                that some of your picture books may not be included in the directory, but know that
+                we always welcome more submissions from you. Thank you.
+              </Content>
+            </div>
+          </template>
+
+          <template>
+            <p class="field">
+              <Content name="instructions/welcome/2/body"
+                >When you're ready, click on the BOOK button below to submit a book!</Content
+              >
+            </p>
+          </template>
+        </MessageSequence>
+
+        <PublicProfilePreview class="mb-30" />
+
         <div>
-          <PublicProfileForm v-if="hasPendingPublicProfile" welcome />
-          <PublicProfilePreview v-else class="mb-30" />
-        </div>
-
-        <div v-if="!hasPendingPublicProfile">
-          <!-- Welcome message sequence -->
-          <MessageSequence
-            ref="submissionFormMessage"
-            storageKey="dashboardSubmissionForms"
-            @load="submissionFormMessageCompleted = $event.completed"
-            @completed="submissionFormMessageCompleted = $event"
-          >
-            <template>
-              <h2 class="field">
-                <Content name="instructions/dashboard/welcome/0/title">Welcome!</Content>
-              </h2>
-              <div class="field">
-                <Content name="instructions/dashboard/welcome/0/body">
-                  As a leader in the industry and a contributor to ATW you have special access to
-                  two Submission Forms: BOOKS and BUNDLES. Both forms are available for you to use
-                  as many times as you like and at any time. The world is full of beautiful picture
-                  books—we want to hear what has captured your heart! To that end we hope that you
-                  spread the love and include picture books that are not in-house and you have not
-                  personally worked on.
-                </Content>
-              </div>
-            </template>
-
-            <template>
-              <h2 class="field">
-                <Content name="instructions/dashboard/welcome/1/title">Curatorial Process</Content>
-              </h2>
-              <div class="field">
-                <Content name="instructions/dashboard/welcome/1/body">
-                  Our vision is to create a directory that exemplifies beautiful art and innovative
-                  storytelling. Our mission is to amplify BIPOC voices and create a space for BIPOC
-                  creators and leaders. To that end we are creating a space dedicated to only BIPOC
-                  creators. All picture books submitted for consideration need to have both BIPOC
-                  illustrator AND BIPOC author. We also have a separate ATW Curatorial team
-                  consisting of BIPOC leaders who is tasked with a final curation of all
-                  submissions. This means that some of your picture books may not be included in the
-                  directory, but know that we always welcome more submissions from you. Thank you.
-                </Content>
-              </div>
-            </template>
-
-            <template>
-              <p class="field">
-                <Content name="instructions/welcome/2/body"
-                  >When you're ready, click on the BOOK button below to submit a book!</Content
-                >
-              </p>
-            </template>
-          </MessageSequence>
-
           <h2>
             {{ $can('submitPerson') ? 'Submission Forms' : 'Suggest a book' }}
             <span
@@ -218,10 +211,7 @@ export default {
       </section>
 
       <!-- Invite -->
-      <section
-        v-if="$can('invite') && !hasPendingPublicProfile && submissionFormMessageCompleted"
-        class="section"
-      >
+      <section v-if="$can('invite') && submissionFormMessageCompleted" class="section">
         <h2>
           Invite Users
           <span
