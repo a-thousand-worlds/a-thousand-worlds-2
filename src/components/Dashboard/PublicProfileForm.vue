@@ -85,6 +85,7 @@ export default {
       disableAfterSave: false,
       engagementOptions,
       identities: profile?.identities ? { ...profile.identities } : {},
+      isInIndustry: null,
       loading: false,
       name: profile?.name || '', // admin only
       otherIdentity: null,
@@ -216,66 +217,34 @@ export default {
               <input v-model="affiliations.website" class="input" type="text" />
             </div>
 
-            <!-- engagement -->
+            <!-- in the industry -->
             <div class="field">
-              <label class="label is-uppercase" :class="{ error: hasError('engagements') }"
-                ><Content name="contributor-profile/engagement" format="label"
-                  >How do you engage with books?</Content
-                ><sup class="required">*</sup></label
-              >
-              <div class="sublabel tablet-columns-2">
-                <div
-                  v-for="engagement of engagementOptions"
-                  :key="engagement.id"
-                  class="control columns-2"
+              <label class="label is-uppercase" :class="{ error: hasError('isInIndustry') }"
+                ><Content name="contributor-profile/organization" format="label"
+                  >Do you work in the picture book industry?</Content
                 >
-                  <input
-                    :id="`engagement-${engagement.id}`"
-                    v-model="affiliations.selectedEngagementCategories[engagement.id]"
-                    :name="engagement.id"
-                    @change="revalidate"
-                    type="checkbox"
-                    :false-value="null"
-                    class="checkbox mr-2 mb-3"
-                  />
-                  <label
-                    class="label is-inline"
-                    style="word-wrap: nobreak"
-                    :for="`engagement-${engagement.id}`"
-                  >
-                    {{ engagement.text }}
-                  </label>
-                </div>
-                <div>
-                  <input
-                    v-model="affiliations.selectedEngagementCategories.other"
-                    id="engagement-other"
-                    type="checkbox"
-                    class="checkbox mr-2 mb-3"
-                    @change="revalitate"
-                  />
-                  <label for="engagement-other" class="label is-inline">Other</label>
-                  <div>
-                    <input
-                      v-model="affiliations.otherEngagementCategory"
-                      @change="revalidate"
-                      class="input"
-                      style="max-width: 200px"
-                      type="text"
-                    />
-                  </div>
-                </div>
+                <sup class="required">*</sup></label
+              >
+              <div>
+                <label style="font-weight: normal"
+                  ><input type="radio" name="in-industry" v-model="isInIndustry" :value="true" />
+                  Yes</label
+                >
+              </div>
+              <div>
+                <label style="font-weight: normal"
+                  ><input type="radio" name="in-industry" v-model="isInIndustry" :value="false" />
+                  No</label
+                >
               </div>
             </div>
           </div>
         </div>
 
-        <!-- organization -->
-        <div class="field">
+        <!-- organization name -->
+        <div v-if="isInIndustry" class="field">
           <label class="label is-uppercase" :class="{ error: hasError('organizationName') }"
-            ><Content name="contributor-profile/organization" format="label"
-              >Are you affiliated with an organization?</Content
-            ></label
+            >Organization name<sup class="required">*</sup></label
           >
           <input
             v-model="affiliations.organization"
@@ -286,11 +255,11 @@ export default {
         </div>
 
         <!-- organization link -->
-        <div class="field">
+        <div v-if="isInIndustry" class="field">
           <label class="label is-uppercase" :class="{ error: hasError('organizationLink') }"
             ><Content name="contributor-profile/organization-link" format="label"
               >Link to organization</Content
-            ></label
+            ><sup class="required">*</sup></label
           >
           <input
             v-model="affiliations.organizationLink"
@@ -300,12 +269,69 @@ export default {
           />
         </div>
 
+        <!-- engagement -->
+        <div class="field">
+          <label class="label is-uppercase" :class="{ error: hasError('engagements') }"
+            ><Content
+              v-if="isInIndustry"
+              name="contributor-profile/engagement/industry"
+              format="label"
+              >What is your role?</Content
+            ><Content v-else name="contributor-profile/engagement/nonindustry" format="label"
+              >How do you engage with books?</Content
+            ><sup class="required">*</sup></label
+          >
+          <div class="sublabel tablet-columns-2">
+            <div
+              v-for="engagement of engagementOptions"
+              :key="engagement.id"
+              class="control columns-2"
+            >
+              <input
+                :id="`engagement-${engagement.id}`"
+                v-model="affiliations.selectedEngagementCategories[engagement.id]"
+                :name="engagement.id"
+                @change="revalidate"
+                type="checkbox"
+                :false-value="null"
+                class="checkbox mr-2 mb-3"
+              />
+              <label
+                class="label is-inline"
+                style="word-wrap: nobreak"
+                :for="`engagement-${engagement.id}`"
+              >
+                {{ engagement.text }}
+              </label>
+            </div>
+            <div>
+              <input
+                v-model="affiliations.selectedEngagementCategories.other"
+                id="engagement-other"
+                type="checkbox"
+                class="checkbox mr-2 mb-3"
+                @change="revalitate"
+              />
+              <label for="engagement-other" class="label is-inline">Other</label>
+              <div>
+                <input
+                  v-model="affiliations.otherEngagementCategory"
+                  @change="revalidate"
+                  class="input"
+                  style="max-width: 200px"
+                  type="text"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div v-if="admin || welcome || true">
           <h3 v-if="!admin" class="mt-50 mb-30">
             <Content name="contributor-profile/identities">
               ATW is based on celebrating the voices of diverse identities. We'd love to know how
               you identify, to help us keep track of our representation and ensure we are being
-              inclusive. This information below will not be made public.
+              inclusive. This information will not be made public.
             </Content>
           </h3>
 
@@ -398,7 +424,7 @@ export default {
         </div>
 
         <!-- save button -->
-        <div class="field my-4">
+        <div class="field my-40">
           <input
             type="submit"
             :disabled="!loading && errors.length > 0"
