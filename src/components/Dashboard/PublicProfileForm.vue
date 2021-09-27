@@ -3,7 +3,7 @@ import validator from '@/mixins/validator'
 import Content from '@/components/Content'
 import PhotoUpload from '@/components/PhotoUpload'
 import RecommendedBy from '@/components/RecommendedBy'
-import engagementOptions from '@/store/constants/engagements'
+import { professionalOptions, nonprofessionalOptions } from '@/store/constants/engagements'
 
 const newAffiliations = () => ({
   organization: '',
@@ -85,7 +85,8 @@ export default {
         ...profile?.affiliations,
       },
       disableAfterSave: false,
-      engagementOptions,
+      professionalOptions,
+      nonprofessionalOptions,
       identities: profile?.identities ? { ...profile.identities } : {},
       isProfessional: !!profile?.affiliations?.organization || null,
       loading: false,
@@ -107,6 +108,12 @@ export default {
     },
   },
   watch: {
+    isProfessional(next, prev) {
+      // when isProfessional changes, clear the old engagements since they are not compatible, i.e. professional and nonprofessional
+      if (next != null && prev != null) {
+        this.affiliations.selectedEngagementCategories = {}
+      }
+    },
     '$store.state.user.user'(next, prev) {
       this.identities = next?.profile?.identities || this.identities
       this.photo = next?.profile?.photo || this.photo || null
@@ -293,7 +300,7 @@ export default {
           >
           <div class="sublabel tablet-columns-2">
             <div
-              v-for="engagement of engagementOptions"
+              v-for="engagement of isProfessional ? professionalOptions : nonprofessionalOptions"
               :key="engagement.id"
               class="control columns-2"
             >
