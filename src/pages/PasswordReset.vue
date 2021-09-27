@@ -1,6 +1,18 @@
 <script>
+import validator from '@/mixins/validator'
+
 export default {
   name: 'PasswordResetPage',
+  mixins: [
+    validator(function () {
+      return [
+        this.email.length === 0 && {
+          name: 'email',
+          message: 'Email is required',
+        },
+      ].filter(x => x)
+    }),
+  ],
   data() {
     return {
       email: '',
@@ -14,16 +26,26 @@ export default {
     },
   },
   methods: {
-    pReset() {
-      if (!this.email || !this.email.length) {
-        return
-      }
-      this.$store
-        .dispatch('user/passwordReset', this.email)
-        .then(() => {})
-        .catch(err => {
-          console.error('passwordReset error', err)
+    /** Shows or clears an error for the given service response. */
+    handleResponse(response) {
+      this.loading = true
+      return response
+        .then(() => {
+          this.loading = false
+          this.clearErrors()
         })
+        .catch(err => {
+          console.error(err)
+          this.loading = false
+          this.addError({
+            message: err.message,
+          })
+        })
+    },
+
+    resetPassword() {
+      if (!this.validate()) return
+      this.handleResponse(this.$store.dispatch('user/passwordReset', this.email))
     },
   },
 }
@@ -31,23 +53,35 @@ export default {
 
 <template>
   <div class="is-flex is-justify-content-center">
-    <form class="is-flex-grow-1" style="max-width: 480px" @submit.prevent="pReset">
+    <form class="is-flex-grow-1" style="max-width: 480px" @submit.prevent="resetPassword">
       <h1 class="title page-title divider-bottom">Password Reset</h1>
 
       <div class="field">
-        <label class="label">EMAIL</label>
+        <label :class="['label', { error: hasError('email') }]">EMAIL</label>
         <div class="control">
-          <input v-model="email" type="email" class="input" />
+          <input
+            v-model="email"
+            type="email"
+            :class="{ 'is-danger': hasError('email') }"
+            class="input"
+          />
         </div>
       </div>
 
       <div class="field">
-        <input type="submit" class="button is-primary w-100" value="RESET" />
+        <input type="submit" class="button is-primary w-100" value="RESET PASSWORD" />
       </div>
 
       <div class="has-text-centered">
         <p><router-link :to="{ name: 'Login' }">LOG IN</router-link></p>
         <p><router-link :to="{ name: 'Signup' }">SIGN UP</router-link></p>
+      </div>
+
+      <!-- error message -->
+      <div v-if="hasErrors()" class="field my-4">
+        <p v-for="(error, i) of getErrors()" :key="i" class="error has-text-centered is-uppercase">
+          {{ error.message || 'Unknown error' }}
+        </p>
       </div>
     </form>
   </div>
