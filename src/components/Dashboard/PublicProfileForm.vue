@@ -87,7 +87,7 @@ export default {
       disableAfterSave: false,
       engagementOptions,
       identities: profile?.identities ? { ...profile.identities } : {},
-      isInIndustry: !!profile?.affiliations?.organization || null,
+      isProfessional: !!profile?.affiliations?.organization || null,
       loading: false,
       name: profile?.name || '', // admin only
       otherIdentity: null,
@@ -219,9 +219,9 @@ export default {
               <input v-model="affiliations.website" class="input" type="text" />
             </div>
 
-            <!-- in the industry -->
+            <!-- professional - works for a publishing house-->
             <div class="field">
-              <label class="label is-uppercase" :class="{ error: hasError('isInIndustry') }"
+              <label class="label is-uppercase" :class="{ error: hasError('isProfessional') }"
                 ><Content name="contributor-profile/organization" format="label"
                   >Do you work for a publishing house?</Content
                 >
@@ -229,13 +229,23 @@ export default {
               >
               <div>
                 <label style="font-weight: normal"
-                  ><input type="radio" name="in-industry" v-model="isInIndustry" :value="true" />
+                  ><input
+                    type="radio"
+                    name="is-professional"
+                    v-model="isProfessional"
+                    :value="true"
+                  />
                   Yes</label
                 >
               </div>
               <div>
                 <label style="font-weight: normal"
-                  ><input type="radio" name="in-industry" v-model="isInIndustry" :value="false" />
+                  ><input
+                    type="radio"
+                    name="is-professional"
+                    v-model="isProfessional"
+                    :value="false"
+                  />
                   No</label
                 >
               </div>
@@ -244,7 +254,7 @@ export default {
         </div>
 
         <!-- organization name -->
-        <div v-if="isInIndustry" class="field">
+        <div v-if="isProfessional" class="field">
           <label class="label is-uppercase" :class="{ error: hasError('organizationName') }"
             >Organization name<sup class="required">*</sup></label
           >
@@ -257,7 +267,7 @@ export default {
         </div>
 
         <!-- organization link -->
-        <div v-if="isInIndustry" class="field">
+        <div v-if="isProfessional" class="field">
           <label class="label is-uppercase" :class="{ error: hasError('organizationLink') }"
             >Link to organization<sup class="required">*</sup></label
           >
@@ -273,11 +283,11 @@ export default {
         <div class="field">
           <label class="label is-uppercase" :class="{ error: hasError('engagements') }"
             ><Content
-              v-if="isInIndustry"
-              name="contributor-profile/engagement/industry"
+              v-if="isProfessional"
+              name="contributor-profile/engagement/professional"
               format="label"
               >What is your title in the organization?</Content
-            ><Content v-else name="contributor-profile/engagement/nonindustry" format="label"
+            ><Content v-else name="contributor-profile/engagement/nonprofessional" format="label"
               >How do you engage with books?</Content
             ><sup class="required">*</sup></label
           >
