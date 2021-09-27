@@ -46,7 +46,7 @@ export default {
         .join(', ')
     },
     submitterwebsite() {
-      if (this.submitterLoading || !this.submitter.affiliations?.organization?.length) return null
+      if (this.submitterLoading || !this.submitter.affiliations?.website?.length) return null
       return this.submitter.affiliations.website
     },
     submitterOrganization() {

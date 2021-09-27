@@ -49,8 +49,6 @@ export default {
         this.$can('submitBookOrBundle') &&
         (!affiliations ||
           (!affiliations.website &&
-            !affiliations.organization &&
-            !affiliations.organizationLink &&
             !(
               Object.values(affiliations.selectedEngagementCategory).length > 0 ||
               affiliations.otherEngagementCategory
