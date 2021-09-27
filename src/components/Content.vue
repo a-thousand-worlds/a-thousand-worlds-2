@@ -102,7 +102,13 @@ export default {
 </script>
 
 <template>
-  <span :class="`content-component format-${format}`">
+  <span
+    :class="{
+      'content-component': true,
+      [`format-${format}`]: true,
+      'can-edit': $can('editContent'),
+    }"
+  >
     <!-- render dummy CEditor in order to trigger async component loading -->
     <CEditor v-if="!editorLoaded && $can('editContent')" v-show="false" />
     <!-- apply className directly to CEditor since if it is rendered as an inline input, styles like font size won't cascade from the parent -->
@@ -121,9 +127,11 @@ export default {
 <!-- unscoped to apply to innerHTML and CKEditor -->
 <style lang="scss">
 .content-component {
-  cursor: context-menu;
-  input:not(:focus) {
+  &.can-edit {
     cursor: context-menu;
+    input:not(:focus) {
+      cursor: context-menu;
+    }
   }
 
   .ck-focused {
