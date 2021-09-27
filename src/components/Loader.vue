@@ -6,7 +6,8 @@
 .loading-spinner {
   width: 200px;
   height: 200px;
-  background-size: cover;
+  background-size: contain;
+  background-repeat: no-repeat;
   display: inline-block;
 }
 .theme1 .loading-spinner {

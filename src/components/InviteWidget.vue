@@ -1,15 +1,19 @@
 <script>
 import parseRecipient from '@/util/parseRecipient'
+import Loader from '@/components/Loader'
 
 export default {
+  components: {
+    Loader,
+  },
   data() {
     const allowedRoles = this.$allowedInviteeRoles()
     return {
-      disableSend: null,
       dropdownActive: false,
       expanded: false,
       emailInput: '',
       error: null,
+      sending: false,
       message: null,
       role: allowedRoles.length === 1 ? allowedRoles[0] : null,
     }
@@ -56,20 +60,18 @@ export default {
 
     /** Shows or clears an error for the given service response. */
     handleResponse(response) {
-      this.loading = true
+      this.sending = true
       return response
         .then(() => {
-          this.loading = false
+          this.sending = false
           this.error = null
-          this.disableSend = false
         })
         .catch(err => {
           console.error(err)
           this.error = {
             message: err.message,
           }
-          this.loading = false
-          this.disableSend = false
+          this.sending = false
         })
     },
 
@@ -259,9 +261,8 @@ export default {
       </div>
 
       <div class="control">
-        <button class="button is-primary" :disabled="disableSend" @click.prevent="send">
-          Invite
-        </button>
+        <button class="button is-primary" :disabled="sending" @click.prevent="send">Invite</button>
+        <Loader v-if="sending" class="ml-10" style="height: 100%" />
       </div>
     </div>
 
