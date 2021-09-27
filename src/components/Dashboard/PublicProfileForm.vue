@@ -344,7 +344,7 @@ export default {
         </div>
 
         <!-- attribution preview -->
-        <div id="attribution-preview" class="field my-50">
+        <div v-if="$store.state.user?.user?.uid" id="attribution-preview" class="field my-50">
           <label class="label mb-20"
             >Here's how your name will appear on each book you recommend:</label
           >
