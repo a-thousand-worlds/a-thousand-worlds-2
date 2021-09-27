@@ -87,7 +87,7 @@ export default {
       disableAfterSave: false,
       engagementOptions,
       identities: profile?.identities ? { ...profile.identities } : {},
-      isInIndustry: null,
+      isInIndustry: !!profile?.affiliations?.organization || null,
       loading: false,
       name: profile?.name || '', // admin only
       otherIdentity: null,
@@ -223,7 +223,7 @@ export default {
             <div class="field">
               <label class="label is-uppercase" :class="{ error: hasError('isInIndustry') }"
                 ><Content name="contributor-profile/organization" format="label"
-                  >Do you work in the picture book industry?</Content
+                  >Do you work for a publishing house?</Content
                 >
                 <sup class="required">*</sup></label
               >
@@ -259,9 +259,7 @@ export default {
         <!-- organization link -->
         <div v-if="isInIndustry" class="field">
           <label class="label is-uppercase" :class="{ error: hasError('organizationLink') }"
-            ><Content name="contributor-profile/organization-link" format="label"
-              >Link to organization</Content
-            ><sup class="required">*</sup></label
+            >Link to organization<sup class="required">*</sup></label
           >
           <input
             v-model="affiliations.organizationLink"
@@ -278,7 +276,7 @@ export default {
               v-if="isInIndustry"
               name="contributor-profile/engagement/industry"
               format="label"
-              >What is your role?</Content
+              >What is your title in the organization?</Content
             ><Content v-else name="contributor-profile/engagement/nonindustry" format="label"
               >How do you engage with books?</Content
             ><sup class="required">*</sup></label
