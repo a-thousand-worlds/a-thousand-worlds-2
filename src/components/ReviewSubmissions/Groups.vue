@@ -1,9 +1,11 @@
 <script>
 import Group from '@/components/ReviewSubmissions/Group'
+import Loader from '@/components/Loader'
 
 export default {
   components: {
     Group,
+    Loader,
   },
   props: {
     status: {
@@ -18,6 +20,9 @@ export default {
     },
   },
   computed: {
+    loaded() {
+      return this.$store.state.submissions[this.type].loadedAll
+    },
     submissions() {
       const submissions = this.$store.getters[`submissions/${this.type}/list`]().filter(
         sub => sub && sub.status === this.status,
@@ -66,7 +71,13 @@ export default {
       </div>
     </div>
 
-    <p v-if="!submissionsGroups.length" style="font-size: 20px">No submissions to review</p>
+    <div v-if="!loaded" class="mt-60 has-text-centered">
+      <Loader />
+    </div>
+
+    <p v-else-if="submissionsGroups.length === 0" style="font-size: 20px">
+      No submissions to review
+    </p>
 
     <div v-else>
       <div v-for="(group, gid) of submissionsGroups" :key="gid" class="sub-group py-20">
