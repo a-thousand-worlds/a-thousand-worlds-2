@@ -42,8 +42,12 @@ export default {
       bipoc: null,
       disableAfterSave: false,
       disableResetPassword: false,
+      // true if the form has been submitted and is waiting for a response
       loading: false,
       password: '',
+      // after a successful login, there is a delay before the user is redirected
+      // use this to provide additional visual feedback (Loader)
+      redirecting: false,
       // only show errors after a submit has been attempted
       submitAttempt: false,
     }
@@ -188,12 +192,19 @@ export default {
     async login() {
       if (!this.validate()) return
 
-      return this.handleResponse(
+      await this.handleResponse(
         this.$store.dispatch('user/login', {
           email: this.email,
           password: this.password,
         }),
       )
+
+      // handle response will set loading to false, but we need to keep loading = true until the user watch kicks in to redirect to the dashboard
+      // this occurs with a fast network and slow CPU
+      this.loading = true
+
+      // use redirecting to render a Loader so there is some indication to the user that something has changed
+      this.redirecting = true
     },
 
     async signup() {
@@ -424,6 +435,10 @@ export default {
               Reset Password
             </button>
           </p>
+
+          <div v-if="redirecting" class="my-50 has-text-centered">
+            <Loader />
+          </div>
         </div>
       </form>
     </div>
