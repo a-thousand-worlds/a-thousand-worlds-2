@@ -154,17 +154,17 @@ const module = mergeOne(managed('submits/books'), {
       await context.dispatch('save', { path: sub.id, value: sub })
       context.commit('setOne', { path: sub.id, value: sub })
 
-      // update user profile
+      // update submitter profile submission
       await context.dispatch(
-        'user/save',
+        'users/save',
         {
-          path: `profile/submissions/${sub.id}`,
+          path: `${sub.createdBy}/profile/submissions/${sub.id}`,
           value: 'rejected',
         },
         { root: true },
       )
 
-      // check submission group to be full reviewved so sending result email is required
+      // check submission group to be full reviewed so sending result email is required
       await context.dispatch('checkSubmissionGroup', sub.group)
     },
 
@@ -222,7 +222,6 @@ const module = mergeOne(managed('submits/books'), {
           )?.id
           if (!cid) {
             cid = uid()
-            console.log('new illustrator', cid, illustrator)
             await context.dispatch(
               'people/save',
               {
@@ -270,7 +269,7 @@ const module = mergeOne(managed('submits/books'), {
         { root: true },
       )
 
-      // update user profile
+      // update submitter profile submission
       await context.dispatch(
         'users/save',
         {
@@ -294,22 +293,6 @@ const module = mergeOne(managed('submits/books'), {
 
       // check submission group to be full reviewved so sending result email is required
       await context.dispatch('checkSubmissionGroup', sub.group)
-    },
-
-    /** Delete submission */
-    delete: async (context, sid) => {
-      // remove submission
-      await context.dispatch('remove', sid)
-
-      // remove from user profile
-      await context.dispatch(
-        'user/save',
-        {
-          path: `profile/submissions/${sid}`,
-          value: null,
-        },
-        { root: true },
-      )
     },
 
     /** Collect all submissions from submission group */
