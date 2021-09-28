@@ -78,7 +78,7 @@ npm run update:dbcache %ENV_FILE%
 ```
 
 1. Prompted authentication (email/password) - are credentials for website (not firebase!)
-1. `%ENV_FILE_PATH% contains firebase configuration and determines Firebase database and storage for building local cache, for example:`npm run update:localcache .env`or`npm run update:localcache .env.local`
+1. `%ENV_FILE_PATH% contains firebase configuration and determines Firebase database and storage for building local cache, for example:`npm run update:dbcache .env`or`npm run update:dbcache .env.local`
 1. Script donwload books covers to `./public/img` folder, and saves database cache to `./public/dbcache.js` - it's better not deploy them to production with `firebase deploy` - it's easy to make mistake if local development database differs from production database, but in case it's happened - just rebuild production cache (clear or set to false `cache/clear` at database and fire `buildCache` firebase function endpoint) to fix it
 1. If locally runned website doesn't displays books covers - rebuilding local cache may be the first point to check
 1. Local cache is not working automatically because firebase emulators doesn't has `pubsub` (cron) functionality, and should be regenerated manually

@@ -70,7 +70,7 @@ const store = createStore({
         }
       } else {
         console.warn(
-          'The cache has not been generated. Run `npm run update:localcache .env.local` to build the cache from Firebase. Once deployed, the cache will be regenerated directly on Firebase hosting via rebuildCache.js if needed.',
+          'The cache has not been generated. Run `npm run update:dbcache .env.local` to build the cache from Firebase. Once deployed, the cache will be regenerated directly on Firebase hosting via rebuildCache.js if needed.',
         )
       }
     },

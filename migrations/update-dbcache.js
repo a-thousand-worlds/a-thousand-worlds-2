@@ -11,7 +11,7 @@ const image64ToBuffer = require('../functions/util/image64ToBuffer')
 const envFile = process.argv[process.argv.length - 1]
 
 if (envFile.endsWith('update-dbcache.js')) {
-  console.info('Usage: npm run update:localcache PATH_TO_ENV_FILE')
+  console.info('Usage: npm run update:dbcache PATH_TO_ENV_FILE')
   process.exit(0)
 }
 
