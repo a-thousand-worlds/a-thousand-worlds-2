@@ -9,6 +9,13 @@ export default {
     BookListView,
     Loader,
   },
+  data() {
+    return {
+      // set to true to turn off the list view override on shared lists
+      // set when the user manually toggles the view mode
+      manualViewMode: false,
+    }
+  },
   computed: {
     books() {
       return this.$store.getters['books/filtered']
@@ -17,13 +24,22 @@ export default {
       return this.$store.getters['books/isFiltered']
     },
     loading() {
-      // return false
       return !this.$store.state.books.loaded || !this.$store.state.tags.books.loaded
     },
     viewMode() {
       // if this is a shared list, show in list view
+      // the RightBar component uses this same condition to override viewMode
+      // we cannot put this logic in store/ui since modules cannot react to $route
       const shared = !!this.$route.query.books
-      return shared ? 'list' : this.$store.state.ui.viewMode
+      return shared && !this.manualViewMode ? 'list' : this.$store.state.ui.viewMode
+    },
+  },
+  watch: {
+    // when the user manually changes the view mode, turn off the list view override for shared lists
+    '$store.state.ui.viewMode'(next, prev) {
+      if (next && prev) {
+        this.manualViewMode = true
+      }
     },
   },
   methods: {

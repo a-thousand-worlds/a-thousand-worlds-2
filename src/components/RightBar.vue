@@ -12,12 +12,22 @@ export default {
   props: ['hideBookmarks'],
   data() {
     return {
+      // set to true to turn off the list view override on shared lists
+      // set when the user manually toggles the view mode
+      manualViewMode: false,
       showViewOptions: true,
     }
   },
   computed: {
     bookmarksCount() {
       return Object.keys(this.$store.state.user.user?.profile.bookmarks || {}).length
+    },
+    viewMode() {
+      // if this is a shared list, show in list view
+      // the BooksView component uses this same condition to override viewMode
+      // we cannot put this logic in store/ui since modules cannot react to $route
+      const shared = !!this.$route.query.books
+      return shared && !this.manualViewMode ? 'list' : this.$store.state.ui.viewMode
     },
   },
   watch: {
@@ -27,7 +37,18 @@ export default {
   },
   methods: {
     toggleViewMode(mode) {
-      this.$store.commit('ui/setViewMode', mode)
+      // if the view mode is overriden due to a list share, then calling toggleViewMode('covers') as-is will have no effect, since $store.state.ui.viewMode technically already is 'covers'. In this case, we have to force it to list and then back to covers so that the BooksView watch triggers.
+      const shared = !!this.$route.query.books
+      if (shared && !this.manualViewMode && mode === 'covers') {
+        this.manualViewMode = true
+        this.$store.commit('ui/setViewMode', 'list')
+        // changing the value back must be delayed, otherwise the BooksView watch will not trigger
+        setTimeout(() => {
+          this.$store.commit('ui/setViewMode', 'covers')
+        })
+      } else {
+        this.$store.commit('ui/setViewMode', mode)
+      }
     },
     toggleBookmarks() {
       if (!this.$iam('authorized')) {
@@ -66,7 +87,7 @@ export default {
     <ul v-if="showViewOptions" class="menu-list">
       <li>
         <a
-          :class="{ active: $store.state.ui.viewMode === 'covers' }"
+          :class="{ active: viewMode === 'covers' }"
           href="#"
           @click.prevent="toggleViewMode('covers')"
         >
@@ -76,7 +97,7 @@ export default {
       </li>
       <li class="my-30">
         <a
-          :class="{ active: $store.state.ui.viewMode === 'list' }"
+          :class="{ active: viewMode === 'list' }"
           href="#"
           @click.prevent="toggleViewMode('list')"
         >
