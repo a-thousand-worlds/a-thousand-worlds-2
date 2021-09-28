@@ -6,6 +6,14 @@ export default {
   components: {
     BookmarkWidget,
   },
+  data() {
+    return {
+      // controls the appearance of a checkmark icon when the link has been copied
+      linkCopied: false,
+      // controls whether the share link and clipboard copy button are visible
+      showShareLink: false,
+    }
+  },
   computed: {
     bookmarks() {
       return Object.keys(this.$store.state.user.user.profile.bookmarks || {}).map(id => ({
@@ -22,8 +30,13 @@ export default {
     new Clipboard('#copy-link') // eslint-disable-line no-new
   },
   methods: {
+    toggleShowShareLink() {
+      this.showShareLink = !this.showShareLink
+      this.linkCopied = false
+    },
     shareAll() {
       this.$store.dispatch('ui/popup', `Shareable link copied to clipboard`)
+      this.linkCopied = true
     },
     unmarkAll() {
       this.$store.dispatch('user/clearBookmarks')
@@ -36,15 +49,33 @@ export default {
   <div class="bookmarks-view">
     <div v-if="bookmarks.length" class="container has-text-right mb-20">
       <a
-        id="copy-link"
-        @click="shareAll"
-        :data-clipboard-text="shareLink"
-        v-tippy="{ content: 'Copy a shareable link to the clipboard' }"
-        class="option-link m-5"
+        @click.prevent="toggleShowShareLink"
+        class="option-link primary-hover m-5"
+        style="user-select: none"
       >
         Share List
         <i class="fa fa-share-square ml-1" />
       </a>
+      <div v-if="showShareLink" class="mt-3 mb-30">
+        <div class="field has-addons">
+          <div class="control is-expanded has-icons-right">
+            <input type="text" class="input is-rounded" :value="shareLink" readonly />
+            <span v-show="linkCopied" class="icon is-right" style="line-height: 2.5; right: 10px">
+              <i class="fas fa-check" />
+            </span>
+          </div>
+          <div class="control">
+            <a
+              class="button is-primary is-rounded"
+              @click.prevent="shareAll"
+              id="copy-link"
+              :data-clipboard-text="shareLink"
+            >
+              <i class="fa fa-clipboard ml-1" />
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
 
     <p v-if="!bookmarks.length">You don't have any bookmarks yet.</p>
