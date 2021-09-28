@@ -20,6 +20,11 @@ export default {
       // return false
       return !this.$store.state.books.loaded || !this.$store.state.tags.books.loaded
     },
+    viewMode() {
+      // if this is a shared list, show in list view
+      const shared = !!this.$route.query.books
+      return shared ? 'list' : this.$store.state.ui.viewMode
+    },
   },
   methods: {
     resetFilter() {
@@ -50,16 +55,16 @@ export default {
       <!-- books -->
       <div
         :class="{
-          masonry: $store.state.ui.viewMode === 'covers',
+          masonry: viewMode === 'covers',
           'with-bookmarks': $store.state.ui.bookmarksOpen,
         }"
       >
         <div
           v-for="book of books"
           :key="book.id"
-          :class="{ 'masonry-item': true, ['masonry-item-' + $store.state.ui.viewMode]: true }"
+          :class="{ 'masonry-item': true, ['masonry-item-' + viewMode]: true }"
         >
-          <BookCoverView v-if="$store.state.ui.viewMode === 'covers'" :book="book" />
+          <BookCoverView v-if="viewMode === 'covers'" :book="book" />
           <BookListView v-else :book="book" />
         </div>
       </div>

@@ -17,6 +17,7 @@ const module = mergeOne(managed('books'), moduleFilterable, shuffleable(), {
     setFiltersFromUrl: context => {
       moduleFilterable.actions.setFiltersFromUrl(context)
 
+      // router.currentRoute._value has not been populated yet when this is called
       const urlParams = new URLSearchParams(window.location.search)
       const isbns = urlParams.get('books')?.split(',') || []
 
