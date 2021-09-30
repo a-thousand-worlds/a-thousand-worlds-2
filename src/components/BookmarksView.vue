@@ -31,7 +31,7 @@ export default {
       return this.bookmarks.map(bookmark => this.$store.state.books.data[bookmark.id]?.isbn)
     },
     shareLink() {
-      return `${window.location.origin}/s/${this.shareCode}`
+      return this.shareCode ? `${window.location.origin}/s/${this.shareCode}` : null
     },
   },
   watch: {
@@ -46,11 +46,15 @@ export default {
   },
   methods: {
     async toggleShowShareLink() {
-      this.showShareLink = !this.showShareLink
-      this.linkCopied = false
+      // close share link input (desktop only)
+      if (this.showShareLink) {
+        this.linkCopied = false
+        this.showShareLink = false
+        return
+      }
 
-      // generate a new share code if it hasn't already been generated, or if it was reset due to changing bookmarks
-      if (this.showShareLink && !this.shareCode) {
+      // when the share link input is shown, generate a new share code if it hasn't already been generated, or if it was reset due to changing bookmarks
+      if ((!this.showShareLink || window.navigator?.share) && !this.shareCode) {
         this.loadingShareCode = true
         try {
           this.shareCode = await this.$store.dispatch('links/create', {
@@ -61,6 +65,19 @@ export default {
           this.$store.dispatch('ui/handleError', e)
         }
         this.loadingShareCode = false
+      }
+
+      // mobile share (https only)
+      if (window.navigator?.share) {
+        window.navigator.share({
+          title: 'Share',
+          text: `Share ${this.bookmarks.length} Books`,
+          url: this.shareLink,
+        })
+      }
+      // desktop
+      else {
+        this.showShareLink = true
       }
     },
     shareAll() {
