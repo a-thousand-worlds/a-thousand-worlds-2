@@ -53,6 +53,15 @@ const module = {
     },
   },
   actions: {
+    /** Returns an error handler that shows the error in an error popup. Also logs the full error object to the console. */
+    handleError(context, e) {
+      console.error(e)
+      context.dispatch('popup', {
+        type: 'error',
+        text: typeof e === 'object' ? e.message : e,
+        autoclose: false,
+      })
+    },
     popup(context, data) {
       const { text, type } = typeof data === 'string' ? { text: data, type: 'info' } : data
       const typeClasses = { error: 'danger' }

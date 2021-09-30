@@ -23,6 +23,9 @@ export default {
     isFiltered() {
       return this.$store.getters['books/isFiltered']
     },
+    isShared() {
+      return this.$store.getters['books/isShared']
+    },
     loading() {
       return !this.$store.state.books.loaded || !this.$store.state.tags.books.loaded
     },
@@ -30,8 +33,7 @@ export default {
       // if this is a shared list, show in list view
       // the RightBar component uses this same condition to override viewMode
       // we cannot put this logic in store/ui since modules cannot react to $route
-      const shared = !!this.$route.query.books
-      return shared && !this.manualViewMode ? 'list' : this.$store.state.ui.viewMode
+      return this.isShared && !this.manualViewMode ? 'list' : this.$store.state.ui.viewMode
     },
   },
   watch: {
@@ -64,12 +66,22 @@ export default {
       </div>
 
       <!-- shared list -->
-      <div v-if="$store.state.books?.idFilters.length > 0" class="mb-30 has-text-centered">
+      <div v-if="isShared" class="mb-30 has-text-centered">
         <h2 class="mb-20">Someone shared a list of books with you!</h2>
+      </div>
+
+      <!-- show loader while share code is loading, otherwise it will show all books -->
+      <div
+        v-if="$store.state.books.loadingShareCode"
+        class="has-text-centered"
+        style="margin-top: 20vh"
+      >
+        <Loader />
       </div>
 
       <!-- books -->
       <div
+        v-else
         :class="{
           masonry: viewMode === 'covers',
           'with-bookmarks': $store.state.ui.bookmarksOpen,

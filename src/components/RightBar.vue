@@ -22,12 +22,14 @@ export default {
     bookmarksCount() {
       return Object.keys(this.$store.state.user.user?.profile.bookmarks || {}).length
     },
+    isShared() {
+      return this.$store.getters['books/isShared']
+    },
     viewMode() {
       // if this is a shared list, show in list view
       // the BooksView component uses this same condition to override viewMode
       // we cannot put this logic in store/ui since modules cannot react to $route
-      const shared = !!this.$route.query.books
-      return shared && !this.manualViewMode ? 'list' : this.$store.state.ui.viewMode
+      return this.isShared && !this.manualViewMode ? 'list' : this.$store.state.ui.viewMode
     },
   },
   watch: {
@@ -38,8 +40,7 @@ export default {
   methods: {
     toggleViewMode(mode) {
       // if the view mode is overriden due to a list share, then calling toggleViewMode('covers') as-is will have no effect, since $store.state.ui.viewMode technically already is 'covers'. In this case, we have to force it to list and then back to covers so that the BooksView watch triggers.
-      const shared = !!this.$route.query.books
-      if (shared && !this.manualViewMode && mode === 'covers') {
+      if (this.isShared && !this.manualViewMode && mode === 'covers') {
         this.manualViewMode = true
         this.$store.commit('ui/setViewMode', 'list')
         // changing the value back must be delayed, otherwise the BooksView watch will not trigger

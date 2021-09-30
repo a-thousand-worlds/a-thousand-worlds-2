@@ -13,6 +13,21 @@ export default {
     BooksView,
     Filter,
   },
+  // update the id filters if a share code is provided
+  // See: https://router.vuejs.org/guide/advanced/navigation-guards.html#in-component-guards
+  // Note: only has access to `this` inside next callback
+  // we can use global store reference though since we're using it already in this module
+  beforeRouteEnter(to, from, next) {
+    const shareCode = to.params.code
+    store.dispatch('books/setFiltersFromShareCode', shareCode)
+    next()
+  },
+  // update the id filters whenever the share code changes
+  beforeRouteUpdate(to, from, next) {
+    const shareCode = to.params.code
+    store.dispatch('books/setFiltersFromShareCode', shareCode)
+    next()
+  },
   beforeRouteLeave(to, from, next) {
     // mark the user's visit once they navigate to any other page
     // used to show the one-time welcome messagein App.vue

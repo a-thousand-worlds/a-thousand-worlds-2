@@ -40,6 +40,9 @@ const module = () => ({
     isFiltered: state => {
       return state.filters?.length > 0 || state.idFilters?.length > 0
     },
+    isFilteredByIds: state => {
+      return state.idFilters?.length > 0
+    },
     filtered:
       state =>
       (items, tagName = 'tags') => {

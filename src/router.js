@@ -4,9 +4,14 @@ import NotFound from '@/pages/NotFound.vue'
 
 const routes = [
   {
-    // Non authorized pages
+    // Public pages
     path: '/',
     name: 'Home',
+    component: () => import(/* webpackChunkName: "guest" */ './pages/Home.vue'),
+  },
+  {
+    path: '/s/:code',
+    name: 'ShareList',
     component: () => import(/* webpackChunkName: "guest" */ './pages/Home.vue'),
   },
   {

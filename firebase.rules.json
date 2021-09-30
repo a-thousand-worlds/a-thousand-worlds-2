@@ -23,6 +23,10 @@
         }
       }
     },
+    "links": {
+      ".read": true,
+      ".write": "auth != null"
+    },
     "logs": {
       ".read": "auth != null && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )",
       ".write": "auth != null && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )"

@@ -1,15 +1,21 @@
 <script>
 import Clipboard from 'clipboard'
 import BookmarkWidget from '@/components/BookmarkWidget'
+import Loader from '@/components/Loader'
 
 export default {
   components: {
     BookmarkWidget,
+    Loader,
   },
   data() {
     return {
       // controls the appearance of a checkmark icon when the link has been copied
       linkCopied: false,
+      // tracks if the new share code is loading
+      loadingShareCode: false,
+      // the shared list code that was generated
+      shareCode: null,
       // controls whether the share link and clipboard copy button are visible
       showShareLink: false,
     }
@@ -21,18 +27,41 @@ export default {
         type: this.$store.state.user.user.profile.bookmarks[id],
       }))
     },
+    isbns() {
+      return this.bookmarks.map(bookmark => this.$store.state.books.data[bookmark.id]?.isbn)
+    },
     shareLink() {
-      const isbns = this.bookmarks.map(bookmark => this.$store.state.books.data[bookmark.id]?.isbn)
-      return `${window.location.origin}?books=${isbns.join(',')}`
+      return `${window.location.origin}/s/${this.shareCode}`
+    },
+  },
+  watch: {
+    bookmarks() {
+      // when bookmarks change, reset the share code and close the share link
+      this.shareCode = null
+      this.showShareLink = false
     },
   },
   mounted() {
     new Clipboard('#copy-link') // eslint-disable-line no-new
   },
   methods: {
-    toggleShowShareLink() {
+    async toggleShowShareLink() {
       this.showShareLink = !this.showShareLink
       this.linkCopied = false
+
+      // generate a new share code if it hasn't already been generated, or if it was reset due to changing bookmarks
+      if (this.showShareLink && !this.shareCode) {
+        this.loadingShareCode = true
+        try {
+          this.shareCode = await this.$store.dispatch('links/create', {
+            type: 'books',
+            data: this.isbns,
+          })
+        } catch (e) {
+          this.$store.dispatch('ui/handleError', e)
+        }
+        this.loadingShareCode = false
+      }
     },
     shareAll() {
       this.$store.dispatch('ui/popup', `Shareable link copied to clipboard`)
@@ -48,6 +77,11 @@ export default {
 <template>
   <div class="bookmarks-view">
     <div v-if="bookmarks.length" class="container has-text-right mb-20">
+      <Loader
+        v-if="loadingShareCode"
+        class="mr-1"
+        style="display: inline-block; width: 1em; height: 1em"
+      />
       <a
         @click.prevent="toggleShowShareLink"
         class="option-link primary-hover m-5"
@@ -56,7 +90,7 @@ export default {
         Share List
         <i class="fa fa-share-square ml-1" />
       </a>
-      <div v-if="showShareLink" class="mt-3 mb-30">
+      <div v-if="showShareLink && !loadingShareCode" class="mt-3 mb-30">
         <div class="field has-addons">
           <div class="control is-expanded has-icons-right">
             <input type="text" class="input is-rounded" :value="shareLink" readonly />

@@ -7,12 +7,48 @@ const firebaseImport = () => import(/* webpackChunkName: "firebase" */ '@/fireba
 
 const moduleFilterable = filterable()
 const module = mergeOne(managed('books'), moduleFilterable, shuffleable(), {
+  data: {
+    loadingShareCode: false,
+  },
+  mutations: {
+    setLoadingShareCode: (state, value) => {
+      state.loadingShareCode = value
+    },
+  },
   getters: {
     // override filtered from filterable module to filter shuffled
     filtered: (state, getters, rootState) =>
       moduleFilterable.getters.filtered(state)(state.shuffled, 'tags'),
+    // set to try when a share code is loading
+    // or if any id filters are set on books
+    isShared: state => {
+      return state.loadingShareCode || moduleFilterable.getters.isFilteredByIds(state)
+    },
   },
   actions: {
+    /** Fetches the ISBNs for a given share code and sets id filters for each shared book. */
+    setFiltersFromShareCode: async (context, code) => {
+      if (!code) {
+        context.commit('setIdFilters', [])
+        return
+      }
+
+      context.commit('setLoadingShareCode', true)
+      try {
+        const share = await context.rootGetters['links/get'](code)
+        const isbns = share?.data
+        if (isbns) {
+          const ids = isbns.map(isbn => context.getters.findBy('isbn', isbn)?.id).filter(x => x)
+          if (ids.length > 0) {
+            context.commit('setIdFilters', ids)
+          }
+        }
+      } catch (e) {
+        context.dispatch('ui/handleError', e, { root: true })
+      }
+      context.commit('setLoadingShareCode', false)
+    },
+
     // override setFiltersFromUrl from filterable module to use isbn instead id
     setFiltersFromUrl: context => {
       moduleFilterable.actions.setFiltersFromUrl(context)
