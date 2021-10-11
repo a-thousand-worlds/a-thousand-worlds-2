@@ -1,9 +1,11 @@
 <script>
+import _ from 'lodash'
 import sortBy from 'lodash/sortBy'
 import reverse from 'lodash/reverse'
 import debounce from 'lodash/debounce'
 import dayjs from 'dayjs'
 import { remove as diacritics } from 'diacritics'
+import { parse } from 'json2csv'
 
 import creatorTitles from '@/store/constants/creatorTitles'
 import AddCreator from '@/components/AddCreator'
@@ -17,6 +19,7 @@ import SortableTableHeading from '@/components/SortableTableHeading'
 import CoverImage from '@/components/CoverImage'
 import SimpleInput from '@/components/fields/SimpleInput'
 import Tag from '@/components/Tag'
+import download from '@/util/download'
 
 /** Generates a sort token that will sort empty strings to the end regardless of sort direction. */
 const sortEmptyToEnd = (s, dir) => `${dir === 'asc' && s === '' ? 1 : 0}-${s}`
@@ -143,6 +146,46 @@ export default {
         .filter(x => x)
     },
 
+    download() {
+      try {
+        // convert books properties to readable data, e.g. tag names instead of ids
+        const booksOutput = this.books.map(book => ({
+          // omit creators since we render authors and illustrators as separate columns
+          ..._.omit(book, 'creators'),
+          authors: this.formatAuthors(book.creators),
+          illustrators: this.formatIllustrators(book.creators),
+          tags: this.formatTags(book),
+        }))
+        const csv = parse(booksOutput, {
+          fields: [
+            'isbn',
+            'title',
+            'authors',
+            'illustrators',
+            'tags',
+            'year',
+            'goodreads',
+            'publisher',
+            'summary',
+            'createdAt',
+            'createdBy',
+            'id',
+            'submissionId',
+            'cover',
+            'thumbnail',
+            'reviewedAt',
+            'reviewedBy',
+            'updatedAt',
+            'updatedBy',
+            'status',
+          ],
+        })
+        download(csv, `ATW books (${this.books.length}) - ${new Date().toISOString()}.csv`)
+      } catch (e) {
+        this.$store.dispatch('ui/handleError', e)
+      }
+    },
+
     formatAuthors(creators) {
       return this.authors(creators)
         .map(author => author?.name)
@@ -160,6 +203,12 @@ export default {
     formatIllustrators(creators) {
       return this.illustrators(creators)
         .map(illustrator => illustrator?.name)
+        .join(', ')
+    },
+
+    formatTags(book) {
+      return this.getTags(book)
+        .map(tag => tag.tag)
         .join(', ')
     },
 
@@ -292,6 +341,16 @@ export default {
           />
           <a @click.prevent="toggleEditMode">
             {{ editMode ? 'DONE' : 'EDIT' }}
+          </a>
+          <a
+            @click.prevent="download"
+            v-tippy="{
+              content: `Download CSV of ${search ? '' : 'all '}${books.length} book${
+                books.length === 1 ? '' : 's'
+              }${search ? ' (filtered)' : ''}`,
+            }"
+          >
+            <i class="fa fa-download ml-5" />
           </a>
         </span>
       </div>
