@@ -89,6 +89,7 @@ const module = mergeOne(usersModule, {
       const firebase = firebasem.default
       firebase.auth().signOut()
       ctx.dispatch('resetAuth', null, { root: true })
+      ctx.commit('impersonate', null)
       ctx.commit('ui/setLastVisited', new Date(), { root: true })
 
       router.push({ name: 'Login' })
