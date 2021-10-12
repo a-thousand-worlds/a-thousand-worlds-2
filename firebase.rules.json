@@ -52,8 +52,8 @@
       ".read": "auth != null && (root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true )",
       ".write": "root.child('users/'+auth.uid+'/roles/owner').val() === true",
       "$uid": {
-        // contributors can be loaded individually (e.g. in the RecommendedBy component)
-        ".read": "root.child('users/'+$uid+'/roles/contributor').val() === true || ( auth != null && ($uid === auth.uid || root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true) )",
+        // contributors and owners can be loaded individually (e.g. in the RecommendedBy component)
+        ".read": "root.child('users/'+$uid+'/roles/owner').val() === true || root.child('users/'+$uid+'/roles/contributor').val() === true || (auth != null && ($uid === auth.uid || root.child('users/'+auth.uid+'/roles/owner').val() === true || root.child('users/'+auth.uid+'/roles/advisor').val() === true) )",
         ".write": "auth != null && $uid === auth.uid",
         "roles": {
           ".read": "auth != null && $uid === auth.uid",
