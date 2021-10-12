@@ -209,7 +209,11 @@ export default {
       </section>
 
       <!-- Invite -->
-      <section v-if="$can('invite') && submissionFormMessageCompleted" class="section">
+      <!-- Users who cannot submit books (creators) do not have submissionFormMessageCompleted -->
+      <section
+        v-if="$can('invite') && (submissionFormMessageCompleted || !$can('submitBookOrBundle'))"
+        class="section"
+      >
         <h2>
           Invite Users
           <span
