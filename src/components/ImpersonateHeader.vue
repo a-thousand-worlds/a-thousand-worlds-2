@@ -23,6 +23,9 @@ export default {
     impersonate(role) {
       this.$store.commit('user/impersonate', role)
     },
+    close() {
+      this.$store.commit('user/impersonate', null)
+    },
   },
 }
 </script>
@@ -53,10 +56,19 @@ export default {
             @click.prevent="impersonate(null)"
             class="dropdown-item is-capitalized is-uppercase"
             style="color: #000; font-weight: bold"
-            >None</a
+            >Close</a
           >
         </template>
       </Dropdown>
+      <span style="position: absolute">
+        <button @click.prevent="close" class="delete ml-5" style="vertical-align: middle" />
+      </span>
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+@import 'bulma/sass/utilities/_all.sass';
+@import 'bulma/sass/components/dropdown.sass';
+@import 'bulma/sass/elements/other.sass'; // delete button
+</style>
