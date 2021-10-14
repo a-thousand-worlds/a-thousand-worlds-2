@@ -77,7 +77,10 @@ export default {
           ? null
           : Object.values(this.$store.state.books.data || {}).find(
               // note that hardcover and softcover have different ISBNs, so duplicates cannot be detected automatically
-              book => ISBN.asIsbn10(book.isbn || '') === ISBN.asIsbn10(isbn || ''),
+              book =>
+                book.isbn === isbn ||
+                (ISBN.asIsbn10(book.isbn || '') &&
+                  ISBN.asIsbn10(book.isbn || '') === ISBN.asIsbn10(isbn || '')),
             ),
       )
     },

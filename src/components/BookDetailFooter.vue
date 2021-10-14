@@ -16,10 +16,12 @@ export default {
   },
   computed: {
     isbn10() {
-      return ISBN.asIsbn10(this.book?.isbn || '')
+      // default to book.isbn if asIsbn10 returns null
+      // contributor may have entered Amazon ASIN instead of ISBN
+      return ISBN.asIsbn10(this.book?.isbn || '') || this.book?.isbn
     },
     isbn13() {
-      return ISBN.asIsbn13(this.book?.isbn || '')
+      return ISBN.asIsbn13(this.book?.isbn || '') || this.book?.isbn
     },
   },
 }
