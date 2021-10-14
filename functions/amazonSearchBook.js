@@ -64,6 +64,8 @@ module.exports = () => {
         )
         if (asin && `${asin}`.length && !$el && isBook) {
           $el = $(this)
+          // data-asin may contain an ASIN instead of an ISBN
+          // rather than look up the ISBN here, where it would slow down the response, we can look it up after it has been submitted
           isbn = asin
         }
       })
