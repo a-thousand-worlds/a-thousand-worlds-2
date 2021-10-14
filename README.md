@@ -37,6 +37,10 @@
    - `firebase functions:config:set goodreads.api_key="YOUR_API_KEY"`
 1. Set administrator email functions config:
    - `firebase functions:config:set project.admin_email="ADMIN_EMAIL"`
+1. Set allowed email recipients (optional):
+   - Allows unauthorized users to send emails to site owners/admin
+   - Defaults to config.project.admin_email
+   - `firebase functions:config:set project.allowed_email_recipients.0="EMAIL"`
 1. Copy firebase config for local emulator:
    - `firebase functions:config:get > functions/.runtimeconfig.json`
 1. Navigate to `FUNCTIONS_URL/buildCache` to build `public/dbcache.js`.

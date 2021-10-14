@@ -37,9 +37,12 @@ module.exports = () => {
         return
       }
 
-      // can send emails to admin without authorization
+      // can send emails to allowed_admin_emails without authorization
       const config = functions.config()
-      if (to === config.project.admin_email) {
+      const allowedRecipients = config.project.allowed_email_recipients || [
+        config.project.admin_email,
+      ]
+      if (allowedRecipients.some(email => email.toLowerCase() === to.toLowerCase())) {
         const info = await sendEmail(to, subject, html)
         if (info.error) {
           console.log(`Sending email to <${to}> error: ${info.error}`)

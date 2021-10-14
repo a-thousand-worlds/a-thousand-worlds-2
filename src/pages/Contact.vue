@@ -78,7 +78,7 @@ export default {
         .catch(err => {
           console.log('sending message error', err)
           this.$store.dispatch('ui/popup', {
-            text: 'Sending Error: ' + JSON.stringify(err),
+            text: err,
             autoclose: false,
           })
         })
