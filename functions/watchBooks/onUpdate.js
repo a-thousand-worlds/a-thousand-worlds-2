@@ -32,11 +32,11 @@ const watchBooks = functions
     if (attempts >= 5) {
       const project = functions.config().project
       // let's send notification email to project admin
-      const mail = await sendEmail(
-        project.admin_email,
-        'Attention! Book cover search failed!',
-        `<p>Searching cover image for book <b>${book.title}</b> (isbn: ${book.isbn}) failed after 5 attempts!</p><p> - Sincerely, project Bot</p>`,
-      )
+      const mail = await sendEmail({
+        to: project.admin_email,
+        subject: 'Book cover search failure notice',
+        body: `<p>Searching cover image for book <b>${book.title}</b> (isbn: ${book.isbn}) failed after 5 attempts.</p>`,
+      })
       console.log(
         `Find cover for <${book.isbn}> failed after 5 times. Notification email send to <${project.admin_email}> with id <${mail.messageId}>`,
       )

@@ -9,7 +9,7 @@ const template = (s, data) =>
   )
 
 /** Sends an email. Supports basic templating, replacing data keys found in the subject and body with provided values. */
-const sendEmail = async ({ to, subject, body, data }) => {
+const sendEmail = async ({ to, subject, replyTo, body, data }) => {
   const url = process.env.VUE_APP_EMAIL_URL
   if (!url) {
     throw new Error('Email service url not configured')
@@ -28,7 +28,7 @@ const sendEmail = async ({ to, subject, body, data }) => {
     token = await firebase.auth().currentUser.getIdToken()
   }
   return axios
-    .get(`${url}?to=${to}&subject=${subjectFilled}&html=${bodyFilled}`, {
+    .get(`${url}?to=${to}&replyTo=${replyTo}&subject=${subjectFilled}&body=${bodyFilled}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

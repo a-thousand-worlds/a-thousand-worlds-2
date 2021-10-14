@@ -30,10 +30,14 @@ module.exports = () => {
   app.get(
     '/',
     handleError(async (req, res) => {
-      const { to, html, subject } = req.query
+      const { to, body, replyTo, subject } = req.query
 
-      if (!to || !html || !subject) {
-        res.status(500).send('Insufficient query parameters. to, subject, and html required.')
+      if (!to || !body || !subject) {
+        res
+          .status(500)
+          .send(
+            'Insufficient query parameters. to, subject, and body are required. replyTo is optional.',
+          )
         return
       }
 
@@ -43,7 +47,7 @@ module.exports = () => {
         config.project.admin_email,
       ]
       if (allowedRecipients.some(email => email.toLowerCase() === to.toLowerCase())) {
-        const info = await sendEmail(to, subject, html)
+        const info = await sendEmail({ to, replyTo, subject, body })
         if (info.error) {
           console.log(`Sending email to <${to}> error: ${info.error}`)
           res.status(500).send(info.error)
@@ -88,7 +92,7 @@ module.exports = () => {
             return
           }
 
-          const info = await sendEmail(to, subject, html)
+          const info = await sendEmail({ to, subject, body })
           if (info.error) {
             console.log(`Sending email to <${to}> error: ${info.error}`)
             res.status(500).send(info.error)

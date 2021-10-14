@@ -1,7 +1,7 @@
 const functions = require('firebase-functions')
 const nodemailer = require('nodemailer')
 
-const sendEmail = async (to, subject, html, attachments = []) => {
+const sendEmail = async ({ to, replyTo, subject, body }) => {
   const mg = functions.config().mailgun
   const transporter = nodemailer.createTransport({
     host: 'smtp.mailgun.org',
@@ -16,12 +16,14 @@ const sendEmail = async (to, subject, html, attachments = []) => {
     error: null,
   }
   try {
-    info = await transporter.sendMail({
+    const args = {
       from: mg.sender,
+      ...(replyTo ? { replyTo } : null),
       to,
       subject,
-      html,
-    })
+      html: body,
+    }
+    info = await transporter.sendMail(args)
   } catch (error) {
     info.error = error
   }

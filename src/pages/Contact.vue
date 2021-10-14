@@ -3,6 +3,7 @@ import { useHead } from '@vueuse/head'
 import store from '@/store'
 import Content from '@/components/Content'
 import HeartIcon from '@/assets/icons/heart.svg'
+import Loader from '@/components/Loader'
 import sendEmail from '@/util/sendEmail'
 
 const variants = {
@@ -21,6 +22,7 @@ export default {
   components: {
     Content,
     HeartIcon,
+    Loader,
   },
   setup() {
     const description = `Contact us! We'd love to hear from you!`
@@ -65,8 +67,9 @@ export default {
       this.$store.commit('ui/setBusy', true)
       sendEmail({
         to: process.env.VUE_APP_ADMIN_EMAIL,
+        replyTo: `${this.name} <${this.email}>`,
         subject: this.subject,
-        body: `<p>Contact form message<p><p>From ${this.name} - ${this.email}<p><br><p>${this.message}`,
+        body: `<i>Message from <a href="mailto:${this.email}">${this.email}</a>. You can reply directly to this email.</i><br><br>${this.message}`,
       })
         .then(() => {
           this.$store.dispatch('ui/popup', { text: 'Message sent!', autoclose: true })
@@ -197,7 +200,7 @@ export default {
           v-model="dropdown"
           @change="setSubject()"
         >
-          <option value="" disabled>Subject</option>
+          <option value="" disabled>Choose a subject</option>
           <option v-for="subj in subjectVariants" :key="subj" class="subject-opt">
             {{ subj }}
           </option>
@@ -225,6 +228,11 @@ export default {
       </div>
 
       <div class="has-text-right">
+        <Loader
+          v-if="$store.state.ui.busy"
+          class="mr-10"
+          style="width: 2em; height: 2em; display: inline-block; margin-top: 1em"
+        />
         <button
           :disabled="$store.state.ui.busy || !isValid"
           type="submit"
