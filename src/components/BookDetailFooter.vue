@@ -39,7 +39,7 @@ export default {
 
         <a
           v-if="amazonAffiliateCode"
-          :href="`https://amzn.com/${isbn10}?tag=${amazonAffiliateCode}`"
+          :href="`https://amzn.com/dp/${isbn10}?tag=${amazonAffiliateCode}`"
           target="_blank"
           ><button class="button is-rounded is-secondary mx-1">
             <i class="fas fa-shopping-cart mr-1" /> AMAZON
