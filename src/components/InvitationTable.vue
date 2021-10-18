@@ -1,4 +1,5 @@
 <script>
+import Clipboard from 'clipboard'
 import dayjs from 'dayjs'
 export default {
   name: 'InvitationTable',
@@ -17,9 +18,23 @@ export default {
       resendDisabled: {},
     }
   },
+  computed: {
+    inviteLink() {
+      return ''
+    },
+  },
+  mounted() {
+    new Clipboard('.copy-link') // eslint-disable-line no-new
+  },
   methods: {
     cancel(invite) {
       this.$emit('cancel', invite)
+    },
+    copied(invite) {
+      this.$store.dispatch(
+        'ui/popup',
+        `Invitation link for ${invite.firstName} ${invite.lastName} copied to clipboard`,
+      )
     },
     resend(invite) {
       this.$emit('resend', invite)
@@ -37,6 +52,9 @@ export default {
     },
     format(date) {
       return dayjs(date).format('MMMM DD, YYYY')
+    },
+    signupLink(invite) {
+      return `${window.location.origin}/signup?code=${invite.code}`
     },
   },
 }
@@ -61,6 +79,15 @@ export default {
         <td v-if="fields.includes('email')">{{ invite.email }}</td>
         <td class="is-capitalized">{{ invite.role }}</td>
         <td>
+          <button
+            v-if="fields.includes('resend')"
+            class="copy-link is-flat"
+            :data-clipboard-text="signupLink(invite)"
+            v-tippy="{ content: 'Copy invitation link to clipboard' }"
+            @click="copied(invite)"
+          >
+            <i class="fas fa-link" />
+          </button>
           <button
             v-if="fields.includes('resend')"
             class="is-flat"
