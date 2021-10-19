@@ -683,6 +683,11 @@ export default {
 
         <hr />
 
+        <p v-if="submissions[0]?.title.length > 0 && errors.length === 0" class="mb-20">
+          You have {{ submissions.length }} book{{ submissions.length > 1 ? 's' : '' }} ready to
+          submit.
+        </p>
+
         <!-- submit -->
         <div class="field is-grouped">
           <button
