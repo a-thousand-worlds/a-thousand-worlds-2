@@ -212,6 +212,8 @@ export default {
 
       return this.handleResponse(
         this.$store.dispatch('user/signup', {
+          // if a contributor is invited but is not BIPOC, watchUsers will set their role to a regular user
+          bipoc: this.bipoc,
           code: this.code,
           email: this.email,
           name: this.name,
@@ -378,7 +380,14 @@ export default {
                 v-if="invite?.role === 'contributor' || invite?.role === 'creator'"
                 class="field"
               >
-                <label class="label">Do you identify as BIPOC?</label>
+                <label class="label"
+                  >Do you identify as
+                  <abbr
+                    v-tippy="{ content: 'Black, Indigenous, and People of Color' }"
+                    style="text-decoration: underline dotted"
+                    >BIPOC</abbr
+                  >?</label
+                >
                 <div>
                   <label
                     ><input type="radio" v-model="bipoc" name="bipoc" :value="true" /> Yes</label
@@ -395,19 +404,34 @@ export default {
 
           <!-- BIPOC message -->
           <h3 v-if="bipoc === false" class="mb-20">
-            Thank you for your interest in joining ATW! We recognize the value of everyone who
-            wishes to contribute. In order to stay true to the mission of ATW, we are only accepting
-            BIPOC contributors at this time.
+            Currently we are only accepting
+            <abbr
+              v-tippy="{ content: 'Black, Indigenous, and People of Color' }"
+              style="text-decoration: underline dotted"
+              >BIPOC</abbr
+            >
+            contributors, but thank you for your interest. We would love for you to join as an ally
+            instead!
           </h3>
 
           <!-- submit -->
           <div class="field my-4">
             <input
-              :disabled="loading || disableAfterSave || bipoc === false"
+              :disabled="loading || disableAfterSave"
               type="submit"
               class="button is-primary is-rounded is-fullwidth is-uppercase"
               :class="{ 'is-loading': loading }"
-              :value="isLogin ? 'Log In' : isSignup ? 'Create Account' : isAccount ? 'Save' : null"
+              :value="
+                isLogin
+                  ? 'Log In'
+                  : isAccount
+                  ? 'Save'
+                  : isSignup
+                  ? bipoc === false
+                    ? 'Join as ally'
+                    : 'Create Account'
+                  : null
+              "
             />
           </div>
 

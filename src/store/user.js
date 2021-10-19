@@ -95,7 +95,7 @@ const module = mergeOne(usersModule, {
       router.push({ name: 'Login' })
     },
 
-    async signup({ commit, dispatch, rootState }, { code, email, name, password }) {
+    async signup({ commit, dispatch, rootState }, { bipoc, code, email, name, password }) {
       const firebasem = await firebaseImport()
       const firebase = firebasem.default
       const { user } = await firebase.auth().createUserWithEmailAndPassword(email, password)
@@ -108,7 +108,10 @@ const module = mergeOne(usersModule, {
         ...(typeof navigator !== 'undefined' && navigator.userAgent
           ? { userAgent: navigator.userAgent }
           : null),
-        ...(code ? { code } : null),
+        // do not save code to non-BIPOC contributor profiles, otherwise the dashboard will incorrectly look up the invitation role
+        ...(code ? (bipoc !== false ? { code } : { codeNonBipoc: code }) : null),
+        // store BIPOC status of contributors to enable custom welcome message
+        ...(bipoc != null ? { bipoc } : null),
       })
 
       return user

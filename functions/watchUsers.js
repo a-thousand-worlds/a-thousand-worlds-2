@@ -27,11 +27,13 @@ const watchUsers = functions /*
     console.log(`New User: ${user.email} (${user.uid})`)
 
     const invites = await get('invites')
+    const profile = await get(`users/${user.uid}/profile`)
 
     // get the invite code from the user profile
     // otherwise search for the invite by email
     const inviteCode =
-      (await get(`users/${user.uid}/profile/code`)) ||
+      profile.code ||
+      profile.codeNonBipoc ||
       Object.keys(invites).find(code => invites[code].email === user.email)
 
     const invite = invites[inviteCode]
@@ -47,6 +49,21 @@ const watchUsers = functions /*
       return
     } else if (!invite.role || !invite.role.length) {
       console.error(`No role for invite code: ${inviteCode}`)
+      return
+    }
+    // non-BIPOC contributor
+    else if (invite.role === 'contributor' && !profile.bipoc) {
+      console.log('Non-BIPOC contributor joining as ally')
+
+      // add uid to invite
+      // add signupEmail to invite if it differs from the invite email
+      // mark invite as used
+      await update(`invites/${inviteCode}`, {
+        ...(user.email !== invite.email ? { signupEmail: user.email } : null),
+        bipoc,
+        uid: user.uid,
+        used: new Date().toISOString(),
+      })
       return
     }
 
