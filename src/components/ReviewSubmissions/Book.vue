@@ -1,6 +1,5 @@
 <script>
 import debounce from 'lodash/debounce'
-import Jimp from 'jimp'
 import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
 import almostEqual from '@/util/almostEqual'
 import parseNames from '@/util/parseNames'
@@ -33,13 +32,13 @@ export default {
     },
     coverUrl() {
       return (
-        this.sub.thumbnail ||
         this.sub.cover?.url ||
         (this.sub.cover?.base64
           ? this.sub.cover.base64.startsWith('data:image')
             ? this.sub.cover?.base64
             : `data:image/png;base64,${this.sub.cover.base64}`
-          : '')
+          : '') ||
+        this.sub.thumbnail
       )
     },
     /** Returns true if all authors exist in the people directory already. */
@@ -85,20 +84,21 @@ export default {
     fileChange(e) {
       const file = e.target.files[0]
       const reader = new FileReader()
-      reader.onload = () => {
-        Jimp.read(reader.result, (err, img) => {
-          if (err) {
-            console.error('jimp error', err)
+
+      // save `this` component instance since onload handler needs to reference its inner `this`
+      const _this = this
+      reader.onload = async () => {
+        // load width and height
+        const image = new Image()
+        image.onload = function () {
+          _this.sub.cover = {
+            base64: reader.result,
+            height: this.width,
+            width: this.height,
           }
-          if (img) {
-            this.sub.cover = {
-              base64: reader.result,
-              height: img.bitmap.width,
-              width: img.bitmap.height,
-            }
-            this.save()
-          }
-        })
+          _this.save()
+        }
+        image.src = reader.result
       }
       reader.onerror = err => {
         console.error('FileReader error', err)
