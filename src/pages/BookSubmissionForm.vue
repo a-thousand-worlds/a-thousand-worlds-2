@@ -49,14 +49,14 @@ export default {
       ? draftBooks.map(draft => ({
           ...draft,
           tags: draft.tags || {},
-          // do not restore thumbnail if draft has no isbn
+          // do not restore thumbnail or confirmed if draft has no ISBN
           // this occurs if the user confirms no then refreshes the page before the thumbnail is reset
-          thumbnail: draft.isbn ? draft.thumbnail : '',
-          ...(!draft.isbn &&
-            draft.isbnLastFound && {
-              attempts: 0,
-              confirmed: false,
-            }),
+          ...(!draft.isbn && {
+            // set attempts to 0 and confirmed to false to prompt the user to enter ISBN manually
+            attempts: 0,
+            confirmed: false,
+            thumbnail: '',
+          }),
         }))
       : [this.newSubmissionObject()]
   },
@@ -347,13 +347,34 @@ export default {
     validateSubmission(sub) {
       return [
         !sub.title ? { name: 'title', message: 'Title is required' } : null,
-        !sub.authors ? { name: 'authors', message: 'Author is required' } : null,
-        !sub.illustrators
-          ? { name: 'illustrators', message: 'Illustrator is required (or "same")' }
+        !sub.authors
+          ? {
+              name: 'authors',
+              message:
+                'Author is required' + (this.submissions.length > 1 ? ` for "${sub.title}"` : ''),
+            }
           : null,
-        !sub.isbn ? { name: 'isbn', message: 'ISBN is required' } : null,
+        !sub.illustrators
+          ? {
+              name: 'illustrators',
+              message:
+                'Illustrator is required (or "same")' +
+                (this.submissions.length > 1 ? ` for "${sub.title}"` : ''),
+            }
+          : null,
+        !sub.isbn
+          ? {
+              name: 'isbn',
+              message:
+                'ISBN is required' + (this.submissions.length > 1 ? ` for "${sub.title}"` : ''),
+            }
+          : null,
         !Object.values(sub.tags).some(x => x)
-          ? { name: 'tags', message: 'Tags are required' }
+          ? {
+              name: 'tags',
+              message:
+                'Tags are required' + (this.submissions.length > 1 ? ` for "${sub.title}"` : ''),
+            }
           : null,
       ].filter(x => x)
     },
@@ -595,9 +616,6 @@ export default {
                             class="button is-rounded is-primary"
                           >
                             Search
-                          </button>
-                          <button class="button is-flat" @click="setConfirmed(si, null)">
-                            Cancel
                           </button>
                         </div>
                       </div>
