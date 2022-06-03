@@ -16,29 +16,43 @@ export default {
     // link to admin edit pages instead of public detail pages
     edit: Boolean,
   },
+  emits: ['loaded'],
+  data() {
+    return {
+      // if the main image fails to load, this gets set to true and the fallback image is used
+      imgErrored: false,
+    }
+  },
   computed: {
     coverRatio() {
       if (!this.book) return 1
-      if (this.updatedCover) return (this.book.cover.height / this.book.cover.width) * 100
+      if (this.hasBookCoverUrl) return (this.book.cover.height / this.book.cover.width) * 100
       if (!this.book.coverWidth || !this.book.coverHeight) return 1
       return (this.book.coverHeight / this.book.coverWidth) * 100
     },
     bgImage() {
       if (!this.book) return null
-      if (this.updatedCover) return this.book.cover.cache || this.book.cover.url
+      if (this.hasBookCoverUrl) return this.book.cover.cache || this.book.cover.url
       return this.book.cover || ''
     },
     bgFallback() {
       if (!this.book) return null
-      if (this.updatedCover) return this.book.cover.url
+      if (this.hasBookCoverUrl) return this.book.cover.url
       return this.book.cover || ''
     },
-    updatedCover() {
+    hasBookCoverUrl() {
       return this.book?.cover?.url?.startsWith('http')
     },
   },
   created() {
-    // this.$store.dispatch('loadImage', this.book.cover)
+    const img = new Image()
+    img.onload = () => {
+      this.$emit('loaded', this.book)
+    }
+    img.onerror = () => {
+      this.imgErrored = true
+    }
+    img.src = this.bgImage
   },
 }
 </script>
@@ -55,7 +69,7 @@ export default {
             minWidth: !bgImage ? '100px' : null,
             minHeight: !bgImage ? '180px' : null,
             paddingTop: coverRatio + '%',
-            backgroundImage: `url(${bgImage}), url(${bgFallback})`,
+            backgroundImage: `url(${imgErrored ? bgFallback : bgImage})`,
             backgroundColor: bgImage ? 'transparent' : null,
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',

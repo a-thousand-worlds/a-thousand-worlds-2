@@ -11,24 +11,30 @@ export default {
   },
   props: ['book'],
   emits: ['loaded'],
+  data() {
+    return {
+      // if the main image fails to load, this gets set to true and the fallback image is used
+      imgErrored: false,
+    }
+  },
   computed: {
+    bgImage() {
+      return this.hasBookCoverUrl
+        ? this.book.cover.cache || this.book.cover.url
+        : this.book.cover || ''
+    },
+    bgFallback() {
+      if (this.hasBookCoverUrl) return this.book.cover.url
+      return this.book.cover || ''
+    },
     coverRatio() {
-      if (this.updatedCover) return (this.book.cover?.height / this.book.cover?.width) * 100
+      if (this.hasBookCoverUrl) return (this.book.cover?.height / this.book.cover?.width) * 100
       if (!this.book || !this.book.coverWidth || !this.book.coverHeight) {
         return 1
       }
       return (this.book.coverHeight / this.book.coverWidth) * 100
     },
-    bgImage() {
-      if (this.updatedCover) return this.book.cover.cache || this.book.cover.url
-      // return this.$store.state.images[this.book.cover] || ''
-      return this.book.cover || ''
-    },
-    bgFallback() {
-      if (this.updatedCover) return this.book.cover.url
-      return this.book.cover || ''
-    },
-    updatedCover() {
+    hasBookCoverUrl() {
       return this.book.cover?.url?.startsWith('http')
     },
   },
@@ -36,6 +42,9 @@ export default {
     const img = new Image()
     img.onload = () => {
       this.$emit('loaded', this.book)
+    }
+    img.onerror = () => {
+      this.imgErrored = true
     }
     img.src = this.bgImage
   },
@@ -48,7 +57,7 @@ export default {
       :style="{
         width: '100%',
         paddingTop: coverRatio + '%',
-        backgroundImage: `url(${bgImage}), url(${bgFallback})`,
+        backgroundImage: `url(${imgErrored ? bgFallback : bgImage})`,
         backgroundSize: 'contain',
         backgroundRepeat: 'no-repeat',
         backgroundColor: bgImage ? 'transparent' : null,

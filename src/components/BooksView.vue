@@ -108,7 +108,7 @@ export default {
             :key="book.id"
             style="margin-bottom: 20px; max-width: 400px; margin: 0 auto 20px"
           >
-            <BookListView :book="book" />
+            <BookListView :book="book" @loaded="bookCoverLoaded($event)" />
           </div>
         </div>
       </div>
