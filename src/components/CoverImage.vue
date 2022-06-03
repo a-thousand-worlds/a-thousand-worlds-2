@@ -1,5 +1,5 @@
 <script>
-/** Renders a square cover image from a book or person. */
+/** Renders a square cover image from a book or person. For book covers on the home page, see BookCoverView.vue. */
 export default {
   props: ['item'],
   computed: {

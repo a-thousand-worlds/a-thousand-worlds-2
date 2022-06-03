@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import { createHead } from '@vueuse/head'
 import VueTippy from 'vue-tippy'
+import VueMasonry from 'vue-next-masonry'
 import 'tippy.js/dist/tippy.css'
 import CKEditor from '@ckeditor/ckeditor5-vue'
 import App from '@/App.vue'
@@ -55,7 +56,13 @@ window.addEventListener('unhandledrejection', function (e) {
   store.dispatch('ui/popup', { text: e.reason, type: 'error', autoclose: false })
 })
 
-const app = createApp(App).use(createHead()).use(store).use(router).use(CKEditor).use(VueTippy)
+const app = createApp(App)
+  .use(createHead())
+  .use(store)
+  .use(router)
+  .use(CKEditor)
+  .use(VueTippy)
+  .use(VueMasonry)
 
 // sourced from https://stackoverflow.com/questions/63869859/detect-click-outside-element-on-vue-3
 Object.entries(directives).forEach(([name, directive]) => app.directive(name, directive))

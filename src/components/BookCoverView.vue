@@ -10,6 +10,7 @@ export default {
     BookDetailLink,
   },
   props: ['book'],
+  emits: ['loaded'],
   computed: {
     coverRatio() {
       if (this.updatedCover) return (this.book.cover?.height / this.book.cover?.width) * 100
@@ -30,6 +31,13 @@ export default {
     updatedCover() {
       return this.book.cover?.url?.startsWith('http')
     },
+  },
+  created() {
+    const img = new Image()
+    img.onload = () => {
+      this.$emit('loaded', this.book)
+    }
+    img.src = this.bgImage
   },
 }
 </script>
