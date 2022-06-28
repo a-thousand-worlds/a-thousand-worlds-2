@@ -1,4 +1,8 @@
 // https://github.com/raineorshine/npm-check-updates
 module.exports = {
-  reject: ['sass-loader'],
+  reject: [
+    // v2+ requires pure ESM
+    '@sindresorhus/slugify',
+    'sass-loader',
+  ],
 }
