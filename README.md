@@ -92,7 +92,7 @@ npm run update:dbcache %ENV_FILE%
 
 ```sh
 # start local development
-npm run serve
+npm start
 ```
 
 Server must be restarted if `.env` changes
