@@ -15,7 +15,7 @@ export default {
   emits: ['completed', 'load', 'step'],
 
   data() {
-    const remoteData = this.$store.state.user?.user.profile?.messageSequence?.[this.storageKey]
+    const remoteData = this.$store.state.user?.user?.profile?.messageSequence?.[this.storageKey]
     const data = {
       completed: false,
       step: 0,
