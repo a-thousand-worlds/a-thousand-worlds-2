@@ -50,9 +50,14 @@ export default {
   methods: {
     async approveAll() {
       this.$store.commit('ui/setBusy', true)
-      await this.$store.dispatch(`submissions/${this.type}/approve`, this.submissions)
-      this.$store.commit('ui/setBusy', false)
-      this.$store.dispatch('ui/popup', 'All submissions approved')
+      try {
+        await this.$store.dispatch(`submissions/${this.type}/approve`, this.submissions)
+        this.$store.dispatch('ui/popup', 'All submissions approved')
+      } catch (e) {
+        this.$store.dispatch('ui/popup', `Approve Submissions Error: ${e.message}`)
+      } finally {
+        this.$store.commit('ui/setBusy', false)
+      }
     },
   },
 }

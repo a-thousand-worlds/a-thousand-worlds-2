@@ -128,7 +128,7 @@ export default {
 <style scoped lang="scss">
 @import '@/assets/style/mixins.scss';
 @import '@/assets/style/vars.scss';
-.level-item:hover {
+.level-item:hover:not([disabled]) {
   @include primary(color);
 }
 </style>
