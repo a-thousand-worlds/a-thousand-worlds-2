@@ -31,10 +31,7 @@ export default {
       </div>
 
       <h1
-        class="
-          divider-bottom
-          is-capitalized is-flex is-justify-content-space-between is-align-items-center
-        "
+        class="divider-bottom is-capitalized is-flex is-justify-content-space-between is-align-items-center"
       >
         <span>Review {{ label }} Submissions</span>
         <router-link :to="{ name: 'ReviewRejectedSubmissions', params: { type } }"

@@ -36,13 +36,7 @@ export default {
 
     <section
       v-if="isOpen"
-      class="
-        submenu
-        p-2
-        pt-20
-        has-text-centered
-        is-align-self-stretch is-flex-direction-column is-justify-content-space-between
-      "
+      class="submenu p-2 pt-20 has-text-centered is-align-self-stretch is-flex-direction-column is-justify-content-space-between"
     >
       <MainMenu />
     </section>
