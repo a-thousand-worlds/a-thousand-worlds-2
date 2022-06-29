@@ -129,7 +129,12 @@ export default {
       </div>
     </div>
 
-    <p v-if="!bookmarks.length">You don't have any bookmarks yet.</p>
+    <div v-if="bookmarks.length === 0">
+      <p class="field">You don't have any bookmarks yet!</p>
+      <p class="field">Click the bookmark icon on a book cover to add it to your list.</p>
+      <p class="field">Click the bookmark icon in the upper right corner to close.</p>
+    </div>
+
     <BookmarkWidget
       v-for="(bookmark, i) of bookmarks"
       :key="i"

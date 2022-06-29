@@ -1,4 +1,5 @@
 <script>
+import BookmarkIcon from '../assets/icons/bookmark.svg'
 import Content from '@/components/Content'
 import PublicProfilePreview from '@/components/Dashboard/PublicProfilePreview'
 import CreatorProfilePreview from '@/components/Dashboard/CreatorProfilePreview'
@@ -12,6 +13,7 @@ import YourBookSubmissions from '@/components/Dashboard/YourBookSubmissions'
 
 export default {
   components: {
+    BookmarkIcon,
     Content,
     PublicProfilePreview,
     CreatorProfilePreview,
@@ -25,6 +27,7 @@ export default {
   },
   data() {
     return {
+      shareListCompleted: false,
       inviteMessageCompleted: false,
       submissionFormMessageCompleted: false,
       templates: {
@@ -64,6 +67,11 @@ export default {
       return this.$store.dispatch('submissions/books/loadOne', submissionId)
     })
     Promise.all(preloads)
+  },
+  methods: {
+    openBookmarks() {
+      this.$router.push({ name: 'Home', params: { bookmarksOpen: true } })
+    },
   },
 }
 </script>
@@ -208,17 +216,52 @@ export default {
         </div>
       </section>
 
-      <!-- Invite -->
-      <!-- Users who cannot submit books (creators) do not have submissionFormMessageCompleted -->
-      <section
-        v-if="$can('invite') && (submissionFormMessageCompleted || !$can('submitBookOrBundle'))"
-        class="section"
-      >
+      <!-- Users -->
+      <section v-if="$iam('user')" class="section">
+        <MessageSequence
+          ref="shareListMessage"
+          storageKey="dashboardShareList"
+          @load="shareListCompleted = $event.completed"
+          @completed="shareListCompleted = $event"
+        >
+          <template>
+            <h2 class="field">
+              <Content name="instructions/dashboard/user/title">Create and share list</Content>
+            </h2>
+            <div class="field">
+              Create your own list of books and share them with others! To save a book to your list,
+              click on the bookmark icon on the book cover:
+
+              <div class="is-flex is-justify-content-center m-5">
+                <div
+                  class="has-text-right p-3"
+                  style="
+                    background-color: rgba(255, 255, 255, 0.333);
+                    width: 160px;
+                    max-width: 100%;
+                    border: solid 1px gray;
+                    border-top-width: 0;
+                  "
+                >
+                  <BookmarkIcon />
+                </div>
+              </div>
+
+              To share your list with others, open your saved books and click:
+              <div class="is-flex is-justify-content-center m-5">
+                <b @click.prevent="openBookmarks"
+                  >SHARE LIST <i class="fa fa-share-square ml-1"
+                /></b>
+              </div>
+            </div>
+          </template>
+        </MessageSequence>
+
         <h2>
-          Invite Users
+          Discover books
           <span
-            v-if="inviteMessageCompleted"
-            @click.prevent="$refs.inviteMessage.toggle"
+            v-if="shareListCompleted"
+            @click.prevent="$refs.shareListMessage.toggle"
             v-tippy="{ content: 'Help' }"
             class="has-text-right"
             style="
@@ -232,6 +275,22 @@ export default {
           /></span>
         </h2>
 
+        <p class="field">
+          Browse new releases and classic picture books carefully selected to represent the best
+          BIPOC creators in the industry.
+        </p>
+
+        <router-link class="button is-outlined is-primary" :to="{ name: 'Home' }"
+          >Discover and Share</router-link
+        >
+      </section>
+
+      <!-- Invite -->
+      <!-- Users who cannot submit books (creators) do not have submissionFormMessageCompleted -->
+      <section
+        v-if="$can('invite') && (submissionFormMessageCompleted || !$can('submitBookOrBundle'))"
+        class="section"
+      >
         <MessageSequence
           ref="inviteMessage"
           storageKey="dashboardInvite"
@@ -254,6 +313,24 @@ export default {
             </div>
           </template>
         </MessageSequence>
+
+        <h2>
+          Invite Users
+          <span
+            v-if="inviteMessageCompleted"
+            @click.prevent="$refs.inviteMessage.toggle"
+            v-tippy="{ content: 'Help' }"
+            class="has-text-right"
+            style="
+              margin-left: 10px;
+              font-size: 14px;
+              white-space: nowrap;
+              cursor: pointer;
+              vertical-align: middle;
+            "
+            ><i class="far fa-question-circle"
+          /></span>
+        </h2>
 
         <InviteWidget ref="invite" />
         <ul class="my-20">

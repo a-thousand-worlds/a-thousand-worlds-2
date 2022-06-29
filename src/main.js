@@ -44,7 +44,7 @@ router.beforeEach((to, from, next) => {
 })
 
 router.afterEach((to, from) => {
-  store.commit('ui/setBookmarksOpen', false)
+  store.commit('ui/setBookmarksOpen', to.params.bookmarksOpen ?? false)
 })
 
 // global error handling

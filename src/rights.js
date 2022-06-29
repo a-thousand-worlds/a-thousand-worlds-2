@@ -6,7 +6,7 @@
  */
 
 export const rights = {
-  invite: ['advisor', 'contributor', 'creator'],
+  invite: ['advisor', 'contributor', 'creator', 'user'],
   manageCollections: [],
   manageInvites: ['advisor'],
   editContent: [],
@@ -18,7 +18,7 @@ export const rights = {
 }
 
 export const allowedInvitees = {
-  user: ['contributor', 'creator', 'advisor'],
+  user: ['contributor', 'creator', 'advisor', 'user'],
   contributor: ['advisor'],
   creator: ['advisor'],
   advisor: ['advisor'],
