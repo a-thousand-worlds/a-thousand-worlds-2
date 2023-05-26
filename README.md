@@ -2,7 +2,9 @@
 
 ## Setup
 
-1. Clone this repo
+Requires node v14 (sharp needs to be upgraded for higher node versions)
+
+1. `git clone https://github.com/a-thousand-worlds/a-thousand-worlds-2/`
 1. `npm install`
 1. `cd functions && npm install && cd ..`
 1. `npm install -g firebase-tools`
@@ -33,8 +35,6 @@
 1. Deploy Firebase functions: `firebase deploy --only functions`
 1. Add Request URL from Firebase Functions dashboard to `VUE_APP_SEARCH_SERVICE_URL` in .env.local
    - https://console.firebase.google.com/u/0/project/PROJECT_NAME/functions/list
-1. Add Goodreads API key for firebase function
-   - `firebase functions:config:set goodreads.api_key="YOUR_API_KEY"`
 1. Set administrator email functions config:
    - `firebase functions:config:set project.admin_email="ADMIN_EMAIL"`
 1. Set allowed email recipients (optional):
@@ -47,63 +47,17 @@
    - Get full endpoint URL at Firebase Functions dashboard (same baseUrl as `VUE_APP_SEARCH_SERVICE_URL`)
    - File `dbcache.js` and book covers generated automatically at Firebase hosting—no redeployment required.
 
-### Email
+## Development
 
-1. Create and configure mailgun account
-1. Update DNS sending (TXT) and optionally receiving (MX) records
-1. Generate sending SMTP credentials for domain
-   - Maingun dashboard -> Sending -> Domain settings -> SMTP credentials
-   - For `postmater@DOMAIN` click `Reset password` -> on appeared popup click `Copy` button -> temporary save password for later use
-   - Or generate new SMTP user and use this user later replacing postmaster@DOMAIN
-1. Set firebase function configuration to send emails:
-   - `firebase functions:config:set mailgun.user="postmaster@DOMAIN" mailgun.password="POSTMASTER_PASSWORD" mailgun.sender="sender-email@DOMAIN"` (sender email can be any at your domain, for example: bot@DOMAIN)
-
-### Caching
-
-1. Website uses `dbcache.js` file with cached version of guest-accesible database content for fastest content display. Cache rebuilds daily by Firebase pubsub (cron) at 00:00 New York timezone.
-1. To configure automatic schedule and timezone - update `functions/index.js` file (line 75) and redeploy Firebase functions (`firebase deploy --only functions`)
-1. Website uses boolean `cache/clean` flag to check if cache rebuilding is required. To make manual cache rebuilding confirm flag not exists or set to `false` and fire `buildCache` Firebase function endpoint.
-1. Book covers are also cached from Firebase Storage to Firebase Hosting (because second works faster).
-
-#### Multisites buildCache http entrypoint and cron pubsub function
-
-To use rebuild cache on Firebase Hosting websites manually there is `FUNCTIONS_URL/buildCache` entrypoint with available query param `host`.
-Default value for `host` param is `'all'` but it applies Firebase Website `SITE_ID` value if there are many websites use same Firebase Database and functions.
-
-Default automatic cache updatating function updates all websites. To configure this behavior - update `functions/buildCacheCron.js` (line 5). For separate autoupdates of multiple website - duplicate `functions/buildCacheCron.js`, update accordingly `function/buildCacheCron*.js` files and `functions/index.js`
-
-## Scripts
-
-### Local cache for local run or development
+Start the server and navigate to: http://localhost:8080
 
 ```sh
-# update local cache
-npm run update:dbcache %ENV_FILE%
-```
-
-1. Prompted authentication (email/password) - are credentials for website (not firebase!)
-1. `%ENV_FILE_PATH% contains firebase configuration and determines Firebase database and storage for building local cache, for example:`npm run update:dbcache .env`or`npm run update:dbcache .env.local`
-1. Script donwload books covers to `./public/img` folder, and saves database cache to `./public/dbcache.js` - it's better not deploy them to production with `firebase deploy` - it's easy to make mistake if local development database differs from production database, but in case it's happened - just rebuild production cache (clear or set to false `cache/clear` at database and fire `buildCache` firebase function endpoint) to fix it
-1. If locally runned website doesn't displays books covers - rebuilding local cache may be the first point to check
-1. Local cache is not working automatically because firebase emulators doesn't has `pubsub` (cron) functionality, and should be regenerated manually
-1. Script works independently from `cache/clear` database flag and doesn't affect it
-
-### Compile and hot-reload for development
-
-```sh
-# start local development
 npm start
 ```
 
-Server must be restarted if `.env` changes
+_\*The server must be restarted if `.env` changes_
 
-### Lint and fix files
-
-```sh
-npm run lint
-```
-
-### Run locally
+Run Firebase functions with the local emulator to enable book search API:
 
 ```sh
 # pull remote config down to be used by emulator
@@ -114,13 +68,57 @@ npm run build
 firebase emulators:start
 ```
 
+## Database caching
+
+A static cache of the database is stored at `/public/dbcache.js` for performance.
+
+### Local
+
+To update your local dbcache with the latest books in production:
+
+```sh
+npm run update:dbcache .env.local
+```
+
+- Enter email and password for your ATW account **(not Firebase)**.
+- `%ENV_FILE% contains firebase configuration and determines the Firebase database and storage for building local cache production database. Instead, rebuild the production cache (clear or set to false `cache/clear`at database and fire`buildCache` firebase function endpoint) to fix it
+- Book covers are also cached from Firebase Storage to Firebase Hosting (because Hosting is faster).
+- The script downloads books covers to `/public/img`, and saves the database cache to `/public/dbcache.js`
+  - It is best not to deploy the local cache to production with `firebase deploy`. Instead, use the production instructions below.
+
+### Production
+
+- Cache rebuilds daily by Firebase pubsub (cron) at 00:00 New York timezone.
+  - To configure automatic schedule and timezone, update `functions/index.js` file (line 75) and redeploy Firebase functions (`firebase deploy --only functions`)
+  - The local cache cannot not updated automatically because firebase emulators to not have cron functionality.
+- The website uses `cache/clear` in Firebase to check if cache rebuilding is not required.
+  - To manually rebuild the cache, clear the flag in the Firebase console and hit the `buildCache` Firebase function endpoint.
+  - `update:dbcache` ignores `cache/clear`
+- buildCache http entrypoint and cron pubsub function
+  - To use rebuild cache on Firebase Hosting websites manually there is `FUNCTIONS_URL/buildCache` entrypoint with available query param `host`.
+  - Default value for `host` param is `'all'` but it applies Firebase Website `SITE_ID` value if there are many websites use same Firebase Database and functions.
+  - Default automatic cache updatating function updates all websites. To configure this behavior - update `functions/buildCacheCron.js` (line 5). For separate autoupdatess of multiple websites, duplicate `functions/buildCacheCron.js` and update `function/buildCacheCron*.js` and `functions/index.js`.
+
 ### Deploy
+
+Make sure that local cache files are correct or not deployed.
 
 ```sh
 npm run deploy
 ```
 
-Make sure that local cache files are correct or not deployed
+### Email
+
+The website needs a properly configured and authorized email server to send emails to users on invite, book submission, etc.
+
+1. Create and configure mailgun account
+1. Update DNS sending (TXT) and optionally receiving (MX) records
+1. Generate sending SMTP credentials for domain
+   - Maingun dashboard -> Sending -> Domain settings -> SMTP credentials
+   - For `postmater@DOMAIN` click `Reset password` -> on appeared popup click `Copy` button -> temporary save password for later use
+   - Or generate new SMTP user and use this user later replacing postmaster@DOMAIN
+1. Set firebase function configuration to send emails:
+   - `firebase functions:config:set mailgun.user="postmaster@DOMAIN" mailgun.password="POSTMASTER_PASSWORD" mailgun.sender="sender-email@DOMAIN"` (sender email can be any at your domain, for example: bot@DOMAIN)
 
 ## Customize Vue configuration
 
