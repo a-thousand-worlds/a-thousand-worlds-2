@@ -30,8 +30,8 @@
     "node": ">=16"
   },
   "dependencies": {
-    "@ckeditor/ckeditor5-build-balloon": "^29.0.0",
-    "@ckeditor/ckeditor5-vue": "^2.0.1",
+    "@ckeditor/ckeditor5-build-balloon": "^38.0.1",
+    "@ckeditor/ckeditor5-vue": "^5.1.0",
     "@sindresorhus/slugify": "^1.1.2",
     "@vueuse/head": "^0.6.0",
     "axios": "^0.21.1",
