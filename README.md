@@ -2,8 +2,6 @@
 
 ## Setup
 
-Requires node v14 (sharp needs to be upgraded for higher node versions)
-
 1. `git clone https://github.com/a-thousand-worlds/a-thousand-worlds-2/`
 1. `npm install`
 1. `cd functions && npm install && cd ..`
