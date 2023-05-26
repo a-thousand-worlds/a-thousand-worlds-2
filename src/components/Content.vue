@@ -109,7 +109,7 @@ export default {
       'can-edit': $can('editContent'),
     }"
   >
-    <!-- render dummy CEditor in order to trigger async component loading -->
+    <!-- render a hidden dummy CEditor in order to trigger async component loading, otherwise there is a flash. -->
     <CEditor v-if="!editorLoaded && $can('editContent')" v-show="false" />
     <!-- apply className directly to CEditor since if it is rendered as an inline input, styles like font size won't cascade from the parent -->
     <CEditor
@@ -143,6 +143,7 @@ export default {
     border: 0;
     padding: 8px;
     margin-left: -8px;
+    margin-right: -8px;
     margin-top: -8px;
 
     & > :first-child,
