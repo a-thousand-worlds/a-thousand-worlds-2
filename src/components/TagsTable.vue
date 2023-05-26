@@ -332,7 +332,7 @@ export default {
         <th
           class="has-text-centered"
           v-tippy="{
-            content: `Adjust the likelihood of ${type} being sorted to the top. For example, a person that has a tag with a weight of 10 means the person is 10 times more likely to be sorted to the top than a person that has a tag with a weight of 1.`,
+            content: `Adjust the likelihood of ${type} with this tag being sorted to the top. For example, if Historical has a weight of 10 and all other tags have a weight of 1, then a Historical book will be 10 times more likely to be sorted to the top than a non-Historical book.`,
           }"
           style="white-space: nowrap"
         >
