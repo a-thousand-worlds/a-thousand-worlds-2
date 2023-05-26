@@ -48,7 +48,9 @@ class ATWUploadAdapter {
   }
 }
 
-const FirebaseUploadAdapter = editor => {
+// must be defined as an old-school function declaration, not an arrow function
+// See: https://github.com/ckeditor/ckeditor5/issues/11812#issuecomment-1564993835
+const FirebaseUploadAdapter = function (editor) {
   editor.plugins.get('FileRepository').createUploadAdapter = loader => new ATWUploadAdapter(loader)
 }
 
