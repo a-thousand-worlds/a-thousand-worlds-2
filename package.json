@@ -11,8 +11,6 @@
     "emulate": "firebase emulators:start --only functions",
     "host:staging": "firebase hosting:channel:deploy staging --expires 30d",
     "lint": "vue-cli-service lint src functions vue.config.js",
-    "//preload": "cannot call firebase database:get in child_process due to truncated stdout (https://github.com/sindresorhus/execa/issues/130)",
-    "preload": "mkdir -p /tmp/atw && firebase database:get /tags > /tmp/atw/tags.json && node ./preload.js",
     "postinstall": "husky install",
     "start": "vue-cli-service serve",
     "start:local": "npm run build && VUE_APP_DATABASE_EMULATOR vue-cli-service serve",
